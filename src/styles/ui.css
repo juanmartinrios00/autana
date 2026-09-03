@@ -1,0 +1,407 @@
+/* ==========================================================================
+   Autana — primitivas de UI
+   ========================================================================== */
+
+/* --- Button ------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  /* Anchos y bajos: la proporción es lo que les da el aire. El texto va
+     chico y espaciado, no grande y apretado. */
+  height: 42px;
+  padding-inline: 30px;
+  border: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    transform var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease),
+    background var(--dur-med) var(--ease);
+}
+
+.btn--yellow {
+  background: var(--accent);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.btn--yellow:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--sh-hover);
+}
+
+.btn--dark {
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+.btn--dark:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--sh-hover);
+}
+
+.btn--outline {
+  background: var(--canvas);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.btn--outline:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--ink-2);
+}
+.btn--ghost:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+
+.btn--danger {
+  background: var(--canvas);
+  color: var(--danger);
+  box-shadow: inset 0 0 0 1px #f0c6c4;
+}
+
+.btn--sm {
+  height: 34px;
+  padding-inline: 18px;
+  gap: 7px;
+  font-size: 0.66rem;
+}
+
+.btn--lg {
+  height: 48px;
+  padding-inline: 44px;
+  font-size: 0.78rem;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn:disabled {
+  background: var(--surface-3);
+  color: var(--ink-4);
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* --- CtaSplit ----------------------------------------------------------
+   Un solo enlace, dos bloques. Uso puntual: una por pantalla, y solo en la
+   accion principal de la pagina. En hover se abre el hueco, nada mas.      */
+
+.cta {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 6px;
+  transition: gap var(--dur-med) var(--ease);
+}
+
+.cta:hover {
+  gap: 10px;
+}
+
+.cta__label,
+.cta__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  background: var(--accent);
+  color: var(--ink);
+  transition: background var(--dur-med) var(--ease);
+}
+
+.cta__label {
+  height: 48px;
+  padding-inline: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cta__arrow {
+  width: 48px;
+  flex-shrink: 0;
+}
+
+.cta:hover .cta__label,
+.cta:hover .cta__arrow {
+  background: var(--accent-hover);
+}
+
+.cta--sm .cta__label {
+  height: 38px;
+  padding-inline: 26px;
+  font-size: 0.69rem;
+}
+.cta--sm .cta__arrow {
+  width: 38px;
+}
+
+/* --- Field: Input y Select --------------------------------------------- */
+
+.field {
+  display: block;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.field__control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 52px;
+  padding-inline: 14px;
+  border: 0;
+  border-radius: 0;
+  background: var(--canvas);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  font-size: 0.94rem;
+  color: var(--ink);
+  transition: box-shadow var(--dur-med) var(--ease);
+}
+
+.field__control::placeholder {
+  color: var(--ink-4);
+}
+
+.field__control:focus-visible {
+  outline: 0;
+  box-shadow:
+    inset 0 0 0 1px var(--ink),
+    0 0 0 3px var(--accent);
+}
+
+.field__control:disabled {
+  background: var(--surface-2);
+  color: var(--ink-4);
+  cursor: not-allowed;
+}
+
+.field--error .field__control {
+  box-shadow: inset 0 0 0 1.5px var(--danger);
+}
+
+.field__error {
+  display: block;
+  margin-top: 7px;
+  font-size: 0.78rem;
+  color: var(--danger);
+}
+
+/* El select necesita el chevron propio: quitamos el nativo. */
+.field__control--select {
+  appearance: none;
+  padding-right: 38px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236e7175' stroke-width='1.4' stroke-linecap='square'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.field__icon {
+  flex-shrink: 0;
+  color: var(--ink-3);
+}
+
+/* --- Badge -------------------------------------------------------------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding-inline: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+
+.badge--accent {
+  background: var(--accent);
+  color: var(--ink);
+}
+.badge--dark {
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+.badge--outline {
+  background: var(--canvas);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+.badge--tint {
+  background: var(--accent-tint);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+.badge--success {
+  background: var(--success-bg);
+  color: var(--success);
+}
+.badge--warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+.badge--danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* --- Card --------------------------------------------------------------- */
+
+.card {
+  background: var(--canvas);
+  border-radius: 0;
+  box-shadow: var(--sh-flat);
+}
+
+.card--pad {
+  padding: var(--sp-5);
+}
+
+.card--raised {
+  box-shadow: var(--sh-flat), var(--sh-overlay);
+}
+
+.card--interactive {
+  transition:
+    transform var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
+}
+
+.card--interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sh-hover);
+}
+
+/* --- Skeleton ----------------------------------------------------------- */
+
+.skeleton {
+  background: var(--surface-3);
+  border-radius: 0;
+  animation: skeleton-pulse 1.4s var(--ease) infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Input con icono: el foco vive en el contenedor, no en el <input> desnudo. */
+.field__control--group:focus-within {
+  box-shadow:
+    inset 0 0 0 1px var(--ink),
+    0 0 0 3px var(--accent);
+}
+
+.field__inner {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+}
+
+.field__inner::placeholder {
+  color: var(--ink-4);
+}
+
+/* Boton que solo envuelve un chip: no debe verse como boton. */
+.chip-button {
+  border: 0;
+  padding: 0;
+  background: none;
+}
+
+.chip-button:hover .badge {
+  background: var(--surface-3);
+}
+
+/* En mobile la CTA ocupa el ancho y aprieta el tracking: la etiqueta tiene que
+   entrar en una linea, si no se rompe la forma de los dos bloques. */
+@media (max-width: 560px) {
+  .cta {
+    width: 100%;
+  }
+
+  .cta__label {
+    flex-grow: 1;
+    height: 46px;
+    padding-inline: 18px;
+    font-size: 0.69rem;
+    letter-spacing: 0.06em;
+  }
+
+  .cta__arrow {
+    width: 46px;
+  }
+}
+
+/* --- Empty y error states ----------------------------------------------- */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8) var(--sp-6);
+  border-radius: 0;
+  box-shadow: var(--sh-flat);
+  text-align: center;
+}
+
+.empty__icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--sp-1);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  color: var(--ink-4);
+}
+
+.empty--error .empty__icon {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.empty__title {
+  font-size: 1.19rem;
+}
+
+.empty__text {
+  max-width: 38ch;
+  font-size: 0.91rem;
+  color: var(--ink-3);
+}
+
+.empty__action {
+  margin-top: var(--sp-2);
+}

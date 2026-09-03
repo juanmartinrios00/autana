@@ -1,0 +1,106 @@
+/* ==========================================================================
+   Autana — tokens
+   Blanco de fondo, negro para texto y estructura, amarillo solo para accion.
+   Los neutros tienen temperatura calida deliberada; no son grises frios.
+   ========================================================================== */
+
+:root {
+  /* --- Superficies --- */
+  --canvas: #ffffff;
+  --surface: #fafaf7;
+  --surface-2: #f5f5f1;
+  --surface-3: #f0f0ec;
+  /* La linea suave separa cosas por dentro; la dura dibuja los contornos.
+     Es el borde negro de 1px el que da el caracter, no una sombra. */
+  --line: #dedcd4;
+  --line-strong: #0b0b0c;
+
+  /* --- Tinta --- */
+  --ink: #0b0b0c;
+  --ink-2: #3f4145;
+  --ink-3: #6e7175;
+  --ink-4: #9a9da2;
+  --ink-inverse: #ffffff;
+
+  /* --- Accion. Nunca fondo de seccion, nunca color de texto. --- */
+  --accent: #ffd100;
+  --accent-hover: #f0c200;
+  --accent-tint: #fff7cc;
+  --accent-line: #f5df7a;
+
+  /* --- Semanticos --- */
+  --success: #0f8a5f;
+  --success-bg: #e9f6f0;
+  --warning: #b26a00;
+  --warning-bg: #fbf1e0;
+  --danger: #c4302b;
+  --danger-bg: #fbebea;
+
+  /* --- Tipografia --- */
+  /* Archivo lleva los titulares y los numeros grandes: es mas ancha y mas
+     tecnica. Instrument Sans se queda en la UI y los formularios, que es
+     donde mejor se lee. */
+  --font-display: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+  --font-ui: 'Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  --fs-display: clamp(2.5rem, 1.5rem + 3.9vw, 4.75rem);
+  --fs-h1: clamp(1.9rem, 1.45rem + 1.8vw, 2.5rem);
+  --fs-h2: clamp(1.45rem, 1.2rem + 1vw, 1.75rem);
+  --fs-h3: 1.25rem;
+  --fs-body: 1rem;
+  --fs-sm: 0.875rem;
+  --fs-xs: 0.78rem;
+  --fs-over: 0.72rem;
+
+  --lh-tight: 1.06;
+  --lh-body: 1.6;
+  --ls-display: -0.035em;
+  --ls-heading: -0.024em;
+  --ls-over: 0.18em;
+  --ls-nav: 0.12em;
+
+  /* --- Espaciado, escala de 8 --- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  /* --- Forma ---
+     Esquinas rectas en todo. `--r-pill` queda solo para lo que es de verdad
+     un circulo: avatares, el boton de favorito, los circulos de marca. */
+  --r-sm: 0;
+  --r-md: 0;
+  --r-lg: 0;
+  --r-xl: 0;
+  --r-pill: 999px;
+
+  /* --- Elevacion ---
+     Sin sombras difusas. El contorno es una hairline negra, y el hover suma
+     una sombra dura y desplazada: se lee como papel apilado, no como blur.
+     Los overlays son la unica excepcion, porque flotan de verdad. */
+  --sh-flat: inset 0 0 0 1px var(--line-strong);
+  --sh-hover: inset 0 0 0 1px var(--ink), 4px 4px 0 0 var(--ink);
+  --sh-overlay: inset 0 0 0 1px var(--ink), 0 24px 48px -24px rgba(11, 11, 12, 0.28);
+
+  /* --- Movimiento: 150-300ms, ease-out, transform y opacity --- */
+  --ease: cubic-bezier(0.2, 0.8, 0.3, 1);
+  --dur-fast: 150ms;
+  --dur-med: 200ms;
+  --dur-slow: 300ms;
+
+  /* --- Layout --- */
+  --nav-h: 74px;
+  /* Todo lo sticky se cuelga de acá. En mobile la navbar es más alta porque
+     el buscador baja a una segunda fila, y este token lo acompaña. */
+  --sticky-top: var(--nav-h);
+  --page-max: 1440px;
+  --page-pad: clamp(16px, 4vw, 56px);
+
+  color-scheme: light;
+}

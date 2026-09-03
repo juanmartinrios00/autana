@@ -1,0 +1,112 @@
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.slider__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+}
+
+.slider__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.slider__title {
+  font-size: var(--fs-h2);
+}
+
+.slider__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+}
+
+.slider__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.91rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: gap var(--dur-fast) var(--ease);
+}
+
+.slider__action:hover {
+  gap: 11px;
+}
+
+.slider__arrows {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.slider__arrow {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+  color: var(--ink);
+  transition:
+    background var(--dur-fast) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+}
+
+.slider__arrow:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.slider__arrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Scroll real con snap: se arrastra con el dedo y anda sin JS. El padding
+   lateral negativo deja que las cards lleguen al borde de la pantalla en
+   mobile sin romper la grilla del contenedor. */
+.slider__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--item-width, 300px);
+  gap: var(--sp-5);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--page-pad);
+  padding-bottom: var(--sp-2);
+  margin-inline: calc(var(--page-pad) * -1);
+  padding-inline: var(--page-pad);
+  scrollbar-width: none;
+}
+
+.slider__track::-webkit-scrollbar {
+  display: none;
+}
+
+.slider__track > * {
+  scroll-snap-align: start;
+}
+
+.slider__track:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 0;
+}
+
+@media (max-width: 639px) {
+  .slider__track {
+    grid-auto-columns: min(var(--item-width, 300px), 82vw);
+  }
+
+  .slider__arrows {
+    display: none;
+  }
+}

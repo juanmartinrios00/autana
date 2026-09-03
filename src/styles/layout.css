@@ -1,0 +1,376 @@
+/* ==========================================================================
+   Autana — layout: navbar, footer, envoltorio de página
+   ========================================================================== */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--canvas);
+  box-shadow: inset 0 -1px 0 var(--line-strong);
+  transition:
+    background var(--dur-slow) var(--ease),
+    box-shadow var(--dur-slow) var(--ease),
+    color var(--dur-slow) var(--ease);
+}
+
+/* Sobre el hero oscuro la navbar flota: sin fondo, sin línea, en blanco. */
+.navbar--over {
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink-inverse);
+}
+
+.navbar__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  height: var(--nav-h);
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+}
+
+.navbar__mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--ink);
+  color: var(--accent);
+}
+
+.navbar--over .navbar__mark {
+  background: var(--ink-inverse);
+  color: var(--ink);
+}
+
+.navbar__wordmark {
+  font-size: 1.19rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+/* Absolutamente centrados: quedan en el medio de la navbar sin importar
+   cuánto ocupen el logo y el buscador a los costados. */
+.navbar__links {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+}
+
+.navbar__link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.94rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--ink-2);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.navbar__link:hover {
+  color: var(--ink);
+}
+
+.navbar__links .navbar__link.is-active {
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.navbar--over .navbar__link {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.navbar--over .navbar__link:hover,
+.navbar--over .navbar__links .navbar__link.is-active {
+  color: var(--ink-inverse);
+}
+
+/* El botón de salir tiene que verse igual que los links de la navbar. */
+button.navbar__link {
+  border: 0;
+  background: none;
+  font-family: inherit;
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-left: auto;
+}
+
+.navbar__avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--ink-inverse);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.navbar--over .navbar__avatar {
+  background: var(--ink-inverse);
+  color: var(--ink);
+}
+
+/* Botón de contorno, no un bloque de color: la navbar tiene que pesar poco.
+   El amarillo se guarda para los CTA de las páginas. */
+.navbar__cta {
+  display: inline-flex;
+  align-items: center;
+  height: 42px;
+  padding-inline: 20px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 0.91rem;
+  font-weight: 500;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  transition:
+    background var(--dur-med) var(--ease),
+    color var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
+}
+
+.navbar__cta:hover {
+  background: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.navbar--over .navbar__cta {
+  color: var(--ink-inverse);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.navbar--over .navbar__cta:hover {
+  background: var(--ink-inverse);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink-inverse);
+}
+
+.navbar__burger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  place-items: center;
+}
+
+/* --- Buscador de la navbar ---------------------------------------------- */
+
+.navsearch {
+  display: flex;
+  align-items: center;
+  width: 260px;
+  height: 42px;
+  flex-shrink: 0;
+  padding-right: 8px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  transition:
+    box-shadow var(--dur-fast) var(--ease),
+    width var(--dur-slow) var(--ease);
+}
+
+.navsearch:focus-within {
+  width: 320px;
+}
+
+.navbar--over .navsearch {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.navbar--over .navsearch:focus-within {
+  box-shadow: inset 0 0 0 1px var(--ink-inverse);
+}
+
+/* La lupa es el submit, no un adorno: hay algo clickeable sin sumar un
+   bloque de color. */
+.navsearch__submit {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink-3);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.navsearch__submit:hover {
+  color: var(--ink);
+}
+
+.navsearch__input {
+  flex-grow: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 0.875rem;
+}
+
+.navsearch__input::placeholder {
+  color: var(--ink-4);
+}
+
+/* La cruz nativa del type=search no se puede estilar: usamos la nuestra. */
+.navsearch__input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.navsearch__clear {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--ink-3);
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+.navsearch__clear:hover {
+  color: var(--ink);
+}
+
+.navbar--over .navsearch__input,
+.navbar--over .navsearch__submit,
+.navbar--over .navsearch__clear {
+  color: var(--ink-inverse);
+}
+
+.navbar--over .navsearch__input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Marca el borde superior del documento para el observador de la navbar.
+   Va absoluto para no ocupar lugar ni empujar nada. */
+.nav-sentinel {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* Con los links centrados, el espacio del medio se acaba antes. */
+@media (max-width: 1279px) {
+  .navbar__links {
+    display: none;
+  }
+}
+
+/* La experiencia mobile no es el desktop comprimido: se reordena. */
+@media (max-width: 899px) {
+  :root {
+    --nav-h: 108px;
+  }
+
+  .navbar__actions .navbar__desktop-only {
+    display: none;
+  }
+
+  .navbar__burger {
+    display: grid;
+  }
+
+  .navbar__inner {
+    flex-wrap: wrap;
+    align-content: center;
+    row-gap: var(--sp-3);
+    gap: var(--sp-3);
+    padding-block: var(--sp-3);
+  }
+
+  .navsearch,
+  .navsearch:focus-within {
+    order: 10;
+    width: 100%;
+  }
+}
+
+/* --- Footer ------------------------------------------------------------- */
+
+.footer {
+  margin-top: auto;
+  box-shadow: inset 0 1px 0 var(--line-strong);
+}
+
+.footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+  padding-block: var(--sp-7);
+}
+
+.footer__note {
+  font-size: 0.84rem;
+  color: var(--ink-4);
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-5);
+}
+
+.footer__link {
+  font-size: 0.84rem;
+  color: var(--ink-3);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.footer__link:hover {
+  color: var(--ink);
+}
+
+/* --- Envoltorio de página ----------------------------------------------- */
+
+.main {
+  flex-grow: 1;
+}
+
+.section {
+  padding-block: var(--sp-8);
+}
+
+.section--tinted {
+  background: var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--line),
+    inset 0 -1px 0 var(--line);
+}
+
+.section__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  margin-bottom: var(--sp-6);
+  flex-wrap: wrap;
+}

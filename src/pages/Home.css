@@ -1,0 +1,235 @@
+.hero {
+  position: relative;
+  /* La navbar es sticky, así que ocupa lugar en el flujo. El hero sube por
+     detrás para que la navbar flote encima: como tiene z-index y el hero no,
+     se dibuja arriba sin necesidad de sacarla del flujo. */
+  margin-top: calc(var(--nav-h) * -1);
+  background: var(--ink);
+  color: var(--ink-inverse);
+  /* La foto entra por acá: basta con definir --hero-image en :root. */
+  background-image: var(--hero-image, none);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Velo para que el texto se lea sobre cualquier foto. Sin imagen es
+   transparente y no ensucia el negro. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11, 11, 12, 0.72) 0%, rgba(11, 11, 12, 0.5) 100%);
+  opacity: var(--hero-scrim, 0);
+  pointer-events: none;
+}
+
+.hero__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* La navbar flota encima, así que el hero se come su alto. */
+  padding-block: calc(var(--nav-h) + var(--sp-9)) var(--sp-8);
+}
+
+.hero__title {
+  max-width: 15ch;
+  margin-top: var(--sp-5);
+  font-size: var(--fs-display);
+  line-height: 0.98;
+  color: var(--ink-inverse);
+}
+
+.hero__sub {
+  max-width: 46ch;
+  margin-top: var(--sp-5);
+  font-size: 1.19rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* El buscador es el elemento principal de la home, no un adorno del hero. */
+.search-module {
+  width: 100%;
+  margin-top: var(--sp-7);
+  padding: 22px;
+  text-align: left;
+  box-shadow:
+    var(--sh-flat),
+    0 2px 4px rgba(11, 11, 12, 0.04),
+    0 30px 60px -34px rgba(11, 11, 12, 0.3);
+}
+
+.search-module__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.search-module__submit {
+  height: 52px;
+  padding-inline: 38px;
+}
+
+.search-module .field__control {
+  height: 56px;
+}
+
+.search-module__popular {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: var(--sp-5);
+  padding-top: 18px;
+  box-shadow: inset 0 1px 0 var(--surface-3);
+}
+
+.search-module__popular-label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink-4);
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-7);
+  margin: var(--sp-7) 0 0;
+}
+
+.stats__divider {
+  align-self: stretch;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.stats__value {
+  font-size: 1.63rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.stats__label {
+  margin-top: var(--sp-1);
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* --- Banda de venta ----------------------------------------------------- */
+
+.sell-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-7);
+  flex-wrap: wrap;
+  margin-block: var(--sp-8);
+  padding: 52px;
+  border-radius: 0;
+  background: var(--ink);
+}
+
+.sell-band__copy {
+  max-width: 58ch;
+}
+
+.sell-band__title {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-h1);
+  color: var(--ink-inverse);
+}
+
+.sell-band__text {
+  margin-top: var(--sp-3);
+  color: var(--ink-4);
+}
+
+.sell-band__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+}
+
+@media (max-width: 899px) {
+  .hero {
+    padding-block: var(--sp-7) var(--sp-6);
+  }
+
+  .search-module__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-module__submit {
+    width: 100%;
+  }
+
+  .stats {
+    gap: var(--sp-5);
+  }
+
+  .stats__divider {
+    display: none;
+  }
+
+  .sell-band {
+    padding: var(--sp-6) var(--sp-5);
+  }
+}
+
+.stats__item {
+  text-align: left;
+}
+
+.stats__value {
+  margin: 0;
+}
+
+.sell-band__eyebrow {
+  color: var(--accent);
+}
+
+.sell-band__secondary {
+  color: var(--ink-4);
+  padding-inline: var(--sp-1);
+}
+
+.sell-band__secondary:hover:not(:disabled) {
+  color: var(--ink-inverse);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.placeholder__title,
+.placeholder__text {
+  margin-top: var(--sp-3);
+}
+
+.placeholder__text {
+  color: var(--ink-3);
+}
+
+/* --- Secciones de la home ----------------------------------------------- */
+
+.home__sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-9);
+  padding-block: var(--sp-8);
+}
+
+@media (max-width: 899px) {
+  .home__sections {
+    gap: var(--sp-8);
+    padding-block: var(--sp-7);
+  }
+}
+
+.home__faq {
+  padding-block: var(--sp-8) var(--sp-9);
+}
+
+.home__closing {
+  padding-bottom: var(--sp-9);
+}

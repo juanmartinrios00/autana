@@ -1,0 +1,4 @@
+# El repo guarda todo con saltos de linea LF, sin importar el sistema desde el
+# que se commitee. Evita que un archivo aparezca entero como modificado solo
+# por haberlo abierto en Windows.
+* text=auto eol=lf

@@ -1,0 +1,511 @@
+/* ==========================================================================
+   Tarjetas de las secciones de la home
+   ========================================================================== */
+
+/* --- Marca: círculo con el logo, o la inicial mientras no esté ----------- */
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  text-align: center;
+}
+
+.brand__circle {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border-radius: var(--r-pill);
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+  transition:
+    transform var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
+}
+
+.brand:hover .brand__circle {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-hover);
+}
+
+.brand__logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.brand__initial {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--ink-4);
+}
+
+.brand__name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.brand__count {
+  font-size: 0.72rem;
+  color: var(--ink-4);
+}
+
+/* --- Carrocería --------------------------------------------------------- */
+
+.category {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--sp-1);
+  height: 116px;
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: 0;
+  background: var(--surface);
+  box-shadow: var(--sh-flat);
+  transition:
+    transform var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
+}
+
+.category:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-hover);
+}
+
+.category__name {
+  font-size: 1.06rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.category__count {
+  font-size: 0.78rem;
+  color: var(--ink-4);
+}
+
+/* --- Presupuesto -------------------------------------------------------- */
+
+.budget {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 116px;
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--ink-inverse);
+  transition: transform var(--dur-med) var(--ease);
+}
+
+.budget:hover {
+  transform: translate(-2px, -2px);
+}
+
+.budget__label {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.budget__cta {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* --- Modelos más buscados ----------------------------------------------- */
+
+.model {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  height: 92px;
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: 0;
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+  transition:
+    transform var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
+}
+
+.model:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-hover);
+}
+
+.model__make {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+.model__name {
+  font-size: 1.19rem;
+  font-weight: 600;
+  letter-spacing: -0.024em;
+}
+
+/* --- Cómo funciona ------------------------------------------------------ */
+
+.how {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-8);
+  padding: var(--sp-8);
+  border-radius: 0;
+  background: var(--surface);
+}
+
+.how__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-6);
+}
+
+.how__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.how__title {
+  font-size: var(--fs-h2);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.steps__item {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: var(--sp-4);
+  row-gap: var(--sp-1);
+}
+
+/* El número ocupa las dos filas, a la izquierda del bloque de texto. */
+.steps__number {
+  grid-row: span 2;
+  font-size: 1.06rem;
+  font-weight: 700;
+  color: var(--ink-4);
+  padding-top: 2px;
+}
+
+.steps__title {
+  font-size: 1rem;
+}
+
+.steps__text {
+  font-size: 0.91rem;
+  color: var(--ink-3);
+}
+
+/* --- Concesionarias ----------------------------------------------------- */
+
+.dealer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  border-radius: 0;
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+  transition:
+    transform var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
+}
+
+.dealer:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-hover);
+}
+
+.dealer__avatar {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.dealer__name {
+  font-size: 1.06rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.dealer__location {
+  font-size: 0.84rem;
+  color: var(--ink-3);
+  margin-top: -8px;
+}
+
+.dealer__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-top: var(--sp-3);
+  box-shadow: inset 0 1px 0 var(--line);
+}
+
+.dealer__count {
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+/* --- Preguntas frecuentes ----------------------------------------------- */
+
+.faq {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: var(--sp-8);
+  align-items: start;
+}
+
+.faq__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  position: sticky;
+  top: calc(var(--sticky-top) + var(--sp-5));
+}
+
+.faq__title {
+  font-size: var(--fs-h2);
+}
+
+.faq__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.faq__item {
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.faq__item:first-child {
+  box-shadow: inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
+}
+
+/* `details` y `summary` dan el acordeón accesible sin una línea de JS. */
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  padding: var(--sp-5) 0;
+  font-size: 1.06rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.faq__q:hover {
+  color: var(--ink-3);
+}
+
+/* Un más que gira hasta ser un menos: dos barras y una rotación. */
+.faq__mark {
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.faq__mark::before,
+.faq__mark::after {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: 2px;
+  border-radius: 0;
+  background: var(--ink);
+  transition: transform var(--dur-med) var(--ease);
+}
+
+.faq__mark::after {
+  transform: rotate(90deg);
+}
+
+.faq__item[open] .faq__mark::after {
+  transform: rotate(0deg);
+}
+
+.faq__a {
+  max-width: 68ch;
+  padding-bottom: var(--sp-5);
+  color: var(--ink-3);
+}
+
+@media (max-width: 899px) {
+  .how {
+    grid-template-columns: 1fr;
+    gap: var(--sp-7);
+    padding: var(--sp-6) var(--sp-5);
+  }
+
+  .faq {
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+
+  .faq__head {
+    position: static;
+  }
+}
+
+/* --- El problema -------------------------------------------------------- */
+
+.problem {
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.problem__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-8);
+  align-items: start;
+  padding-block: var(--sp-9);
+}
+
+.problem__eyebrow {
+  color: var(--accent);
+}
+
+.problem__title {
+  margin-top: var(--sp-4);
+  max-width: 16ch;
+  font-size: var(--fs-h1);
+  color: var(--ink-inverse);
+}
+
+/* Cada dolor separado por una hairline, no por una card: es una lista, no
+   cuatro objetos sueltos. */
+.problem__item {
+  padding-block: var(--sp-5);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.problem__item:first-child {
+  padding-top: 0;
+}
+
+.problem__item:last-child {
+  box-shadow: none;
+  padding-bottom: 0;
+}
+
+.problem__item-title {
+  font-size: 1.06rem;
+  color: var(--ink-inverse);
+}
+
+.problem__item-text {
+  margin-top: var(--sp-2);
+  font-size: 0.91rem;
+  color: var(--ink-4);
+}
+
+/* --- Cierre ------------------------------------------------------------- */
+
+.closing {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  box-shadow: var(--sh-flat);
+}
+
+.closing__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding: var(--sp-8);
+}
+
+/* La hairline entre columnas la pone la segunda, para que no se duplique. */
+.closing__col--alt {
+  background: var(--surface);
+  box-shadow: inset 1px 0 0 var(--line-strong);
+}
+
+.closing__eyebrow {
+  color: var(--ink-3);
+}
+
+.closing__title {
+  font-size: var(--fs-h2);
+}
+
+.closing__text {
+  max-width: 44ch;
+  color: var(--ink-3);
+}
+
+.closing__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  height: 60px;
+  padding-inline: 26px;
+  box-shadow: inset 0 0 0 1px var(--ink);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    box-shadow var(--dur-med) var(--ease),
+    transform var(--dur-med) var(--ease);
+}
+
+.closing__link:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-hover);
+}
+
+@media (max-width: 899px) {
+  .problem__inner {
+    grid-template-columns: 1fr;
+    gap: var(--sp-6);
+    padding-block: var(--sp-7);
+  }
+
+  .closing {
+    grid-template-columns: 1fr;
+  }
+
+  .closing__col {
+    padding: var(--sp-6) var(--sp-5);
+  }
+
+  .closing__col--alt {
+    box-shadow: inset 0 1px 0 var(--line-strong);
+  }
+}

@@ -1,0 +1,197 @@
+/* ==========================================================================
+   Vehicle card — la imagen es la protagonista y la card tiene mucho aire.
+   ========================================================================== */
+
+.vcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 0;
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+  transition:
+    transform var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
+}
+
+.vcard:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-hover);
+}
+
+.vcard:focus-within {
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+
+.vcard__media {
+  position: relative;
+  height: 198px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.vcard__media--loading {
+  background: var(--surface-3);
+}
+
+.vmedia {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.vmedia--empty {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.vcard:hover .vmedia {
+  transform: scale(1.03);
+}
+
+.vcard__condition {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+}
+
+.vcard__fav {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
+
+.vcard__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4) 18px 18px;
+}
+
+.vcard__title {
+  font-size: 1.06rem;
+  line-height: 1.22;
+}
+
+/* El enlace cubre la card entera: toda la superficie es clickeable, pero el
+   botón de favorito queda por encima con su propio z-index. */
+.vcard__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.vcard__link:focus-visible {
+  outline: 0;
+}
+
+.vcard__meta {
+  font-size: 0.81rem;
+  color: var(--ink-3);
+}
+
+.vcard__price {
+  font-size: 1.38rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.vcard__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.vcard__location {
+  font-size: 0.78rem;
+  color: var(--ink-3);
+}
+
+.vcard__seller {
+  height: 22px;
+  font-size: 0.69rem;
+}
+
+/* --- Vista de lista ----------------------------------------------------- */
+
+.vcard--list {
+  flex-direction: row;
+}
+
+.vcard--list .vcard__media {
+  width: 300px;
+  height: auto;
+  min-height: 190px;
+}
+
+.vcard--list .vcard__body {
+  flex-grow: 1;
+  justify-content: center;
+  padding: var(--sp-5);
+}
+
+@media (max-width: 699px) {
+  .vcard--list {
+    flex-direction: column;
+  }
+
+  .vcard--list .vcard__media {
+    width: 100%;
+    height: 198px;
+  }
+}
+
+/* --- Botón de favorito -------------------------------------------------- */
+
+.fav {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+  transition:
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.fav:hover {
+  transform: scale(1.06);
+}
+
+.fav:active {
+  transform: scale(0.94);
+}
+
+.fav--on {
+  background: var(--accent);
+}
+
+.fav__icon--on {
+  fill: currentColor;
+}
+
+/* --- Grilla ------------------------------------------------------------- */
+
+.vgrid {
+  display: grid;
+  gap: var(--sp-5);
+}
+
+.vgrid--grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.vgrid--list {
+  grid-template-columns: minmax(0, 1fr);
+}

@@ -1,0 +1,81 @@
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.filters__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: 38px;
+}
+
+.filters__title {
+  font-size: 1.06rem;
+}
+
+.filters__head-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* Los fieldset traen borde y padding propios del navegador. */
+.filters__group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filters__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.filters__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.filters__chip {
+  height: 32px;
+  font-weight: 500;
+}
+
+/* --- Control segmentado ------------------------------------------------- */
+
+.segmented {
+  display: flex;
+  gap: var(--sp-1);
+  height: 44px;
+  padding: 4px;
+  border-radius: 0;
+  background: var(--surface-2);
+}
+
+.segmented__item {
+  flex-grow: 1;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--ink-3);
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.segmented__item:hover {
+  color: var(--ink);
+}
+
+.segmented__item.is-on {
+  background: var(--ink);
+  color: var(--ink-inverse);
+  font-weight: 600;
+}

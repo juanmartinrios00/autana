@@ -1,0 +1,302 @@
+/* ==========================================================================
+   Perfil y garage
+   ========================================================================== */
+
+.profile__head {
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.profile__head-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-7);
+  flex-wrap: wrap;
+  padding-block: var(--sp-8);
+}
+
+.profile__identity {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+}
+
+.profile__avatar {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  background: var(--ink-inverse);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.profile__name {
+  font-size: var(--fs-h1);
+  color: var(--ink-inverse);
+}
+
+.profile__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-top: var(--sp-3);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+/* --- Nivel -------------------------------------------------------------- */
+
+.levelcard {
+  width: 320px;
+  padding: var(--sp-5);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.levelcard__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.levelcard__number {
+  color: var(--accent);
+}
+
+.levelcard__title {
+  font-family: var(--font-display);
+  font-size: 1.19rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.levelcard__bar {
+  height: 4px;
+  margin-top: var(--sp-4);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.levelcard__fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--dur-slow) var(--ease);
+}
+
+.levelcard__hint {
+  margin-top: var(--sp-3);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* --- Secciones ---------------------------------------------------------- */
+
+.profile__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+  padding-block: var(--sp-8);
+}
+
+.profile__section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-5);
+}
+
+.profile__section-title {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-h2);
+}
+
+.profile__section-note {
+  font-size: 0.84rem;
+  color: var(--ink-3);
+}
+
+/* --- Garage ------------------------------------------------------------- */
+
+.garage {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-5);
+}
+
+.gslot {
+  display: flex;
+  flex-direction: column;
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+}
+
+.gslot--empty {
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.gslot--editing {
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.gslot__media {
+  height: 180px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+/* Sin foto: bloque neutro, sin ilustración ni icono. */
+.gslot__media--empty {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-2);
+}
+
+.gslot--empty .gslot__media {
+  height: 120px;
+}
+
+.gslot__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gslot__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-5);
+}
+
+.gslot__slot {
+  color: var(--ink-4);
+}
+
+.gslot__title {
+  font-size: 1.06rem;
+}
+
+.gslot__car {
+  font-size: 1.25rem;
+}
+
+.gslot__year {
+  font-size: 0.84rem;
+  color: var(--ink-3);
+}
+
+.gslot__hint {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+.gslot__note {
+  margin-top: var(--sp-1);
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+
+.gslot__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-top: var(--sp-3);
+}
+
+.gslot__actions--quiet {
+  margin-top: var(--sp-4);
+  margin-inline: calc(var(--sp-4) * -1);
+}
+
+.gslot__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+}
+
+.gslot__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.gslot__note-input {
+  height: auto;
+  padding: var(--sp-3) 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* --- Logros ------------------------------------------------------------- */
+
+.achievements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0;
+  box-shadow: var(--sh-flat);
+}
+
+.achievement {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.achievement__mark {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  color: var(--ink);
+}
+
+.achievement.is-done .achievement__mark {
+  background: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.achievement__title {
+  font-size: 1rem;
+  color: var(--ink-4);
+}
+
+.achievement.is-done .achievement__title {
+  color: var(--ink);
+}
+
+.achievement__hint {
+  margin-top: var(--sp-1);
+  font-size: 0.84rem;
+  color: var(--ink-3);
+}
+
+@media (max-width: 899px) {
+  .profile__head-inner {
+    padding-block: var(--sp-7);
+  }
+
+  .levelcard {
+    width: 100%;
+  }
+
+  .gslot__pair {
+    grid-template-columns: 1fr;
+  }
+}

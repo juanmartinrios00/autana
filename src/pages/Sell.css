@@ -1,0 +1,437 @@
+.sell {
+  padding-block: var(--sp-6) var(--sp-8);
+}
+
+/* --- Stepper ------------------------------------------------------------ */
+
+.stepper {
+  display: flex;
+  max-width: 900px;
+  margin: 0 auto var(--sp-7);
+}
+
+.stepper__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  flex-grow: 1;
+}
+
+.stepper__dot {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-pill);
+  background: var(--canvas);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  font-size: 0.81rem;
+  font-weight: 600;
+  color: var(--ink-4);
+  transition:
+    background var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease),
+    color var(--dur-med) var(--ease);
+}
+
+.stepper__dot.is-done {
+  background: var(--ink);
+  color: var(--accent);
+  box-shadow: none;
+}
+
+.stepper__dot.is-on {
+  background: var(--accent);
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: 0 0 0 4px var(--accent-tint);
+}
+
+.stepper__label {
+  font-size: 0.78rem;
+  color: var(--ink-4);
+  text-align: center;
+}
+
+.stepper__label.is-on {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* La línea une este paso con el siguiente, arrancando después del punto. */
+.stepper__line {
+  position: absolute;
+  top: 14px;
+  left: calc(50% + 22px);
+  right: calc(-50% + 22px);
+  height: 2px;
+  background: var(--line);
+}
+
+.stepper__line.is-done {
+  background: var(--ink);
+}
+
+/* --- Cuerpo ------------------------------------------------------------- */
+
+.sell__body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-7);
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.sell__form {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.sell__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.sell__title {
+  font-size: 2rem;
+}
+
+.sell__lead {
+  max-width: 58ch;
+  color: var(--ink-3);
+}
+
+.sell__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.sell__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+
+.sell__textarea {
+  height: auto;
+  padding: var(--sp-3) 14px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.sell__hint {
+  display: flex;
+  gap: var(--sp-3);
+  font-size: 0.84rem;
+  color: var(--ink-3);
+}
+
+.sell__hint svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--success);
+}
+
+.sell__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-top: var(--sp-6);
+  box-shadow: inset 0 1px 0 var(--line);
+}
+
+/* --- Toggle ------------------------------------------------------------- */
+
+.sell__toggle-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  height: 52px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.toggle__track {
+  display: flex;
+  justify-content: flex-start;
+  width: 48px;
+  height: 28px;
+  padding: 3px;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  transition: background var(--dur-med) var(--ease);
+}
+
+.toggle__track.is-on {
+  justify-content: flex-end;
+  background: var(--accent);
+}
+
+.toggle__knob {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+}
+
+.toggle__label {
+  font-size: 0.91rem;
+}
+
+/* --- Uploader ----------------------------------------------------------- */
+
+.uploader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: 52px var(--sp-6);
+  border-radius: 0;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--accent);
+  text-align: center;
+  transition: background var(--dur-med) var(--ease);
+}
+
+.dropzone.is-dragging {
+  background: var(--accent-tint);
+}
+
+.dropzone__icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.dropzone__title {
+  font-size: 1.25rem;
+}
+
+.dropzone__text {
+  font-size: 0.91rem;
+  color: var(--ink-3);
+}
+
+.uploader__error {
+  font-size: 0.84rem;
+  color: var(--danger);
+}
+
+.uploader__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.uploader__count {
+  font-size: 1rem;
+}
+
+.uploader__saved {
+  font-size: 0.81rem;
+  color: var(--success);
+}
+
+.uploader__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--sp-3);
+}
+
+.thumb {
+  position: relative;
+  height: 132px;
+  overflow: hidden;
+  border-radius: 0;
+  background: var(--surface-2);
+}
+
+.thumb--main {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.thumb--busy {
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.thumb__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb__badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  height: 22px;
+  font-size: 0.66rem;
+}
+
+.thumb__remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+}
+
+/* --- Resumen ------------------------------------------------------------ */
+
+.sell__aside {
+  position: sticky;
+  top: calc(var(--sticky-top) + var(--sp-4));
+  width: 340px;
+  flex-shrink: 0;
+}
+
+.sell__summary-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.sell__summary-title {
+  font-size: 1rem;
+}
+
+.sell__summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: 0;
+}
+
+.sell__summary-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  font-size: 0.84rem;
+}
+
+.sell__summary-row dt {
+  color: var(--ink-3);
+}
+
+.sell__summary-row dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.sell__summary-note {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  box-shadow: inset 0 1px 0 var(--line);
+  font-size: 0.78rem;
+  color: var(--ink-4);
+}
+
+/* --- Confirmación ------------------------------------------------------- */
+
+.sell__done {
+  display: flex;
+  justify-content: center;
+}
+
+.sell__done-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  max-width: 520px;
+  padding: var(--sp-8) var(--sp-7);
+  text-align: center;
+}
+
+.sell__done-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-pill);
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.sell__done-text {
+  font-family: var(--font-mono);
+  font-size: 1.06rem;
+}
+
+.sell__done-note {
+  font-size: 0.84rem;
+  color: var(--ink-4);
+}
+
+.sell__done-actions {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+
+@media (max-width: 1023px) {
+  .sell__body {
+    flex-direction: column;
+  }
+
+  .sell__aside {
+    position: static;
+    width: 100%;
+    order: -1;
+  }
+
+  .sell__form {
+    width: 100%;
+  }
+}
+
+@media (max-width: 639px) {
+  .sell__pair {
+    grid-template-columns: 1fr;
+  }
+
+  .stepper__label {
+    display: none;
+  }
+}
+
+.sell__failure {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: 0;
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 0.84rem;
+}

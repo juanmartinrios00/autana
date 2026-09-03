@@ -1,0 +1,114 @@
+.login {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--sp-9) var(--sp-8);
+}
+
+.login__card {
+  width: 100%;
+  max-width: 460px;
+  padding: var(--sp-7);
+  box-shadow: var(--sh-flat), var(--sh-overlay);
+}
+
+.login__title {
+  margin-top: var(--sp-3);
+  font-size: 1.75rem;
+}
+
+.login__text {
+  margin-top: var(--sp-3);
+  color: var(--ink-3);
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  margin-top: var(--sp-6);
+}
+
+.login__legal {
+  margin-top: var(--sp-4);
+  font-size: 0.78rem;
+  color: var(--ink-4);
+}
+
+.login__legal a {
+  color: var(--ink-2);
+  box-shadow: inset 0 -1px 0 var(--line-strong);
+}
+
+.login__note {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-5);
+  box-shadow: inset 0 1px 0 var(--line);
+  font-size: 0.81rem;
+  color: var(--ink-3);
+}
+
+.login__note svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--success);
+}
+
+.login__card--sent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-3);
+}
+
+.login__sent-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--sp-2);
+  border-radius: var(--r-pill);
+  background: var(--accent-tint);
+  color: var(--ink);
+}
+
+.login__switch {
+  margin-top: var(--sp-4);
+  font-size: 0.84rem;
+  color: var(--ink-3);
+}
+
+/* Botón que se comporta como enlace dentro de un párrafo. */
+.login__again {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: inset 0 -1px 0 var(--line-strong);
+}
+
+.login__again:hover {
+  box-shadow: inset 0 -1px 0 var(--accent);
+}
+
+/* Separador con la palabra en el medio: dos líneas y un hueco. */
+.login__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-block: var(--sp-5);
+  font-size: 0.78rem;
+  color: var(--ink-4);
+}
+
+.login__divider::before,
+.login__divider::after {
+  content: '';
+  flex-grow: 1;
+  height: 1px;
+  background: var(--line);
+}
