@@ -1,3 +1,4 @@
+import { computeLevel } from './levels'
 import { photoUrl, requireSupabase } from './supabase'
 import type {
   Paginated,
@@ -213,7 +214,19 @@ export async function listVehicles({
     items = items.filter((vehicle) => sellerIds.has(vehicle.sellerId))
   }
 
-  return { items, total: count ?? items.length, page, pageSize }
+  return { items: await withSellerLevels(items), total: count ?? items.length, page, pageSize }
+}
+
+/** Adjunta el nivel del vendedor a un lote de avisos, en una sola consulta. */
+async function withSellerLevels(items: Vehicle[]): Promise<Vehicle[]> {
+  if (items.length === 0) return items
+
+  /* Si la vista todavia no existe o falla, los avisos se muestran igual sin
+     el sello: es un adorno de confianza, no el contenido. */
+  const levels = await getSellerLevels(items.map((item) => item.sellerId)).catch(() => null)
+  if (!levels) return items
+
+  return items.map((item) => ({ ...item, sellerLevel: levels.get(item.sellerId) }))
 }
 
 async function listSellersOfType(type: Seller['type']): Promise<{ id: string }[]> {
@@ -233,7 +246,9 @@ export async function getVehicleBySlug(slug: string): Promise<Vehicle> {
 
   if (error) throw error
   if (!data) throw new NotFoundError('esa publicación')
-  return toVehicle(data as ListingRow)
+
+  const [vehicle] = await withSellerLevels([toVehicle(data as ListingRow)])
+  return vehicle!
 }
 
 export async function getSeller(id: string): Promise<Seller> {
@@ -267,10 +282,12 @@ export async function getSimilarVehicles(vehicle: Vehicle, limit = 3): Promise<V
 
   if (error) throw error
 
-  return (data as ListingRow[])
+  const similar = (data as ListingRow[])
     .map(toVehicle)
     .sort((a, b) => Math.abs(a.price - vehicle.price) - Math.abs(b.price - vehicle.price))
     .slice(0, limit)
+
+  return withSellerLevels(similar)
 }
 
 export async function getVehiclesByIds(ids: string[]): Promise<Vehicle[]> {
@@ -458,7 +475,7 @@ export async function listRecentVehicles(limit = 8): Promise<Vehicle[]> {
     .limit(limit)
 
   if (error) throw error
-  return (data as ListingRow[]).map(toVehicle)
+  return withSellerLevels((data as ListingRow[]).map(toVehicle))
 }
 
 /**
@@ -618,4 +635,74 @@ export async function updateProfile(userId: string, input: ProfileUpdate): Promi
     .eq('id', userId)
 
   if (error) throw error
+}
+
+/* ---------------------------------------------------------------------------
+   Nivel del vendedor
+--------------------------------------------------------------------------- */
+
+interface StatsRow {
+  user_id: string
+  name: string
+  whatsapp: string | null
+  city: string | null
+  active_listings: number
+  best_photos: number
+  garage_cars: number
+}
+
+export interface SellerLevel {
+  level: number
+  title: string
+}
+
+/**
+ * Nivel de varios vendedores de una sola consulta.
+ *
+ * La vista `profile_stats` devuelve números crudos y el nivel se calcula acá
+ * con `computeLevel`, que es la única fuente de las reglas. Sin esto habría
+ * que pedir los datos de cada vendedor por separado al pintar una grilla.
+ */
+export async function getSellerLevels(userIds: string[]): Promise<Map<string, SellerLevel>> {
+  const unique = [...new Set(userIds)].filter(Boolean)
+  if (unique.length === 0) return new Map()
+
+  const client = requireSupabase()
+  const { data, error } = await client.from('profile_stats').select('*').in('user_id', unique)
+  if (error) throw error
+
+  return new Map(
+    (data as StatsRow[]).map((row) => {
+      const state = computeLevel({
+        profile: { name: row.name, whatsapp: row.whatsapp, city: row.city },
+        activeListings: row.active_listings,
+        bestPhotoCount: row.best_photos,
+        garageCars: row.garage_cars,
+      })
+      return [row.user_id, { level: state.level, title: state.title }]
+    }),
+  )
+}
+
+/** Los números crudos de un perfil, para la pantalla propia. */
+export async function getProfileStats(userId: string): Promise<{
+  activeListings: number
+  bestPhotoCount: number
+  garageCars: number
+}> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('profile_stats')
+    .select('active_listings, best_photos, garage_cars')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (error) throw error
+  const row = data as Pick<StatsRow, 'active_listings' | 'best_photos' | 'garage_cars'> | null
+
+  return {
+    activeListings: row?.active_listings ?? 0,
+    bestPhotoCount: row?.best_photos ?? 0,
+    garageCars: row?.garage_cars ?? 0,
+  }
 }

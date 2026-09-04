@@ -11,7 +11,14 @@ function initials(name: string): string {
     .join('')
 }
 
-export function SellerCard({ seller }: { seller: Seller }) {
+interface SellerCardProps {
+  seller: Seller
+  /** Nivel del vendedor. Acá se muestra siempre, incluso el primero: es la
+   *  pantalla donde el comprador decide a quién escribirle. */
+  level?: { level: number; title: string }
+}
+
+export function SellerCard({ seller, level }: SellerCardProps) {
   return (
     <div className="seller card">
       <span className="seller__avatar" aria-hidden="true">
@@ -21,6 +28,11 @@ export function SellerCard({ seller }: { seller: Seller }) {
       <div className="seller__info">
         <div className="seller__name-row">
           <h3 className="seller__name">{seller.name}</h3>
+          {level && (
+            <Badge tone="tint">
+              Nivel {level.level} · {level.title}
+            </Badge>
+          )}
           {seller.verified && <Badge tone="success">Verificada</Badge>}
         </div>
 

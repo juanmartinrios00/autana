@@ -52,9 +52,19 @@ export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
 
         <div className="vcard__foot">
           <span className="vcard__location">{locationLabel(vehicle.location)}</span>
-          {vehicle.sellerType && (
-            <Badge className="vcard__seller">{sellerTypeLabels[vehicle.sellerType]}</Badge>
-          )}
+          <span className="vcard__seller-info">
+            {/* Desde nivel 2. En el primero el sello diria "Recién llegado" en
+                cada card de un marketplace nuevo, y eso castiga justo a quien
+                recien se suma. En el detalle si se muestra siempre. */}
+            {vehicle.sellerLevel && vehicle.sellerLevel.level > 1 && (
+              <Badge tone="tint" className="vcard__level">
+                {vehicle.sellerLevel.title}
+              </Badge>
+            )}
+            {vehicle.sellerType && (
+              <Badge className="vcard__seller">{sellerTypeLabels[vehicle.sellerType]}</Badge>
+            )}
+          </span>
         </div>
       </div>
     </article>

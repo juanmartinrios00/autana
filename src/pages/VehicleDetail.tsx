@@ -202,7 +202,11 @@ export function VehicleDetail() {
 
           <section className="detail__section">
             <h2 className="detail__heading">Vendedor</h2>
-            {seller ? <SellerCard seller={seller} /> : <Skeleton height="116px" radius="16px" />}
+            {seller ? (
+              <SellerCard seller={seller} level={vehicle.sellerLevel} />
+            ) : (
+              <Skeleton height="116px" />
+            )}
           </section>
         </div>
 

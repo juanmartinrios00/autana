@@ -116,7 +116,15 @@
   color: var(--ink-3);
 }
 
-.vcard__seller {
+.vcard__seller-info {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+
+.vcard__seller,
+.vcard__level {
   height: 22px;
   font-size: 0.69rem;
 }

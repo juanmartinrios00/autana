@@ -76,7 +76,7 @@ export function Profile() {
       : null,
     activeListings: showing?.activeListings ?? 0,
     bestPhotoCount: showing?.bestPhotoCount ?? 0,
-    garage,
+    garageCars: garage.length,
   })
 
   useDocumentMeta({

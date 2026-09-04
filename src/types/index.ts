@@ -99,6 +99,8 @@ export interface Vehicle {
      por cada card de la grilla. */
   sellerName?: string
   sellerType?: SellerType
+  /** Nivel del vendedor, para que el comprador sepa a quien le escribe. */
+  sellerLevel?: { level: number; title: string }
 }
 
 export interface Favorite {

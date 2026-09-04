@@ -1,5 +1,3 @@
-import type { GarageEntry } from '../types'
-
 /**
  * Niveles y logros.
  *
@@ -51,14 +49,15 @@ export interface LevelInput {
   activeListings: number
   /** Cuántas fotos tiene la publicación con más fotos. */
   bestPhotoCount: number
-  garage: GarageEntry[]
+  /** Autos cargados en el garage. */
+  garageCars: number
 }
 
 export function computeLevel({
   profile,
   activeListings,
   bestPhotoCount,
-  garage,
+  garageCars,
 }: LevelInput): LevelState {
   const achievements: Achievement[] = [
     {
@@ -89,13 +88,13 @@ export function computeLevel({
       id: 'garage_started',
       title: 'Garage abierto',
       hint: 'Sumá el primer auto a tu garage.',
-      done: garage.length >= 1,
+      done: garageCars >= 1,
     },
     {
       id: 'garage_complete',
       title: 'Garage completo',
       hint: 'Llená los cuatro espacios del garage.',
-      done: garage.length >= 4,
+      done: garageCars >= 4,
     },
   ]
 
