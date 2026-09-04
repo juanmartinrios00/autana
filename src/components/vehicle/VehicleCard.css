@@ -24,16 +24,18 @@
   box-shadow: inset 0 0 0 1.5px var(--ink);
 }
 
+/* Plano propio, mas oscuro que la card: sin foto tiene que leerse como un
+   hueco de imagen, no como un pedazo de card en blanco. */
 .vcard__media {
   position: relative;
   height: 198px;
   flex-shrink: 0;
   overflow: hidden;
-  background: var(--surface-2);
+  background: var(--surface-3);
 }
 
 .vcard__media--loading {
-  background: var(--surface-3);
+  background: var(--surface-2);
 }
 
 .vmedia {

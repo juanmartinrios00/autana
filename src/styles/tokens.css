@@ -5,11 +5,15 @@
    ========================================================================== */
 
 :root {
-  /* --- Superficies --- */
+  /* --- Superficies ---
+     Cada plano tiene que distinguirse del anterior a simple vista. Un gris al
+     1% del blanco no es un plano, es blanco: la seccion "tintada" no se lee
+     como seccion y la pagina queda sin jerarquia. Estos valores son greige
+     calido, asi que el conjunto sigue leyendose blanco. */
   --canvas: #ffffff;
-  --surface: #fafaf7;
-  --surface-2: #f5f5f1;
-  --surface-3: #f0f0ec;
+  --surface: #f4f2ec;
+  --surface-2: #eae7dd;
+  --surface-3: #ddd9cc;
   /* La linea suave separa cosas por dentro; la dura dibuja los contornos.
      Es el borde negro de 1px el que da el caracter, no una sombra. */
   --line: #dedcd4;
@@ -18,8 +22,11 @@
   /* --- Tinta --- */
   --ink: #0b0b0c;
   --ink-2: #3f4145;
-  --ink-3: #6e7175;
-  --ink-4: #9a9da2;
+  /* Los dos grises de texto pasan 4.5:1 sobre blanco, surface y surface-2.
+     Sobre surface-3 no llegan, asi que ese plano queda para fondos sin texto
+     encima (media de las cards, rieles, separadores). */
+  --ink-3: #5c5e62;
+  --ink-4: #66686c;
   --ink-inverse: #ffffff;
 
   /* --- Accion. Nunca fondo de seccion, nunca color de texto. --- */

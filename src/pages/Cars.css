@@ -5,6 +5,8 @@
   padding-block: var(--sp-6) var(--sp-8);
 }
 
+/* Panel con superficie propia: antes flotaba suelto en el blanco y la pagina
+   no tenia estructura, solo una columna de campos al aire. */
 .cars__aside {
   position: sticky;
   top: calc(var(--sticky-top) + var(--sp-4));
@@ -12,7 +14,9 @@
   flex-shrink: 0;
   max-height: calc(100dvh - var(--sticky-top) - var(--sp-7));
   overflow-y: auto;
-  padding-right: var(--sp-2);
+  padding: var(--sp-5);
+  background: var(--surface);
+  box-shadow: var(--sh-flat);
 }
 
 .cars__results {
