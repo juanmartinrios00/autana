@@ -1,0 +1,20 @@
+{
+  // Configuración para desplegar en Cloudflare.
+  //
+  // El proyecto es un sitio estático: no hay código de servidor. Se despliega
+  // como un Worker que sirve los archivos de `dist`, que es la forma que
+  // Cloudflare recomienda hoy para SPAs.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "autana",
+  "compatibility_date": "2026-01-01",
+
+  "assets": {
+    "directory": "./dist",
+
+    // Sin esto, entrar directo a /cars/renault-symbol-2010 devuelve 404: ese
+    // archivo no existe, la ruta la resuelve el router en el navegador.
+    // `single-page-application` hace que cualquier ruta desconocida sirva el
+    // index.html manteniendo la URL.
+    "not_found_handling": "single-page-application"
+  }
+}
