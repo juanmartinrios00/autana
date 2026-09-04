@@ -1,5 +1,0 @@
-# Cloudflare Pages sirve archivos estáticos. Sin esta regla, entrar directo a
-# /cars/bmw-320i-... devuelve 404, porque ese archivo no existe: la ruta la
-# resuelve el router en el navegador. El 200 (no 301) hace que la URL se
-# mantenga mientras se sirve el index.
-/*    /index.html   200
