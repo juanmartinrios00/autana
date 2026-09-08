@@ -1,15 +1,22 @@
 {
   // Configuración para desplegar en Cloudflare.
   //
-  // El proyecto es un sitio estático: no hay código de servidor. Se despliega
-  // como un Worker que sirve los archivos de `dist`, que es la forma que
-  // Cloudflare recomienda hoy para SPAs.
+  // Se despliega como un Worker que sirve los archivos de `dist`. El worker de
+  // `worker/index.ts` se para adelante y reescribe las etiquetas del <head> en
+  // las fichas de vehículo, para que compartir un link por WhatsApp muestre el
+  // auto y no el preview genérico del sitio. Todo lo demás lo sirven los
+  // assets directamente.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "autana",
   "compatibility_date": "2026-01-01",
+  "main": "worker/index.ts",
 
   "assets": {
     "directory": "./dist",
+
+    // El binding es lo que le deja al worker pedir un archivo estático y
+    // reescribirlo antes de devolverlo.
+    "binding": "ASSETS",
 
     // Sin esto, entrar directo a /cars/renault-symbol-2010 devuelve 404: ese
     // archivo no existe, la ruta la resuelve el router en el navegador.
