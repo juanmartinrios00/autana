@@ -64,6 +64,11 @@ export function Navbar({ atTop }: NavbarProps) {
         <div className="navbar__actions">
           {session ? (
             <>
+              {/* Con sesión, el panel de venta tiene que estar a un clic. Sin
+                  esto la única puerta era el avatar, que no dice a dónde va. */}
+              <Link to="/my-listings" className="navbar__link navbar__desktop-only">
+                Mis publicaciones
+              </Link>
               <button
                 type="button"
                 className="navbar__link navbar__desktop-only"

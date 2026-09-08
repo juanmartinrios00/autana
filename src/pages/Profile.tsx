@@ -96,6 +96,7 @@ export function Profile() {
     setReloads((count) => count + 1)
   }
 
+
   if (status === 'notfound') {
     return (
       <div className="page section">
@@ -151,7 +152,7 @@ export function Profile() {
               borrás una publicación, baja. */}
           <div className="levelcard">
             <div className="levelcard__top">
-              <span className="over levelcard__number">Nivel {level.level}</span>
+              <span className="over over--invert levelcard__number">Nivel {level.level}</span>
               <span className="levelcard__title">{level.title}</span>
             </div>
 
@@ -172,6 +173,28 @@ export function Profile() {
       </section>
 
       <div className="page profile__body">
+        {/* La puerta al panel de venta. Va arriba de todo y como bloque
+            entero, no como un link perdido: es lo que más viene a hacer
+            alguien que entra a su propio perfil. */}
+        {editable && (
+          <Link to="/my-listings" className="profile__listings">
+            <span className="profile__listings-copy">
+              <span className="over">Tus avisos</span>
+              <span className="profile__listings-title">Mis publicaciones</span>
+              <span className="profile__listings-text">
+                {showing.activeListings === 0
+                  ? 'Todavía no tenés avisos activos. Entrá para publicar el primero.'
+                  : `${showing.activeListings} ${
+                      showing.activeListings === 1 ? 'aviso activo' : 'avisos activos'
+                    }. Pausalos, editalos o marcalos vendidos.`}
+              </span>
+            </span>
+            <span className="profile__listings-arrow" aria-hidden="true">
+              <Icon name="arrowRight" size={20} />
+            </span>
+          </Link>
+        )}
+
         <section className="profile__section">
           <header className="profile__section-head">
             <div>

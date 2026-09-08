@@ -1,0 +1,51 @@
+/* ==========================================================================
+   Mis publicaciones — el panel de quien vende
+   ========================================================================== */
+
+.mylistings-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.mylistings-page__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+}
+
+.mylistings-page__titles {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+}
+
+.mylistings-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: var(--sp-1);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--ink-3);
+  transition:
+    color var(--dur-fast) var(--ease),
+    gap var(--dur-fast) var(--ease);
+}
+
+.mylistings-page__back:hover {
+  gap: 10px;
+  color: var(--ink);
+}
+
+.mylistings-page__title {
+  font-size: var(--fs-h1);
+}
+
+.mylistings-page__count {
+  font-size: 0.94rem;
+  color: var(--ink-3);
+}

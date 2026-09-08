@@ -6,6 +6,7 @@ import { FavoritesProvider } from './context/FavoritesProvider'
 import { Cars } from './pages/Cars'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
+import { MyListings } from './pages/MyListings'
 import { Sell } from './pages/Sell'
 import { Placeholder } from './pages/Placeholder'
 import { Profile } from './pages/Profile'
@@ -37,6 +38,9 @@ export default function App() {
                   después vuelven acá. */}
               <Route element={<RequireAuth />}>
                 <Route path="sell" element={<Sell />} />
+                {/* Mismo formulario que publicar, pero arranca lleno. */}
+                <Route path="sell/:slug/edit" element={<Sell />} />
+                <Route path="my-listings" element={<MyListings />} />
                 <Route path="profile" element={<Profile />} />
               </Route>
 

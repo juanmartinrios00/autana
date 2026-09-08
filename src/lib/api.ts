@@ -1,6 +1,7 @@
 import { computeLevel } from './levels'
 import { photoUrl, requireSupabase } from './supabase'
 import type {
+  ListingStatus,
   Paginated,
   Seller,
   SortOption,
@@ -19,6 +20,21 @@ export class NotFoundError extends Error {
   constructor(what: string) {
     super(`No encontramos ${what}.`)
     this.name = 'NotFoundError'
+  }
+}
+
+/**
+ * Una escritura que no tocó ninguna fila.
+ *
+ * RLS no rechaza los UPDATE ni los DELETE: los *filtra*. Si el aviso no es de
+ * quien pide el cambio, Postgres no encuentra nada que modificar y devuelve
+ * OK con cero filas y sin error. Sin distinguir ese caso, la pantalla
+ * festejaría un cambio que nunca ocurrió.
+ */
+export class NotAllowedError extends Error {
+  constructor(what: string) {
+    super(`No pudimos ${what}. Puede que tu sesión haya vencido: probá entrar de nuevo.`)
+    this.name = 'NotAllowedError'
   }
 }
 
@@ -363,7 +379,7 @@ export async function listModels(make: string): Promise<string[]> {
    Publicar
 --------------------------------------------------------------------------- */
 
-export interface NewListing {
+export interface ListingInput {
   make: string
   model: string
   trim: string | null
@@ -399,7 +415,7 @@ function slugify(value: string): string {
 
 /** Publica el aviso y sube las fotos. Devuelve el vehículo ya guardado. */
 export async function createListing(
-  input: NewListing,
+  input: ListingInput,
   photos: Blob[],
   userId: string,
 ): Promise<Vehicle> {
@@ -468,17 +484,22 @@ export async function uploadListingPhotos(
   listingId: string,
   userId: string,
   photos: Blob[],
+  startPosition = 0,
 ): Promise<number> {
   const client = requireSupabase()
   const rows: { listing_id: string; path: string; position: number }[] = []
 
   for (const [index, blob] of photos.entries()) {
-    const path = `${userId}/${listingId}/${index}.webp`
+    const position = startPosition + index
+    /* El sufijo al azar evita pisar una foto vieja al editar: las posiciones
+       se reutilizan cuando se borra alguna del medio, los nombres no. */
+    const suffix = Math.random().toString(36).slice(2, 8)
+    const path = `${userId}/${listingId}/${position}-${suffix}.webp`
     const { error } = await client.storage
       .from('listing-photos')
       .upload(path, blob, { contentType: 'image/webp', upsert: true })
 
-    if (!error) rows.push({ listing_id: listingId, path, position: index })
+    if (!error) rows.push({ listing_id: listingId, path, position })
   }
 
   if (rows.length > 0) {
@@ -487,6 +508,161 @@ export async function uploadListingPhotos(
   }
 
   return rows.length
+}
+
+/* ---------------------------------------------------------------------------
+   Gestionar los avisos propios
+--------------------------------------------------------------------------- */
+
+/**
+ * Guarda los cambios de un aviso que ya existe.
+ *
+ * El slug NO se toca, aunque cambien la marca, el modelo o el año. Es la
+ * identidad pública del aviso: si alguien lo compartió por WhatsApp, ese link
+ * tiene que seguir funcionando. Un slug que dice "corolla" en un aviso que
+ * ahora dice Hilux es feo; un link roto es peor.
+ */
+export async function updateListing(id: string, input: ListingInput, userId: string): Promise<Vehicle> {
+  const client = requireSupabase()
+
+  /* Igual que al publicar: el contacto y la ubicación viven en el perfil. */
+  const { error: profileError } = await client
+    .from('profiles')
+    .update({ whatsapp: input.whatsapp, city: input.city, province: input.province })
+    .eq('id', userId)
+
+  if (profileError) throw profileError
+
+  const { data, error } = await client
+    .from('listings')
+    .update({
+      make: input.make,
+      model: input.model,
+      trim: input.trim,
+      year: input.year,
+      price: input.price,
+      negotiable: input.negotiable,
+      mileage: input.mileage,
+      condition: input.condition,
+      fuel_type: input.fuelType,
+      transmission: input.transmission,
+      drivetrain: input.drivetrain,
+      body_type: input.bodyType,
+      engine: input.engine,
+      doors: input.doors,
+      color: input.color,
+      city: input.city,
+      province: input.province,
+      description: input.description,
+    })
+    .eq('id', id)
+    .select(LISTING_COLUMNS)
+
+  if (error) throw error
+  const rows = data as ListingRow[] | null
+  if (!rows || rows.length === 0) throw new NotAllowedError('guardar los cambios')
+
+  return toVehicle(rows[0]!)
+}
+
+/**
+ * Saca una foto de un aviso: el archivo del bucket y la fila que lo apunta.
+ *
+ * Se borra primero el archivo y después la fila. Al revés, un fallo a mitad de
+ * camino dejaría una fila apuntando a un archivo que ya no está, y la ficha
+ * mostraría una imagen rota.
+ */
+export async function deleteListingImage(imageId: string): Promise<void> {
+  const client = requireSupabase()
+
+  const { data: image, error: readError } = await client
+    .from('listing_images')
+    .select('path')
+    .eq('id', imageId)
+    .maybeSingle()
+
+  if (readError) throw readError
+  if (!image) return
+
+  await client.storage.from('listing-photos').remove([(image as { path: string }).path])
+
+  const { data, error } = await client
+    .from('listing_images')
+    .delete()
+    .eq('id', imageId)
+    .select('id')
+
+  if (error) throw error
+  if (!data || data.length === 0) throw new NotAllowedError('borrar la foto')
+}
+
+
+/**
+ * Todos los avisos del usuario, en cualquier estado.
+ *
+ * No hace falta filtrar por dueño más allá del `seller_id`: la política de
+ * RLS ya deja ver los pausados, vendidos y borradores únicamente a quien los
+ * publicó, así que nadie puede espiar los avisos guardados de otro cambiando
+ * el id en la URL.
+ */
+export async function listMyListings(userId: string): Promise<Vehicle[]> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('listings')
+    .select(LISTING_COLUMNS)
+    .eq('seller_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data as ListingRow[]).map(toVehicle)
+}
+
+/**
+ * Pausa un aviso, lo reactiva o lo marca vendido.
+ *
+ * Es lo que mantiene vivo al marketplace: `listVehicles` sólo trae los
+ * activos, así que pausar o marcar vendido lo saca de la búsqueda en el acto,
+ * y la política de RLS lo esconde también del link directo. Un clasificado
+ * lleno de autos ya vendidos deja de servirle al comprador.
+ */
+export async function setListingStatus(id: string, status: ListingStatus): Promise<void> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('listings')
+    .update({ status })
+    .eq('id', id)
+    .select('id')
+
+  if (error) throw error
+  if (!data || data.length === 0) throw new NotAllowedError('actualizar el aviso')
+}
+
+/**
+ * Borra un aviso y sus fotos.
+ *
+ * El `on delete cascade` se lleva las filas de `listing_images`, pero no los
+ * archivos del bucket: esos hay que borrarlos a mano o quedan ocupando lugar
+ * para siempre. Si la limpieza del storage falla, el aviso se borra igual —
+ * que alguien no pueda dar de baja su publicación es mucho peor que un puñado
+ * de archivos huérfanos.
+ */
+export async function deleteListing(id: string): Promise<void> {
+  const client = requireSupabase()
+
+  const { data: images } = await client
+    .from('listing_images')
+    .select('path')
+    .eq('listing_id', id)
+
+  const paths = (images as { path: string }[] | null)?.map((row) => row.path) ?? []
+  if (paths.length > 0) {
+    await client.storage.from('listing-photos').remove(paths)
+  }
+
+  const { data, error } = await client.from('listings').delete().eq('id', id).select('id')
+
+  if (error) throw error
+  if (!data || data.length === 0) throw new NotAllowedError('borrar el aviso')
 }
 
 /* ---------------------------------------------------------------------------

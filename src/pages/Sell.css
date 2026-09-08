@@ -439,3 +439,71 @@
   color: var(--danger);
   font-size: 0.84rem;
 }
+
+/* --- Fotos ya publicadas (modo edición) ---------------------------------
+   Se muestran aparte de las nuevas porque son otra cosa: éstas ya están en el
+   bucket y quitarlas es una acción inmediata, no un cambio pendiente.       */
+
+.uploaded {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+
+.uploaded__title {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.uploaded__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--sp-3);
+}
+
+.uploaded__item {
+  position: relative;
+  height: 132px;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.uploaded__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploaded__main {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.uploaded__remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgba(11, 11, 12, 0.18);
+  transition:
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.uploaded__remove:hover {
+  background: var(--danger);
+  color: var(--ink-inverse);
+  transform: scale(1.06);
+}

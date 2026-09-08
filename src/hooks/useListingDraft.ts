@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { BodyType, Drivetrain, FuelType, Transmission, VehicleCondition } from '../types'
+import type {
+  BodyType,
+  Drivetrain,
+  FuelType,
+  Transmission,
+  Vehicle,
+  VehicleCondition,
+} from '../types'
 
 /**
  * El borrador de la publicación. Todo se guarda como texto porque viene de
@@ -52,11 +59,44 @@ function read(): ListingDraft {
   }
 }
 
-export function useListingDraft() {
-  const [draft, setDraft] = useState<ListingDraft>(read)
+/** Los datos de un aviso existente, con la forma que espera el formulario. */
+export function draftFromVehicle(vehicle: Vehicle, whatsapp: string): ListingDraft {
+  return {
+    make: vehicle.make,
+    model: vehicle.model,
+    trim: vehicle.trim ?? '',
+    year: String(vehicle.year),
+    condition: vehicle.condition,
+    mileage: String(vehicle.mileage),
+    fuelType: vehicle.fuelType,
+    transmission: vehicle.transmission,
+    bodyType: vehicle.bodyType,
+    drivetrain: vehicle.drivetrain,
+    engine: vehicle.engine,
+    doors: vehicle.doors ? String(vehicle.doors) : '',
+    color: vehicle.color,
+    price: String(vehicle.price),
+    negotiable: vehicle.negotiable,
+    city: vehicle.location.city,
+    province: vehicle.location.province,
+    description: vehicle.description,
+    whatsapp,
+  }
+}
+
+/**
+ * @param persist Guardar en `localStorage`. Va en `false` al editar un aviso
+ *   que ya existe: ese formulario arranca lleno con datos del servidor, y si
+ *   además escribiera en el storage se llevaría puesto el borrador a medio
+ *   hacer de una publicación nueva.
+ */
+export function useListingDraft({ persist = true }: { persist?: boolean } = {}) {
+  const [draft, setDraft] = useState<ListingDraft>(() => (persist ? read() : emptyDraft))
   const [savedAt, setSavedAt] = useState<Date | null>(null)
 
   useEffect(() => {
+    if (!persist) return
+
     const id = setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(draft))
@@ -67,20 +107,24 @@ export function useListingDraft() {
     }, 600)
 
     return () => clearTimeout(id)
-  }, [draft])
+  }, [draft, persist])
 
   const update = useCallback(<K extends keyof ListingDraft>(key: K, value: ListingDraft[K]) => {
     setDraft((prev) => ({ ...prev, [key]: value }))
   }, [])
 
+  /* Cargar de una el formulario entero, para el modo edición. */
+  const replace = useCallback((next: ListingDraft) => setDraft(next), [])
+
   const reset = useCallback(() => {
     setDraft(emptyDraft)
+    if (!persist) return
     try {
       localStorage.removeItem(STORAGE_KEY)
     } catch {
       /* Nada que limpiar. */
     }
-  }, [])
+  }, [persist])
 
-  return { draft, update, reset, savedAt }
+  return { draft, update, replace, reset, savedAt }
 }

@@ -1,0 +1,162 @@
+/* ==========================================================================
+   Mis publicaciones — la lista de gestión de los avisos propios
+   ========================================================================== */
+
+.mylistings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.mylistings__failure {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 0.88rem;
+}
+
+.mylistings__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.mylisting {
+  display: flex;
+  align-items: stretch;
+  gap: var(--sp-4);
+  padding: var(--sp-3);
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+}
+
+/* Pausado, vendido o borrador: sigue estando pero pierde protagonismo, para
+   que la vista se lea de un golpe como "esto es lo que está activo". */
+.mylisting.is-quiet {
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.mylisting.is-quiet .mylisting__media {
+  opacity: 0.6;
+}
+
+.mylisting__media {
+  width: 116px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.mylisting__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mylisting__img-empty {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 84px;
+  color: var(--ink-4);
+}
+
+.mylisting__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  flex-grow: 1;
+  min-width: 0;
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) 0;
+}
+
+.mylisting__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.mylisting__title {
+  font-family: var(--font-display);
+  font-size: 1.06rem;
+  font-weight: 600;
+  letter-spacing: -0.024em;
+}
+
+.mylisting__title:hover {
+  color: var(--ink-3);
+}
+
+.mylisting__meta {
+  font-size: 0.82rem;
+  color: var(--ink-3);
+}
+
+.mylisting__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-top: var(--sp-1);
+}
+
+/* La confirmación de borrado ocupa el lugar de los botones normales: no hay
+   forma de apretar "eliminar" de nuevo sin querer mientras está abierta. */
+.mylisting__actions--confirm {
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--danger-bg);
+}
+
+.mylisting__confirm-text {
+  margin-right: var(--sp-1);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--danger);
+}
+
+/* --- Sin avisos ---------------------------------------------------------- */
+
+.mylistings__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+.mylistings__empty-text {
+  color: var(--ink-3);
+}
+
+@media (max-width: 699px) {
+  .mylisting {
+    flex-direction: column;
+  }
+
+  .mylisting__media {
+    width: 100%;
+    height: 160px;
+  }
+
+  .mylisting__body {
+    padding: 0 var(--sp-2) var(--sp-2);
+  }
+
+  .mylisting__actions {
+    width: 100%;
+  }
+}
+
+/* El link envuelve al botón: hereda su forma y no suma una caja de más. */
+.mylisting__edit {
+  display: inline-flex;
+}

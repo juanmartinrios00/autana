@@ -321,3 +321,71 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Puerta a "Mis publicaciones" ----------------------------------------
+   Es un bloque entero y no un botón chico: en el perfil propio es la acción
+   principal, y tiene que competirle en peso al garage que viene abajo.     */
+
+.profile__listings {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  padding: clamp(var(--sp-5), 3vw, var(--sp-6));
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  transition:
+    transform var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease),
+    background var(--dur-med) var(--ease);
+}
+
+.profile__listings:hover {
+  transform: translateY(-3px);
+  background: var(--canvas);
+  box-shadow: var(--sh-hover);
+}
+
+.profile__listings-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.profile__listings-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-display);
+  letter-spacing: var(--ls-heading);
+}
+
+.profile__listings-text {
+  max-width: 52ch;
+  font-size: 0.94rem;
+  color: var(--ink-3);
+}
+
+.profile__listings-arrow {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--ink);
+  transition: transform var(--dur-med) var(--ease);
+}
+
+.profile__listings:hover .profile__listings-arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 639px) {
+  .profile__listings {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-4);
+  }
+}
