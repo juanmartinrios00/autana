@@ -223,3 +223,51 @@
 .vgrid--list {
   grid-template-columns: minmax(0, 1fr);
 }
+
+/* --- Botón de comparar ---------------------------------------------------
+   Queda deliberadamente callado: es una acción secundaria dentro de la card,
+   y no tiene que competirle al precio ni al título. Recién cuando está
+   elegido se pinta, para que se vea de un golpe cuáles entraron.          */
+
+.cmp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  height: 36px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--ink-3);
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.cmp-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.cmp-btn--on {
+  background: var(--accent-tint);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+.cmp-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* El enlace del título cubre la card entera, así que este botón necesita su
+   propio plano para poder recibir el clic. */
+.vcard__compare {
+  position: relative;
+  z-index: 2;
+  margin-top: var(--sp-1);
+}

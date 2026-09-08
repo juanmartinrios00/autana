@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { CompareBar } from '../compare/CompareBar'
 import { ErrorBoundary } from './ErrorBoundary'
 import { Footer } from './Footer'
 import { Navbar } from './Navbar'
@@ -41,6 +42,7 @@ export function Layout() {
         </ErrorBoundary>
       </main>
       <Footer />
+      <CompareBar />
     </>
   )
 }

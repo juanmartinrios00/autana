@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Badge } from '../ui/Badge'
+import { CompareButton } from './CompareButton'
 import { FavoriteButton } from './FavoriteButton'
 import { VehicleMedia } from './VehicleMedia'
 import {
@@ -66,6 +67,10 @@ export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
             )}
           </span>
         </div>
+
+        {/* Va en su propia fila y no dentro del pie: ahí conviven la ubicación
+            y los sellos del vendedor, y un tercer elemento rompe el reparto. */}
+        <CompareButton slug={vehicle.slug} title={title} className="vcard__compare" />
       </div>
     </article>
   )

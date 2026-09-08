@@ -335,6 +335,22 @@ export async function getSimilarVehicles(vehicle: Vehicle, limit = 3): Promise<V
   return withSellerLevels(similar)
 }
 
+/**
+ * Varios vehiculos por su slug, en una sola consulta.
+ *
+ * El comparador vive en la URL —`/compare?ids=corolla-2019-x,cruze-2020-y`—
+ * asi que compararlo con alguien es mandarle el link. Por eso van los slugs y
+ * no los ids: el que recibe el mensaje ve de que autos se trata antes de
+ * abrirlo.
+ */
+export async function getVehiclesBySlugs(slugs: string[]): Promise<Vehicle[]> {
+  if (!slugs.length) return []
+  const client = requireSupabase()
+  const { data, error } = await client.from('listings').select(LISTING_COLUMNS).in('slug', slugs)
+  if (error) throw error
+  return withSellerLevels((data as ListingRow[]).map(toVehicle))
+}
+
 export async function getVehiclesByIds(ids: string[]): Promise<Vehicle[]> {
   if (!ids.length) return []
   const client = requireSupabase()

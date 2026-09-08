@@ -1,0 +1,161 @@
+/* ==========================================================================
+   Comparador
+   ========================================================================== */
+
+.compare {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.compare__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+}
+
+.compare__title {
+  font-size: var(--fs-h1);
+}
+
+.compare__lead {
+  margin-top: var(--sp-2);
+  max-width: 60ch;
+  color: var(--ink-3);
+}
+
+/* En pantallas angostas la tabla scrollea sola en vez de romper la grilla. */
+.compare__scroll {
+  overflow-x: auto;
+  margin-inline: calc(var(--page-pad) * -1);
+  padding-inline: var(--page-pad);
+}
+
+.compare__table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* --- Encabezado: la card de cada auto ------------------------------------ */
+
+.compare__corner {
+  width: 150px;
+}
+
+.compare__col {
+  padding: 0 var(--sp-2) var(--sp-5);
+  text-align: left;
+  vertical-align: bottom;
+}
+
+.compare__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+}
+
+.compare__media {
+  width: 100%;
+  height: 132px;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.compare__name {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.024em;
+}
+
+.compare__name:hover {
+  color: var(--ink-3);
+}
+
+.compare__drop {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgba(11, 11, 12, 0.16);
+  transition:
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.compare__drop:hover {
+  background: var(--ink);
+  color: var(--ink-inverse);
+  transform: scale(1.06);
+}
+
+/* --- Filas --------------------------------------------------------------- */
+
+.compare__label {
+  padding: var(--sp-4) var(--sp-4) var(--sp-4) 0;
+  text-align: left;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink-3);
+  white-space: nowrap;
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.compare__cell {
+  padding: var(--sp-4) var(--sp-3);
+  font-size: 0.94rem;
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+/* El mejor de cada fila. Sólo se marca donde hay un criterio objetivo
+   —precio, año, kilometraje— y nunca si hay empate: destacar a uno de dos
+   iguales sería inventar una diferencia. */
+.compare__cell.is-best {
+  position: relative;
+  font-weight: 700;
+}
+
+.compare__cell.is-best::before {
+  content: '';
+  position: absolute;
+  inset: var(--sp-2) var(--sp-1);
+  z-index: -1;
+  border-radius: var(--r-sm);
+  background: var(--accent-tint);
+}
+
+.compare__table tbody tr:last-child .compare__label,
+.compare__table tbody tr:last-child .compare__cell {
+  box-shadow: none;
+}
+
+@media (max-width: 639px) {
+  .compare__corner {
+    width: 110px;
+  }
+
+  .compare__media {
+    height: 96px;
+  }
+}
