@@ -160,6 +160,27 @@ const orderBy: Record<SortOption, { column: string; ascending: boolean }> = {
   'mileage-asc': { column: 'mileage', ascending: true },
 }
 
+/**
+ * Las palabras de una busqueda, limpias y listas para entrar en un filtro.
+ *
+ * PostgREST arma los filtros con una gramatica de texto: la coma separa
+ * condiciones, el punto separa campo/operador/valor y los parentesis agrupan.
+ * Interpolar lo que escribio el usuario rompia la consulta entera — buscar
+ * "Renault, azul" devolvia PGRST100 y la pantalla quedaba en error. Tambien
+ * se van `%` y `_`, que son comodines de LIKE. Para una marca o un modelo
+ * alcanza con letras, numeros y guion.
+ *
+ * El tope de terminos evita que pegar un parrafo arme una consulta enorme.
+ */
+function searchTerms(q: string): string[] {
+  return q
+    .trim()
+    .split(/\s+/)
+    .map((term) => term.replace(/[^\p{L}\p{N}-]/gu, ''))
+    .filter(Boolean)
+    .slice(0, 6)
+}
+
 export interface ListVehiclesOptions {
   filters?: VehicleFilters
   sort?: SortOption
@@ -181,7 +202,14 @@ export async function listVehicles({
     .select(LISTING_COLUMNS, { count: 'exact' })
     .eq('status', 'active')
 
-  if (filters.q) query = query.or(`make.ilike.%${filters.q}%,model.ilike.%${filters.q}%`)
+  /* Cada palabra tiene que aparecer en la marca o en el modelo. Antes se
+     pedia la frase entera en una sola columna, asi que "Renault Symbol" —la
+     marca en una columna y el modelo en la otra— no encontraba nada. Los
+     `or` encadenados se combinan con AND, que es justo lo que queremos. */
+  for (const term of searchTerms(filters.q ?? '')) {
+    query = query.or(`make.ilike.%${term}%,model.ilike.%${term}%`)
+  }
+
   if (filters.make) query = query.eq('make', filters.make)
   if (filters.model) query = query.eq('model', filters.model)
   if (filters.province) query = query.eq('province', filters.province)
@@ -195,6 +223,17 @@ export async function listVehicles({
   if (filters.bodyType?.length) query = query.in('body_type', filters.bodyType)
   if (filters.condition?.length) query = query.in('condition', filters.condition)
 
+  /* El tipo de vendedor vive en `profiles`, asi que hay que resolverlo ANTES
+     de paginar. Filtrando despues del `.range()` se recortaba la pagina ya
+     traida: salian menos de `pageSize` resultados, el total venia sin filtrar
+     —con lo cual el paginador mostraba paginas de mas— y quedaban avisos a
+     los que no se llegaba desde ninguna pagina. */
+  if (filters.sellerType) {
+    const sellerIds = (await listSellersOfType(filters.sellerType)).map((seller) => seller.id)
+    if (sellerIds.length === 0) return { items: [], total: 0, page, pageSize }
+    query = query.in('seller_id', sellerIds)
+  }
+
   const { column, ascending } = orderBy[sort]
   const { data, error, count } = await query
     .order(column, { ascending })
@@ -202,17 +241,7 @@ export async function listVehicles({
 
   if (error) throw error
 
-  let items = (data as ListingRow[]).map(toVehicle)
-
-  /* El tipo de vendedor vive en `profiles`, así que no se puede filtrar en la
-     misma consulta sin un join. A esta escala alcanza con filtrar acá; cuando
-     el volumen lo pida, se resuelve con una vista en la base. */
-  if (filters.sellerType) {
-    const sellerIds = new Set(
-      (await listSellersOfType(filters.sellerType)).map((seller) => seller.id),
-    )
-    items = items.filter((vehicle) => sellerIds.has(vehicle.sellerId))
-  }
+  const items = (data as ListingRow[]).map(toVehicle)
 
   return { items: await withSellerLevels(items), total: count ?? items.length, page, pageSize }
 }
@@ -493,7 +522,7 @@ export async function listPopularVehicles(limit = 8, minViews = 1): Promise<Vehi
     .limit(limit)
 
   if (error) throw error
-  return (data as ListingRow[]).map(toVehicle)
+  return withSellerLevels((data as ListingRow[]).map(toVehicle))
 }
 
 /** Cuántas publicaciones activas hay por marca o por carrocería. */
@@ -534,8 +563,24 @@ export async function getStats(): Promise<MarketplaceStats> {
   }
 }
 
-/** Suma una visita. Si falla no importa: es una métrica, no el contenido. */
+/**
+ * Suma una visita. Si falla no importa: es una métrica, no el contenido.
+ *
+ * Una sola por aviso y por pestaña. Sin esto, refrescar la ficha o volver a
+ * ella desde "similares" sumaba de nuevo, y "Más vistos" terminaba ordenado
+ * por quién recargó más, no por interés real.
+ */
 export async function registerView(slug: string): Promise<void> {
+  const key = `autana:viewed:${slug}`
+
+  try {
+    if (sessionStorage.getItem(key)) return
+    sessionStorage.setItem(key, '1')
+  } catch {
+    /* Storage bloqueado (incógnito estricto, cookies de terceros): se cuenta
+       igual. Perder la deduplicación es mejor que perder la métrica. */
+  }
+
   const client = requireSupabase()
   await client.rpc('register_listing_view', { listing_slug: slug })
 }
