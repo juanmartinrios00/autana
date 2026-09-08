@@ -1,9 +1,18 @@
+/* ==========================================================================
+   Home — el hero y las bandas de la landing
+   ========================================================================== */
+
 .hero {
   position: relative;
   /* La navbar es sticky, así que ocupa lugar en el flujo. El hero sube por
      detrás para que la navbar flote encima: como tiene z-index y el hero no,
      se dibuja arriba sin necesidad de sacarla del flujo. */
   margin-top: calc(var(--nav-h) * -1);
+  /* Las esquinas de abajo redondeadas despegan el hero del resto de la
+     página: se lee como una placa apoyada sobre el papel blanco, no como
+     una banda que corta la pantalla en dos. */
+  border-radius: 0 0 var(--r-2xl) var(--r-2xl);
+  overflow: hidden;
   background: var(--ink);
   color: var(--ink-inverse);
   /* La foto entra por acá: basta con definir --hero-image en :root. */
@@ -12,84 +21,122 @@
   background-position: center;
 }
 
+/* Sin foto el negro plano queda muerto. Este halo cálido —amarillo al 10%,
+   apagándose hacia los bordes— le da un centro de luz sin sumar un color
+   nuevo a la paleta. Cuando llegue la foto, el velo de abajo lo tapa. */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 90% at 18% 0%, rgba(255, 209, 0, 0.1) 0%, transparent 60%),
+    radial-gradient(60% 80% at 100% 100%, rgba(255, 255, 255, 0.06) 0%, transparent 55%);
+  pointer-events: none;
+}
+
 /* Velo para que el texto se lea sobre cualquier foto. Sin imagen es
    transparente y no ensucia el negro. */
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(11, 11, 12, 0.72) 0%, rgba(11, 11, 12, 0.5) 100%);
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(11, 11, 12, 0.74) 0%, rgba(11, 11, 12, 0.52) 100%);
   opacity: var(--hero-scrim, 0);
   pointer-events: none;
 }
 
 .hero__inner {
   position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   /* La navbar flota encima, así que el hero se come su alto. */
-  padding-block: calc(var(--nav-h) + var(--sp-9)) var(--sp-8);
+  padding-block: calc(var(--nav-h) + var(--sp-9)) var(--sp-9);
 }
 
 .hero__title {
-  max-width: 15ch;
+  max-width: 16ch;
   margin-top: var(--sp-5);
   font-size: var(--fs-display);
-  line-height: 0.98;
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: var(--ls-display);
   color: var(--ink-inverse);
 }
 
 .hero__sub {
-  max-width: 46ch;
+  max-width: 48ch;
   margin-top: var(--sp-5);
   font-size: 1.19rem;
-  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-/* El buscador es el elemento principal de la home, no un adorno del hero. */
+/* El buscador es el elemento principal de la home, no un adorno del hero:
+   por eso es la única pieza blanca sobre el negro y la que más levanta. */
 .search-module {
   width: 100%;
   margin-top: var(--sp-7);
-  padding: 22px;
+  padding: var(--sp-5);
+  border-radius: var(--r-xl);
   text-align: left;
   box-shadow:
-    var(--sh-flat),
-    0 2px 4px rgba(11, 11, 12, 0.04),
-    0 30px 60px -34px rgba(11, 11, 12, 0.3);
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 2px 6px rgba(11, 11, 12, 0.16),
+    0 40px 70px -32px rgba(11, 11, 12, 0.7);
 }
 
 .search-module__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
-  gap: 14px;
+  gap: var(--sp-3);
   align-items: end;
 }
 
 .search-module__submit {
-  height: 52px;
-  padding-inline: 38px;
+  height: 56px;
+  padding-inline: 34px;
 }
 
 .search-module .field__control {
   height: 56px;
+  /* Dentro del módulo los campos se apoyan en un plano tintado: se leen como
+     huecos de un mismo bloque, no como cinco cajas sueltas. */
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px transparent;
+}
+
+.search-module .field__control:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.search-module .field__control:focus-visible {
+  background: var(--canvas);
+  box-shadow:
+    inset 0 0 0 1.5px var(--ink),
+    0 0 0 4px var(--accent-tint);
 }
 
 .search-module__popular {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--sp-2);
   flex-wrap: wrap;
   margin-top: var(--sp-5);
-  padding-top: 18px;
-  box-shadow: inset 0 1px 0 var(--surface-3);
+  padding-top: var(--sp-5);
+  box-shadow: inset 0 1px 0 var(--line);
 }
 
 .search-module__popular-label {
+  margin-right: var(--sp-1);
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--ink-4);
 }
+
+/* --- Números del marketplace -------------------------------------------- */
 
 .stats {
   display: flex;
@@ -99,22 +146,27 @@
   margin: var(--sp-7) 0 0;
 }
 
+.stats__item {
+  text-align: left;
+}
+
 .stats__divider {
   align-self: stretch;
   width: 1px;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .stats__value {
-  font-size: 1.63rem;
+  margin: 0;
+  font-size: 2rem;
   font-weight: 700;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
 }
 
 .stats__label {
   margin-top: var(--sp-1);
-  font-size: 0.84rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.58);
 }
 
 /* --- Banda de venta ----------------------------------------------------- */
@@ -125,9 +177,9 @@
   justify-content: space-between;
   gap: var(--sp-7);
   flex-wrap: wrap;
-  margin-block: var(--sp-8);
-  padding: 52px;
-  border-radius: 0;
+  margin-block: var(--sp-9);
+  padding: clamp(var(--sp-6), 4vw, var(--sp-8));
+  border-radius: var(--r-2xl);
   background: var(--ink);
 }
 
@@ -136,14 +188,14 @@
 }
 
 .sell-band__title {
-  margin-top: var(--sp-3);
+  margin-top: var(--sp-4);
   font-size: var(--fs-h1);
   color: var(--ink-inverse);
 }
 
 .sell-band__text {
-  margin-top: var(--sp-3);
-  color: var(--ink-4);
+  margin-top: var(--sp-4);
+  color: rgba(255, 255, 255, 0.66);
 }
 
 .sell-band__actions {
@@ -153,53 +205,16 @@
   gap: var(--sp-4);
 }
 
-@media (max-width: 899px) {
-  .hero {
-    padding-block: var(--sp-7) var(--sp-6);
-  }
-
-  .search-module__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .search-module__submit {
-    width: 100%;
-  }
-
-  .stats {
-    gap: var(--sp-5);
-  }
-
-  .stats__divider {
-    display: none;
-  }
-
-  .sell-band {
-    padding: var(--sp-6) var(--sp-5);
-  }
-}
-
-.stats__item {
-  text-align: left;
-}
-
-.stats__value {
-  margin: 0;
-}
-
-.sell-band__eyebrow {
-  color: var(--accent);
-}
-
 .sell-band__secondary {
-  color: var(--ink-4);
-  padding-inline: var(--sp-1);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .sell-band__secondary:hover:not(:disabled) {
   color: var(--ink-inverse);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
 }
+
+/* --- Placeholder -------------------------------------------------------- */
 
 .placeholder__title,
 .placeholder__text {
@@ -212,24 +227,71 @@
 
 /* --- Secciones de la home ----------------------------------------------- */
 
+/* El aire entre secciones es largo a propósito: es lo que hace que cada
+   bloque se lea como una idea completa y no como una lista continua. */
 .home__sections {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-9);
-  padding-block: var(--sp-8);
-}
-
-@media (max-width: 899px) {
-  .home__sections {
-    gap: var(--sp-8);
-    padding-block: var(--sp-7);
-  }
+  gap: var(--sp-10);
+  padding-block: var(--sp-10);
 }
 
 .home__faq {
-  padding-block: var(--sp-8) var(--sp-9);
+  padding-block: var(--sp-9) var(--sp-10);
 }
 
 .home__closing {
-  padding-bottom: var(--sp-9);
+  padding-bottom: var(--sp-10);
+}
+
+@media (max-width: 899px) {
+  .hero {
+    border-radius: 0 0 var(--r-xl) var(--r-xl);
+  }
+
+  .hero__inner {
+    padding-block: calc(var(--nav-h) + var(--sp-7)) var(--sp-7);
+  }
+
+  .hero__title {
+    max-width: 100%;
+  }
+
+  .search-module {
+    padding: var(--sp-4);
+  }
+
+  .search-module__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-module__submit {
+    width: 100%;
+    margin-top: var(--sp-1);
+  }
+
+  .stats {
+    gap: var(--sp-5) var(--sp-6);
+  }
+
+  .stats__divider {
+    display: none;
+  }
+
+  .sell-band {
+    margin-block: var(--sp-8);
+  }
+
+  .home__sections {
+    gap: var(--sp-9);
+    padding-block: var(--sp-8);
+  }
+
+  .home__faq {
+    padding-block: var(--sp-8) var(--sp-9);
+  }
+
+  .home__closing {
+    padding-bottom: var(--sp-9);
+  }
 }

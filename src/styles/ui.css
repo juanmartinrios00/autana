@@ -2,56 +2,76 @@
    Autana — primitivas de UI
    ========================================================================== */
 
-/* --- Button ------------------------------------------------------------- */
+/* --- Button -------------------------------------------------------------
+   El boton dejo de ser una placa de versalitas diminutas. Ahora es una
+   capsula con el texto en tamanio de lectura: se entiende de un vistazo,
+   pesa lo que tiene que pesar y no obliga a descifrar un renglon espaciado.
+   El hover no desplaza el bloque, lo levanta con sombra.                   */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  /* Anchos y bajos: la proporción es lo que les da el aire. El texto va
-     chico y espaciado, no grande y apretado. */
-  height: 42px;
-  padding-inline: 30px;
+  gap: 8px;
+  height: 48px;
+  padding-inline: 26px;
   border: 0;
-  font-size: 0.72rem;
+  border-radius: var(--r-pill);
+  font-size: 0.94rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   transition:
     transform var(--dur-med) var(--ease),
     box-shadow var(--dur-med) var(--ease),
-    background var(--dur-med) var(--ease);
+    background var(--dur-med) var(--ease),
+    color var(--dur-med) var(--ease);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .btn--yellow {
   background: var(--accent);
   color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--ink);
+  box-shadow:
+    0 1px 2px rgba(11, 11, 12, 0.06),
+    0 8px 18px -10px rgba(176, 143, 0, 0.7);
 }
 .btn--yellow:hover:not(:disabled) {
   background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--sh-hover);
+  box-shadow:
+    0 2px 4px rgba(11, 11, 12, 0.08),
+    0 14px 26px -12px rgba(176, 143, 0, 0.85);
 }
 
 .btn--dark {
   background: var(--ink);
   color: var(--ink-inverse);
+  box-shadow:
+    0 1px 2px rgba(11, 11, 12, 0.1),
+    0 8px 18px -10px rgba(11, 11, 12, 0.5);
 }
 .btn--dark:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--sh-hover);
+  background: #26262a;
+  box-shadow:
+    0 2px 4px rgba(11, 11, 12, 0.12),
+    0 14px 26px -12px rgba(11, 11, 12, 0.6);
 }
 
 .btn--outline {
   background: var(--canvas);
   color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--ink);
+  box-shadow:
+    inset 0 0 0 1px var(--line-strong),
+    0 1px 2px rgba(11, 11, 12, 0.04);
 }
 .btn--outline:hover:not(:disabled) {
-  box-shadow: inset 0 0 0 1px var(--ink);
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px var(--ink-4),
+    0 2px 6px rgba(11, 11, 12, 0.06);
 }
 
 .btn--ghost {
@@ -68,18 +88,21 @@
   color: var(--danger);
   box-shadow: inset 0 0 0 1px #f0c6c4;
 }
+.btn--danger:hover:not(:disabled) {
+  background: var(--danger-bg);
+}
 
 .btn--sm {
-  height: 34px;
+  height: 38px;
   padding-inline: 18px;
-  gap: 7px;
-  font-size: 0.66rem;
+  gap: 6px;
+  font-size: 0.86rem;
 }
 
 .btn--lg {
-  height: 48px;
-  padding-inline: 44px;
-  font-size: 0.78rem;
+  height: 56px;
+  padding-inline: 34px;
+  font-size: 1.02rem;
 }
 
 .btn--block {
@@ -87,7 +110,7 @@
 }
 
 .btn:disabled {
-  background: var(--surface-3);
+  background: var(--surface-2);
   color: var(--ink-4);
   box-shadow: none;
   transform: none;
@@ -96,7 +119,8 @@
 
 /* --- CtaSplit ----------------------------------------------------------
    Un solo enlace, dos bloques. Uso puntual: una por pantalla, y solo en la
-   accion principal de la pagina. En hover se abre el hueco, nada mas.      */
+   accion principal de la pagina. En hover se abre el hueco: el gesto
+   sugiere que algo avanza.                                                */
 
 .cta {
   display: inline-flex;
@@ -106,7 +130,7 @@
 }
 
 .cta:hover {
-  gap: 10px;
+  gap: 9px;
 }
 
 .cta__label,
@@ -114,38 +138,45 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0;
+  border-radius: var(--r-pill);
   background: var(--accent);
   color: var(--ink);
-  transition: background var(--dur-med) var(--ease);
+  box-shadow:
+    0 1px 2px rgba(11, 11, 12, 0.06),
+    0 8px 18px -10px rgba(176, 143, 0, 0.7);
+  transition:
+    background var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
 }
 
 .cta__label {
-  height: 48px;
-  padding-inline: 40px;
-  font-size: 0.75rem;
+  height: 56px;
+  padding-inline: 32px;
+  font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
 }
 
 .cta__arrow {
-  width: 48px;
+  width: 56px;
   flex-shrink: 0;
 }
 
 .cta:hover .cta__label,
 .cta:hover .cta__arrow {
   background: var(--accent-hover);
+  box-shadow:
+    0 2px 4px rgba(11, 11, 12, 0.08),
+    0 14px 26px -12px rgba(176, 143, 0, 0.85);
 }
 
 .cta--sm .cta__label {
-  height: 38px;
-  padding-inline: 26px;
-  font-size: 0.69rem;
+  height: 44px;
+  padding-inline: 24px;
+  font-size: 0.9rem;
 }
 .cta--sm .cta__arrow {
-  width: 38px;
+  width: 44px;
 }
 
 /* --- Field: Input y Select --------------------------------------------- */
@@ -156,9 +187,10 @@
 
 .field__label {
   display: block;
-  margin-bottom: 7px;
-  font-size: 0.78rem;
+  margin-bottom: 8px;
+  font-size: 0.82rem;
   font-weight: 600;
+  letter-spacing: -0.005em;
   color: var(--ink-3);
 }
 
@@ -168,9 +200,9 @@
   gap: 10px;
   width: 100%;
   height: 52px;
-  padding-inline: 14px;
+  padding-inline: 16px;
   border: 0;
-  border-radius: 0;
+  border-radius: var(--r-md);
   background: var(--canvas);
   box-shadow: inset 0 0 0 1px var(--line-strong);
   font-size: 0.94rem;
@@ -178,19 +210,25 @@
   transition: box-shadow var(--dur-med) var(--ease);
 }
 
+.field__control:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1px var(--ink-4);
+}
+
 .field__control::placeholder {
   color: var(--ink-4);
 }
 
+/* El foco suma un halo amarillo difuso en vez de un cerco duro: acompania
+   la forma redondeada en lugar de dibujarle un marco encima. */
 .field__control:focus-visible {
   outline: 0;
   box-shadow:
-    inset 0 0 0 1px var(--ink),
-    0 0 0 3px var(--accent);
+    inset 0 0 0 1.5px var(--ink),
+    0 0 0 4px var(--accent-tint);
 }
 
 .field__control:disabled {
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--ink-4);
   cursor: not-allowed;
 }
@@ -209,10 +247,10 @@
 /* El select necesita el chevron propio: quitamos el nativo. */
 .field__control--select {
   appearance: none;
-  padding-right: 38px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236e7175' stroke-width='1.4' stroke-linecap='square'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236e7175' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 14px center;
+  background-position: right 16px center;
 }
 
 .field__icon {
@@ -226,13 +264,17 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 26px;
-  padding-inline: 10px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  height: 28px;
+  padding-inline: 12px;
+  border-radius: var(--r-pill);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   background: var(--surface-2);
   color: var(--ink-2);
+  transition:
+    background var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
 }
 
 .badge--accent {
@@ -245,7 +287,7 @@
 }
 .badge--outline {
   background: var(--canvas);
-  color: var(--ink);
+  color: var(--ink-2);
   box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 .badge--tint {
@@ -269,17 +311,17 @@
 /* --- Card --------------------------------------------------------------- */
 
 .card {
+  border-radius: var(--r-xl);
   background: var(--canvas);
-  border-radius: 0;
-  box-shadow: var(--sh-flat);
+  box-shadow: var(--sh-sm);
 }
 
 .card--pad {
-  padding: var(--sp-5);
+  padding: var(--sp-6);
 }
 
 .card--raised {
-  box-shadow: var(--sh-flat), var(--sh-overlay);
+  box-shadow: var(--sh-lg);
 }
 
 .card--interactive {
@@ -289,15 +331,15 @@
 }
 
 .card--interactive:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--sh-hover);
 }
 
 /* --- Skeleton ----------------------------------------------------------- */
 
 .skeleton {
-  background: var(--surface-3);
-  border-radius: 0;
+  background: var(--surface-2);
+  border-radius: var(--r-sm);
   animation: skeleton-pulse 1.4s var(--ease) infinite;
 }
 
@@ -314,8 +356,8 @@
 /* Input con icono: el foco vive en el contenedor, no en el <input> desnudo. */
 .field__control--group:focus-within {
   box-shadow:
-    inset 0 0 0 1px var(--ink),
-    0 0 0 3px var(--accent);
+    inset 0 0 0 1.5px var(--ink),
+    0 0 0 4px var(--accent-tint);
 }
 
 .field__inner {
@@ -332,19 +374,28 @@
   color: var(--ink-4);
 }
 
-/* Boton que solo envuelve un chip: no debe verse como boton. */
+/* Boton que solo envuelve un chip: no debe verse como boton, pero si tiene
+   que verse pulsable — de ahi el contorno y el tinte al pasar por encima. */
 .chip-button {
   border: 0;
   padding: 0;
   background: none;
+  border-radius: var(--r-pill);
+}
+
+.chip-button .badge {
+  cursor: pointer;
+  background: var(--canvas);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 
 .chip-button:hover .badge {
-  background: var(--surface-3);
+  background: var(--accent-tint);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
 }
 
-/* En mobile la CTA ocupa el ancho y aprieta el tracking: la etiqueta tiene que
-   entrar en una linea, si no se rompe la forma de los dos bloques. */
+/* En mobile la CTA ocupa el ancho: la etiqueta tiene que entrar en una
+   linea, si no se rompe la forma de los dos bloques. */
 @media (max-width: 560px) {
   .cta {
     width: 100%;
@@ -352,14 +403,13 @@
 
   .cta__label {
     flex-grow: 1;
-    height: 46px;
-    padding-inline: 18px;
-    font-size: 0.69rem;
-    letter-spacing: 0.06em;
+    height: 50px;
+    padding-inline: 20px;
+    font-size: 0.92rem;
   }
 
   .cta__arrow {
-    width: 46px;
+    width: 50px;
   }
 }
 
@@ -370,9 +420,9 @@
   flex-direction: column;
   align-items: center;
   gap: var(--sp-3);
-  padding: var(--sp-8) var(--sp-6);
-  border-radius: 0;
-  box-shadow: var(--sh-flat);
+  padding: var(--sp-9) var(--sp-6);
+  border-radius: var(--r-xl);
+  background: var(--surface);
   text-align: center;
 }
 
@@ -383,8 +433,9 @@
   height: 64px;
   margin-bottom: var(--sp-1);
   border-radius: var(--r-pill);
-  background: var(--surface-2);
+  background: var(--canvas);
   color: var(--ink-4);
+  box-shadow: var(--sh-sm);
 }
 
 .empty--error .empty__icon {
@@ -393,12 +444,12 @@
 }
 
 .empty__title {
-  font-size: 1.19rem;
+  font-size: 1.25rem;
 }
 
 .empty__text {
   max-width: 38ch;
-  font-size: 0.91rem;
+  font-size: 0.94rem;
   color: var(--ink-3);
 }
 

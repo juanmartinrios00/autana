@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 0;
+  border-radius: var(--r-xl);
   background: var(--canvas);
   box-shadow: var(--sh-flat);
   transition:
@@ -16,26 +16,32 @@
 }
 
 .vcard:hover {
-  transform: translate(-2px, -2px);
+  transform: translateY(-4px);
   box-shadow: var(--sh-hover);
 }
 
 .vcard:focus-within {
-  box-shadow: inset 0 0 0 1.5px var(--ink);
+  box-shadow:
+    0 0 0 1.5px var(--ink),
+    0 0 0 5px var(--accent-tint);
 }
 
 /* Plano propio, mas oscuro que la card: sin foto tiene que leerse como un
-   hueco de imagen, no como un pedazo de card en blanco. */
+   hueco de imagen, no como un pedazo de card en blanco. Va con margen y
+   radio propio — la foto flota dentro de la card en vez de ir pegada al
+   borde, que es lo que le da el aire. */
 .vcard__media {
   position: relative;
-  height: 198px;
+  height: 200px;
   flex-shrink: 0;
   overflow: hidden;
-  background: var(--surface-3);
+  margin: var(--sp-2);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
 }
 
 .vcard__media--loading {
-  background: var(--surface-2);
+  background: var(--surface);
 }
 
 .vmedia {
@@ -57,14 +63,14 @@
 
 .vcard__condition {
   position: absolute;
-  top: 14px;
-  left: 14px;
+  top: 12px;
+  left: 12px;
 }
 
 .vcard__fav {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
   z-index: 2;
 }
 
@@ -72,7 +78,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
-  padding: var(--sp-4) 18px 18px;
+  padding: var(--sp-3) var(--sp-4) var(--sp-5);
 }
 
 .vcard__title {
@@ -139,12 +145,13 @@
   width: 300px;
   height: auto;
   min-height: 190px;
+  flex-shrink: 0;
 }
 
 .vcard--list .vcard__body {
   flex-grow: 1;
   justify-content: center;
-  padding: var(--sp-5);
+  padding: var(--sp-5) var(--sp-5) var(--sp-5) var(--sp-3);
 }
 
 @media (max-width: 699px) {
@@ -153,8 +160,12 @@
   }
 
   .vcard--list .vcard__media {
-    width: 100%;
-    height: 198px;
+    width: auto;
+    height: 200px;
+  }
+
+  .vcard--list .vcard__body {
+    padding: var(--sp-3) var(--sp-4) var(--sp-5);
   }
 }
 
@@ -167,11 +178,13 @@
   height: 36px;
   border: 0;
   border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
   color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--ink);
+  box-shadow: 0 2px 6px rgba(11, 11, 12, 0.16);
   transition:
     background var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
     transform var(--dur-fast) var(--ease);
 }
 
@@ -185,6 +198,7 @@
 
 .fav--on {
   background: var(--accent);
+  box-shadow: 0 2px 8px rgba(176, 143, 0, 0.5);
 }
 
 .fav__icon--on {
@@ -196,6 +210,10 @@
 .vgrid {
   display: grid;
   gap: var(--sp-5);
+}
+
+.vgrid--list {
+  gap: var(--sp-4);
 }
 
 .vgrid--grid {

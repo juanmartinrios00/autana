@@ -15,8 +15,8 @@
   max-height: calc(100dvh - var(--sticky-top) - var(--sp-7));
   overflow-y: auto;
   padding: var(--sp-5);
+  border-radius: var(--r-xl);
   background: var(--surface);
-  box-shadow: var(--sh-flat);
 }
 
 .cars__results {
@@ -61,7 +61,7 @@
   gap: var(--sp-1);
   height: 42px;
   padding: 4px;
-  border-radius: 0;
+  border-radius: var(--r-pill);
   background: var(--surface-2);
 }
 
@@ -70,7 +70,7 @@
   place-items: center;
   width: 40px;
   border: 0;
-  border-radius: 0;
+  border-radius: var(--r-pill);
   background: transparent;
   color: var(--ink-3);
   transition:
@@ -119,6 +119,7 @@
   width: 36px;
   height: 36px;
   border: 0;
+  border-radius: var(--r-pill);
   background: var(--canvas);
   box-shadow: var(--sh-flat);
   font-size: 0.84rem;
@@ -192,7 +193,7 @@
     max-height: 86dvh;
     display: flex;
     flex-direction: column;
-    border-radius: 0;
+    border-radius: var(--r-2xl) var(--r-2xl) 0 0;
     background: var(--canvas);
     box-shadow: 0 -12px 40px -18px rgba(11, 11, 12, 0.4);
     animation: sheet-rise var(--dur-slow) var(--ease);

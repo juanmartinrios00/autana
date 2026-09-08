@@ -6,8 +6,11 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: var(--canvas);
-  box-shadow: inset 0 -1px 0 var(--line-strong);
+  /* Traslucida y con desenfoque: al scrollear, el contenido se adivina por
+     debajo en vez de cortarse contra una placa opaca. */
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(1.6) blur(14px);
+  box-shadow: inset 0 -1px 0 var(--line);
   transition:
     background var(--dur-slow) var(--ease),
     box-shadow var(--dur-slow) var(--ease),
@@ -17,6 +20,7 @@
 /* Sobre el hero oscuro la navbar flota: sin fondo, sin línea, en blanco. */
 .navbar--over {
   background: transparent;
+  backdrop-filter: none;
   box-shadow: none;
   color: var(--ink-inverse);
 }
@@ -39,8 +43,9 @@
 .navbar__mark {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
   background: var(--ink);
   color: var(--accent);
 }
@@ -64,27 +69,36 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: var(--sp-6);
+  gap: var(--sp-1);
 }
 
+/* Los links del centro son pastillas: el activo se marca con un fondo
+   tenue en vez de un subrayado, asi el estado se lee sin mirar el filo. */
 .navbar__link {
   display: inline-flex;
   align-items: center;
+  height: 38px;
+  padding-inline: 14px;
+  border-radius: var(--r-pill);
   font-size: 0.94rem;
   font-weight: 500;
   letter-spacing: -0.01em;
   white-space: nowrap;
   color: var(--ink-2);
-  transition: color var(--dur-fast) var(--ease);
+  transition:
+    color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
 }
 
 .navbar__link:hover {
   color: var(--ink);
+  background: var(--surface);
 }
 
 .navbar__links .navbar__link.is-active {
   color: var(--ink);
-  box-shadow: inset 0 -2px 0 var(--accent);
+  font-weight: 600;
+  background: var(--surface-2);
 }
 
 .navbar--over .navbar__link {
@@ -94,6 +108,7 @@
 .navbar--over .navbar__link:hover,
 .navbar--over .navbar__links .navbar__link.is-active {
   color: var(--ink-inverse);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 /* El botón de salir tiene que verse igual que los links de la navbar. */
@@ -127,19 +142,25 @@ button.navbar__link {
   color: var(--ink);
 }
 
-/* Botón de contorno, no un bloque de color: la navbar tiene que pesar poco.
-   El amarillo se guarda para los CTA de las páginas. */
+/* La accion principal del sitio esta siempre a la vista y se ve como lo que
+   es: una capsula solida. Sobre el hero oscuro se invierte a blanco para no
+   pelearse con el amarillo del buscador, que ahi manda. */
 .navbar__cta {
   display: inline-flex;
   align-items: center;
-  height: 42px;
-  padding-inline: 20px;
+  height: 44px;
+  padding-inline: 22px;
   flex-shrink: 0;
+  border-radius: var(--r-pill);
   white-space: nowrap;
   font-size: 0.91rem;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
+  background: var(--accent);
+  box-shadow:
+    0 1px 2px rgba(11, 11, 12, 0.06),
+    0 8px 18px -10px rgba(176, 143, 0, 0.7);
   transition:
     background var(--dur-med) var(--ease),
     color var(--dur-med) var(--ease),
@@ -147,19 +168,21 @@ button.navbar__link {
 }
 
 .navbar__cta:hover {
-  background: var(--accent);
-  box-shadow: inset 0 0 0 1px var(--accent);
+  background: var(--accent-hover);
+  box-shadow:
+    0 2px 4px rgba(11, 11, 12, 0.08),
+    0 14px 26px -12px rgba(176, 143, 0, 0.85);
 }
 
 .navbar--over .navbar__cta {
-  color: var(--ink-inverse);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  color: var(--ink);
+  background: var(--ink-inverse);
+  box-shadow: none;
 }
 
 .navbar--over .navbar__cta:hover {
-  background: var(--ink-inverse);
-  color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--ink-inverse);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: none;
 }
 
 .navbar__burger {
@@ -167,6 +190,7 @@ button.navbar__link {
   width: 44px;
   height: 44px;
   border: 0;
+  border-radius: var(--r-pill);
   background: transparent;
   color: inherit;
   place-items: center;
@@ -178,26 +202,34 @@ button.navbar__link {
   display: flex;
   align-items: center;
   width: 260px;
-  height: 42px;
+  height: 44px;
   flex-shrink: 0;
   padding-right: 8px;
-  background: transparent;
-  box-shadow: inset 0 0 0 1px var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px transparent;
   transition:
+    background var(--dur-fast) var(--ease),
     box-shadow var(--dur-fast) var(--ease),
     width var(--dur-slow) var(--ease);
 }
 
 .navsearch:focus-within {
-  width: 320px;
+  width: 330px;
+  background: var(--canvas);
+  box-shadow:
+    inset 0 0 0 1.5px var(--ink),
+    0 0 0 4px var(--accent-tint);
 }
 
 .navbar--over .navsearch {
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
 }
 
 .navbar--over .navsearch:focus-within {
-  box-shadow: inset 0 0 0 1px var(--ink-inverse);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 0 0 1.5px var(--ink-inverse);
 }
 
 /* La lupa es el submit, no un adorno: hay algo clickeable sin sumar un
@@ -205,10 +237,11 @@ button.navbar__link {
 .navsearch__submit {
   display: grid;
   place-items: center;
-  width: 40px;
+  width: 42px;
   height: 100%;
   flex-shrink: 0;
   border: 0;
+  border-radius: var(--r-pill);
   background: transparent;
   color: var(--ink-3);
   transition: color var(--dur-fast) var(--ease);
@@ -316,7 +349,8 @@ button.navbar__link {
 
 .footer {
   margin-top: auto;
-  box-shadow: inset 0 1px 0 var(--line-strong);
+  background: var(--surface);
+  box-shadow: inset 0 1px 0 var(--line);
 }
 
 .footer__inner {
@@ -325,7 +359,7 @@ button.navbar__link {
   justify-content: space-between;
   gap: var(--sp-5);
   flex-wrap: wrap;
-  padding-block: var(--sp-7);
+  padding-block: var(--sp-8);
 }
 
 .footer__note {
@@ -340,7 +374,8 @@ button.navbar__link {
 }
 
 .footer__link {
-  font-size: 0.84rem;
+  font-size: 0.88rem;
+  font-weight: 500;
   color: var(--ink-3);
   transition: color var(--dur-fast) var(--ease);
 }
@@ -356,14 +391,16 @@ button.navbar__link {
 }
 
 .section {
-  padding-block: var(--sp-8);
+  padding-block: var(--sp-9);
 }
 
-.section--tinted {
+/* La banda tintada a sangre entre hairlines se reemplaza por un plano
+   redondeado. Va por dentro de `.page` —no envolviendola— para que sus
+   bordes caigan justo sobre la grilla del resto de la pagina. */
+.section__panel {
+  border-radius: var(--r-2xl);
+  padding: clamp(var(--sp-6), 4vw, var(--sp-8));
   background: var(--surface);
-  box-shadow:
-    inset 0 1px 0 var(--line),
-    inset 0 -1px 0 var(--line);
 }
 
 .section__head {
@@ -371,6 +408,6 @@ button.navbar__link {
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--sp-5);
-  margin-bottom: var(--sp-6);
+  margin-bottom: var(--sp-7);
   flex-wrap: wrap;
 }

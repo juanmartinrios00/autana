@@ -268,16 +268,18 @@ export function VehicleDetail() {
       </div>
 
       {similar.length > 0 && (
-        <section className="section section--tinted detail__similar">
+        <section className="section detail__similar">
           <div className="page">
-            <div className="section__head">
-              <h2>Vehículos similares</h2>
-              <Link to={`/cars?bodyType=${vehicle.bodyType}`} className="detail__similar-link">
-                Ver más como este
-                <Icon name="arrowRight" size={15} />
-              </Link>
+            <div className="section__panel">
+              <div className="section__head">
+                <h2>Vehículos similares</h2>
+                <Link to={`/cars?bodyType=${vehicle.bodyType}`} className="detail__similar-link">
+                  Ver más como este
+                  <Icon name="arrowRight" size={15} />
+                </Link>
+              </div>
+              <VehicleGrid vehicles={similar} />
             </div>
-            <VehicleGrid vehicles={similar} />
           </div>
         </section>
       )}

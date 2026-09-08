@@ -11,13 +11,17 @@
      como seccion y la pagina queda sin jerarquia. Estos valores son greige
      calido, asi que el conjunto sigue leyendose blanco. */
   --canvas: #ffffff;
-  --surface: #f4f2ec;
-  --surface-2: #eae7dd;
-  --surface-3: #ddd9cc;
-  /* La linea suave separa cosas por dentro; la dura dibuja los contornos.
-     Es el borde negro de 1px el que da el caracter, no una sombra. */
-  --line: #dedcd4;
-  --line-strong: #0b0b0c;
+  --surface: #f6f4ef;
+  --surface-2: #edeae1;
+  --surface-3: #e0dccf;
+  /* Los contornos ya no son negros. Antes el caracter lo daba una hairline
+     de 1px a tinta plena; ahora lo da la forma redondeada y la sombra que
+     levanta el plano, asi que la linea baja a acompaniar en vez de gritar.
+     `--line-strong` sigue siendo la mas marcada — bordes de campos, contornos
+     de cards — pero es un neutro, no tinta. */
+  --line: #e7e4da;
+  --line-strong: #d6d2c5;
+  --line-ink: rgba(11, 11, 12, 0.14);
 
   /* --- Tinta --- */
   --ink: #0b0b0c;
@@ -51,21 +55,25 @@
   --font-ui: 'Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 
-  --fs-display: clamp(2.5rem, 1.5rem + 3.9vw, 4.75rem);
-  --fs-h1: clamp(1.9rem, 1.45rem + 1.8vw, 2.5rem);
-  --fs-h2: clamp(1.45rem, 1.2rem + 1vw, 1.75rem);
-  --fs-h3: 1.25rem;
+  /* Los titulares pesan mas que antes y arrancan mas grandes: en una landing
+     el titulo es la imagen principal mientras no haya foto. */
+  --fs-display: clamp(2.75rem, 1.5rem + 4.6vw, 5.25rem);
+  --fs-h1: clamp(2rem, 1.5rem + 2.1vw, 2.9rem);
+  --fs-h2: clamp(1.55rem, 1.25rem + 1.3vw, 2.05rem);
+  --fs-h3: 1.3rem;
   --fs-body: 1rem;
   --fs-sm: 0.875rem;
   --fs-xs: 0.78rem;
   --fs-over: 0.72rem;
 
-  --lh-tight: 1.06;
-  --lh-body: 1.6;
-  --ls-display: -0.035em;
-  --ls-heading: -0.024em;
-  --ls-over: 0.18em;
+  --lh-tight: 1.04;
+  --lh-body: 1.62;
+  --ls-display: -0.038em;
+  --ls-heading: -0.028em;
+  --ls-over: 0.1em;
   --ls-nav: 0.12em;
+
+  --fw-display: 600;
 
   /* --- Espaciado, escala de 8 --- */
   --sp-1: 4px;
@@ -77,23 +85,45 @@
   --sp-7: 48px;
   --sp-8: 64px;
   --sp-9: 96px;
+  /* El respiro entre secciones de landing, que es mas largo que cualquier
+     espacio de dentro de una seccion. */
+  --sp-10: 128px;
 
   /* --- Forma ---
-     Esquinas rectas en todo. `--r-pill` queda solo para lo que es de verdad
-     un circulo: avatares, el boton de favorito, los circulos de marca. */
-  --r-sm: 0;
-  --r-md: 0;
-  --r-lg: 0;
-  --r-xl: 0;
+     Todo redondeado, con la escala creciendo con el tamanio del objeto: un
+     chip no lleva el mismo radio que un panel de seccion, porque el radio se
+     percibe en proporcion al bloque. `--r-pill` es para lo que de verdad es
+     un circulo o una capsula. */
+  --r-xs: 8px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+  --r-2xl: 32px;
   --r-pill: 999px;
 
   /* --- Elevacion ---
-     Sin sombras difusas. El contorno es una hairline negra, y el hover suma
-     una sombra dura y desplazada: se lee como papel apilado, no como blur.
-     Los overlays son la unica excepcion, porque flotan de verdad. */
-  --sh-flat: inset 0 0 0 1px var(--line-strong);
-  --sh-hover: inset 0 0 0 1px var(--ink), 4px 4px 0 0 var(--ink);
-  --sh-overlay: inset 0 0 0 1px var(--ink), 0 24px 48px -24px rgba(11, 11, 12, 0.28);
+     Sombras suaves y en capas: una hairline que dibuja el contorno, una
+     sombra corta que apoya el objeto en el papel y una larga y difusa que lo
+     despega. El hover profundiza la difusa en vez de desplazar el bloque.
+     Van tenidas de tinta calida, no de negro puro, para que no se vean
+     grises sobre el greige. */
+  --sh-flat: 0 0 0 1px var(--line), 0 1px 2px rgba(11, 11, 12, 0.04);
+  --sh-sm:
+    0 0 0 1px var(--line), 0 1px 2px rgba(11, 11, 12, 0.04),
+    0 4px 10px -6px rgba(11, 11, 12, 0.1);
+  --sh-md:
+    0 0 0 1px var(--line), 0 2px 4px rgba(11, 11, 12, 0.03),
+    0 12px 24px -12px rgba(11, 11, 12, 0.14);
+  --sh-lg:
+    0 0 0 1px var(--line), 0 4px 8px rgba(11, 11, 12, 0.03),
+    0 28px 48px -20px rgba(11, 11, 12, 0.18);
+  --sh-hover:
+    0 0 0 1px var(--line-strong), 0 2px 6px rgba(11, 11, 12, 0.05),
+    0 20px 36px -16px rgba(11, 11, 12, 0.2);
+  --sh-overlay:
+    0 0 0 1px var(--line), 0 32px 64px -24px rgba(11, 11, 12, 0.28),
+    0 8px 16px -8px rgba(11, 11, 12, 0.1);
 
   /* --- Movimiento: 150-300ms, ease-out, transform y opacity --- */
   --ease: cubic-bezier(0.2, 0.8, 0.3, 1);
@@ -102,12 +132,12 @@
   --dur-slow: 300ms;
 
   /* --- Layout --- */
-  --nav-h: 74px;
+  --nav-h: 76px;
   /* Todo lo sticky se cuelga de acá. En mobile la navbar es más alta porque
      el buscador baja a una segunda fila, y este token lo acompaña. */
   --sticky-top: var(--nav-h);
-  --page-max: 1440px;
-  --page-pad: clamp(16px, 4vw, 56px);
+  --page-max: 1320px;
+  --page-pad: clamp(20px, 4vw, 56px);
 
   color-scheme: light;
 }

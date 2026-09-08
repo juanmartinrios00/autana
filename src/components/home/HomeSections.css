@@ -1,5 +1,9 @@
 /* ==========================================================================
    Tarjetas de las secciones de la home
+
+   Todas comparten el mismo gesto: plano redondeado, contorno claro, sombra
+   corta. El hover levanta el bloque —sube y profundiza la sombra— en vez de
+   desplazarlo. Es un solo idioma repetido, y por eso la home se lee entera.
    ========================================================================== */
 
 /* --- Marca: círculo con el logo, o la inicial mientras no esté ----------- */
@@ -15,28 +19,29 @@
 .brand__circle {
   display: grid;
   place-items: center;
-  width: 88px;
-  height: 88px;
+  width: 92px;
+  height: 92px;
   border-radius: var(--r-pill);
   background: var(--canvas);
-  box-shadow: var(--sh-flat);
+  box-shadow: var(--sh-sm);
   transition:
     transform var(--dur-med) var(--ease),
     box-shadow var(--dur-med) var(--ease);
 }
 
 .brand:hover .brand__circle {
-  transform: translate(-2px, -2px);
+  transform: translateY(-4px);
   box-shadow: var(--sh-hover);
 }
 
 .brand__logo {
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   object-fit: contain;
 }
 
 .brand__initial {
+  font-family: var(--font-display);
   font-size: 1.75rem;
   font-weight: 600;
   letter-spacing: -0.03em;
@@ -44,7 +49,7 @@
 }
 
 .brand__name {
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   font-weight: 600;
   line-height: 1.2;
 }
@@ -61,25 +66,28 @@
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--sp-1);
-  height: 116px;
-  padding: var(--sp-4) var(--sp-5);
-  border-radius: 0;
+  height: 132px;
+  padding: var(--sp-5);
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--sh-flat);
   transition:
     transform var(--dur-med) var(--ease),
-    box-shadow var(--dur-med) var(--ease);
+    box-shadow var(--dur-med) var(--ease),
+    background var(--dur-med) var(--ease);
 }
 
 .category:hover {
-  transform: translate(-2px, -2px);
+  transform: translateY(-4px);
+  background: var(--canvas);
   box-shadow: var(--sh-hover);
 }
 
 .category__name {
-  font-size: 1.06rem;
+  font-family: var(--font-display);
+  font-size: 1.13rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.024em;
 }
 
 .category__count {
@@ -93,16 +101,19 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 116px;
-  padding: var(--sp-4) var(--sp-5);
-  border-radius: 0;
+  height: 132px;
+  padding: var(--sp-5);
+  border-radius: var(--r-lg);
   background: var(--ink);
   color: var(--ink-inverse);
-  transition: transform var(--dur-med) var(--ease);
+  transition:
+    transform var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
 }
 
 .budget:hover {
-  transform: translate(-2px, -2px);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 36px -18px rgba(11, 11, 12, 0.55);
 }
 
 .budget__label {
@@ -113,10 +124,8 @@
 }
 
 .budget__cta {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: var(--ls-nav);
-  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 600;
   color: var(--accent);
 }
 
@@ -126,10 +135,10 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2px;
-  height: 92px;
+  gap: 3px;
+  height: 104px;
   padding: var(--sp-4) var(--sp-5);
-  border-radius: 0;
+  border-radius: var(--r-lg);
   background: var(--canvas);
   box-shadow: var(--sh-flat);
   transition:
@@ -138,7 +147,7 @@
 }
 
 .model:hover {
-  transform: translate(-2px, -2px);
+  transform: translateY(-4px);
   box-shadow: var(--sh-hover);
 }
 
@@ -151,6 +160,7 @@
 }
 
 .model__name {
+  font-family: var(--font-display);
   font-size: 1.19rem;
   font-weight: 600;
   letter-spacing: -0.024em;
@@ -161,9 +171,9 @@
 .how {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--sp-8);
-  padding: var(--sp-8);
-  border-radius: 0;
+  gap: clamp(var(--sp-7), 5vw, var(--sp-9));
+  padding: clamp(var(--sp-6), 4vw, var(--sp-9));
+  border-radius: var(--r-2xl);
   background: var(--surface);
 }
 
@@ -177,7 +187,8 @@
 .how__head {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  align-items: flex-start;
+  gap: var(--sp-4);
 }
 
 .how__title {
@@ -192,27 +203,39 @@
 
 .steps__item {
   display: grid;
-  grid-template-columns: 40px 1fr;
-  grid-template-rows: auto auto;
+  grid-template-columns: 34px 1fr;
+  /* La primera fila mide al menos lo que la ficha del numero: asi el titulo
+     queda centrado contra ella en vez de colgado de su borde de arriba. */
+  grid-template-rows: minmax(34px, auto) auto;
   column-gap: var(--sp-4);
-  row-gap: var(--sp-1);
+  row-gap: var(--sp-2);
 }
 
-/* El número ocupa las dos filas, a la izquierda del bloque de texto. */
+/* El número dejó de ser un texto suelto: es una ficha redonda que ancla el
+   paso y hace que la lista se lea como una secuencia, no como tres párrafos.
+   Ocupa las dos filas, a la izquierda del bloque de texto. */
 .steps__number {
   grid-row: span 2;
-  font-size: 1.06rem;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-pill);
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+  font-size: 0.82rem;
   font-weight: 700;
-  color: var(--ink-4);
-  padding-top: 2px;
+  color: var(--ink-2);
 }
 
 .steps__title {
-  font-size: 1rem;
+  align-self: center;
+  font-size: 1.02rem;
 }
 
 .steps__text {
-  font-size: 0.91rem;
+  font-size: 0.94rem;
   color: var(--ink-3);
 }
 
@@ -223,7 +246,7 @@
   flex-direction: column;
   gap: var(--sp-3);
   padding: var(--sp-5);
-  border-radius: 0;
+  border-radius: var(--r-lg);
   background: var(--canvas);
   box-shadow: var(--sh-flat);
   transition:
@@ -232,7 +255,7 @@
 }
 
 .dealer:hover {
-  transform: translate(-2px, -2px);
+  transform: translateY(-4px);
   box-shadow: var(--sh-hover);
 }
 
@@ -241,7 +264,7 @@
   place-items: center;
   width: 48px;
   height: 48px;
-  border-radius: 0;
+  border-radius: var(--r-md);
   background: var(--ink);
   color: var(--accent);
   font-size: 1rem;
@@ -249,9 +272,10 @@
 }
 
 .dealer__name {
+  font-family: var(--font-display);
   font-size: 1.06rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.024em;
 }
 
 .dealer__location {
@@ -265,7 +289,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-3);
-  padding-top: var(--sp-3);
+  padding-top: var(--sp-4);
   box-shadow: inset 0 1px 0 var(--line);
 }
 
@@ -278,15 +302,16 @@
 
 .faq {
   display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: var(--sp-8);
+  grid-template-columns: 360px 1fr;
+  gap: clamp(var(--sp-6), 5vw, var(--sp-9));
   align-items: start;
 }
 
 .faq__head {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  align-items: flex-start;
+  gap: var(--sp-4);
   position: sticky;
   top: calc(var(--sticky-top) + var(--sp-5));
 }
@@ -298,23 +323,36 @@
 .faq__list {
   display: flex;
   flex-direction: column;
+  gap: var(--sp-3);
 }
 
+/* Cada pregunta es una ficha, no un renglón entre hairlines: al abrirse
+   levanta y se pone en blanco, así se ve cuál está desplegada de un vistazo.
+   `details` y `summary` dan el acordeón accesible sin una línea de JS. */
 .faq__item {
-  box-shadow: inset 0 -1px 0 var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  transition:
+    background var(--dur-med) var(--ease),
+    box-shadow var(--dur-med) var(--ease);
 }
 
-.faq__item:first-child {
-  box-shadow: inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
+.faq__item:hover {
+  background: var(--surface-2);
 }
 
-/* `details` y `summary` dan el acordeón accesible sin una línea de JS. */
+.faq__item[open] {
+  background: var(--canvas);
+  box-shadow: var(--sh-sm);
+}
+
 .faq__q {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-5);
-  padding: var(--sp-5) 0;
+  padding: var(--sp-5);
+  font-family: var(--font-display);
   font-size: 1.06rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -326,8 +364,8 @@
   display: none;
 }
 
-.faq__q:hover {
-  color: var(--ink-3);
+.faq__q:focus-visible {
+  border-radius: var(--r-lg);
 }
 
 /* Un más que gira hasta ser un menos: dos barras y una rotación. */
@@ -336,6 +374,7 @@
   flex-shrink: 0;
   width: 16px;
   height: 16px;
+  color: var(--ink-3);
 }
 
 .faq__mark::before,
@@ -344,8 +383,8 @@
   position: absolute;
   inset: 50% 0 auto 0;
   height: 2px;
-  border-radius: 0;
-  background: var(--ink);
+  border-radius: var(--r-pill);
+  background: currentColor;
   transition: transform var(--dur-med) var(--ease);
 }
 
@@ -359,48 +398,39 @@
 
 .faq__a {
   max-width: 68ch;
-  padding-bottom: var(--sp-5);
+  padding: 0 var(--sp-5) var(--sp-5);
   color: var(--ink-3);
-}
-
-@media (max-width: 899px) {
-  .how {
-    grid-template-columns: 1fr;
-    gap: var(--sp-7);
-    padding: var(--sp-6) var(--sp-5);
-  }
-
-  .faq {
-    grid-template-columns: 1fr;
-    gap: var(--sp-5);
-  }
-
-  .faq__head {
-    position: static;
-  }
 }
 
 /* --- El problema -------------------------------------------------------- */
 
+/* La sección no es una banda a sangre sino un plano oscuro con aire
+   alrededor: corta el blanco sin partir la página al medio. El respiro de
+   abajo lo pone `.home__sections`, que ya viene con su propio padding. */
 .problem {
-  background: var(--ink);
-  color: var(--ink-inverse);
+  display: block;
+  padding-block: var(--sp-9) 0;
 }
 
 .problem__inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--sp-8);
+  gap: clamp(var(--sp-6), 5vw, var(--sp-9));
   align-items: start;
-  padding-block: var(--sp-9);
+  padding: clamp(var(--sp-6), 4vw, var(--sp-9));
+  border-radius: var(--r-2xl);
+  background: var(--ink);
+  color: var(--ink-inverse);
 }
 
-.problem__eyebrow {
-  color: var(--accent);
+.problem__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
 }
 
 .problem__title {
-  margin-top: var(--sp-4);
   max-width: 16ch;
   font-size: var(--fs-h1);
   color: var(--ink-inverse);
@@ -410,7 +440,7 @@
    cuatro objetos sueltos. */
 .problem__item {
   padding-block: var(--sp-5);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.14);
 }
 
 .problem__item:first-child {
@@ -429,16 +459,18 @@
 
 .problem__item-text {
   margin-top: var(--sp-2);
-  font-size: 0.91rem;
-  color: var(--ink-4);
+  font-size: 0.94rem;
+  color: rgba(255, 255, 255, 0.62);
 }
 
 /* --- Cierre ------------------------------------------------------------- */
 
+/* Los dos caminos, uno al lado del otro y en planos opuestos: el oscuro se
+   queda con la acción principal, el claro con la secundaria. */
 .closing {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  box-shadow: var(--sh-flat);
+  gap: var(--sp-5);
 }
 
 .closing__col {
@@ -446,25 +478,28 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--sp-4);
-  padding: var(--sp-8);
+  padding: clamp(var(--sp-6), 4vw, var(--sp-8));
+  border-radius: var(--r-2xl);
+  background: var(--ink);
+  color: var(--ink-inverse);
 }
 
-/* La hairline entre columnas la pone la segunda, para que no se duplique. */
 .closing__col--alt {
   background: var(--surface);
-  box-shadow: inset 1px 0 0 var(--line-strong);
-}
-
-.closing__eyebrow {
-  color: var(--ink-3);
+  color: var(--ink);
 }
 
 .closing__title {
   font-size: var(--fs-h2);
+  color: inherit;
 }
 
 .closing__text {
   max-width: 44ch;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.closing__col--alt .closing__text {
   color: var(--ink-3);
 }
 
@@ -473,39 +508,48 @@
   align-items: center;
   gap: var(--sp-2);
   margin-top: var(--sp-2);
-  height: 60px;
-  padding-inline: 26px;
-  box-shadow: inset 0 0 0 1px var(--ink);
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  height: 56px;
+  padding-inline: 32px;
+  border-radius: var(--r-pill);
+  background: var(--canvas);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  box-shadow:
+    inset 0 0 0 1px var(--line-strong),
+    0 1px 2px rgba(11, 11, 12, 0.04);
   transition:
     box-shadow var(--dur-med) var(--ease),
-    transform var(--dur-med) var(--ease);
+    gap var(--dur-med) var(--ease);
 }
 
 .closing__link:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: var(--sh-hover);
+  gap: var(--sp-3);
+  box-shadow:
+    inset 0 0 0 1px var(--ink-4),
+    0 6px 14px -8px rgba(11, 11, 12, 0.3);
 }
 
 @media (max-width: 899px) {
-  .problem__inner {
+  .how {
+    grid-template-columns: 1fr;
+  }
+
+  .faq {
     grid-template-columns: 1fr;
     gap: var(--sp-6);
-    padding-block: var(--sp-7);
+  }
+
+  .faq__head {
+    position: static;
+  }
+
+  .problem__inner {
+    grid-template-columns: 1fr;
+    margin-block: var(--sp-8);
   }
 
   .closing {
     grid-template-columns: 1fr;
-  }
-
-  .closing__col {
-    padding: var(--sp-6) var(--sp-5);
-  }
-
-  .closing__col--alt {
-    box-shadow: inset 0 1px 0 var(--line-strong);
   }
 }

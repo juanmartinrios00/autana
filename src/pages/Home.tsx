@@ -100,7 +100,7 @@ export function Home() {
     <>
       <section className="hero">
         <div className="page hero__inner">
-        <span className="over">Marketplace de autos · Argentina</span>
+        <span className="over over--invert">Marketplace de autos · Argentina</span>
         <h1 className="hero__title">Encontrá el auto justo para vos.</h1>
         <p className="hero__sub">
           Vehículos de particulares y concesionarias, con filtros que sirven y contacto directo

@@ -66,7 +66,7 @@
   position: relative;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border-radius: 0;
+  border-radius: var(--r-2xl);
   background: var(--surface-2);
 }
 
@@ -123,17 +123,24 @@
   height: 88px;
   overflow: hidden;
   border: 0;
-  border-radius: 0;
+  border-radius: var(--r-md);
   background: var(--surface-2);
-  transition: box-shadow var(--dur-fast) var(--ease);
+  transition:
+    box-shadow var(--dur-fast) var(--ease),
+    opacity var(--dur-fast) var(--ease);
 }
 
 .gallery__thumb:hover {
-  box-shadow: inset 0 0 0 2px var(--line-strong);
+  opacity: 0.82;
 }
 
+/* La miniatura activa se marca por fuera: un aro que no le come pixeles a
+   la foto, como si el resto estuviera un paso atras. */
 .gallery__thumb.is-on {
-  box-shadow: inset 0 0 0 2px var(--ink);
+  opacity: 1;
+  box-shadow:
+    0 0 0 2px var(--canvas),
+    0 0 0 4px var(--ink);
 }
 
 .gallery__thumb--more {
@@ -151,7 +158,7 @@
   gap: 0;
   margin: 0;
   padding: var(--sp-2) var(--sp-1);
-  border-radius: 0;
+  border-radius: var(--r-xl);
   box-shadow: var(--sh-flat);
 }
 
@@ -186,7 +193,7 @@
   width: 64px;
   height: 64px;
   flex-shrink: 0;
-  border-radius: 0;
+  border-radius: var(--r-lg);
   background: var(--ink);
   color: var(--accent);
   font-size: 1.38rem;
@@ -256,10 +263,8 @@
   display: flex;
   flex-direction: column;
   padding: var(--sp-6);
-  box-shadow:
-    var(--sh-flat),
-    0 2px 4px rgba(11, 11, 12, 0.03),
-    0 26px 52px -32px rgba(11, 11, 12, 0.26);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-md);
 }
 
 .detail__panel-top {

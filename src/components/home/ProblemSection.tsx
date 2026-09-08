@@ -26,22 +26,26 @@ const pains = [
 export function ProblemSection() {
   return (
     <section className="problem">
-      <div className="page problem__inner">
-        <header className="problem__head">
-          <span className="over problem__eyebrow">El problema</span>
-          <h2 className="problem__title">
-            Comprar un usado no debería ser una apuesta.
-          </h2>
-        </header>
+      <div className="page">
+        {/* El plano oscuro va por dentro de la grilla de la página, no a
+            sangre: así corta el blanco sin partir la pantalla al medio. */}
+        <div className="problem__inner">
+          <header className="problem__head">
+            <span className="over over--invert">El problema</span>
+            <h2 className="problem__title">
+              Comprar un usado no debería ser una apuesta.
+            </h2>
+          </header>
 
-        <ul className="problem__list">
-          {pains.map((pain) => (
-            <li className="problem__item" key={pain.title}>
-              <h3 className="problem__item-title">{pain.title}</h3>
-              <p className="problem__item-text">{pain.text}</p>
-            </li>
-          ))}
-        </ul>
+          <ul className="problem__list">
+            {pains.map((pain) => (
+              <li className="problem__item" key={pain.title}>
+                <h3 className="problem__item-title">{pain.title}</h3>
+                <p className="problem__item-text">{pain.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   )
