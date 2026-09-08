@@ -145,6 +145,111 @@ function appendToHead(html: string): HTMLRewriterElementContentHandlers {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   robots.txt y sitemap.xml
+
+   Van generados acá y no como archivos en `public/` por una razon concreta:
+   con `not_found_handling: single-page-application`, cualquier ruta que no
+   exista devuelve el index.html. Un `/robots.txt` que responde HTML es peor
+   que no tenerlo. Ademas el sitemap tiene que salir de la base —los avisos
+   cambian todos los dias— y la URL del sitemap dentro de robots depende del
+   dominio, que puede dejar de ser el de workers.dev.
+--------------------------------------------------------------------------- */
+
+function robots(origin: string): Response {
+  /* Se bloquea lo que es de cada usuario o parte de un flujo: no aporta nada
+     en un buscador y gasta presupuesto de rastreo. El garage publico (`/g/`)
+     si se indexa, que para eso se comparte. */
+  const body = [
+    'User-agent: *',
+    'Allow: /',
+    'Disallow: /login',
+    'Disallow: /sell',
+    'Disallow: /profile',
+    'Disallow: /my-listings',
+    'Disallow: /favorites',
+    '',
+    `Sitemap: ${origin}/sitemap.xml`,
+    '',
+  ].join('\n')
+
+  return new Response(body, {
+    headers: {
+      'content-type': 'text/plain; charset=utf-8',
+      'cache-control': 'public, max-age=3600',
+    },
+  })
+}
+
+function xmlEscape(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
+
+interface SitemapRow {
+  slug: string
+  updated_at: string
+}
+
+async function sitemap(origin: string): Promise<Response> {
+  const params = new URLSearchParams({
+    select: 'slug,updated_at',
+    status: 'eq.active',
+    order: 'updated_at.desc',
+    /* Un sitemap admite 50.000 URLs. Con este tope estamos lejos; el dia que
+       se acerque hay que partirlo en un indice de sitemaps. */
+    limit: '5000',
+  })
+
+  const response = await fetch(`${SUPABASE_PUBLIC.url}/rest/v1/listings?${params}`, {
+    headers: {
+      apikey: SUPABASE_PUBLIC.anonKey,
+      Authorization: `Bearer ${SUPABASE_PUBLIC.anonKey}`,
+    },
+    cf: { cacheTtl: 300, cacheEverything: true },
+  })
+
+  /* Las fijas van siempre, aunque la base no conteste: mas vale un sitemap
+     con la home que un 500 que Google reintenta y termina penalizando. */
+  const entries: { loc: string; lastmod?: string }[] = [
+    { loc: `${origin}/` },
+    { loc: `${origin}/cars` },
+  ]
+
+  if (response.ok) {
+    const rows = (await response.json()) as SitemapRow[]
+    for (const row of rows) {
+      entries.push({
+        loc: `${origin}/cars/${row.slug}`,
+        lastmod: row.updated_at.slice(0, 10),
+      })
+    }
+  }
+
+  const body = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...entries.map((entry) =>
+      entry.lastmod
+        ? `<url><loc>${xmlEscape(entry.loc)}</loc><lastmod>${entry.lastmod}</lastmod></url>`
+        : `<url><loc>${xmlEscape(entry.loc)}</loc></url>`,
+    ),
+    '</urlset>',
+    '',
+  ].join('\n')
+
+  return new Response(body, {
+    headers: {
+      'content-type': 'application/xml; charset=utf-8',
+      'cache-control': 'public, max-age=300',
+    },
+  })
+}
+
 async function renderListing(request: Request, env: Env, slug: string): Promise<Response> {
   const assetResponse = await env.ASSETS.fetch(request)
 
@@ -190,6 +295,10 @@ async function renderListing(request: Request, env: Env, slug: string): Promise<
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
+
+    if (url.pathname === '/robots.txt') return robots(url.origin)
+    if (url.pathname === '/sitemap.xml') return sitemap(url.origin)
+
     const match = url.pathname.match(LISTING_URL)
 
     /* Sólo las fichas de vehículo, y sólo lecturas: el resto del sitio no

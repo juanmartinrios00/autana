@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
+import { ErrorBoundary } from './ErrorBoundary'
 import { Footer } from './Footer'
 import { Navbar } from './Navbar'
 
 export function Layout() {
   const sentinel = useRef<HTMLDivElement>(null)
+  const location = useLocation()
 
   /* Se arranca leyendo la posición real: si alguien recarga a mitad de página,
      la navbar tiene que nacer sólida y no transparente sobre contenido blanco. */
@@ -29,8 +31,14 @@ export function Layout() {
       </a>
       <div className="nav-sentinel" ref={sentinel} aria-hidden="true" />
       <Navbar atTop={atTop} />
+      {/* El boundary abraza sólo el contenido: si una pantalla se rompe, la
+          navbar y el pie siguen ahí y se puede navegar a otro lado en vez de
+          quedar en una pantalla en blanco. La `key` es la ruta porque, sin
+          eso, una vez roto el cartel de error no se iría nunca más. */}
       <main className="main" id="contenido">
-        <Outlet />
+        <ErrorBoundary key={location.pathname}>
+          <Outlet />
+        </ErrorBoundary>
       </main>
       <Footer />
     </>
