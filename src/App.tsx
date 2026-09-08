@@ -4,6 +4,7 @@ import { Layout } from './components/layout/Layout'
 import { AuthProvider } from './context/AuthProvider'
 import { FavoritesProvider } from './context/FavoritesProvider'
 import { Cars } from './pages/Cars'
+import { Favorites } from './pages/Favorites'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
 import { MyListings } from './pages/MyListings'
@@ -25,8 +26,12 @@ export default function App() {
               <Route path="cars" element={<Cars />} />
               <Route path="cars/:slug" element={<VehicleDetail />} />
 
+              {/* Los favoritos no exigen sesión: sin cuenta viven en el
+                  navegador, y pedir registro para ver lo que uno mismo guardó
+                  sería un peaje justo donde el visitante está decidiendo. */}
+              <Route path="favorites" element={<Favorites />} />
+
               {/* Fase 3 — sistema de usuario */}
-              <Route path="favorites" element={<Placeholder title="Favoritos" phase="Fase 3" />} />
               <Route path="compare" element={<Placeholder title="Comparador" phase="Fase 3" />} />
               <Route path="dashboard/*" element={<Placeholder title="Dashboard" phase="Fase 3" />} />
               <Route path="login" element={<Login />} />

@@ -511,6 +511,74 @@ export async function uploadListingPhotos(
 }
 
 /* ---------------------------------------------------------------------------
+   Favoritos
+--------------------------------------------------------------------------- */
+
+/** Los ids de las publicaciones que el usuario guardó. */
+export async function listFavoriteIds(userId: string): Promise<string[]> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('favorites')
+    .select('listing_id')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data as { listing_id: string }[]).map((row) => row.listing_id)
+}
+
+/**
+ * Guarda un favorito.
+ *
+ * Va con `upsert` y no con `insert` porque marcar dos veces lo mismo —dos
+ * pestañas abiertas, un doble clic— no es un error que le importe a nadie:
+ * el favorito ya está, que es lo que el usuario pidió. Con `insert` reventaría
+ * contra la clave primaria (user_id, listing_id) y habría que distinguir ese
+ * caso de un fallo real.
+ */
+export async function addFavorite(userId: string, listingId: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client
+    .from('favorites')
+    .upsert({ user_id: userId, listing_id: listingId }, { onConflict: 'user_id,listing_id' })
+
+  if (error) throw error
+}
+
+export async function removeFavorite(userId: string, listingId: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client
+    .from('favorites')
+    .delete()
+    .eq('user_id', userId)
+    .eq('listing_id', listingId)
+
+  if (error) throw error
+}
+
+/**
+ * Sube a la cuenta los favoritos que estaban guardados en el navegador.
+ *
+ * Se llama al iniciar sesión. Es un merge, no un reemplazo: alguien que venía
+ * navegando sin cuenta y marcó tres autos no tiene por qué perderlos, y si ya
+ * tenía favoritos en la cuenta tampoco. Los que ya estaban se ignoran por el
+ * `upsert`.
+ */
+export async function mergeFavorites(userId: string, listingIds: string[]): Promise<void> {
+  if (listingIds.length === 0) return
+
+  const client = requireSupabase()
+  const { error } = await client
+    .from('favorites')
+    .upsert(
+      listingIds.map((listingId) => ({ user_id: userId, listing_id: listingId })),
+      { onConflict: 'user_id,listing_id' },
+    )
+
+  if (error) throw error
+}
+
+/* ---------------------------------------------------------------------------
    Gestionar los avisos propios
 --------------------------------------------------------------------------- */
 

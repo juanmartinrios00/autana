@@ -1,0 +1,67 @@
+/* ==========================================================================
+   Favoritos
+   ========================================================================== */
+
+.favorites {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.favorites__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+}
+
+.favorites__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.favorites__title {
+  font-size: var(--fs-h1);
+}
+
+.favorites__count {
+  font-size: 0.94rem;
+  color: var(--ink-3);
+}
+
+.favorites__failure {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 0.88rem;
+}
+
+/* El aviso de que la lista es sólo de este navegador. Va en tinte amarillo
+   porque es una invitación, no un error: no hay nada roto todavía. */
+.favorites__notice {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--r-lg);
+  background: var(--accent-tint);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+.favorites__notice-text {
+  flex-grow: 1;
+  min-width: 240px;
+  font-size: 0.91rem;
+}
+
+.favorites__synced {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.86rem;
+  color: var(--ink-4);
+}
