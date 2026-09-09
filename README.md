@@ -13,6 +13,21 @@ npm run dev
 
 `npm run lint` (oxlint) · `npm run build` (typecheck + build).
 
+## Deploy
+
+**Se despliega solo al pushear a `main`.** Cloudflare buildea desde el repo y
+publica; no hay que correr nada a mano.
+
+No hay script `deploy` a propósito. Cuando existían los dos caminos —el push y
+un `wrangler deploy` local— cada publicación disparaba dos builds con quince
+segundos de diferencia, y ganaba el que terminaba último. Con el mismo commit
+da igual, pero alcanza con que un día corras el manual desde un working tree
+desactualizado para publicar código viejo sin enterarte.
+
+Si alguna vez hace falta publicar a mano (Cloudflare caído, un rollback
+urgente), el comando es `npm run build && npx wrangler deploy`. Que sea de
+escribir y no de tipear `npm run deploy` es parte del punto.
+
 ## Cómo está organizado
 
 ```
