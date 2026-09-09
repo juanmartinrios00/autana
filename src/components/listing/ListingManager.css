@@ -160,3 +160,18 @@
 .mylisting__edit {
   display: inline-flex;
 }
+
+/* Aviso bloqueado por moderación. Se ve distinto de un pausado a propósito:
+   uno es una decisión del vendedor y el otro no. */
+.mylisting__actions--blocked {
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--danger-bg);
+}
+
+.mylisting__blocked-text {
+  margin-right: var(--sp-1);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--danger);
+}

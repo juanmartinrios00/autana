@@ -58,6 +58,7 @@ export const statusLabels: Record<ListingStatus, string> = {
   active: 'Activa',
   paused: 'Pausada',
   sold: 'Vendido',
+  blocked: 'Bloqueada',
 }
 
 /** `USD 32.900`. Sin decimales: en autos no aportan nada. */

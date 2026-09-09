@@ -4,6 +4,7 @@ import { Layout } from './components/layout/Layout'
 import { AuthProvider } from './context/AuthProvider'
 import { CompareProvider } from './context/CompareProvider'
 import { FavoritesProvider } from './context/FavoritesProvider'
+import { Admin } from './pages/Admin'
 import { Cars } from './pages/Cars'
 import { Compare } from './pages/Compare'
 import { Favorites } from './pages/Favorites'
@@ -51,6 +52,10 @@ export default function App() {
                   {/* Mismo formulario que publicar, pero arranca lleno. */}
                   <Route path="sell/:slug/edit" element={<Sell />} />
                   <Route path="my-listings" element={<MyListings />} />
+                {/* Quién entra lo decide la base, no esta ruta: las políticas
+                    de `reports` sólo devuelven datos a un admin, así que a
+                    cualquier otro la pantalla le llega vacía. */}
+                <Route path="admin" element={<Admin />} />
                   <Route path="profile" element={<Profile />} />
                 </Route>
 

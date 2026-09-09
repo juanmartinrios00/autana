@@ -10,6 +10,7 @@ import { FavoriteButton } from '../components/vehicle/FavoriteButton'
 import { VehicleGallery } from '../components/vehicle/VehicleGallery'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { VehicleSpecs } from '../components/vehicle/VehicleSpecs'
+import { ReportDialog } from '../components/vehicle/ReportDialog'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { useFavorites } from '../hooks/useFavorites'
 import {
@@ -263,6 +264,12 @@ export function VehicleDetail() {
               <Icon name="check" size={16} />
               Nunca transfieras dinero antes de ver el vehículo. Autana no interviene en el pago.
             </p>
+
+            {/* Al final y en voz baja: tiene que estar a mano para quien lo
+                necesita, sin competirle al botón de contactar. */}
+            <div className="detail__report">
+              <ReportDialog listingId={vehicle.id} title={title} />
+            </div>
           </div>
         </aside>
       </div>

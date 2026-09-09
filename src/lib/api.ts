@@ -527,6 +527,125 @@ export async function uploadListingPhotos(
 }
 
 /* ---------------------------------------------------------------------------
+   Reportes y moderación
+--------------------------------------------------------------------------- */
+
+export type ReportReason = 'scam' | 'sold' | 'duplicate' | 'wrong_data' | 'offensive' | 'other'
+
+export const reportReasons: Record<ReportReason, string> = {
+  scam: 'Parece una estafa',
+  sold: 'Ya está vendido',
+  duplicate: 'Está publicado dos veces',
+  wrong_data: 'Los datos no son reales',
+  offensive: 'Contenido ofensivo',
+  other: 'Otra cosa',
+}
+
+/**
+ * Reporta una publicación.
+ *
+ * Exige cuenta: sin identidad, un script manda mil reportes y el sistema no
+ * sirve para nada. El índice único de la base garantiza uno por persona y por
+ * aviso, así que reportar dos veces choca contra la clave y se traduce a un
+ * mensaje claro en vez de a un error crudo.
+ */
+export async function reportListing(
+  listingId: string,
+  userId: string,
+  reason: ReportReason,
+  detail: string,
+): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('reports').insert({
+    listing_id: listingId,
+    reporter_id: userId,
+    reason,
+    detail: detail.trim(),
+  })
+
+  if (!error) return
+  /* 23505 es violación de unicidad: ya lo había reportado. No es un fallo. */
+  if (error.code === '23505') throw new Error('Ya reportaste esta publicación. Gracias.')
+  throw error
+}
+
+/** Si esta persona ya reportó este aviso, para no ofrecerle hacerlo de nuevo. */
+export async function hasReported(listingId: string, userId: string): Promise<boolean> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('reports')
+    .select('id')
+    .eq('listing_id', listingId)
+    .eq('reporter_id', userId)
+    .maybeSingle()
+
+  if (error) throw error
+  return Boolean(data)
+}
+
+/** `true` si la cuenta modera. Sale de la base, no de nada que viva acá. */
+export async function isAdmin(): Promise<boolean> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('is_admin')
+  if (error) throw error
+  return data === true
+}
+
+export interface ReportedListing {
+  vehicle: Vehicle
+  reports: { id: string; reason: ReportReason; detail: string; createdAt: string }[]
+}
+
+/**
+ * Las publicaciones reportadas, con sus reportes.
+ *
+ * Sólo devuelve algo para quien modera: la política de `reports` esconde los
+ * ajenos, así que a cualquier otro le llega una lista vacía en vez de un error.
+ */
+export async function listReportedListings(): Promise<ReportedListing[]> {
+  const client = requireSupabase()
+
+  const { data, error } = await client
+    .from('reports')
+    .select('id, reason, detail, created_at, listing_id')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+
+  const rows = data as {
+    id: string
+    reason: ReportReason
+    detail: string
+    created_at: string
+    listing_id: string
+  }[]
+
+  if (rows.length === 0) return []
+
+  const vehicles = await getVehiclesByIds([...new Set(rows.map((row) => row.listing_id))])
+  const byId = new Map(vehicles.map((vehicle) => [vehicle.id, vehicle]))
+
+  /* Se agrupa por aviso y se ordena por cantidad de reportes: lo más denunciado
+     primero, que es lo que hay que mirar antes. */
+  const grouped = new Map<string, ReportedListing>()
+  for (const row of rows) {
+    const vehicle = byId.get(row.listing_id)
+    if (!vehicle) continue
+
+    const entry = grouped.get(row.listing_id) ?? { vehicle, reports: [] }
+    entry.reports.push({
+      id: row.id,
+      reason: row.reason,
+      detail: row.detail,
+      createdAt: row.created_at,
+    })
+    grouped.set(row.listing_id, entry)
+  }
+
+  return [...grouped.values()].sort((a, b) => b.reports.length - a.reports.length)
+}
+
+/* ---------------------------------------------------------------------------
    Favoritos
 --------------------------------------------------------------------------- */
 

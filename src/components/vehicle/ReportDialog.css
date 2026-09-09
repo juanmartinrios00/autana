@@ -1,0 +1,148 @@
+/* ==========================================================================
+   Reportar una publicación
+   ========================================================================== */
+
+/* Deliberadamente callado y al final de la ficha: tiene que estar, pero no
+   compite con contactar al vendedor, que es a lo que la gente viene. */
+.report__trigger {
+  border: 0;
+  padding: 0;
+  background: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink-4);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.report__trigger:hover {
+  color: var(--danger);
+}
+
+.report__done {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: var(--ink-4);
+}
+
+/* --- El diálogo ---------------------------------------------------------- */
+
+.report {
+  width: min(440px, calc(100vw - var(--sp-6)));
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-xl);
+  background: var(--canvas);
+  box-shadow: var(--sh-overlay);
+  color: var(--ink);
+}
+
+.report::backdrop {
+  background: rgba(11, 11, 12, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.report__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+}
+
+.report__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.report__title {
+  font-size: 1.25rem;
+}
+
+.report__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--ink-3);
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.report__close:hover {
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.report__lead {
+  margin-top: calc(var(--sp-3) * -1);
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.report__text {
+  font-size: 0.94rem;
+  color: var(--ink-3);
+}
+
+.report__login {
+  display: block;
+}
+
+.report__field {
+  display: block;
+}
+
+.report__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.report__textarea {
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  border: 0;
+  border-radius: var(--r-md);
+  background: var(--canvas);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  font-family: inherit;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  resize: vertical;
+  transition: box-shadow var(--dur-med) var(--ease);
+}
+
+.report__textarea:focus-visible {
+  outline: 0;
+  box-shadow:
+    inset 0 0 0 1.5px var(--ink),
+    0 0 0 4px var(--accent-tint);
+}
+
+.report__failure {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 0.88rem;
+}
+
+.report__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  margin-top: var(--sp-1);
+}

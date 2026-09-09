@@ -13,7 +13,11 @@ export type FuelType = 'petrol' | 'diesel' | 'hybrid' | 'electric' | 'gnc'
 export type Transmission = 'manual' | 'automatic' | 'cvt'
 export type Drivetrain = 'fwd' | 'rwd' | 'awd' | '4x4'
 export type BodyType = 'sedan' | 'suv' | 'hatchback' | 'pickup' | 'coupe' | 'van'
-export type ListingStatus = 'draft' | 'active' | 'paused' | 'sold'
+/**
+ * `blocked` lo pone la moderación y el vendedor no lo puede revertir. Es lo
+ * que lo separa de `paused`, que es una decisión suya y deshace cuando quiere.
+ */
+export type ListingStatus = 'draft' | 'active' | 'paused' | 'sold' | 'blocked'
 
 export interface User {
   id: string

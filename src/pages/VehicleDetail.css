@@ -363,3 +363,10 @@
     width: 100%;
   }
 }
+
+/* El enlace para reportar, al pie del panel de contacto. */
+.detail__report {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  box-shadow: inset 0 1px 0 var(--line);
+}

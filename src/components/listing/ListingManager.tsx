@@ -17,11 +17,12 @@ import './ListingManager.css'
  * fila está ocupada y cuál está pidiendo confirmación para borrar.
  */
 
-const statusTone: Record<ListingStatus, 'success' | 'warning' | 'dark' | 'neutral'> = {
+const statusTone: Record<ListingStatus, 'success' | 'warning' | 'dark' | 'neutral' | 'danger'> = {
   active: 'success',
   paused: 'warning',
   sold: 'dark',
   draft: 'neutral',
+  blocked: 'danger',
 }
 
 interface ListingManagerProps {
@@ -78,6 +79,9 @@ export function ListingManager({ listings, onStatusChange, onDelete }: ListingMa
           const isBusy = busy === vehicle.id
           const isConfirming = confirming === vehicle.id
           const title = vehicleTitle(vehicle)
+          /* Bloqueada por moderación: no se ofrece nada que RLS vaya a
+             rechazar igual. Borrarla sí puede, y que lo haga. */
+          const blocked = vehicle.status === 'blocked'
 
           return (
             <li
@@ -128,6 +132,21 @@ export function ListingManager({ listings, onStatusChange, onDelete }: ListingMa
                     </Button>
                     <Button variant="ghost" size="sm" disabled={isBusy} onClick={() => setConfirming(null)}>
                       Cancelar
+                    </Button>
+                  </div>
+                ) : blocked ? (
+                  <div className="mylisting__actions mylisting__actions--blocked">
+                    <span className="mylisting__blocked-text">
+                      La bloqueamos por reportes de otros usuarios. Si creés que fue un error,
+                      escribinos.
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={isBusy}
+                      onClick={() => setConfirming(vehicle.id)}
+                    >
+                      Eliminar
                     </Button>
                   </div>
                 ) : (

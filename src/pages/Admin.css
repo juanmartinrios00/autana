@@ -1,0 +1,124 @@
+/* ==========================================================================
+   Moderación
+   ========================================================================== */
+
+.admin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.admin__title {
+  font-size: var(--fs-h1);
+}
+
+.admin__lead {
+  margin-top: var(--sp-2);
+  max-width: 62ch;
+  color: var(--ink-3);
+}
+
+.admin__failure {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 0.88rem;
+}
+
+.admin__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.admin__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+}
+
+.admin__item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.admin__item-titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.admin__item-title {
+  font-family: var(--font-display);
+  font-size: 1.13rem;
+  font-weight: 600;
+  letter-spacing: -0.024em;
+}
+
+.admin__item-title:hover {
+  color: var(--ink-3);
+}
+
+.admin__item-meta {
+  font-size: 0.82rem;
+  color: var(--ink-3);
+}
+
+.admin__item-tags {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+/* Cada denuncia en su renglón: el motivo pesa y el texto libre va en cursiva,
+   porque es la voz de quien reportó y no nuestra. */
+.admin__reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.admin__reason {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+}
+
+.admin__reason-label {
+  font-weight: 600;
+}
+
+.admin__reason-detail {
+  flex-grow: 1;
+  min-width: 200px;
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+.admin__reason-when {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--ink-4);
+  white-space: nowrap;
+}
+
+.admin__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
