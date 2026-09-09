@@ -15,18 +15,20 @@ npm run dev
 
 ## Deploy
 
-**Se despliega solo al pushear a `main`.** Cloudflare buildea desde el repo y
-publica; no hay que correr nada a mano.
+    npm run deploy
 
-No hay script `deploy` a propósito. Cuando existían los dos caminos —el push y
-un `wrangler deploy` local— cada publicación disparaba dos builds con quince
-segundos de diferencia, y ganaba el que terminaba último. Con el mismo commit
-da igual, pero alcanza con que un día corras el manual desde un working tree
-desactualizado para publicar código viejo sin enterarte.
+Buildea y publica en Cloudflare Workers con `wrangler deploy`, que toma el
+nombre y el directorio de assets de `wrangler.jsonc`.
 
-Si alguna vez hace falta publicar a mano (Cloudflare caído, un rollback
-urgente), el comando es `npm run build && npx wrangler deploy`. Que sea de
-escribir y no de tipear `npm run deploy` es parte del punto.
+**Es manual.** No hay integración de Git: pushear a `main` no publica nada. Si
+alguna vez se conecta, hay que sacar este script — con los dos caminos activos
+cada publicación dispara dos builds y gana el que termina último, que es la
+forma de publicar un commit viejo sin enterarse.
+
+Ojo con una trampa al leer `wrangler deployments list`: un solo `wrangler
+deploy` deja **dos** registros con unos quince segundos de diferencia, uno por
+la subida de los assets y otro por los triggers. Parecen dos deploys y no lo
+son.
 
 ## Cómo está organizado
 
