@@ -83,6 +83,10 @@ interface ListingRow {
   profiles?: { name: string; seller_type: Seller['type'] } | null
 }
 
+/* La forma de un perfil tal como se lee publicamente. `whatsapp` no esta y no
+   es un olvido: desde la migracion 008 la columna no es legible, y tenerla en
+   el tipo dejaria que alguien la pidiera y recibiera `undefined` sin enterarse.
+   Que el compilador lo frene es la mitad del arreglo. */
 interface ProfileRow {
   id: string
   name: string
@@ -90,7 +94,6 @@ interface ProfileRow {
   seller_type: Seller['type']
   city: string | null
   province: string | null
-  whatsapp: string | null
   verified: boolean
 }
 
@@ -149,6 +152,11 @@ function toVehicle(row: ListingRow): Vehicle {
   }
 }
 
+/* Las columnas de `profiles` que se pueden leer. Desde la migracion 008 el
+   permiso es por columna: `select('*')` falla, y esta bien que falle — es lo
+   que avisa que alguien agrego una columna sin decidir si es publica. */
+const PROFILE_COLUMNS = 'id, name, avatar_url, seller_type, city, province, verified, created_at'
+
 function toSeller(row: ProfileRow, listingCount: number): Seller {
   return {
     id: row.id,
@@ -162,7 +170,6 @@ function toSeller(row: ProfileRow, listingCount: number): Seller {
     reviewCount: 0,
     listingCount,
     verified: row.verified,
-    whatsapp: row.whatsapp,
   }
 }
 
@@ -302,7 +309,7 @@ export async function getSeller(id: string): Promise<Seller> {
   const client = requireSupabase()
 
   const [profile, count] = await Promise.all([
-    client.from('profiles').select('*').eq('id', id).maybeSingle(),
+    client.from('profiles').select(PROFILE_COLUMNS).eq('id', id).maybeSingle(),
     client
       .from('listings')
       .select('id', { count: 'exact', head: true })
@@ -971,7 +978,7 @@ export async function listDealers(limit = 8): Promise<Seller[]> {
   const client = requireSupabase()
 
   const [profiles, listings] = await Promise.all([
-    client.from('profiles').select('*').eq('seller_type', 'dealer'),
+    client.from('profiles').select(PROFILE_COLUMNS).eq('seller_type', 'dealer'),
     client.from('listings').select('seller_id').eq('status', 'active'),
   ])
 
@@ -1001,7 +1008,6 @@ export interface ProfileSummary {
   sellerType: Seller['type']
   city: string | null
   province: string | null
-  whatsapp: string | null
   verified: boolean
   /** Publicaciones activas. */
   activeListings: number
@@ -1013,7 +1019,7 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
   const client = requireSupabase()
 
   const [profile, listings] = await Promise.all([
-    client.from('profiles').select('*').eq('id', userId).maybeSingle(),
+    client.from('profiles').select(PROFILE_COLUMNS).eq('id', userId).maybeSingle(),
     client
       .from('listings')
       .select('id, status, listing_images(id)')
@@ -1039,7 +1045,6 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
     sellerType: profileRow.seller_type,
     city: profileRow.city,
     province: profileRow.province,
-    whatsapp: profileRow.whatsapp,
     verified: profileRow.verified,
     activeListings: rows.length,
     bestPhotoCount: rows.reduce((max, row) => Math.max(max, row.listing_images?.length ?? 0), 0),
@@ -1107,7 +1112,6 @@ export async function updateProfile(userId: string, input: ProfileUpdate): Promi
 interface StatsRow {
   user_id: string
   name: string
-  whatsapp: string | null
   city: string | null
   verified: boolean
   created_at: string
@@ -1154,6 +1158,41 @@ export async function getSellerTrust(userIds: string[]): Promise<Map<string, Tru
 }
 
 /**
+ * El WhatsApp del vendedor de un aviso.
+ *
+ * Va por una funcion de la base y no por una columna porque `profiles` dejo de
+ * exponer el numero: cualquiera podia bajarse nombre + celular + ciudad de
+ * todos los usuarios en una sola consulta. Ahora cuesta un aviso activo por
+ * numero. Ver `008_whatsapp_no_enumerable.sql`.
+ *
+ * Devuelve `null` si el aviso no esta activo, que es lo correcto: un aviso
+ * bloqueado esta bloqueado por algo.
+ */
+export async function getListingWhatsapp(slug: string): Promise<string | null> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('listing_whatsapp', { p_slug: slug })
+  if (error) throw error
+  return (data as string | null) ?? null
+}
+
+/** El propio numero. La funcion resuelve de quien es con `auth.uid()`, asi que
+ *  no hay parametro que manipular. */
+export async function getOwnWhatsapp(): Promise<string | null> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('my_whatsapp')
+  if (error) throw error
+  return (data as string | null) ?? null
+}
+
+/** Cambia solo el tipo de vendedor. Antes esto reenviaba el perfil entero, y
+ *  desde que el numero no se puede leer eso lo habria borrado. */
+export async function updateSellerType(userId: string, type: Seller['type']): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('profiles').update({ seller_type: type }).eq('id', userId)
+  if (error) throw error
+}
+
+/**
  * Todo lo que `computeLevel` necesita, en una sola consulta.
  *
  * `profile_stats` ya trae los contadores y los tres campos que definen el
@@ -1164,15 +1203,18 @@ export async function getLevelInput(userId: string): Promise<LevelInput> {
   const client = requireSupabase()
   const { data, error } = await client
     .from('profile_stats')
-    .select('name, whatsapp, city, active_listings, best_photos, garage_cars')
+    .select('name, city, active_listings, best_photos, garage_cars')
     .eq('user_id', userId)
     .maybeSingle()
 
   if (error) throw error
   const row = data as Omit<StatsRow, 'user_id' | 'verified' | 'created_at'> | null
+  /* Si esta cargado, no cual es: el logro solo necesita saber eso, y el unico
+     que puede preguntarlo es el propio dueno. */
+  const hasWhatsapp = Boolean(await getOwnWhatsapp().catch(() => null))
 
   return {
-    profile: row ? { name: row.name, whatsapp: row.whatsapp, city: row.city } : null,
+    profile: row ? { name: row.name, hasWhatsapp, city: row.city } : null,
     activeListings: row?.active_listings ?? 0,
     bestPhotoCount: row?.best_photos ?? 0,
     garageCars: row?.garage_cars ?? 0,

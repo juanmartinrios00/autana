@@ -41,8 +41,6 @@ export interface Seller {
   reviewCount: number
   listingCount: number
   verified: boolean
-  /** En formato local; se normaliza al armar el link de WhatsApp. */
-  whatsapp: string | null
 }
 
 export interface Location {

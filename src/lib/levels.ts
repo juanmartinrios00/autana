@@ -59,7 +59,9 @@ export const LEVELS = [
 ] as const
 
 export interface LevelInput {
-  profile: { name: string; whatsapp: string | null; city: string | null } | null
+  /** `hasWhatsapp` y no el numero: el logro solo necesita saber si esta
+   *  cargado, y desde la migracion 008 el numero no se lee de `profiles`. */
+  profile: { name: string; hasWhatsapp: boolean; city: string | null } | null
   activeListings: number
   /** Cuántas fotos tiene la publicación con más fotos. */
   bestPhotoCount: number
@@ -78,7 +80,7 @@ export function computeLevel({
       id: 'profile_complete',
       title: 'Perfil completo',
       hint: 'Cargá tu nombre, tu WhatsApp y tu ubicación.',
-      done: Boolean(profile?.name && profile.whatsapp && profile.city),
+      done: Boolean(profile?.name && profile.hasWhatsapp && profile.city),
     },
     {
       id: 'first_listing',

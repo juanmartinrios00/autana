@@ -159,9 +159,8 @@ export function Privacy() {
         <span className="legal__todo">
           Pendiente de revisión de un abogado. En Argentina rige la Ley 25.326 de Protección
           de Datos Personales, que da derecho a acceder a tus datos, corregirlos y pedir que
-          se supriman. Falta definir a quién se le reclama, en qué plazo se responde y cuál
-          es la dirección de contacto — y que un profesional revise que este documento
-          cumpla lo que corresponde.
+          se supriman. Falta definir el mail al que se reclama y en qué plazo se responde — y
+          que un profesional revise que este documento cumpla lo que corresponde.
         </span>
       </LegalSection>
 

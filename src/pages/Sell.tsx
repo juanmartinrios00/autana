@@ -14,7 +14,7 @@ import { draftFromVehicle, useListingDraft, type ListingDraft } from '../hooks/u
 import {
   createListing,
   deleteListingImage,
-  getProfile,
+  getOwnWhatsapp,
   getVehicleBySlug,
   updateListing,
   uploadListingPhotos,
@@ -128,8 +128,12 @@ export function Sell() {
     if (!editing || !slug || !userId) return
     let current = true
 
-    void Promise.all([getVehicleBySlug(slug), getProfile(userId)])
-      .then(([vehicle, profile]) => {
+    /* El numero ya no viene con el perfil —desde la migracion 008 no se lee de
+       `profiles`— asi que se pide aparte, y la base solo devuelve el propio.
+       Sin esto, editar un aviso arrancaba con el campo vacio y lo borraba al
+       guardar. */
+    void Promise.all([getVehicleBySlug(slug), getOwnWhatsapp().catch(() => null)])
+      .then(([vehicle, own]) => {
         if (!current) return
 
         /* RLS ya impide traer el aviso de otro si no está activo, pero uno
@@ -141,7 +145,7 @@ export function Sell() {
 
         setListingId(vehicle.id)
         setExisting(vehicle.images)
-        replace(draftFromVehicle(vehicle, profile.whatsapp ?? ''))
+        replace(draftFromVehicle(vehicle, own ?? ''))
       })
       .catch((cause) => {
         if (!current) return

@@ -153,8 +153,8 @@ export function Terms() {
           <Link to="/privacy">política de privacidad</Link>.
         </p>
         <span className="legal__todo">
-          Pendiente de definir: quién es el titular del servicio, la dirección de contacto
-          para reclamos, y la ley y jurisdicción aplicables.
+          Pendiente de definir: quién es el titular del servicio, el mail de contacto para
+          reclamos, y la ley y jurisdicción aplicables.
         </span>
       </LegalSection>
     </LegalPage>

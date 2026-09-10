@@ -11,8 +11,9 @@ import { Skeleton } from '../components/ui/Skeleton'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
+  getOwnWhatsapp,
   getProfile,
-  updateProfile,
+  updateSellerType,
   uploadProfileAvatar,
   type ProfileSummary,
 } from '../lib/api'
@@ -55,6 +56,9 @@ export function Profile() {
   const [avatarError, setAvatarError] = useState('')
   const [typeBusy, setTypeBusy] = useState(false)
   const [typeError, setTypeError] = useState('')
+  /* El numero no viaja con el perfil desde la migracion 008: se pide aparte y
+     solo lo devuelve para uno mismo. Alimenta el logro de perfil completo. */
+  const [ownWhatsapp, setOwnWhatsapp] = useState<string | null>(null)
 
   useEffect(() => {
     if (!userId) return
@@ -75,6 +79,12 @@ export function Profile() {
       },
     )
 
+    void getOwnWhatsapp()
+      .catch(() => null)
+      .then((value) => {
+        if (current) setOwnWhatsapp(value)
+      })
+
     return () => {
       current = false
     }
@@ -87,7 +97,7 @@ export function Profile() {
 
   const level = computeLevel({
     profile: showing
-      ? { name: showing.name, whatsapp: showing.whatsapp, city: showing.city }
+      ? { name: showing.name, hasWhatsapp: Boolean(ownWhatsapp), city: showing.city }
       : null,
     activeListings: showing?.activeListings ?? 0,
     bestPhotoCount: showing?.bestPhotoCount ?? 0,
@@ -148,13 +158,9 @@ export function Profile() {
     setTypeBusy(true)
     setTypeError('')
     try {
-      await updateProfile(userId, {
-        name: showing.name,
-        whatsapp: showing.whatsapp ?? '',
-        city: showing.city ?? '',
-        province: showing.province ?? '',
-        sellerType: value as ProfileSummary['sellerType'],
-      })
+      /* Solo el tipo. Antes esto reenviaba el perfil entero, y desde que el
+         numero no se puede leer eso habria guardado un WhatsApp vacio. */
+      await updateSellerType(userId, value as ProfileSummary['sellerType'])
       setReloads((count) => count + 1)
     } catch {
       setTypeError('No pudimos guardar el cambio. Probá de nuevo.')

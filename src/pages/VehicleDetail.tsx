@@ -14,6 +14,7 @@ import { ReportDialog } from '../components/vehicle/ReportDialog'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { useFavorites } from '../hooks/useFavorites'
 import {
+  getListingWhatsapp,
   getSeller,
   getSimilarVehicles,
   getVehicleBySlug,
@@ -47,6 +48,9 @@ export function VehicleDetail() {
   }>({ slug: '', vehicle: null, failed: false })
 
   const [seller, setSeller] = useState<Seller | null>(null)
+  /* El numero ya no viene con el vendedor: se pide contra el slug del aviso y
+     la base solo lo devuelve si el aviso esta activo. Ver la migracion 008. */
+  const [contact, setContact] = useState<string | null>(null)
   const [similar, setSimilar] = useState<Vehicle[]>([])
 
   useEffect(() => {
@@ -61,13 +65,17 @@ export function VehicleDetail() {
            métrica, no el contenido de la página. */
         void registerView(slug)
 
-        const [itsSeller, alike] = await Promise.all([
+        const [itsSeller, alike, number] = await Promise.all([
           getSeller(found.sellerId),
           getSimilarVehicles(found),
+          /* Si falla, la ficha se muestra igual y sin boton de contacto. Es
+             preferible a un boton que abre WhatsApp sin numero. */
+          getListingWhatsapp(slug).catch(() => null),
         ])
         if (!current) return
         setSeller(itsSeller)
         setSimilar(alike)
+        setContact(number)
       })
       .catch((cause: unknown) => {
         /* Un fallo de red no es lo mismo que un aviso inexistente: decirle al
@@ -161,8 +169,8 @@ export function VehicleDetail() {
   const saved = has(vehicle.id)
 
   /* El comprador escribe al vendedor por WhatsApp con el link ya armado. */
-  const contactHref = seller?.whatsapp
-    ? whatsappLink(seller.whatsapp, listingMessage(title, window.location.href))
+  const contactHref = contact
+    ? whatsappLink(contact, listingMessage(title, window.location.href))
     : null
 
   return (
