@@ -1,0 +1,143 @@
+/* Para concesionarias. */
+
+.dealers__head {
+  padding-block: var(--sp-8);
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.dealers__title {
+  margin-top: var(--sp-3);
+  max-width: 20ch;
+  font-size: var(--fs-h2);
+}
+
+.dealers__lead {
+  max-width: 58ch;
+  margin-top: var(--sp-4);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.dealers__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-6);
+}
+
+.dealers__secondary {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.dealers__body {
+  padding-block: var(--sp-7) var(--sp-9);
+}
+
+/* --- Los cuatro puntos ---------------------------------------------------- */
+
+.dealers__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dpoint {
+  padding: var(--sp-5);
+  border-radius: var(--r-xl);
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+}
+
+.dpoint__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+
+.dpoint__title {
+  margin: var(--sp-4) 0 var(--sp-2);
+  font-size: var(--fs-h3);
+}
+
+.dpoint__text {
+  margin: 0;
+  color: var(--ink-3);
+}
+
+/* El número real del marketplace. Va en mono y en chico: es una prueba, no un
+   titular — y mientras el sitio arranca, el número es honesto justamente por
+   ser chico. */
+.dealers__stats {
+  margin-top: var(--sp-5);
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+}
+
+/* --- Los tres pasos ------------------------------------------------------- */
+
+.dealers__how {
+  margin-top: var(--sp-8);
+}
+
+.dealers__how-title {
+  margin: var(--sp-2) 0 var(--sp-5);
+  font-size: var(--fs-h3);
+}
+
+.dsteps {
+  display: grid;
+  gap: var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: paso;
+}
+
+.dstep {
+  display: flex;
+  gap: var(--sp-4);
+  align-items: flex-start;
+  max-width: 68ch;
+}
+
+.dstep p {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.dstep__n {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dealers__note {
+  max-width: 68ch;
+  margin-top: var(--sp-6);
+  padding-left: var(--sp-4);
+  border-left: 2px solid var(--line-strong);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--ink-3);
+}
+
+.dealers__cta {
+  margin-top: var(--sp-8);
+  text-align: center;
+}

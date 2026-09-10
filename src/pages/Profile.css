@@ -253,3 +253,12 @@
     gap: var(--sp-4);
   }
 }
+
+/* El selector de tipo de vendedor. Angosto a propósito: es un campo de dos
+   opciones, y a ancho completo parecería un formulario que hay que llenar. */
+.profile__seller-type {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  max-width: 320px;
+}

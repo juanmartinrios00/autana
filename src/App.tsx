@@ -18,6 +18,7 @@ import { Placeholder } from './pages/Placeholder'
 const Admin = lazy(() => import('./pages/Admin').then((m) => ({ default: m.Admin })))
 const Cars = lazy(() => import('./pages/Cars').then((m) => ({ default: m.Cars })))
 const Compare = lazy(() => import('./pages/Compare').then((m) => ({ default: m.Compare })))
+const Dealers = lazy(() => import('./pages/Dealers').then((m) => ({ default: m.Dealers })))
 const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default: m.Favorites })))
 const Garage = lazy(() => import('./pages/Garage').then((m) => ({ default: m.Garage })))
 const Levels = lazy(() => import('./pages/Levels').then((m) => ({ default: m.Levels })))
@@ -60,6 +61,10 @@ export default function App() {
                     registro para leer una explicación es la forma más rápida
                     de que no la lea. */}
                 <Route path="levels" element={<Levels />} />
+
+                {/* Capta concesionarias, asi que no exige sesion: la lee alguien
+                    que todavia no decidio abrir cuenta. */}
+                <Route path="dealers" element={<Dealers />} />
 
                 {/* El garage es público y tiene pantalla propia: el link que
                     alguien manda por WhatsApp abre los autos, no el panel. */}

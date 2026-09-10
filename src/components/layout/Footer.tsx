@@ -1,11 +1,19 @@
 import { Link } from 'react-router-dom'
 import { Icon } from '../ui/Icon'
 
+/* El pie es donde viven las pantallas que se leen una vez: explicaciones,
+   legales, captación. Es a propósito y no por descarte — la navbar es para lo
+   que se usa seguido, y meter ahí un desplegable con esto cuesta caro en
+   celular, que es de donde entra la mayoría.
+
+   Cuando sean más, se parten en grupos por tópico. Con cinco todavía no hace
+   falta: agrupar cuatro cosas en dos columnas de dos es más ruido que ayuda. */
 const links = [
+  { to: '/dealers', label: 'Para concesionarias' },
+  { to: '/levels', label: 'Los niveles' },
   { to: '/help', label: 'Ayuda' },
   { to: '/terms', label: 'Términos' },
   { to: '/privacy', label: 'Privacidad' },
-  { to: '/dealers', label: 'Para concesionarias' },
 ]
 
 export function Footer() {
