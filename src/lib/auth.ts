@@ -1,6 +1,6 @@
 import type { AuthError, Session as SupabaseSession } from '@supabase/auth-js'
 import { requireSupabase, supabase } from './supabase'
-import type { User } from '../types'
+import type { SellerType, User } from '../types'
 
 /**
  * Autenticación contra Supabase.
@@ -90,18 +90,30 @@ export async function signInWithPassword(email: string, password: string): Promi
  * Crea la cuenta. Con la confirmación por mail desactivada en Supabase, la
  * sesión queda abierta al instante; si está activada, Supabase manda un correo
  * y devuelve un usuario sin sesión, que es lo que detecta el segundo caso.
+ *
+ * `sellerType` viaja en la metadata del usuario y lo lee el trigger
+ * `handle_new_user` (migración 009) para crear el perfil ya con ese tipo. Va
+ * por metadata y no por un update posterior a propósito: cuando la
+ * confirmación por mail está activada no hay sesión al volver de acá, y un
+ * update sin sesión no puede escribir nada. La metadata, en cambio, ya está
+ * puesta cuando el trigger corre.
+ *
+ * Que el valor lo mande el cliente no es un descuido: el tipo de vendedor es
+ * autodeclarado también en Ajustes, y hoy sólo define cuántos avisos podés
+ * tener vivos. La base igual no le cree — la 009 filtra con lista blanca.
  */
 export async function signUpWithPassword(
   email: string,
   password: string,
   name: string,
+  sellerType: SellerType = 'private',
 ): Promise<void> {
   const client = requireSupabase()
 
   const { data, error } = await client.auth.signUp({
     email,
     password,
-    options: { data: { name } },
+    options: { data: { name, seller_type: sellerType } },
   })
 
   if (error) throw describe(error)
@@ -111,13 +123,29 @@ export async function signUpWithPassword(
 /**
  * Manda el magic link. No devuelve sesión: el usuario tiene que abrir el mail.
  * La sesión llega después, por `onAuthChange`, cuando vuelve con el token.
+ *
+ * `profile` viaja igual que en el alta con contraseña, porque este camino
+ * también crea cuentas: quien elige "Concesionaria" y después toca el link por
+ * mail tiene que terminar siendo concesionaria. Supabase usa esta metadata
+ * sólo cuando el usuario no existía; para uno que ya tenía cuenta la ignora, y
+ * eso es lo que queremos — nadie se reescribe el perfil pidiendo un link.
  */
-export async function signInWithMagicLink(email: string): Promise<void> {
+export async function signInWithMagicLink(
+  email: string,
+  profile?: { name?: string; sellerType?: SellerType },
+): Promise<void> {
   const client = requireSupabase()
+
+  const data: Record<string, string> = {}
+  if (profile?.name) data.name = profile.name
+  if (profile?.sellerType) data.seller_type = profile.sellerType
 
   const { error } = await client.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: `${window.location.origin}/` },
+    options: {
+      emailRedirectTo: `${window.location.origin}/`,
+      ...(Object.keys(data).length > 0 ? { data } : {}),
+    },
   })
 
   if (error) throw describe(error)

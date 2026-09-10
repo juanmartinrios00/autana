@@ -9,6 +9,7 @@ import {
 } from '../lib/auth'
 import type { Session } from '../lib/auth'
 import { AuthContext, type AuthValue } from './auth-context'
+import type { SellerType } from '../types'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
@@ -38,13 +39,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signInWithPassword(email, password)
   }, [])
 
-  const signUp = useCallback(async (email: string, password: string, name: string) => {
-    await signUpWithPassword(email, password, name)
-  }, [])
+  const signUp = useCallback(
+    async (email: string, password: string, name: string, sellerType: SellerType) => {
+      await signUpWithPassword(email, password, name, sellerType)
+    },
+    [],
+  )
 
-  const sendMagicLink = useCallback(async (email: string) => {
-    await signInWithMagicLink(email)
-  }, [])
+  const sendMagicLink = useCallback(
+    async (email: string, profile?: { name?: string; sellerType?: SellerType }) => {
+      await signInWithMagicLink(email, profile)
+    },
+    [],
+  )
 
   const signOut = useCallback(async () => {
     setRecovering(false)

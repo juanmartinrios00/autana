@@ -6,15 +6,42 @@ import { Input } from '../components/ui/Input'
 import { useAuth } from '../hooks/useAuth'
 import { MIN_PASSWORD, NeedsConfirmationError, sendPasswordReset } from '../lib/auth'
 import { describeError } from '../lib/errors'
+import type { SellerType } from '../types'
 import './Login.css'
 
 type Mode = 'signin' | 'signup'
+
+/**
+ * El tipo de vendedor se elige acá, al crear la cuenta, y no después en
+ * Ajustes.
+ *
+ * Antes toda cuenta nacía particular y una agencia se enteraba de que existía
+ * el ajuste cuando se chocaba con el tope de 5 avisos cargando su stock. Es
+ * además la separación sobre la que se apoya cualquier plan pago futuro: si no
+ * se sabe quién es agencia desde el primer día, después hay que adivinarlo.
+ *
+ * Lo que se elige acá es lo mismo que se puede cambiar en Ajustes: no es una
+ * cuenta de otro tipo, ni hay una aprobación que esperar.
+ */
+const KINDS: { value: SellerType; title: string; text: string }[] = [
+  {
+    value: 'private',
+    title: 'Particular',
+    text: 'Vendo mi auto. Hasta 5 avisos activos.',
+  },
+  {
+    value: 'dealer',
+    title: 'Concesionaria',
+    text: 'Tengo una agencia. Hasta 25 avisos activos y lugar en la portada.',
+  },
+]
 
 export function Login() {
   const { session, signIn, signUp, sendMagicLink } = useAuth()
   const location = useLocation()
 
   const [mode, setMode] = useState<Mode>('signin')
+  const [kind, setKind] = useState<SellerType>('private')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -35,7 +62,9 @@ export function Login() {
     if (!email.includes('@') || !email.includes('.')) return 'Ingresá un mail válido.'
     if (password.length < MIN_PASSWORD)
       return `La contraseña tiene que tener al menos ${MIN_PASSWORD} caracteres.`
-    if (mode === 'signup' && name.trim().length < 2) return 'Poné tu nombre.'
+    if (mode === 'signup' && name.trim().length < 2) {
+      return kind === 'dealer' ? 'Poné el nombre de la agencia.' : 'Poné tu nombre.'
+    }
     return null
   }
 
@@ -52,7 +81,7 @@ export function Login() {
     setBusy(true)
     try {
       if (mode === 'signin') await signIn(email, password)
-      else await signUp(email, password, name.trim())
+      else await signUp(email, password, name.trim(), kind)
       /* No hace falta navegar: en cuanto hay sesión, el `Navigate` de arriba
          se encarga de llevarlo a donde quería ir. */
     } catch (cause) {
@@ -72,7 +101,13 @@ export function Login() {
     setError(null)
     setBusy(true)
     try {
-      await sendMagicLink(email)
+      /* En modo registro el link puede crear la cuenta, así que se lleva lo
+         que ya eligió. En modo ingreso no se manda nada: la cuenta ya existe y
+         no hay que pisarle el perfil. */
+      await sendMagicLink(
+        email,
+        mode === 'signup' ? { name: name.trim() || undefined, sellerType: kind } : undefined,
+      )
       setLinkSent(true)
     } catch (cause) {
       setError(describeError(cause, 'No pudimos mandar el mail. Probá de nuevo en un momento.'))
@@ -171,13 +206,44 @@ export function Login() {
 
         <form className="login__form" onSubmit={handleSubmit} noValidate>
           {mode === 'signup' && (
-            <Input
-              label="Tu nombre"
-              autoComplete="name"
-              placeholder="Cómo te van a ver los compradores"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
+            <>
+              {/* Radios de verdad, no botones: de dos opciones así se elige
+                  una sola, y el navegador ya sabe decir eso. */}
+              <fieldset className="login__kinds">
+                <legend className="login__kinds-legend">¿Cómo vas a publicar?</legend>
+                {KINDS.map((option) => (
+                  <label
+                    key={option.value}
+                    className={`login-kind${kind === option.value ? ' login-kind--on' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="kind"
+                      className="login-kind__radio"
+                      value={option.value}
+                      checked={kind === option.value}
+                      onChange={() => setKind(option.value)}
+                    />
+                    <span className="login-kind__body">
+                      <span className="login-kind__title">{option.title}</span>
+                      <span className="login-kind__text">{option.text}</span>
+                    </span>
+                  </label>
+                ))}
+              </fieldset>
+
+              <Input
+                label={kind === 'dealer' ? 'Nombre de la agencia' : 'Tu nombre'}
+                autoComplete={kind === 'dealer' ? 'organization' : 'name'}
+                placeholder={
+                  kind === 'dealer'
+                    ? 'Como la conocen los compradores'
+                    : 'Cómo te van a ver los compradores'
+                }
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+              />
+            </>
           )}
 
           <Input
@@ -203,6 +269,17 @@ export function Login() {
             {busy ? 'Un segundo…' : mode === 'signin' ? 'Ingresar' : 'Crear cuenta'}
           </Button>
         </form>
+
+        {/* Dicho acá y no en la página de concesionarias, porque es acá donde
+            alguien podría creer que eligiendo "Concesionaria" ya queda con el
+            sello. No queda: ese lo ponemos a mano. */}
+        {mode === 'signup' && kind === 'dealer' && (
+          <p className="login__kinds-hint">
+            Podés cambiarlo después en Ajustes. El sello de <strong>Verificada</strong> es
+            aparte: lo ponemos a mano tras confirmar que la agencia existe.{' '}
+            <Link to="/dealers">Qué cambia si sos concesionaria</Link>.
+          </p>
+        )}
 
         <p className="login__switch">
           {mode === 'signin' ? '¿Todavía no tenés cuenta?' : '¿Ya tenés cuenta?'}{' '}

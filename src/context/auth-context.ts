@@ -1,5 +1,6 @@
 import { createContext } from 'react'
 import type { Session } from '../lib/auth'
+import type { SellerType } from '../types'
 
 export interface AuthValue {
   session: Session | null
@@ -12,8 +13,18 @@ export interface AuthValue {
    */
   recovering: boolean
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string, name: string) => Promise<void>
-  sendMagicLink: (email: string) => Promise<void>
+  /** `sellerType` se elige en el registro y define el tope de avisos vivos. */
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+    sellerType: SellerType,
+  ) => Promise<void>
+  /** El perfil sólo se usa si el link termina creando la cuenta. */
+  sendMagicLink: (
+    email: string,
+    profile?: { name?: string; sellerType?: SellerType },
+  ) => Promise<void>
   signOut: () => Promise<void>
 }
 

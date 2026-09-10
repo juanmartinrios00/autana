@@ -8,8 +8,9 @@ import './Help.css'
  *
  * Todo lo que dice acá es lo que la aplicación hace, no lo que nos gustaría que
  * hiciera: los topes salen de `005_listing_limits.sql`, el bloqueo por tres
- * reportes de `006_reports.sql`, quién ve tu WhatsApp de la `008`, y que los
- * favoritos sin cuenta vivan en el navegador, de `FavoritesProvider`.
+ * reportes de `006_reports.sql`, quién ve tu WhatsApp de la `008`, el tipo de
+ * vendedor elegido al registrarse de la `009`, y que los favoritos sin cuenta
+ * vivan en el navegador, de `FavoritesProvider`.
  *
  * No se menciona ninguna función que no exista. Es la pantalla que abre alguien
  * que ya se trabó con algo, y mandarlo a buscar un botón que no está es peor que
@@ -107,11 +108,12 @@ const TOPICS: Topic[] = [
         q: '¿Cuántos avisos puedo tener?',
         a: (
           <p>
-            Cinco activos si sos particular, veinticinco si sos concesionaria. Los que
-            marcás como vendidos no ocupan lugar, así que podés seguir publicando sin
-            borrar tu historial. Hay además un tope de avisos nuevos por día, alto como
-            para que no lo toques cargando tu stock.{' '}
-            <Link to="/dealers">Cómo pasar a concesionaria</Link>.
+            Cinco activos si sos particular, veinticinco si sos concesionaria — eso lo
+            elegís al crear la cuenta y lo cambiás cuando quieras en{' '}
+            <Link to="/settings">Ajustes</Link>. Los que marcás como vendidos no ocupan
+            lugar, así que podés seguir publicando sin borrar tu historial. Hay además un
+            tope de avisos nuevos por día, alto como para que no lo toques cargando tu
+            stock. <Link to="/dealers">Qué cambia si sos concesionaria</Link>.
           </p>
         ),
       },
@@ -232,7 +234,10 @@ const TOPICS: Topic[] = [
         a: (
           <p>
             Con tu mail y una contraseña, en <Link to="/login">Ingresar</Link>. Quedás
-            dentro en el momento, sin esperar ningún correo.
+            dentro en el momento, sin esperar ningún correo. En el mismo formulario elegís
+            si publicás como <strong>particular</strong> o como{' '}
+            <strong>concesionaria</strong>: es lo que define si tenés 5 o 25 avisos
+            activos, y se puede cambiar después en <Link to="/settings">Ajustes</Link>.
           </p>
         ),
       },

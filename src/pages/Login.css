@@ -128,3 +128,88 @@
 .login__recover-hint--after {
   margin: var(--sp-3) 0 0;
 }
+
+/* ---------------------------------------------------------------------------
+   Elegir particular o concesionaria, al crear la cuenta.
+
+   Se ve como dos tarjetas, pero por dentro son dos radios nativos dentro de un
+   `fieldset`: el navegador ya da foco, flechas para moverse entre opciones y el
+   anuncio de "1 de 2" al lector de pantalla. Reemplazarlos por dos botones
+   habría obligado a reimplementar las tres cosas a mano.
+--------------------------------------------------------------------------- */
+.login__kinds {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.login__kinds-legend {
+  padding: 0 0 var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.login-kind {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.login-kind:hover {
+  border-color: var(--line-strong);
+}
+
+.login-kind--on {
+  border-color: var(--ink);
+  background: var(--surface);
+}
+
+/* El radio en sí. Se pinta con `accent-color`, que es lo que deja usar el
+   control nativo con el color de la marca en vez de dibujar uno falso. */
+.login-kind__radio {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  accent-color: var(--ink);
+}
+
+.login-kind__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.login-kind__title {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.login-kind__text {
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+}
+
+/* El foco del teclado tiene que verse en la tarjeta entera, no en el puntito. */
+.login-kind:has(.login-kind__radio:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.login__kinds-hint {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+.login__kinds-hint a {
+  color: var(--ink-2);
+  box-shadow: inset 0 -1px 0 var(--line-strong);
+}

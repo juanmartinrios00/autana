@@ -13,7 +13,8 @@ import './Dealers.css'
  * Todo lo que promete acá existe y se puede verificar en el código: el tope de
  * 25 publicaciones sale de `005_listing_limits.sql`, el filtro por tipo de
  * vendedor de `FilterPanel`, el slider de la home de `listDealers`, y el sello
- * de verificada de `profiles.verified`.
+ * de verificada de `profiles.verified`. Que se pueda elegir concesionaria al
+ * registrarse sale de la migración `009`.
  *
  * Lo que NO dice, por la misma razón: nada de "miles de compradores" ni de
  * posiciones destacadas. El marketplace recién arranca y una concesionaria que
@@ -126,16 +127,17 @@ export function Dealers() {
             <li className="dstep">
               <span className="dstep__n mono">1</span>
               <p>
-                Creás la cuenta con el mail de la agencia. Es la misma cuenta que usa
-                cualquiera: no hay un registro aparte ni una aprobación que esperar.
+                Creás la cuenta con el mail de la agencia y, en el mismo formulario,
+                elegís <strong>Concesionaria</strong>. Quedás con las 25 publicaciones
+                desde el primer aviso: no hay una aprobación que esperar.
               </p>
             </li>
             <li className="dstep">
               <span className="dstep__n mono">2</span>
               <p>
-                En <Link to="/settings">Ajustes</Link> elegís <strong>Concesionaria</strong>
-                como tipo de vendedor.
-                Ahí mismo pasás de 5 a 25 publicaciones activas.
+                Si ya tenías una cuenta de particular no hace falta crear otra: el mismo
+                cambio está en <Link to="/settings">Ajustes</Link>, y pasás de 5 a 25 en el
+                acto.
               </p>
             </li>
             <li className="dstep">
