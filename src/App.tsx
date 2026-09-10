@@ -21,6 +21,7 @@ const Compare = lazy(() => import('./pages/Compare').then((m) => ({ default: m.C
 const Dealers = lazy(() => import('./pages/Dealers').then((m) => ({ default: m.Dealers })))
 const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default: m.Favorites })))
 const Garage = lazy(() => import('./pages/Garage').then((m) => ({ default: m.Garage })))
+const Help = lazy(() => import('./pages/Help').then((m) => ({ default: m.Help })))
 const Levels = lazy(() => import('./pages/Levels').then((m) => ({ default: m.Levels })))
 const Privacy = lazy(() => import('./pages/Privacy').then((m) => ({ default: m.Privacy })))
 const Terms = lazy(() => import('./pages/Terms').then((m) => ({ default: m.Terms })))
@@ -55,7 +56,6 @@ export default function App() {
                 {/* La comparación vive en la query: `?ids=slug-a,slug-b`. Así
                     mandarle a alguien "mirá estos dos" es copiar el link. */}
                 <Route path="compare" element={<Compare />} />
-                <Route path="dashboard/*" element={<Placeholder title="Dashboard" phase="Fase 3" />} />
                 <Route path="login" element={<Login />} />
 
                 {/* Explica los niveles y no exige sesión: es la pantalla a la
@@ -71,6 +71,7 @@ export default function App() {
                 {/* Los legales no exigen sesion, y menos que ninguna otra
                     pantalla: el login pide aceptarlos antes de que exista la
                     cuenta. */}
+                <Route path="help" element={<Help />} />
                 <Route path="terms" element={<Terms />} />
                 <Route path="privacy" element={<Privacy />} />
 

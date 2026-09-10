@@ -61,7 +61,7 @@ export function Privacy() {
         <ul>
           <li>Tu foto de perfil.</li>
           <li>Los autos de tu garage, con sus fotos y sus notas.</li>
-          <li>Tus favoritos y tus búsquedas guardadas.</li>
+          <li>Tus favoritos, si tenés cuenta. Sin cuenta viven en tu navegador y no llegan hasta nosotros.</li>
           <li>Los reportes que hagas sobre un aviso.</li>
         </ul>
         <p>
@@ -88,8 +88,8 @@ export function Privacy() {
           <li>Desde cuándo tenés cuenta, y si estás verificada.</li>
         </ul>
         <p>
-          No son públicos: tu mail, tu contraseña, tus favoritos, tus búsquedas guardadas,
-          ni los reportes que hayas hecho. Un reporte lo ve quien lo hizo y quien modera.
+          No son públicos: tu mail, tu contraseña, tus favoritos, ni los reportes que hayas
+          hecho. Un reporte lo ve quien lo hizo y quien modera.
         </p>
       </LegalSection>
 

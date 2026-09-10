@@ -694,3 +694,9 @@
     min-height: 220px;
   }
 }
+
+/* La salida de la FAQ de la home hacia la pantalla de ayuda completa. */
+.faq__more {
+  margin-top: var(--sp-5);
+  font-size: var(--fs-sm);
+}

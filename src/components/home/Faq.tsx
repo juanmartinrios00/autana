@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './HomeSections.css'
 
 const questions = [
@@ -46,6 +47,12 @@ export function Faq() {
           </details>
         ))}
       </div>
+
+      {/* Estas seis son las que más se preguntan; el resto vive en Ayuda. Sin
+          esta salida, la home queda como el único lugar donde hay respuestas. */}
+      <p className="faq__more">
+        <Link to="/help">Ver todas las preguntas</Link>
+      </p>
     </section>
   )
 }

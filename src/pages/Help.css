@@ -1,0 +1,137 @@
+/* Ayuda. */
+
+.help__head {
+  padding-block: var(--sp-8);
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.help__title {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-h2);
+}
+
+.help__lead {
+  max-width: 56ch;
+  margin-top: var(--sp-4);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.help__body {
+  padding-block: var(--sp-7) var(--sp-9);
+}
+
+/* El índice. Se pega arriba al scrollear porque en una pantalla de preguntas
+   largas, perder de vista los temas obliga a volver al principio para cambiar
+   de sección. */
+.help__index {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding-block: var(--sp-3);
+  background: var(--canvas);
+}
+
+.help__index-link {
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.help__index-link:hover {
+  background: var(--surface-3);
+}
+
+.help__topic {
+  margin-top: var(--sp-7);
+  /* El índice tapa el título al saltar al ancla si no se reserva el alto. */
+  scroll-margin-top: var(--sp-9);
+}
+
+.help__topic-title {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--fs-h3);
+}
+
+.help__list {
+  max-width: 72ch;
+  border-top: 1px solid var(--line);
+}
+
+/* Van cerradas: la pantalla se lee primero como una lista de preguntas, y sólo
+   se abre la que a uno le pasa. Abiertas serían cinco pantallas de texto. */
+.help__item {
+  border-bottom: 1px solid var(--line);
+}
+
+.help__q {
+  padding: var(--sp-4) var(--sp-6) var(--sp-4) 0;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+}
+
+.help__q::-webkit-details-marker {
+  display: none;
+}
+
+/* La cruz que gira. Es un signo más que al abrir se vuelve un menos: no hace
+   falta cargar un ícono para eso. */
+.help__q::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: var(--sp-2);
+  width: 12px;
+  height: 2px;
+  background: var(--ink-3);
+  box-shadow: 0 0 0 0 transparent;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.help__q::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: var(--sp-2);
+  width: 12px;
+  height: 2px;
+  background: var(--ink-3);
+  transform: rotate(90deg);
+  transition: opacity var(--dur-fast) var(--ease);
+}
+
+.help__item[open] .help__q::before {
+  opacity: 0;
+}
+
+.help__a {
+  padding-bottom: var(--sp-4);
+  max-width: 68ch;
+  color: var(--ink-2);
+}
+
+.help__a p {
+  margin: 0;
+}
+
+.help__a ul {
+  margin: 0;
+  padding-left: var(--sp-5);
+}
+
+.help__a li {
+  margin-bottom: var(--sp-2);
+}
+
+.help__foot {
+  margin-top: var(--sp-8);
+  color: var(--ink-3);
+}
