@@ -6,17 +6,10 @@ import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
-import { Select } from '../components/ui/Select'
 import { Skeleton } from '../components/ui/Skeleton'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
-import {
-  getOwnWhatsapp,
-  getProfile,
-  updateSellerType,
-  uploadProfileAvatar,
-  type ProfileSummary,
-} from '../lib/api'
+import { getOwnWhatsapp, getProfile, uploadProfileAvatar, type ProfileSummary } from '../lib/api'
 import { listGarage, removeGarageEntry, saveGarageEntry, SLOTS, type GarageInput } from '../lib/garage'
 import { computeLevel } from '../lib/levels'
 import { locationLabel, sellerTypeLabels } from '../lib/format'
@@ -54,8 +47,6 @@ export function Profile() {
   const [reloads, setReloads] = useState(0)
   const [avatarBusy, setAvatarBusy] = useState(false)
   const [avatarError, setAvatarError] = useState('')
-  const [typeBusy, setTypeBusy] = useState(false)
-  const [typeError, setTypeError] = useState('')
   /* El numero no viaja con el perfil desde la migracion 008: se pide aparte y
      solo lo devuelve para uno mismo. Alimenta el logro de perfil completo. */
   const [ownWhatsapp, setOwnWhatsapp] = useState<string | null>(null)
@@ -147,27 +138,6 @@ export function Profile() {
     }
   }
 
-
-  /* El tipo de vendedor es lo unico del perfil que no se completa publicando:
-     `/sell` guarda WhatsApp, ciudad y provincia, pero nunca toca esto. Sin este
-     control nadie podia declararse concesionaria, y por eso el slider de la
-     home y el filtro por concesionaria estaban vacios desde siempre. */
-  async function handleType(value: string) {
-    if (!showing || value === showing.sellerType) return
-
-    setTypeBusy(true)
-    setTypeError('')
-    try {
-      /* Solo el tipo. Antes esto reenviaba el perfil entero, y desde que el
-         numero no se puede leer eso habria guardado un WhatsApp vacio. */
-      await updateSellerType(userId, value as ProfileSummary['sellerType'])
-      setReloads((count) => count + 1)
-    } catch {
-      setTypeError('No pudimos guardar el cambio. Probá de nuevo.')
-    } finally {
-      setTypeBusy(false)
-    }
-  }
 
   if (status === 'notfound') {
     return (
@@ -299,36 +269,6 @@ export function Profile() {
             </span>
           </Link>
         )}
-
-        <section className="profile__section">
-          <header className="profile__section-head">
-            <div>
-              <span className="over">Cómo vendés</span>
-              <h2 className="profile__section-title">Tipo de vendedor</h2>
-              <p className="profile__section-note">
-                Aparece en cada uno de tus avisos y define el tope de publicaciones
-                activas: 5 para particulares, 25 para concesionarias.{' '}
-                <Link to="/dealers">Qué cambia si sos concesionaria</Link>.
-              </p>
-            </div>
-          </header>
-
-          <div className="profile__seller-type">
-            <Select
-              label="Publico como"
-              hideLabel
-              options={[
-                { value: 'private', label: 'Particular' },
-                { value: 'dealer', label: 'Concesionaria' },
-              ]}
-              value={showing.sellerType}
-              disabled={typeBusy}
-              error={typeError || undefined}
-              onChange={(event) => void handleType(event.target.value)}
-            />
-            {typeBusy && <span className="profile__section-note">Guardando…</span>}
-          </div>
-        </section>
 
         <section className="profile__section">
           <header className="profile__section-head">

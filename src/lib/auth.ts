@@ -125,6 +125,35 @@ export async function signInWithMagicLink(email: string): Promise<void> {
   if (error) throw describe(error)
 }
 
+/**
+ * Cambia la contraseña.
+ *
+ * Pide la actual y la verifica de verdad, iniciando sesión con ella antes de
+ * escribir la nueva. Supabase no la exige por su cuenta: `updateUser` acepta
+ * una contraseña nueva con sólo tener sesión abierta. Sin este paso, cualquiera
+ * que agarre un teléfono desbloqueado con la sesión iniciada deja al dueño
+ * afuera de su propia cuenta en dos toques.
+ *
+ * La cuenta lateral que hay que saber: quien de verdad olvidó su contraseña
+ * entra con el link por mail y puede seguir usando el sitio, pero no puede
+ * cambiarla desde acá, porque no sabe la actual. Cerrar ese caso necesita el
+ * flujo de re-autenticación de Supabase, que manda un código al correo; queda
+ * pendiente.
+ */
+export async function changePassword(
+  email: string,
+  current: string,
+  next: string,
+): Promise<void> {
+  const client = requireSupabase()
+
+  const { error: wrong } = await client.auth.signInWithPassword({ email, password: current })
+  if (wrong) throw new Error('La contraseña actual no es correcta.')
+
+  const { error } = await client.auth.updateUser({ password: next })
+  if (error) throw describe(error)
+}
+
 export async function signOut(): Promise<void> {
   if (!supabase) return
   await supabase.auth.signOut()

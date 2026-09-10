@@ -104,6 +104,10 @@ export function AccountMenu({ user, onSignOut }: AccountMenuProps) {
             <Icon name="car" size={16} />
             Mi garage
           </Link>
+          <Link to="/settings" className="account__item" role="menuitem" onClick={close}>
+            <Icon name="check" size={16} />
+            Ajustes
+          </Link>
 
           <button
             type="button"

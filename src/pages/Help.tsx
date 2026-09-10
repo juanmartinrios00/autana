@@ -225,12 +225,34 @@ const TOPICS: Topic[] = [
         ),
       },
       {
+        q: '¿Cómo cambio mi nombre, mi WhatsApp o mi ubicación?',
+        a: (
+          <p>
+            En <Link to="/settings">Ajustes</Link>, desde el menú de tu cuenta. Ahí también
+            elegís si publicás como particular o como concesionaria. Antes esos datos sólo
+            se cargaban al publicar un aviso; ya no.
+          </p>
+        ),
+      },
+      {
+        q: '¿Cómo cambio mi contraseña?',
+        a: (
+          <p>
+            En <Link to="/settings">Ajustes</Link>. Te vamos a pedir la actual: sin eso,
+            cualquiera que agarre tu teléfono desbloqueado con la sesión abierta podría
+            dejarte afuera de tu propia cuenta.
+          </p>
+        ),
+      },
+      {
         q: 'Me olvidé la contraseña',
         a: (
           <p>
             En la pantalla de ingreso, abajo, está{' '}
             <strong>Entrar con un link por mail</strong>. Te mandamos un link, lo abrís desde
             el mismo dispositivo y entrás sin contraseña. Es la forma de recuperar el acceso.
+            Eso sí: entrando así vas a poder usar el sitio, pero todavía no cambiar la
+            contraseña, porque para eso hace falta saber la actual.
           </p>
         ),
       },
@@ -239,8 +261,9 @@ const TOPICS: Topic[] = [
         a: (
           <p>
             Tocando tu foto arriba a la derecha se abre el menú de tu cuenta, con tus
-            publicaciones, tu garage y el botón de cerrar sesión. La foto se cambia desde el
-            ícono de cámara en <Link to="/profile">tu perfil</Link>.
+            publicaciones, tu garage, tus ajustes y el botón de cerrar sesión. La foto se
+            cambia desde el ícono de cámara en <Link to="/profile">tu perfil</Link>, y el
+            nombre, el WhatsApp y la ubicación desde <Link to="/settings">Ajustes</Link>.
           </p>
         ),
       },

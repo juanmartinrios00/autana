@@ -28,6 +28,7 @@ const Terms = lazy(() => import('./pages/Terms').then((m) => ({ default: m.Terms
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })))
 const MyListings = lazy(() => import('./pages/MyListings').then((m) => ({ default: m.MyListings })))
 const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.Profile })))
+const Settings = lazy(() => import('./pages/Settings').then((m) => ({ default: m.Settings })))
 const Sell = lazy(() => import('./pages/Sell').then((m) => ({ default: m.Sell })))
 const VehicleDetail = lazy(() =>
   import('./pages/VehicleDetail').then((m) => ({ default: m.VehicleDetail })),
@@ -86,6 +87,7 @@ export default function App() {
                   {/* Mismo formulario que publicar, pero arranca lleno. */}
                   <Route path="sell/:slug/edit" element={<Sell />} />
                   <Route path="my-listings" element={<MyListings />} />
+                  <Route path="settings" element={<Settings />} />
                 {/* Quién entra lo decide la base, no esta ruta: las políticas
                     de `reports` sólo devuelven datos a un admin, así que a
                     cualquier otro la pantalla le llega vacía. */}

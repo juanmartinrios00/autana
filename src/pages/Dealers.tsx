@@ -81,7 +81,7 @@ export function Dealers() {
 
           <div className="dealers__actions">
             {session ? (
-              <Link to="/profile">
+              <Link to="/settings">
                 <Button variant="yellow">Cambiar mi perfil a concesionaria</Button>
               </Link>
             ) : (
@@ -133,7 +133,8 @@ export function Dealers() {
             <li className="dstep">
               <span className="dstep__n mono">2</span>
               <p>
-                En tu perfil elegís <strong>Concesionaria</strong> como tipo de vendedor.
+                En <Link to="/settings">Ajustes</Link> elegís <strong>Concesionaria</strong>
+                como tipo de vendedor.
                 Ahí mismo pasás de 5 a 25 publicaciones activas.
               </p>
             </li>
@@ -158,8 +159,8 @@ export function Dealers() {
 
         <div className="dealers__cta">
           {session ? (
-            <Link to="/profile">
-              <Button variant="yellow">Ir a mi perfil</Button>
+            <Link to="/settings">
+              <Button variant="yellow">Ir a mis ajustes</Button>
             </Link>
           ) : (
             <Link to="/login">

@@ -115,6 +115,13 @@ export function Navbar({ atTop }: NavbarProps) {
                 >
                   Mi garage <Icon name="arrowRight" size={18} />
                 </Link>
+                <Link
+                  to="/settings"
+                  className="navbar__mobile-link"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Ajustes <Icon name="arrowRight" size={18} />
+                </Link>
                 {/* Mismo criterio que en el menú de escritorio: cerrar sesión
                     al final y marcado, no mezclado con la navegación. */}
                 <button

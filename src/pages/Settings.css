@@ -1,0 +1,82 @@
+/* Ajustes de la cuenta. */
+
+.settings__head {
+  padding-block: var(--sp-8);
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.settings__title {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-h2);
+}
+
+.settings__mail {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.settings__body {
+  display: grid;
+  gap: var(--sp-5);
+  max-width: 680px;
+  padding-block: var(--sp-7) var(--sp-9);
+}
+
+/* Cada bloque es una tarjeta y un formulario aparte: guardar los datos y
+   cambiar la contraseña son dos acciones con dos riesgos distintos, y un solo
+   botón para las dos invita a tocar la que no se quería tocar. */
+.settings__card {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border-radius: var(--r-xl);
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+}
+
+.settings__section-title {
+  margin: 0;
+  font-size: var(--fs-h3);
+}
+
+.settings__note {
+  margin: 0;
+  max-width: 60ch;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--ink-3);
+}
+
+.settings__hint {
+  margin: 0;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-body);
+  color: var(--ink-3);
+}
+
+.settings__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+
+.settings__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+
+.settings__ok {
+  font-size: var(--fs-sm);
+  color: var(--success);
+}
+
+@media (max-width: 599px) {
+  .settings__pair {
+    grid-template-columns: 1fr;
+  }
+}
