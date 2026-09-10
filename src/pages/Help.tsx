@@ -274,6 +274,19 @@ const TOPICS: Topic[] = [
         ),
       },
       {
+        q: '¿Cómo borro mi cuenta?',
+        a: (
+          <p>
+            En <Link to="/settings">Ajustes</Link>, abajo de todo. Te pedimos que escribas
+            tu mail para confirmar porque no tiene vuelta atrás: se borran en el momento tu
+            perfil, tus avisos con sus fotos, tu garage, tus favoritos y tus búsquedas
+            guardadas, sin período de gracia ni copia que podamos restaurar. Lo único que
+            queda son los reportes que hayas hecho sobre avisos de otros, y quedan sin tu
+            nombre.
+          </p>
+        ),
+      },
+      {
         q: '¿Dónde cambio mi foto o cierro sesión?',
         a: (
           <p>

@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
@@ -7,7 +7,7 @@ import { Skeleton } from '../components/ui/Skeleton'
 import { provinces } from '../data/makes'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
-import { getOwnWhatsapp, getProfile, updateProfile } from '../lib/api'
+import { deleteAccount, getOwnWhatsapp, getProfile, updateProfile } from '../lib/api'
 import { changePassword, MIN_PASSWORD } from '../lib/auth'
 import type { Seller } from '../types'
 import './Settings.css'
@@ -22,9 +22,13 @@ import './Settings.css'
  *
  * El tipo de vendedor se mudó acá desde el perfil por lo mismo: es un ajuste de
  * la cuenta, no una sección de una pantalla que además muestra el garage.
+ *
+ * Abajo de todo está el borrado de la cuenta. Va último y separado del resto: es
+ * lo único de esta pantalla que no tiene vuelta atrás.
  */
 export function Settings() {
-  const { session } = useAuth()
+  const { session, signOut } = useAuth()
+  const navigate = useNavigate()
   const userId = session?.user.id ?? ''
   const email = session?.user.email ?? ''
 
@@ -47,6 +51,11 @@ export function Settings() {
   const [passBusy, setPassBusy] = useState(false)
   const [passError, setPassError] = useState('')
   const [passSaved, setPassSaved] = useState(false)
+
+  const [killOpen, setKillOpen] = useState(false)
+  const [killConfirm, setKillConfirm] = useState('')
+  const [killBusy, setKillBusy] = useState(false)
+  const [killError, setKillError] = useState('')
 
   useEffect(() => {
     if (!userId) return
@@ -132,6 +141,29 @@ export function Settings() {
       setPassError(cause instanceof Error ? cause.message : 'No pudimos cambiarla.')
     } finally {
       setPassBusy(false)
+    }
+  }
+
+  async function removeAccount() {
+    /* Escribir el mail, no un tilde ni un "¿estás seguro?". Es lo único que
+       obliga a leer qué cuenta se está borrando: un botón de confirmar se
+       aprieta con el mismo impulso que el anterior. */
+    if (killConfirm.trim().toLowerCase() !== email.toLowerCase()) {
+      setKillError('Escribí tu mail tal cual para confirmar.')
+      return
+    }
+
+    setKillBusy(true)
+    setKillError('')
+    try {
+      await deleteAccount(userId)
+      /* La cuenta ya no existe, así que el token no vale y cerrar sesión puede
+         fallar. No importa: lo que hace falta es limpiar la sesión local. */
+      await signOut().catch(() => {})
+      void navigate('/', { replace: true })
+    } catch {
+      setKillError('No pudimos borrarla. Probá de nuevo; si sigue fallando, avisanos.')
+      setKillBusy(false)
     }
   }
 
@@ -257,6 +289,58 @@ export function Settings() {
             mandamos un link al correo y desde ahí la cambiás sin la anterior.
           </p>
         </form>
+
+        {/* El borrado. Separado y último porque es lo único irreversible de la
+            pantalla, y cerrado por defecto para que no esté a un resbalón de
+            distancia mientras alguien corrige su ciudad. */}
+        <section className="settings__card settings__card--danger">
+          <h2 className="settings__section-title">Borrar tu cuenta</h2>
+          <p className="settings__note">
+            Se borra en el momento y no se puede deshacer: tus avisos y sus fotos, tu
+            garage, tus favoritos, tus búsquedas guardadas y tu perfil. No hay período de
+            gracia ni copia que podamos restaurar después.
+          </p>
+          <p className="settings__note">
+            Lo único que queda son los reportes que hayas hecho sobre avisos de otros, y
+            quedan sin tu nombre. Si se borraran, alguien podría limpiar el historial de
+            moderación dándose de baja.
+          </p>
+
+          {!killOpen ? (
+            <div className="settings__actions">
+              <Button variant="outline" onClick={() => setKillOpen(true)}>
+                Quiero borrar mi cuenta
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Input
+                label={`Escribí ${email} para confirmar`}
+                autoComplete="off"
+                placeholder={email}
+                value={killConfirm}
+                error={killError || undefined}
+                onChange={(e) => setKillConfirm(e.target.value)}
+              />
+              <div className="settings__actions">
+                <Button variant="danger" disabled={killBusy} onClick={() => void removeAccount()}>
+                  {killBusy ? 'Borrando…' : 'Borrar mi cuenta para siempre'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  disabled={killBusy}
+                  onClick={() => {
+                    setKillOpen(false)
+                    setKillConfirm('')
+                    setKillError('')
+                  }}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </>
+          )}
+        </section>
       </div>
     </>
   )

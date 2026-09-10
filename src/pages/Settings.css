@@ -75,6 +75,18 @@
   color: var(--success);
 }
 
+/* La zona de borrado. Se distingue del resto de las tarjetas con un borde, no
+   con un fondo rojo: el fondo grita antes de que alguien haya hecho nada, y a
+   los tres días deja de verse. El borde alcanza para que no se confunda con un
+   formulario más. */
+.settings__card--danger {
+  border: 1px solid var(--danger);
+}
+
+.settings__card--danger .settings__section-title {
+  color: var(--danger);
+}
+
 @media (max-width: 599px) {
   .settings__pair {
     grid-template-columns: 1fr;

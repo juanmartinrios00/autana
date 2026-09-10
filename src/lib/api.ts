@@ -1298,3 +1298,67 @@ export async function getProfileStats(userId: string): Promise<{
     garageCars: row?.garage_cars ?? 0,
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Borrar la cuenta
+--------------------------------------------------------------------------- */
+
+/** Los dos buckets donde un usuario deja archivos, los dos bajo `<userId>/`. */
+const OWN_BUCKETS = ['listing-photos', 'garage-photos'] as const
+
+/**
+ * Vacía una carpeta de Storage, y las de adentro.
+ *
+ * `list` no es recursivo y las fotos de los avisos están dos niveles abajo
+ * (`<userId>/<listingId>/…`, y el avatar en `<userId>/avatar/…`), así que hay
+ * que bajar. Las entradas que son carpeta vienen con `id` en null: es lo único
+ * que las distingue de un archivo.
+ *
+ * Se listan los archivos en vez de calcular las rutas desde la base a propósito:
+ * así también se lleva lo que quedó colgado de una subida que se cortó a la
+ * mitad y nunca llegó a `listing_images`.
+ */
+async function emptyFolder(bucket: string, prefix: string): Promise<void> {
+  const client = requireSupabase()
+  const { data, error } = await client.storage.from(bucket).list(prefix, { limit: 1000 })
+  if (error || !data) return
+
+  const files: string[] = []
+  for (const entry of data) {
+    const path = `${prefix}/${entry.name}`
+    if (entry.id === null) await emptyFolder(bucket, path)
+    else files.push(path)
+  }
+
+  if (files.length > 0) {
+    const { error: removeError } = await client.storage.from(bucket).remove(files)
+    if (removeError) throw removeError
+  }
+}
+
+/**
+ * Borra la cuenta y todo lo que cuelga de ella.
+ *
+ * El orden importa. Las fotos van primero porque son lo único que la cascada de
+ * la base no alcanza: viven en Storage, y las políticas que dejan borrarlas
+ * miran `auth.uid()`. Una vez que la cuenta no existe, no hay sesión, no hay
+ * `auth.uid()` y esos archivos quedan huérfanos para siempre — nadie tiene
+ * permiso de tocarlos.
+ *
+ * Si el borrado de fotos falla, esto corta antes de llamar a la base: es
+ * preferible una cuenta que sigue en pie y se puede reintentar, a una cuenta
+ * borrada con las fotos colgadas.
+ *
+ * Después va `delete_my_account` (migración 010), que borra la fila de
+ * `auth.users` y arrastra el resto por foreign key.
+ */
+export async function deleteAccount(userId: string): Promise<void> {
+  const client = requireSupabase()
+
+  for (const bucket of OWN_BUCKETS) {
+    await emptyFolder(bucket, userId)
+  }
+
+  const { error } = await client.rpc('delete_my_account')
+  if (error) throw error
+}

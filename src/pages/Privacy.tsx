@@ -148,19 +148,34 @@ export function Privacy() {
           Podés borrar cualquier aviso y cualquier auto del garage desde tu cuenta. Cuando
           borrás un aviso, se borran también sus fotos.
         </p>
-        <span className="legal__todo">
-          Pendiente de definir y de revisión legal: cómo se pide la baja completa de la
-          cuenta, cuánto tiempo se conservan los datos después, y qué pasa con los reportes
-          que hiciste sobre otros avisos.
-        </span>
+        <p>
+          Y podés borrar la cuenta entera desde <Link to="/settings">Ajustes</Link>, abajo
+          de todo. Se borra en el momento: tu perfil, tus avisos y sus fotos, tu garage,
+          tus favoritos y tus búsquedas guardadas. No hay período de gracia ni copia que
+          podamos restaurar después — si te arrepentís al día siguiente, no hay nada que
+          traer de vuelta.
+        </p>
+        <p>
+          Lo único que sobrevive son los reportes que hayas hecho sobre avisos de otras
+          personas, y quedan sin tu nombre: el reporte sigue, quién lo hizo se borra. Si se
+          borraran del todo, cualquiera podría limpiar el historial de moderación de sus
+          reportes dándose de baja.
+        </p>
       </LegalSection>
 
       <LegalSection n={7} title="Tus derechos">
+        <p>
+          En Argentina rige la Ley 25.326 de Protección de Datos Personales, que te da
+          derecho a acceder a tus datos, corregirlos y pedir que se supriman. Los tres se
+          ejercen desde la propia aplicación, sin pedirle permiso a nadie: ver lo tuyo en{' '}
+          <Link to="/profile">tu perfil</Link>, corregirlo en{' '}
+          <Link to="/settings">Ajustes</Link>, y suprimirlo con el borrado de cuenta de esa
+          misma pantalla.
+        </p>
         <span className="legal__todo">
-          Pendiente de revisión de un abogado. En Argentina rige la Ley 25.326 de Protección
-          de Datos Personales, que da derecho a acceder a tus datos, corregirlos y pedir que
-          se supriman. Falta definir el mail al que se reclama y en qué plazo se responde — y
-          que un profesional revise que este documento cumpla lo que corresponde.
+          Pendiente de definir y de revisión legal: el mail al que reclamar cuando lo de
+          arriba no alcance, y en qué plazo se responde. También que un profesional revise
+          que este documento cumpla lo que corresponde.
         </span>
       </LegalSection>
 
