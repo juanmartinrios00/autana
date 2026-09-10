@@ -11,7 +11,9 @@
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.112.4",
+    "@supabase/auth-js": "2.112.4",
+    "@supabase/postgrest-js": "2.112.4",
+    "@supabase/storage-js": "2.112.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.3"

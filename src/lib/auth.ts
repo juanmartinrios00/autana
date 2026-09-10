@@ -1,4 +1,4 @@
-import type { AuthError, Session as SupabaseSession } from '@supabase/supabase-js'
+import type { AuthError, Session as SupabaseSession } from '@supabase/auth-js'
 import { requireSupabase, supabase } from './supabase'
 import type { User } from '../types'
 
