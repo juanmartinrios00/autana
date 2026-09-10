@@ -8,7 +8,7 @@ import { DealerSlider } from '../components/home/DealerSlider'
 import { Faq } from '../components/home/Faq'
 import { HowItWorks } from '../components/home/HowItWorks'
 import { PopularModels } from '../components/home/PopularModels'
-import { ProblemSection } from '../components/home/ProblemSection'
+import { MarketplaceProof } from '../components/home/MarketplaceProof'
 import { VehicleSlider } from '../components/home/VehicleSlider'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -26,7 +26,6 @@ import {
   type MarketplaceStats,
 } from '../lib/api'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
-import { formatCount } from '../lib/format'
 import type { Seller, Vehicle } from '../types'
 import './Home.css'
 
@@ -53,7 +52,6 @@ export function Home() {
 
   const [recent, setRecent] = useState<Vehicle[]>([])
   const [mostSeen, setMostSeen] = useState<Vehicle[]>([])
-  const [makeCounts, setMakeCounts] = useState<Record<string, number>>({})
   const [bodyCounts, setBodyCounts] = useState<Record<string, number>>({})
   const [dealers, setDealers] = useState<Seller[]>([])
   const [stats, setStats] = useState<MarketplaceStats | null>(null)
@@ -65,16 +63,14 @@ export function Home() {
     void Promise.allSettled([
       listRecentVehicles(8),
       listPopularVehicles(8),
-      countsBy('make'),
       countsBy('body_type'),
       getStats(),
       listDealers(8),
-    ]).then(([recentResult, popularResult, makesResult, bodiesResult, statsResult, dealersResult]) => {
+    ]).then(([recentResult, popularResult, bodiesResult, statsResult, dealersResult]) => {
       if (!current) return
 
       if (recentResult.status === 'fulfilled') setRecent(recentResult.value)
       if (popularResult.status === 'fulfilled') setMostSeen(popularResult.value)
-      if (makesResult.status === 'fulfilled') setMakeCounts(makesResult.value)
       if (bodiesResult.status === 'fulfilled') setBodyCounts(bodiesResult.value)
       if (statsResult.status === 'fulfilled') setStats(statsResult.value)
       if (dealersResult.status === 'fulfilled') setDealers(dealersResult.value)
@@ -163,36 +159,13 @@ export function Home() {
           </div>
         </Card>
 
-        {/* Los números salen de la base. Si hay tres autos, dice tres. */}
-        {stats && stats.listings > 0 && (
-          <dl className="stats">
-            <div className="stats__item">
-              <dd className="stats__value mono">{formatCount(stats.listings)}</dd>
-              <dt className="stats__label">
-                {stats.listings === 1 ? 'auto publicado' : 'autos publicados'}
-              </dt>
-            </div>
-            <span className="stats__divider" aria-hidden="true" />
-            <div className="stats__item">
-              <dd className="stats__value mono">{formatCount(stats.makes)}</dd>
-              <dt className="stats__label">{stats.makes === 1 ? 'marca' : 'marcas'}</dt>
-            </div>
-            <span className="stats__divider" aria-hidden="true" />
-            <div className="stats__item">
-              <dd className="stats__value mono">{formatCount(stats.provinces)}</dd>
-              <dt className="stats__label">
-                {stats.provinces === 1 ? 'provincia' : 'provincias'}
-              </dt>
-            </div>
-          </dl>
-        )}
         </div>
       </section>
 
-      <ProblemSection />
-
       <div className="page home__sections">
-        <BrandSlider counts={makeCounts} />
+        <BrandSlider />
+
+        {stats && stats.listings > 0 && <MarketplaceProof stats={stats} />}
 
         <VehicleSlider
           eyebrow="Lo último"

@@ -19,6 +19,7 @@ const paths = {
   check: <path d="m3.5 12.5 5.5 5.5L20.5 6.5" />,
   close: <><path d="M4.5 4.5 19.5 19.5" /><path d="M19.5 4.5 4.5 19.5" /></>,
   menu: <><path d="M3 6.5h18" /><path d="M3 12h18" /><path d="M3 17.5h18" /></>,
+  user: <><circle cx="12" cy="8" r="4" /><path d="M4.5 21c.5-4.1 3.3-6.5 7.5-6.5s7 2.4 7.5 6.5" /></>,
   plus: <><path d="M12 3.5v17" /><path d="M3.5 12h17" /></>,
   mapPin: <><path d="M12 21.5 5.5 13.2a7.2 7.2 0 1 1 13 0z" /><path d="M9.5 9.5h5v5h-5z" /></>,
   message: <><path d="M3.5 4.5h17v12h-11l-6 4.5z" /></>,

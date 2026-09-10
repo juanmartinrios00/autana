@@ -21,6 +21,7 @@
 
 .slider__title {
   font-size: var(--fs-h2);
+  max-width: 18ch;
 }
 
 .slider__tools {
@@ -32,23 +33,40 @@
 /* "Ver todos" es una pastilla discreta: se lee como acción sin robarle
    peso al título de la sección. */
 .slider__action {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 7px;
   height: 38px;
-  padding-inline: 16px;
-  border-radius: var(--r-pill);
-  font-size: 0.91rem;
-  font-weight: 600;
+  padding-inline: 0;
+  font-size: var(--fs-over);
+  font-weight: 500;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
   white-space: nowrap;
-  transition:
-    gap var(--dur-fast) var(--ease),
-    background var(--dur-fast) var(--ease);
+  transition: gap var(--dur-fast) var(--ease);
+}
+
+.slider__action::after {
+  content: '';
+  position: absolute;
+  right: 22px;
+  bottom: 5px;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-med) var(--ease);
 }
 
 .slider__action:hover {
   gap: 11px;
-  background: var(--surface-2);
+}
+
+.slider__action:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .slider__arrows {
@@ -61,20 +79,20 @@
   place-items: center;
   width: 40px;
   height: 40px;
-  border: 0;
-  border-radius: var(--r-pill);
-  background: var(--canvas);
-  box-shadow: var(--sh-flat);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--accent);
   color: var(--ink);
   transition:
     background var(--dur-fast) var(--ease),
-    box-shadow var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
     opacity var(--dur-fast) var(--ease);
 }
 
 .slider__arrow:hover:not(:disabled) {
-  background: var(--surface);
-  box-shadow: var(--sh-sm);
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--accent);
 }
 
 .slider__arrow:disabled {
@@ -95,7 +113,7 @@
   scroll-padding-inline: var(--page-pad);
   /* Las cards levantan en hover y arrastran sombra: sin este respiro, el
      alto se recorta contra el borde del riel con scroll. */
-  padding-block: var(--sp-2) var(--sp-4);
+  padding-block: var(--sp-1) var(--sp-3);
   margin-inline: calc(var(--page-pad) * -1);
   padding-inline: var(--page-pad);
   scrollbar-width: none;

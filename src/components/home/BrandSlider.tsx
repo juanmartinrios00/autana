@@ -23,23 +23,16 @@ function logoFor(slug: string): string | null {
   return match ? match[1] : null
 }
 
-interface BrandSliderProps {
-  /** Cuántas publicaciones activas hay por marca. */
-  counts: Record<string, number>
-}
-
-export function BrandSlider({ counts }: BrandSliderProps) {
+export function BrandSlider() {
   return (
     <Slider
       eyebrow="Buscá por marca"
       title="Todas las marcas"
       action={{ label: 'Ver todos los autos', to: '/cars' }}
-      itemWidth="112px"
+      itemWidth="128px"
     >
       {brands.map((brand) => {
         const logo = logoFor(brand.slug)
-        const count = counts[brand.name] ?? 0
-
         return (
           <Link
             key={brand.slug}
@@ -56,9 +49,6 @@ export function BrandSlider({ counts }: BrandSliderProps) {
               )}
             </span>
             <span className="brand__name">{brand.name}</span>
-            <span className="brand__count mono">
-              {count > 0 ? `${count} ${count === 1 ? 'auto' : 'autos'}` : 'Sin avisos'}
-            </span>
           </Link>
         )
       })}

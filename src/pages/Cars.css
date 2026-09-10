@@ -15,7 +15,8 @@
   max-height: calc(100dvh - var(--sticky-top) - var(--sp-7));
   overflow-y: auto;
   padding: var(--sp-5);
-  border-radius: var(--r-xl);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
   background: var(--surface);
 }
 
@@ -61,7 +62,8 @@
   gap: var(--sp-1);
   height: 42px;
   padding: 4px;
-  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
   background: var(--surface-2);
 }
 
@@ -70,7 +72,7 @@
   place-items: center;
   width: 40px;
   border: 0;
-  border-radius: var(--r-pill);
+  border-radius: var(--r-xs);
   background: transparent;
   color: var(--ink-3);
   transition:
@@ -118,10 +120,9 @@
   place-items: center;
   width: 36px;
   height: 36px;
-  border: 0;
-  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
   background: var(--canvas);
-  box-shadow: var(--sh-flat);
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--ink-2);
@@ -138,7 +139,7 @@
 .pagination__page.is-on {
   background: var(--ink);
   color: var(--ink-inverse);
-  box-shadow: none;
+  border-color: var(--ink);
 }
 
 .pagination__info {

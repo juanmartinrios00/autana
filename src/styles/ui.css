@@ -9,74 +9,70 @@
    El hover no desplaza el bloque, lo levanta con sombra.                   */
 
 .btn {
+  --button-cut: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 48px;
-  padding-inline: 26px;
-  border: 0;
-  border-radius: var(--r-pill);
-  font-size: 0.94rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  height: 44px;
+  padding-inline: 20px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  clip-path: polygon(
+    var(--button-cut) 0,
+    100% 0,
+    100% calc(100% - var(--button-cut)),
+    calc(100% - var(--button-cut)) 100%,
+    0 100%,
+    0 var(--button-cut)
+  );
+  font-family: var(--font-ui);
+  font-size: var(--fs-over);
+  font-weight: 500;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
   white-space: nowrap;
   transition:
-    transform var(--dur-med) var(--ease),
-    box-shadow var(--dur-med) var(--ease),
     background var(--dur-med) var(--ease),
+    border-color var(--dur-med) var(--ease),
     color var(--dur-med) var(--ease);
 }
 
 .btn:active:not(:disabled) {
-  transform: translateY(1px);
+  opacity: 0.78;
 }
 
 .btn--yellow {
   background: var(--accent);
   color: var(--ink);
-  box-shadow:
-    0 1px 2px rgba(11, 11, 12, 0.06),
-    0 8px 18px -10px rgba(176, 143, 0, 0.7);
 }
 .btn--yellow:hover:not(:disabled) {
   background: var(--accent-hover);
-  box-shadow:
-    0 2px 4px rgba(11, 11, 12, 0.08),
-    0 14px 26px -12px rgba(176, 143, 0, 0.85);
 }
 
 .btn--dark {
   background: var(--ink);
   color: var(--ink-inverse);
-  box-shadow:
-    0 1px 2px rgba(11, 11, 12, 0.1),
-    0 8px 18px -10px rgba(11, 11, 12, 0.5);
 }
 .btn--dark:hover:not(:disabled) {
   background: #26262a;
-  box-shadow:
-    0 2px 4px rgba(11, 11, 12, 0.12),
-    0 14px 26px -12px rgba(11, 11, 12, 0.6);
 }
 
 .btn--outline {
   background: var(--canvas);
   color: var(--ink);
-  box-shadow:
-    inset 0 0 0 1px var(--line-strong),
-    0 1px 2px rgba(11, 11, 12, 0.04);
+  border-color: var(--line-strong);
+  clip-path: none;
 }
 .btn--outline:hover:not(:disabled) {
   background: var(--surface);
-  box-shadow:
-    inset 0 0 0 1px var(--ink-4),
-    0 2px 6px rgba(11, 11, 12, 0.06);
+  border-color: var(--ink-4);
 }
 
 .btn--ghost {
   background: transparent;
   color: var(--ink-2);
+  clip-path: none;
 }
 .btn--ghost:hover:not(:disabled) {
   color: var(--ink);
@@ -86,7 +82,8 @@
 .btn--danger {
   background: var(--canvas);
   color: var(--danger);
-  box-shadow: inset 0 0 0 1px #f0c6c4;
+  border-color: #f0c6c4;
+  clip-path: none;
 }
 .btn--danger:hover:not(:disabled) {
   background: var(--danger-bg);
@@ -94,15 +91,15 @@
 
 .btn--sm {
   height: 38px;
-  padding-inline: 18px;
+  padding-inline: 16px;
   gap: 6px;
-  font-size: 0.86rem;
+  font-size: var(--fs-over);
 }
 
 .btn--lg {
-  height: 56px;
-  padding-inline: 34px;
-  font-size: 1.02rem;
+  height: 48px;
+  padding-inline: 22px;
+  font-size: var(--fs-over);
 }
 
 .btn--block {
@@ -112,8 +109,7 @@
 .btn:disabled {
   background: var(--surface-2);
   color: var(--ink-4);
-  box-shadow: none;
-  transform: none;
+  border-color: transparent;
   cursor: not-allowed;
 }
 
@@ -138,42 +134,37 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--r-pill);
+  border-radius: 0;
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
   background: var(--accent);
   color: var(--ink);
-  box-shadow:
-    0 1px 2px rgba(11, 11, 12, 0.06),
-    0 8px 18px -10px rgba(176, 143, 0, 0.7);
-  transition:
-    background var(--dur-med) var(--ease),
-    box-shadow var(--dur-med) var(--ease);
+  transition: background var(--dur-med) var(--ease);
 }
 
 .cta__label {
-  height: 56px;
-  padding-inline: 32px;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  height: 48px;
+  padding-inline: 22px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-over);
+  font-weight: 500;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
 }
 
 .cta__arrow {
-  width: 56px;
+  width: 48px;
   flex-shrink: 0;
 }
 
 .cta:hover .cta__label,
 .cta:hover .cta__arrow {
   background: var(--accent-hover);
-  box-shadow:
-    0 2px 4px rgba(11, 11, 12, 0.08),
-    0 14px 26px -12px rgba(176, 143, 0, 0.85);
 }
 
 .cta--sm .cta__label {
   height: 44px;
   padding-inline: 24px;
-  font-size: 0.9rem;
+  font-size: var(--fs-over);
 }
 .cta--sm .cta__arrow {
   width: 44px;
@@ -201,17 +192,18 @@
   width: 100%;
   height: 52px;
   padding-inline: 16px;
-  border: 0;
-  border-radius: var(--r-md);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
   background: var(--canvas);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
+  box-shadow: none;
   font-size: 0.94rem;
   color: var(--ink);
   transition: box-shadow var(--dur-med) var(--ease);
 }
 
 .field__control:hover:not(:disabled) {
-  box-shadow: inset 0 0 0 1px var(--ink-4);
+  border-color: var(--ink-4);
+  box-shadow: none;
 }
 
 .field__control::placeholder {
@@ -222,9 +214,9 @@
    la forma redondeada en lugar de dibujarle un marco encima. */
 .field__control:focus-visible {
   outline: 0;
+  border-color: var(--ink);
   box-shadow:
-    inset 0 0 0 1.5px var(--ink),
-    0 0 0 4px var(--accent-tint);
+    0 0 0 3px var(--accent-tint);
 }
 
 .field__control:disabled {
@@ -266,7 +258,7 @@
   gap: 6px;
   height: 28px;
   padding-inline: 12px;
-  border-radius: var(--r-pill);
+  border-radius: var(--r-xs);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: -0.005em;
@@ -311,9 +303,10 @@
 /* --- Card --------------------------------------------------------------- */
 
 .card {
+  border: 1px solid var(--line);
   border-radius: var(--r-xl);
   background: var(--canvas);
-  box-shadow: var(--sh-sm);
+  box-shadow: none;
 }
 
 .card--pad {
@@ -331,8 +324,9 @@
 }
 
 .card--interactive:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--sh-hover);
+  transform: none;
+  border-color: var(--ink);
+  box-shadow: none;
 }
 
 /* --- Skeleton ----------------------------------------------------------- */
@@ -355,9 +349,9 @@
 
 /* Input con icono: el foco vive en el contenedor, no en el <input> desnudo. */
 .field__control--group:focus-within {
+  border-color: var(--ink);
   box-shadow:
-    inset 0 0 0 1.5px var(--ink),
-    0 0 0 4px var(--accent-tint);
+    0 0 0 3px var(--accent-tint);
 }
 
 .field__inner {
@@ -403,13 +397,13 @@
 
   .cta__label {
     flex-grow: 1;
-    height: 50px;
+    height: 46px;
     padding-inline: 20px;
-    font-size: 0.92rem;
+    font-size: var(--fs-over);
   }
 
   .cta__arrow {
-    width: 50px;
+    width: 46px;
   }
 }
 

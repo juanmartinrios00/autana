@@ -4,33 +4,41 @@
    Los neutros tienen temperatura calida deliberada; no son grises frios.
    ========================================================================== */
 
+@font-face {
+  font-family: 'FK Grotesk';
+  src: url('https://cdn.prod.website-files.com/68ed090d0998c3c224a59e7c/691500412e6f96ee08cbc277_FKGrotesk.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root {
   /* --- Superficies ---
      Cada plano tiene que distinguirse del anterior a simple vista. Un gris al
      1% del blanco no es un plano, es blanco: la seccion "tintada" no se lee
      como seccion y la pagina queda sin jerarquia. Estos valores son greige
      calido, asi que el conjunto sigue leyendose blanco. */
-  --canvas: #ffffff;
-  --surface: #f6f4ef;
-  --surface-2: #edeae1;
-  --surface-3: #e0dccf;
+  --canvas: #fbfbf9;
+  --surface: #f1f2ef;
+  --surface-2: #e7e9e5;
+  --surface-3: #d7dad5;
   /* Los contornos ya no son negros. Antes el caracter lo daba una hairline
      de 1px a tinta plena; ahora lo da la forma redondeada y la sombra que
      levanta el plano, asi que la linea baja a acompaniar en vez de gritar.
      `--line-strong` sigue siendo la mas marcada — bordes de campos, contornos
      de cards — pero es un neutro, no tinta. */
-  --line: #e7e4da;
-  --line-strong: #d6d2c5;
+  --line: #dce0da;
+  --line-strong: #c5cbc3;
   --line-ink: rgba(11, 11, 12, 0.14);
 
   /* --- Tinta --- */
-  --ink: #0b0b0c;
-  --ink-2: #3f4145;
+  --ink: #0a100c;
+  --ink-2: #353b37;
   /* Los dos grises de texto pasan 4.5:1 sobre blanco, surface y surface-2.
      Sobre surface-3 no llegan, asi que ese plano queda para fondos sin texto
      encima (media de las cards, rieles, separadores). */
-  --ink-3: #5c5e62;
-  --ink-4: #66686c;
+  --ink-3: #555d58;
+  --ink-4: #69716c;
   --ink-inverse: #ffffff;
 
   /* --- Accion. Nunca fondo de seccion, nunca color de texto. --- */
@@ -47,33 +55,31 @@
   --danger: #c4302b;
   --danger-bg: #fbebea;
 
-  /* --- Tipografia --- */
-  /* Archivo lleva los titulares y los numeros grandes: es mas ancha y mas
-     tecnica. Instrument Sans se queda en la UI y los formularios, que es
-     donde mejor se lee. */
-  --font-display: 'Archivo', 'Segoe UI', system-ui, sans-serif;
-  --font-ui: 'Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  /* La misma familia variable de Vooma, aplicada a contenido y producto. */
+  --font-display: 'FK Grotesk', Arial, sans-serif;
+  --font-ui: 'FK Grotesk', Arial, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --font-button: var(--font-ui);
 
   /* Los titulares pesan mas que antes y arrancan mas grandes: en una landing
      el titulo es la imagen principal mientras no haya foto. */
-  --fs-display: clamp(2.75rem, 1.5rem + 4.6vw, 5.25rem);
-  --fs-h1: clamp(2rem, 1.5rem + 2.1vw, 2.9rem);
-  --fs-h2: clamp(1.55rem, 1.25rem + 1.3vw, 2.05rem);
-  --fs-h3: 1.3rem;
+  --fs-display: clamp(2.5rem, 3.05vw + 1.76rem, 4.5rem);
+  --fs-h1: clamp(2.5rem, 3.05vw + 1.76rem, 4.5rem);
+  --fs-h2: clamp(2rem, 2.29vw + 1.44rem, 3.5rem);
+  --fs-h3: clamp(1.5rem, 1.52vw + 1.13rem, 2.5rem);
   --fs-body: 1rem;
   --fs-sm: 0.875rem;
   --fs-xs: 0.78rem;
   --fs-over: 0.72rem;
 
-  --lh-tight: 1.04;
-  --lh-body: 1.62;
-  --ls-display: -0.038em;
-  --ls-heading: -0.028em;
+  --lh-tight: 1.08;
+  --lh-body: 1.5;
+  --ls-display: -0.03em;
+  --ls-heading: -0.03em;
   --ls-over: 0.1em;
   --ls-nav: 0.12em;
 
-  --fw-display: 600;
+  --fw-display: 500;
 
   /* --- Espaciado, escala de 8 --- */
   --sp-1: 4px;
@@ -94,12 +100,12 @@
      chip no lleva el mismo radio que un panel de seccion, porque el radio se
      percibe en proporcion al bloque. `--r-pill` es para lo que de verdad es
      un circulo o una capsula. */
-  --r-xs: 8px;
-  --r-sm: 10px;
-  --r-md: 14px;
-  --r-lg: 18px;
-  --r-xl: 24px;
-  --r-2xl: 32px;
+  --r-xs: 2px;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 6px;
+  --r-xl: 8px;
+  --r-2xl: 10px;
   --r-pill: 999px;
 
   /* --- Elevacion ---
@@ -108,19 +114,11 @@
      despega. El hover profundiza la difusa en vez de desplazar el bloque.
      Van tenidas de tinta calida, no de negro puro, para que no se vean
      grises sobre el greige. */
-  --sh-flat: 0 0 0 1px var(--line), 0 1px 2px rgba(11, 11, 12, 0.04);
-  --sh-sm:
-    0 0 0 1px var(--line), 0 1px 2px rgba(11, 11, 12, 0.04),
-    0 4px 10px -6px rgba(11, 11, 12, 0.1);
-  --sh-md:
-    0 0 0 1px var(--line), 0 2px 4px rgba(11, 11, 12, 0.03),
-    0 12px 24px -12px rgba(11, 11, 12, 0.14);
-  --sh-lg:
-    0 0 0 1px var(--line), 0 4px 8px rgba(11, 11, 12, 0.03),
-    0 28px 48px -20px rgba(11, 11, 12, 0.18);
-  --sh-hover:
-    0 0 0 1px var(--line-strong), 0 2px 6px rgba(11, 11, 12, 0.05),
-    0 20px 36px -16px rgba(11, 11, 12, 0.2);
+  --sh-flat: 0 0 0 1px var(--line);
+  --sh-sm: 0 0 0 1px var(--line), 0 3px 10px rgba(11, 11, 12, 0.05);
+  --sh-md: 0 0 0 1px var(--line), 0 10px 28px -12px rgba(11, 11, 12, 0.16);
+  --sh-lg: 0 0 0 1px var(--line), 0 22px 48px -20px rgba(11, 11, 12, 0.2);
+  --sh-hover: 0 0 0 1px var(--ink), 0 14px 32px -18px rgba(11, 11, 12, 0.24);
   --sh-overlay:
     0 0 0 1px var(--line), 0 32px 64px -24px rgba(11, 11, 12, 0.28),
     0 8px 16px -8px rgba(11, 11, 12, 0.1);

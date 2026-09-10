@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { Icon } from '../ui/Icon'
@@ -10,14 +11,6 @@ const links = [
   { to: '/compare', label: 'Comparar' },
 ]
 
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? '')
-    .join('')
-}
-
 interface NavbarProps {
   /** `true` mientras la página está arriba de todo, sin scrollear. */
   atTop: boolean
@@ -26,17 +19,26 @@ interface NavbarProps {
 export function Navbar({ atTop }: NavbarProps) {
   const { session, signOut } = useAuth()
   const location = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   /* La home tiene un hero oscuro a sangre: ahí la navbar flota encima, sin
      fondo. En cuanto se scrollea, o en cualquier otra página, se vuelve
      sólida para no perder legibilidad sobre el contenido blanco. */
   const overHero = location.pathname === '/' && atTop
+  const navbarClass = overHero ? 'navbar navbar--over' : atTop ? 'navbar' : 'navbar navbar--scrolled'
 
   return (
-    <header className={overHero ? 'navbar navbar--over' : 'navbar'}>
+    <header className={navbarClass}>
       <div className="page navbar__inner">
-        <button type="button" className="navbar__burger" aria-label="Abrir menú">
-          <Icon name="menu" size={20} />
+        <button
+          type="button"
+          className="navbar__burger"
+          aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <Icon name={menuOpen ? 'close' : 'menu'} size={20} />
         </button>
 
         <Link to="/" className="navbar__brand">
@@ -77,7 +79,11 @@ export function Navbar({ atTop }: NavbarProps) {
                 title={`${session.user.name} — ver mi perfil`}
                 aria-label="Mi perfil y garage"
               >
-                {initials(session.user.name)}
+                {session.user.avatarUrl ? (
+                  <img src={session.user.avatarUrl} alt="" className="navbar__avatar-img" />
+                ) : (
+                  <Icon name="user" size={19} />
+                )}
               </Link>
             </>
           ) : (
@@ -89,6 +95,48 @@ export function Navbar({ atTop }: NavbarProps) {
           <Link to="/sell" className="navbar__cta">
             Publicar vehículo
           </Link>
+        </div>
+
+        <div
+          id="mobile-navigation"
+          className={menuOpen ? 'navbar__mobile is-open' : 'navbar__mobile'}
+        >
+          <nav className="navbar__mobile-links" aria-label="Principal para celulares">
+            {links.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                onClick={() => setMenuOpen(false)}
+                className={({ isActive }) =>
+                  isActive ? 'navbar__mobile-link is-active' : 'navbar__mobile-link'
+                }
+              >
+                {link.label}
+                <Icon name="arrowRight" size={18} />
+              </NavLink>
+            ))}
+            {session ? (
+              <>
+                <Link to="/profile" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                  Mi perfil <Icon name="arrowRight" size={18} />
+                </Link>
+                <button
+                  type="button"
+                  className="navbar__mobile-link"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    void signOut()
+                  }}
+                >
+                  Salir
+                </button>
+              </>
+            ) : (
+              <Link to="/login" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                Ingresar <Icon name="arrowRight" size={18} />
+              </Link>
+            )}
+          </nav>
         </div>
       </div>
     </header>

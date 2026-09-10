@@ -60,9 +60,11 @@ h1 {
 }
 h2 {
   font-size: var(--fs-h2);
+  line-height: 1.1;
 }
 h3 {
   font-size: var(--fs-h3);
+  line-height: 1.05;
 }
 
 p {
@@ -115,14 +117,15 @@ button {
 .over {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 28px;
-  padding-inline: 12px;
-  border-radius: var(--r-pill);
-  background: var(--surface-2);
-  font-size: var(--fs-over);
+  gap: 0;
+  min-height: 24px;
+  padding-inline: 0;
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: var(--ls-over);
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   white-space: nowrap;
   color: var(--ink-3);
@@ -130,16 +133,11 @@ button {
 
 /* El punto amarillo es lo unico que trae color a la capsula. */
 .over::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  flex-shrink: 0;
-  border-radius: var(--r-pill);
-  background: var(--accent);
+  display: none;
 }
 
 .over--invert {
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   color: rgba(255, 255, 255, 0.8);
 }
 
