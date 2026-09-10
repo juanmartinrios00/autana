@@ -1,32 +1,25 @@
 /* ==========================================================================
    Autana — tokens
    Blanco de fondo, negro para texto y estructura, amarillo solo para accion.
-   Los neutros tienen temperatura calida deliberada; no son grises frios.
+   Los neutros tiran a verde-gris frio. Es lo que deja que el amarillo sea lo
+   unico calido de la pantalla y por lo tanto lo primero que se mira.
    ========================================================================== */
-
-@font-face {
-  font-family: 'FK Grotesk';
-  src: url('https://cdn.prod.website-files.com/68ed090d0998c3c224a59e7c/691500412e6f96ee08cbc277_FKGrotesk.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-}
 
 :root {
   /* --- Superficies ---
      Cada plano tiene que distinguirse del anterior a simple vista. Un gris al
      1% del blanco no es un plano, es blanco: la seccion "tintada" no se lee
-     como seccion y la pagina queda sin jerarquia. Estos valores son greige
-     calido, asi que el conjunto sigue leyendose blanco. */
+     como seccion y la pagina queda sin jerarquia. El tinte verde es leve, asi
+     que el conjunto sigue leyendose blanco. */
   --canvas: #fbfbf9;
   --surface: #f1f2ef;
   --surface-2: #e7e9e5;
   --surface-3: #d7dad5;
-  /* Los contornos ya no son negros. Antes el caracter lo daba una hairline
-     de 1px a tinta plena; ahora lo da la forma redondeada y la sombra que
-     levanta el plano, asi que la linea baja a acompaniar en vez de gritar.
-     `--line-strong` sigue siendo la mas marcada — bordes de campos, contornos
-     de cards — pero es un neutro, no tinta. */
+  /* Los contornos no son negros: son neutros, no tinta. Con los radios cortos
+     de mas abajo la estructura ya la dibuja la forma, y una hairline a tinta
+     plena sobre esquinas casi rectas convierte cada card en una caja. La linea
+     acompania. `--line-strong` es la mas marcada — bordes de campos, contornos
+     de cards — y `--line-ink` queda para cuando hace falta que se note. */
   --line: #dce0da;
   --line-strong: #c5cbc3;
   --line-ink: rgba(11, 11, 12, 0.14);
@@ -55,9 +48,13 @@
   --danger: #c4302b;
   --danger-bg: #fbebea;
 
-  /* La misma familia variable de Vooma, aplicada a contenido y producto. */
-  --font-display: 'FK Grotesk', Arial, sans-serif;
-  --font-ui: 'FK Grotesk', Arial, sans-serif;
+  /* Una sola familia variable para contenido y producto. Schibsted Grotesk es
+     un grotesco de x-height alta, que es lo que sostiene los line-height
+     cortos de abajo: con una x chica, 1.08 en un titular de dos lineas se
+     lee apretado. El fallback es la grotesca del sistema, no Arial, para que
+     el salto mientras carga no cambie el ancho de las cajas. */
+  --font-display: 'Schibsted Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-ui: 'Schibsted Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
   --font-button: var(--font-ui);
 
@@ -96,10 +93,13 @@
   --sp-10: 128px;
 
   /* --- Forma ---
-     Todo redondeado, con la escala creciendo con el tamanio del objeto: un
-     chip no lleva el mismo radio que un panel de seccion, porque el radio se
-     percibe en proporcion al bloque. `--r-pill` es para lo que de verdad es
-     un circulo o una capsula. */
+     Casi recto. La escala entera vive entre 2px y 10px: lo justo para que una
+     esquina no corte, no para que se lea como redondeo. El caracter lo tiene
+     que dar la tipografia y la grilla, no el radio. Sigue creciendo con el
+     tamanio del bloque porque el radio se percibe en proporcion, pero el
+     recorrido es corto y `--r-md` y `--r-lg` empatan a proposito.
+     `--r-pill` es la excepcion: solo para lo que de verdad es un circulo o
+     una capsula. */
   --r-xs: 2px;
   --r-sm: 4px;
   --r-md: 6px;
@@ -109,11 +109,11 @@
   --r-pill: 999px;
 
   /* --- Elevacion ---
-     Sombras suaves y en capas: una hairline que dibuja el contorno, una
-     sombra corta que apoya el objeto en el papel y una larga y difusa que lo
-     despega. El hover profundiza la difusa en vez de desplazar el bloque.
-     Van tenidas de tinta calida, no de negro puro, para que no se vean
-     grises sobre el greige. */
+     Cada nivel es una hairline que dibuja el contorno mas una sombra difusa
+     que lo despega del papel; la sombra corta intermedia solo sobrevive en
+     `--sh-sm`. El hover no desplaza el bloque: cambia la hairline a tinta
+     plena, que sobre esquinas casi rectas se lee mucho antes que un cambio
+     de sombra. */
   --sh-flat: 0 0 0 1px var(--line);
   --sh-sm: 0 0 0 1px var(--line), 0 3px 10px rgba(11, 11, 12, 0.05);
   --sh-md: 0 0 0 1px var(--line), 0 10px 28px -12px rgba(11, 11, 12, 0.16);

@@ -62,16 +62,21 @@ de diseño. Lo que hay que respetar:
 - Fondo blanco, negro para texto y estructura, **amarillo solo para acción**: CTA,
   estado seleccionado, favorito activo, un badge por card. Nunca fondo de sección,
   nunca color de texto.
-- Los neutros tienen temperatura cálida deliberada. No son grises fríos.
-- **Archivo** para titulares y **Instrument Sans** para la UI y los formularios;
+- Los neutros tiran a verde-gris frío. Es lo que deja al amarillo como lo único
+  cálido de la pantalla, y por lo tanto lo primero que se mira.
+- **Schibsted Grotesk** para todo, titulares y UI, en una sola familia variable;
   **JetBrains Mono** (clase `.mono`) solo para datos duros: precios, kilometraje,
-  años, cilindrada.
-- Todo va redondeado, con el radio creciendo con el tamaño del bloque (`--r-xs`
-  a `--r-2xl`, y `--r-pill` para cápsulas y círculos). Las secciones son planos
-  redondeados con aire alrededor, no bandas a sangre entre hairlines.
-- La profundidad la dan sombras suaves en capas (`--sh-flat` … `--sh-overlay`):
-  contorno claro, sombra corta que apoya y sombra difusa que despega. El hover
-  levanta el bloque y profundiza la sombra; nunca lo desplaza.
+  años, cilindrada. Las dos salen del `<link>` de Google Fonts en `index.html`:
+  no metas un `@font-face` apuntando al CDN de otro sitio, que es un archivo que
+  no controlamos y una licencia que no tenemos.
+- **Casi recto.** El radio va de 2px a 10px (`--r-xs` a `--r-2xl`) — lo justo para
+  que una esquina no corte, no para que se lea como redondeo. El carácter lo dan
+  la tipografía y la grilla. `--r-pill` es la excepción, solo para lo que de verdad
+  es un círculo o una cápsula.
+- La profundidad la dan una hairline que dibuja el contorno más una sombra difusa
+  (`--sh-flat` … `--sh-overlay`). El hover **no desplaza el bloque**: pasa la
+  hairline a tinta plena, que sobre esquinas casi rectas se lee mucho antes que
+  un cambio de sombra.
 - Movimiento: 150–300 ms, `ease-out`, `transform` y `opacity`.
 
 ## Backend
