@@ -186,9 +186,22 @@ export function Login() {
           <span>o</span>
         </div>
 
-        {/* Alternativa para quien no quiera inventar otra contraseña. */}
+        {/* Esto es, en los hechos, la recuperación de cuenta: no hay ninguna
+            otra forma de volver a entrar si alguien olvida su contraseña. Antes
+            decía "Mandame un link por mail" a secas y se leía como un segundo
+            camino para registrarse, al punto de tapar que la contraseña era el
+            principal.
+
+            Cuando exista un cambio de contraseña de verdad, esto se puede
+            reemplazar. Hasta entonces sacarlo dejaría afuera de su propia
+            cuenta —y de sus publicaciones— a cualquiera que se olvide. */}
+        <p className="login__recover-hint">
+          {mode === 'signin'
+            ? '¿Olvidaste tu contraseña? Te mandamos un link para entrar sin ella.'
+            : '¿Preferís no inventar otra contraseña? Entrá con un link.'}
+        </p>
         <Button variant="outline" block disabled={busy} onClick={() => void handleMagicLink()}>
-          Mandame un link por mail
+          Entrar con un link por mail
         </Button>
 
         <p className="login__legal">

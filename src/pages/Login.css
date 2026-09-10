@@ -112,3 +112,13 @@
   height: 1px;
   background: var(--line);
 }
+
+/* La línea que explica para qué es el link por mail. Va arriba del botón y en
+   chico: sin ella el botón se leía como un segundo camino para registrarse, y
+   tapaba que el principal es la contraseña. */
+.login__recover-hint {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-sm);
+  text-align: center;
+  color: var(--ink-3);
+}

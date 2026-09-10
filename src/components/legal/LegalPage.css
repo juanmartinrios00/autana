@@ -1,0 +1,90 @@
+.legal__head {
+  padding-block: var(--sp-8);
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.legal__title {
+  margin-top: var(--sp-3);
+  max-width: 20ch;
+  font-size: var(--fs-h2);
+}
+
+.legal__updated {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.legal__body {
+  padding-block: var(--sp-7) var(--sp-9);
+}
+
+/* El resumen en criollo, antes del documento. No reemplaza lo de abajo, pero
+   es lo único que la mayoría va a leer, así que tiene que decir la verdad
+   completa y no una versión conveniente. */
+.legal__intro {
+  max-width: 68ch;
+  padding: var(--sp-5);
+  border-left: 2px solid var(--accent);
+  background: var(--surface);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--ink-2);
+}
+
+.legal__intro p {
+  margin: 0 0 var(--sp-3);
+}
+
+.legal__intro p:last-child {
+  margin-bottom: 0;
+}
+
+.legal__doc {
+  max-width: 68ch;
+  margin-top: var(--sp-7);
+}
+
+.legal__section + .legal__section {
+  margin-top: var(--sp-6);
+}
+
+.legal__section-title {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-h3);
+}
+
+.legal__n {
+  color: var(--ink-3);
+}
+
+.legal__section p,
+.legal__section li {
+  color: var(--ink-2);
+}
+
+.legal__section p {
+  margin: 0 0 var(--sp-3);
+}
+
+.legal__section ul {
+  margin: 0 0 var(--sp-3);
+  padding-left: var(--sp-5);
+}
+
+.legal__section li {
+  margin-bottom: var(--sp-2);
+}
+
+/* Marca los párrafos que todavía no revisó un abogado. Se ve a propósito: si
+   se disimulara, quedaría publicado como si estuviera cerrado. */
+.legal__todo {
+  display: block;
+  margin: var(--sp-4) 0;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px dashed var(--danger);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  color: var(--danger);
+}

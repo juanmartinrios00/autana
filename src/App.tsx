@@ -22,6 +22,8 @@ const Dealers = lazy(() => import('./pages/Dealers').then((m) => ({ default: m.D
 const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default: m.Favorites })))
 const Garage = lazy(() => import('./pages/Garage').then((m) => ({ default: m.Garage })))
 const Levels = lazy(() => import('./pages/Levels').then((m) => ({ default: m.Levels })))
+const Privacy = lazy(() => import('./pages/Privacy').then((m) => ({ default: m.Privacy })))
+const Terms = lazy(() => import('./pages/Terms').then((m) => ({ default: m.Terms })))
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })))
 const MyListings = lazy(() => import('./pages/MyListings').then((m) => ({ default: m.MyListings })))
 const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.Profile })))
@@ -65,6 +67,12 @@ export default function App() {
                 {/* Capta concesionarias, asi que no exige sesion: la lee alguien
                     que todavia no decidio abrir cuenta. */}
                 <Route path="dealers" element={<Dealers />} />
+
+                {/* Los legales no exigen sesion, y menos que ninguna otra
+                    pantalla: el login pide aceptarlos antes de que exista la
+                    cuenta. */}
+                <Route path="terms" element={<Terms />} />
+                <Route path="privacy" element={<Privacy />} />
 
                 {/* El garage es público y tiene pantalla propia: el link que
                     alguien manda por WhatsApp abre los autos, no el panel. */}
