@@ -64,7 +64,7 @@ de diseño. Lo que hay que respetar:
   nunca color de texto.
 - Los neutros tiran a verde-gris frío. Es lo que deja al amarillo como lo único
   cálido de la pantalla, y por lo tanto lo primero que se mira.
-- **Schibsted Grotesk** para todo, titulares y UI, en una sola familia variable;
+- **Archivo** para todo, titulares y UI, en una sola familia variable;
   **JetBrains Mono** (clase `.mono`) solo para datos duros: precios, kilometraje,
   años, cilindrada. Las dos salen del `<link>` de Google Fonts en `index.html`:
   no metas un `@font-face` apuntando al CDN de otro sitio, que es un archivo que

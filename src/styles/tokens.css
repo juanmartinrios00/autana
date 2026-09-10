@@ -48,13 +48,13 @@
   --danger: #c4302b;
   --danger-bg: #fbebea;
 
-  /* Una sola familia variable para contenido y producto. Schibsted Grotesk es
-     un grotesco de x-height alta, que es lo que sostiene los line-height
-     cortos de abajo: con una x chica, 1.08 en un titular de dos lineas se
-     lee apretado. El fallback es la grotesca del sistema, no Arial, para que
-     el salto mientras carga no cambie el ancho de las cajas. */
-  --font-display: 'Schibsted Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-ui: 'Schibsted Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  /* Una sola familia variable para contenido y producto. Archivo es un grotesco
+     de x-height alta, que es lo que sostiene los line-height cortos de abajo:
+     con una x chica, 1.08 en un titular de dos lineas se lee apretado. El
+     fallback es la grotesca del sistema, no Arial, para que el salto mientras
+     carga no cambie el ancho de las cajas. */
+  --font-display: 'Archivo', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-ui: 'Archivo', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
   --font-button: var(--font-ui);
 
@@ -76,7 +76,10 @@
   --ls-over: 0.1em;
   --ls-nav: 0.12em;
 
-  --fw-display: 500;
+  /* Los titulares van en semibold, no en medium. A los tamanios grandes de
+     `--fs-display` un 500 se afina y el titular pierde peso justo donde tiene
+     que ser la imagen principal de la pagina. */
+  --fw-display: 600;
 
   /* --- Espaciado, escala de 8 --- */
   --sp-1: 4px;
