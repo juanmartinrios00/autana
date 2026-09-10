@@ -26,7 +26,26 @@
 -- por moderación. Para eso está el bloqueo, que sí saca el aviso de la vista.
 -- ============================================================================
 
-create or replace view public.profile_stats
+-- Va `drop` y no `create or replace`, que es lo que uno escribiría.
+--
+-- `create or replace view` sólo sabe AGREGAR columnas al final: no puede
+-- insertarlas en el medio, ni renombrarlas, ni reordenarlas. Como acá los dos
+-- campos nuevos entran después de `city`, Postgres ve que la quinta columna
+-- pasa de llamarse `active_listings` a `verified` y falla con
+--
+--   42P16: cannot change name of view column "active_listings" to "verified"
+--
+-- Se podría esquivar poniendo las columnas nuevas al final, pero eso deja el
+-- orden de la vista dependiendo del orden en que se corrieron las migraciones,
+-- y la próxima que agregue una columna se vuelve a encontrar con lo mismo.
+-- Tirarla y rehacerla da el mismo resultado siempre, corra sobre lo que corra.
+--
+-- Es seguro: no hay ninguna otra vista ni función que dependa de ésta —si la
+-- hubiera, el `drop` fallaría en vez de romper algo en silencio— y el `grant`
+-- del final la vuelve a dejar legible, que es lo único que el `drop` se lleva.
+drop view if exists public.profile_stats;
+
+create view public.profile_stats
 with (security_invoker = on)
 as
 select
