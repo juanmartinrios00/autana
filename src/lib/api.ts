@@ -85,6 +85,7 @@ interface ListingRow {
 interface ProfileRow {
   id: string
   name: string
+  avatar_url: string | null
   seller_type: Seller['type']
   city: string | null
   province: string | null
@@ -995,6 +996,7 @@ export async function listDealers(limit = 8): Promise<Seller[]> {
 export interface ProfileSummary {
   id: string
   name: string
+  avatarUrl: string | null
   sellerType: Seller['type']
   city: string | null
   province: string | null
@@ -1022,19 +1024,55 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
   if (!profile.data) throw new NotFoundError('ese perfil')
   if (listings.error) throw listings.error
 
+  const profileRow = profile.data as ProfileRow
   const rows = listings.data as { id: string; listing_images: { id: string }[] | null }[]
 
   return {
-    id: (profile.data as ProfileRow).id,
-    name: (profile.data as ProfileRow).name,
-    sellerType: (profile.data as ProfileRow).seller_type,
-    city: (profile.data as ProfileRow).city,
-    province: (profile.data as ProfileRow).province,
-    whatsapp: (profile.data as ProfileRow).whatsapp,
-    verified: (profile.data as ProfileRow).verified,
+    id: profileRow.id,
+    name: profileRow.name,
+    avatarUrl: profileRow.avatar_url
+      ? profileRow.avatar_url.startsWith('http')
+        ? profileRow.avatar_url
+        : photoUrl(profileRow.avatar_url)
+      : null,
+    sellerType: profileRow.seller_type,
+    city: profileRow.city,
+    province: profileRow.province,
+    whatsapp: profileRow.whatsapp,
+    verified: profileRow.verified,
     activeListings: rows.length,
     bestPhotoCount: rows.reduce((max, row) => Math.max(max, row.listing_images?.length ?? 0), 0),
   }
+}
+
+export async function uploadProfileAvatar(userId: string, file: File): Promise<string> {
+  const client = requireSupabase()
+  const extensions: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+  }
+  const extension = extensions[file.type]
+  if (!extension || file.size > 5 * 1024 * 1024) {
+    throw new Error('Formato o tamaño de foto no permitido.')
+  }
+  const path = `${userId}/avatar/profile-${Date.now()}.${extension}`
+
+  const { error: uploadError } = await client.storage
+    .from('listing-photos')
+    .upload(path, file, { upsert: false, contentType: file.type })
+
+  if (uploadError) throw uploadError
+
+  const publicUrl = photoUrl(path)
+  const [{ error: profileError }, { error: authError }] = await Promise.all([
+    client.from('profiles').update({ avatar_url: path }).eq('id', userId),
+    client.auth.updateUser({ data: { avatar_url: publicUrl } }),
+  ])
+
+  if (profileError) throw profileError
+  if (authError) throw authError
+  return publicUrl
 }
 
 export interface ProfileUpdate {

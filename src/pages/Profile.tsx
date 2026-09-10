@@ -8,7 +8,7 @@ import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
-import { getProfile, type ProfileSummary } from '../lib/api'
+import { getProfile, uploadProfileAvatar, type ProfileSummary } from '../lib/api'
 import { listGarage, removeGarageEntry, saveGarageEntry, SLOTS, type GarageInput } from '../lib/garage'
 import { computeLevel } from '../lib/levels'
 import { locationLabel, sellerTypeLabels } from '../lib/format'
@@ -40,6 +40,8 @@ export function Profile() {
      todo: el nivel depende del garage, así que no alcanza con actualizar la
      lista por su cuenta. */
   const [reloads, setReloads] = useState(0)
+  const [avatarBusy, setAvatarBusy] = useState(false)
+  const [avatarError, setAvatarError] = useState('')
 
   useEffect(() => {
     if (!userId) return
@@ -96,6 +98,32 @@ export function Profile() {
     setReloads((count) => count + 1)
   }
 
+  async function handleAvatar(file?: File) {
+    if (!file) return
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setAvatarError('Elegí una imagen JPG, PNG o WebP.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarError('La foto puede pesar hasta 5 MB.')
+      return
+    }
+
+    setAvatarBusy(true)
+    setAvatarError('')
+    try {
+      const avatarUrl = await uploadProfileAvatar(userId, file)
+      setLoaded((current) => ({
+        ...current,
+        profile: current.profile ? { ...current.profile, avatarUrl } : current.profile,
+      }))
+    } catch {
+      setAvatarError('No pudimos guardar la foto. Probá de nuevo.')
+    } finally {
+      setAvatarBusy(false)
+    }
+  }
+
 
   if (status === 'notfound') {
     return (
@@ -128,9 +156,31 @@ export function Profile() {
       <section className="profile__head">
         <div className="page profile__head-inner">
           <div className="profile__identity">
-            <span className="profile__avatar" aria-hidden="true">
-              {showing.name.slice(0, 2).toUpperCase()}
-            </span>
+            <div className="profile__avatar-shell">
+              <span className="profile__avatar" aria-hidden="true">
+                {showing.avatarUrl ? (
+                  <img src={showing.avatarUrl} alt="" className="profile__avatar-img" />
+                ) : (
+                  <Icon name="user" size={34} />
+                )}
+              </span>
+              {editable && (
+                <label className="profile__avatar-action" title="Cambiar foto de perfil">
+                  <Icon name="camera" size={15} />
+                  <span className="sr-only">Cargar foto de perfil</span>
+                  <input
+                    className="sr-only"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    disabled={avatarBusy}
+                    onChange={(event) => {
+                      void handleAvatar(event.target.files?.[0])
+                      event.currentTarget.value = ''
+                    }}
+                  />
+                </label>
+              )}
+            </div>
             <div>
               <h1 className="profile__name">{showing.name}</h1>
               <div className="profile__meta">
@@ -145,6 +195,11 @@ export function Profile() {
                   {showing.activeListings === 1 ? 'publicación' : 'publicaciones'}
                 </span>
               </div>
+              {editable && (
+                <p className={avatarError ? 'profile__avatar-status is-error' : 'profile__avatar-status'}>
+                  {avatarBusy ? 'Guardando foto…' : avatarError || 'Podés cambiar tu foto desde el ícono.'}
+                </p>
+              )}
             </div>
           </div>
 
