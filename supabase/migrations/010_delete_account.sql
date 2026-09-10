@@ -67,3 +67,33 @@ grant execute on function public.delete_my_account() to authenticated;
 
 comment on function public.delete_my_account() is
   'Borra la cuenta de quien llama (auth.uid()). Las fotos de Storage las borra el cliente antes.';
+
+-- ----------------------------------------------------------------------------
+-- El timbre, para preguntar sin borrar nada
+--
+-- El cliente borra las fotos ANTES de llamar a `delete_my_account`, y ese orden
+-- no se puede invertir: si la cuenta se va primero, nadie tiene ya permiso de
+-- tocar esos archivos y quedan públicos para siempre.
+--
+-- El problema del orden es que si `delete_my_account` no estuviera —esta
+-- migración sin correr, o el caché de esquema de PostgREST todavía sin
+-- refrescar, que pasa durante unos segundos después de crear una función—, las
+-- fotos ya se habrían borrado y la cuenta seguiría viva.
+--
+-- No se puede probar llamando a la de verdad. Por eso esta, que no hace nada:
+-- si responde, la migración está aplicada y el caché la ve, así que la otra
+-- también está. Van juntas en el mismo archivo justamente para que no puedan
+-- existir por separado.
+-- ----------------------------------------------------------------------------
+
+create or replace function public.account_deletion_ready()
+returns boolean
+language sql
+immutable
+as $$ select true $$;
+
+revoke all on function public.account_deletion_ready() from public, anon;
+grant execute on function public.account_deletion_ready() to authenticated;
+
+comment on function public.account_deletion_ready() is
+  'Sonda sin efectos: si responde, delete_my_account existe y PostgREST la ve.';

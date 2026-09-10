@@ -1327,9 +1327,21 @@ async function emptyFolder(bucket: string, prefix: string): Promise<void> {
  *
  * Después va `delete_my_account` (migración 010), que borra la fila de
  * `auth.users` y arrastra el resto por foreign key.
+ *
+ * Y antes de todo eso va la sonda, porque el orden no se puede invertir para
+ * cubrirse: si la cuenta se fuera primero, no habría sesión para borrar las
+ * fotos y quedarían públicas sin que nadie pueda sacarlas.
  */
 export async function deleteAccount(userId: string): Promise<void> {
   const client = requireSupabase()
+
+  /* Preguntar antes de romper nada. `account_deletion_ready` no hace nada y
+     nace en el mismo archivo que `delete_my_account`, así que si contesta es
+     porque la migración está aplicada y PostgREST ya la tiene en su caché de
+     esquema — que tarda unos segundos en refrescarse después de crear una
+     función. Sin esta sonda, ese hueco borra las fotos y deja la cuenta viva. */
+  const { error: notReady } = await client.rpc('account_deletion_ready')
+  if (notReady) throw new Error('El borrado de cuenta no está disponible en este momento.')
 
   for (const bucket of OWN_BUCKETS) {
     await emptyFolder(bucket, userId)
