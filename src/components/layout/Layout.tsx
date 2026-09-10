@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { CompareBar } from '../compare/CompareBar'
 import { ErrorBoundary } from './ErrorBoundary'
@@ -38,7 +38,14 @@ export function Layout() {
           eso, una vez roto el cartel de error no se iría nunca más. */}
       <main className="main" id="contenido">
         <ErrorBoundary key={location.pathname}>
-          <Outlet />
+          {/* Las pantallas llegan en su propio chunk, asi que entre el click y
+              el primer render hay una descarga. El fallback reserva alto de
+              pantalla en vez de mostrar un spinner: sin eso el pie sube hasta
+              debajo de la navbar y vuelve a bajar cuando llega el chunk, que
+              se ve peor que esperar. */}
+          <Suspense fallback={<div className="route-fallback" aria-hidden="true" />}>
+            <Outlet />
+          </Suspense>
         </ErrorBoundary>
       </main>
       <Footer />

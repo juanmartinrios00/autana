@@ -581,3 +581,10 @@ button.navbar__link {
   margin-bottom: var(--sp-7);
   flex-wrap: wrap;
 }
+
+/* Alto reservado mientras baja el chunk de una pantalla. No es un spinner a
+   proposito: a esta escala el chunk llega antes de que un spinner alcance a
+   leerse, y lo unico que hace falta evitar es que el pie salte. */
+.route-fallback {
+  min-height: 70vh;
+}

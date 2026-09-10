@@ -1,20 +1,31 @@
+import { lazy } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { RequireAuth } from './components/auth/RequireAuth'
 import { Layout } from './components/layout/Layout'
 import { AuthProvider } from './context/AuthProvider'
 import { CompareProvider } from './context/CompareProvider'
 import { FavoritesProvider } from './context/FavoritesProvider'
-import { Admin } from './pages/Admin'
-import { Cars } from './pages/Cars'
-import { Compare } from './pages/Compare'
-import { Favorites } from './pages/Favorites'
 import { Home } from './pages/Home'
-import { Login } from './pages/Login'
-import { MyListings } from './pages/MyListings'
-import { Sell } from './pages/Sell'
 import { Placeholder } from './pages/Placeholder'
-import { Profile } from './pages/Profile'
-import { VehicleDetail } from './pages/VehicleDetail'
+
+/* Cada pantalla viaja en su propio chunk, que baja cuando alguien entra a la
+   ruta. `Home` y `Placeholder` quedan afuera a proposito: la primera es la que
+   recibe la visita por defecto y la segunda es el 404, asi que diferirlas
+   agregaria un viaje de red justo cuando no hay nada pintado todavia.
+
+   El `.then` es porque las paginas son exports nombrados y `lazy` espera un
+   default. */
+const Admin = lazy(() => import('./pages/Admin').then((m) => ({ default: m.Admin })))
+const Cars = lazy(() => import('./pages/Cars').then((m) => ({ default: m.Cars })))
+const Compare = lazy(() => import('./pages/Compare').then((m) => ({ default: m.Compare })))
+const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default: m.Favorites })))
+const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })))
+const MyListings = lazy(() => import('./pages/MyListings').then((m) => ({ default: m.MyListings })))
+const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.Profile })))
+const Sell = lazy(() => import('./pages/Sell').then((m) => ({ default: m.Sell })))
+const VehicleDetail = lazy(() =>
+  import('./pages/VehicleDetail').then((m) => ({ default: m.VehicleDetail })),
+)
 
 export default function App() {
   return (
