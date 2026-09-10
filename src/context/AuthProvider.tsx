@@ -13,6 +13,7 @@ import { AuthContext, type AuthValue } from './auth-context'
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [recovering, setRecovering] = useState(false)
 
   useEffect(() => {
     /* La sesión guardada se resuelve de forma asíncrona. Hasta que llegue no
@@ -23,7 +24,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     })
 
-    return onAuthChange(setSession)
+    return onAuthChange((found, event) => {
+      setSession(found)
+      /* La marca se prende con el evento de recuperación y se apaga al cerrar
+         sesión. No se apaga sola al navegar: quien llegó por el link tiene que
+         poder ir y volver de la pantalla sin perder el permiso. */
+      if (event === 'PASSWORD_RECOVERY') setRecovering(true)
+      if (event === 'SIGNED_OUT') setRecovering(false)
+    })
   }, [])
 
   const signIn = useCallback(async (email: string, password: string) => {
@@ -39,12 +47,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = useCallback(async () => {
+    setRecovering(false)
     await endSession()
   }, [])
 
   const value = useMemo<AuthValue>(
-    () => ({ session, loading, signIn, signUp, sendMagicLink, signOut }),
-    [session, loading, signIn, signUp, sendMagicLink, signOut],
+    () => ({ session, loading, recovering, signIn, signUp, sendMagicLink, signOut }),
+    [session, loading, recovering, signIn, signUp, sendMagicLink, signOut],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

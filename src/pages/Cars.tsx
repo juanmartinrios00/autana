@@ -7,6 +7,7 @@ import { Icon } from '../components/ui/Icon'
 import { Select } from '../components/ui/Select'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
+import { SaveSearch } from '../components/search/SaveSearch'
 import { countActive, useVehicleFilters } from '../hooks/useVehicleFilters'
 import { listMakes, listModels, listProvinces, listVehicles } from '../lib/api'
 import { formatCount } from '../lib/format'
@@ -82,6 +83,14 @@ export function Cars() {
   const models = filters.make ? (modelsByMake[filters.make] ?? []) : []
 
   const activeCount = countActive(filters)
+
+  /* Un nombre que se entienda sin abrirla. Si no alcanza con marca, modelo y
+     texto libre, cae en la provincia; y si tampoco, el usuario le pone el que
+     quiera. */
+  const searchLabel =
+    [filters.q, filters.make, filters.model].filter(Boolean).join(' ') ||
+    filters.province ||
+    'Mi búsqueda'
   const total = result?.total ?? 0
 
   /* El título sigue a la búsqueda: una pestaña con diez listados abiertos
@@ -150,6 +159,10 @@ export function Cars() {
           </div>
 
           <div className="cars__tools">
+            {/* Con filtros puestos y sesion iniciada. La busqueda que se guarda
+                es la query string tal cual, que es donde ya viven los filtros. */}
+            <SaveSearch suggested={searchLabel} activeCount={activeCount} />
+
             <Button
               variant="outline"
               size="sm"

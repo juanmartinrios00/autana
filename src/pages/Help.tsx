@@ -67,6 +67,18 @@ const TOPICS: Topic[] = [
         ),
       },
       {
+        q: '¿Puedo guardar una búsqueda para volver después?',
+        a: (
+          <p>
+            Sí, con cuenta y con filtros puestos: arriba de los resultados aparece{' '}
+            <strong>Guardar búsqueda</strong>, le ponés un nombre y queda en{' '}
+            <Link to="/favorites">Favoritos</Link>. Todavía no avisamos por mail cuando
+            aparece un auto que le cierra: eso necesita algo que corra solo todos los días y
+            no está construido, así que preferimos no ofrecerlo antes de que exista.
+          </p>
+        ),
+      },
+      {
         q: '¿Los primeros resultados están pagos?',
         a: (
           <p>
@@ -248,11 +260,11 @@ const TOPICS: Topic[] = [
         q: 'Me olvidé la contraseña',
         a: (
           <p>
-            En la pantalla de ingreso, abajo, está{' '}
-            <strong>Entrar con un link por mail</strong>. Te mandamos un link, lo abrís desde
-            el mismo dispositivo y entrás sin contraseña. Es la forma de recuperar el acceso.
-            Eso sí: entrando así vas a poder usar el sitio, pero todavía no cambiar la
-            contraseña, porque para eso hace falta saber la actual.
+            En la pantalla de ingreso, arriba del separador, está{' '}
+            <strong>¿Olvidaste tu contraseña? Ponete una nueva</strong>. Te mandamos un link
+            al correo y, al abrirlo, podés escribir una nueva sin que te pidamos la anterior:
+            abrir ese link ya prueba que la cuenta es tuya. Dura poco, así que abrilo ahí
+            mismo.
           </p>
         ),
       },

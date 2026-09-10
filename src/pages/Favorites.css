@@ -65,3 +65,63 @@
   font-size: 0.86rem;
   color: var(--ink-4);
 }
+
+/* --- Búsquedas guardadas --------------------------------------------------
+   Van al pie de favoritos, no en pantalla propia: es el mismo gesto —"esto lo
+   quiero para después"— y separarlas obligaría a acordarse de dos lugares.  */
+
+.searches {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--line);
+}
+
+.searches__title {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--fs-h3);
+}
+
+.searches__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.searches__item {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--canvas);
+}
+
+.searches__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--ink);
+}
+
+.searches__drop {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-right: var(--sp-1);
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: none;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.searches__drop:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}

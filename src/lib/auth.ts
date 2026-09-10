@@ -14,8 +14,6 @@ export interface Session {
   user: User
 }
 
-type Listener = (session: Session | null) => void
-
 export const MIN_PASSWORD = 8
 
 function toUser(raw: SupabaseSession['user']): User {
@@ -134,11 +132,10 @@ export async function signInWithMagicLink(email: string): Promise<void> {
  * que agarre un teléfono desbloqueado con la sesión iniciada deja al dueño
  * afuera de su propia cuenta en dos toques.
  *
- * La cuenta lateral que hay que saber: quien de verdad olvidó su contraseña
- * entra con el link por mail y puede seguir usando el sitio, pero no puede
- * cambiarla desde acá, porque no sabe la actual. Cerrar ese caso necesita el
- * flujo de re-autenticación de Supabase, que manda un código al correo; queda
- * pendiente.
+ * Quien de verdad olvidó su contraseña no pasa por acá: va por
+ * `sendPasswordReset`, que le manda un link al correo. Abrir ese link prueba el
+ * control del mail, que es la prueba que corresponde cuando no se sabe la
+ * anterior.
  */
 export async function changePassword(
   email: string,
@@ -154,17 +151,51 @@ export async function changePassword(
   if (error) throw describe(error)
 }
 
+/**
+ * Manda el link para recuperar la contraseña.
+ *
+ * Es el camino del que la olvidó de verdad: `changePassword` pide la actual, y
+ * quien no la sabe no puede usarlo. Abrir un link que llegó al propio correo
+ * prueba el control del mail, que es la prueba que corresponde acá.
+ */
+export async function sendPasswordReset(email: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset`,
+  })
+  if (error) throw describe(error)
+}
+
+/**
+ * Escribe la contraseña nueva sin pedir la anterior.
+ *
+ * Sólo se llama desde la pantalla de recuperación, y sólo después de que
+ * Supabase haya emitido `PASSWORD_RECOVERY`. Sin ese recaudo esto seria un
+ * agujero: cualquiera con una sesión abierta podría cambiar la contraseña sin
+ * saber la vieja, que es justo lo que `changePassword` evita.
+ */
+export async function setRecoveredPassword(password: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.auth.updateUser({ password })
+  if (error) throw describe(error)
+}
+
 export async function signOut(): Promise<void> {
   if (!supabase) return
   await supabase.auth.signOut()
 }
 
 /** Cubre login, logout, refresh de token y la vuelta desde el magic link. */
-export function onAuthChange(listener: Listener): () => void {
+/**
+ * `event` ya no se descarta: hace falta distinguir `PASSWORD_RECOVERY` de una
+ * sesión normal. Las dos dejan al usuario adentro, pero sólo la primera
+ * autoriza cambiar la contraseña sin saber la actual.
+ */
+export function onAuthChange(listener: (session: Session | null, event: string) => void) {
   if (!supabase) return () => {}
 
-  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-    listener(toSession(session))
+  const { data } = supabase.auth.onAuthStateChange((event, session) => {
+    listener(toSession(session), event)
   })
 
   return () => data.subscription.unsubscribe()

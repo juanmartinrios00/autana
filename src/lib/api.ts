@@ -1157,6 +1157,61 @@ export async function getSellerTrust(userIds: string[]): Promise<Map<string, Tru
   )
 }
 
+/* ---------------------------------------------------------------------------
+   Busquedas guardadas
+--------------------------------------------------------------------------- */
+
+/**
+ * Una busqueda guardada es la query string de `/cars` con un nombre.
+ *
+ * Los filtros ya viven en la URL, asi que no hace falta inventar una
+ * representacion nueva: guardar una busqueda es guardar el texto que ya esta en
+ * la barra de direcciones, y restaurarla es volver a ponerlo.
+ *
+ * `notify` existe en la tabla desde el esquema original y NO se expone todavia:
+ * avisar por mail cuando aparece un auto que matchea necesita un job programado
+ * que corra las consultas y las mande. Un casillero que promete mails que no
+ * llegan es peor que no tener el casillero.
+ */
+export interface SavedSearchRow {
+  id: string
+  name: string
+  query: string
+  createdAt: string
+}
+
+export async function listSavedSearches(userId: string): Promise<SavedSearchRow[]> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('saved_searches')
+    .select('id, name, query, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data as { id: string; name: string; query: string; created_at: string }[]).map(
+    (row) => ({ id: row.id, name: row.name, query: row.query, createdAt: row.created_at }),
+  )
+}
+
+export async function saveSearch(userId: string, name: string, query: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client
+    .from('saved_searches')
+    .insert({ user_id: userId, name, query })
+  if (error) throw error
+}
+
+export async function removeSavedSearch(id: string): Promise<void> {
+  const client = requireSupabase()
+  /* RLS filtra en vez de rechazar, asi que un `delete` sobre una fila ajena
+     devuelve OK con cero filas. El `select()` es lo que deja notar la
+     diferencia. */
+  const { data, error } = await client.from('saved_searches').delete().eq('id', id).select('id')
+  if (error) throw error
+  if (!data || data.length === 0) throw new NotAllowedError('borrar esa búsqueda')
+}
+
 /**
  * El WhatsApp del vendedor de un aviso.
  *

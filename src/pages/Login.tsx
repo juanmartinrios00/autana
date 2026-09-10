@@ -4,7 +4,7 @@ import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
 import { Input } from '../components/ui/Input'
 import { useAuth } from '../hooks/useAuth'
-import { MIN_PASSWORD, NeedsConfirmationError } from '../lib/auth'
+import { MIN_PASSWORD, NeedsConfirmationError, sendPasswordReset } from '../lib/auth'
 import { describeError } from '../lib/errors'
 import './Login.css'
 
@@ -22,6 +22,7 @@ export function Login() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [linkSent, setLinkSent] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
   const [checkYourMail, setCheckYourMail] = useState(false)
 
   const from = (location.state as { from?: string } | null)?.from ?? '/'
@@ -78,6 +79,41 @@ export function Login() {
     } finally {
       setBusy(false)
     }
+  }
+
+  async function handleReset() {
+    if (!email.trim()) {
+      setError('Poné tu mail y te mandamos el link.')
+      return
+    }
+
+    setError(null)
+    setBusy(true)
+    try {
+      await sendPasswordReset(email.trim())
+      setResetSent(true)
+    } catch (cause) {
+      setError(describeError(cause, 'No pudimos mandar el mail. Probá de nuevo en un momento.'))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  if (resetSent) {
+    return (
+      <div className="page login">
+        <div className="card card--pad login__card login__card--sent">
+          <span className="login__sent-icon">
+            <Icon name="message" size={26} />
+          </span>
+          <h1 className="login__title">Revisá tu mail</h1>
+          <p className="login__text">
+            Te mandamos un link a <strong>{email}</strong> para poner una contraseña nueva.
+            Dura poco tiempo, así que abrilo ahora.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   if (linkSent || checkYourMail) {
@@ -195,14 +231,22 @@ export function Login() {
             Cuando exista un cambio de contraseña de verdad, esto se puede
             reemplazar. Hasta entonces sacarlo dejaría afuera de su propia
             cuenta —y de sus publicaciones— a cualquiera que se olvide. */}
-        <p className="login__recover-hint">
-          {mode === 'signin'
-            ? '¿Olvidaste tu contraseña? Te mandamos un link para entrar sin ella.'
-            : '¿Preferís no inventar otra contraseña? Entrá con un link.'}
-        </p>
+        {mode === 'signin' && (
+          /* Esta es la recuperacion de verdad: manda un link que deja poner una
+             contrasenia nueva. El de abajo solo deja entrar. */
+          <p className="login__recover-hint">
+            ¿Olvidaste tu contraseña?{' '}
+            <button type="button" className="login__again" onClick={() => void handleReset()}>
+              Ponete una nueva
+            </button>
+          </p>
+        )}
         <Button variant="outline" block disabled={busy} onClick={() => void handleMagicLink()}>
           Entrar con un link por mail
         </Button>
+        <p className="login__recover-hint login__recover-hint--after">
+          Este te deja entrar sin contraseña, pero no la cambia.
+        </p>
 
         <p className="login__legal">
           Al continuar aceptás los <Link to="/terms">términos</Link> y la{' '}

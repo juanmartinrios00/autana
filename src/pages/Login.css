@@ -122,3 +122,9 @@
   text-align: center;
   color: var(--ink-3);
 }
+
+/* La aclaración debajo del link por mail, para que no se confunda con la
+   recuperación de contraseña que está arriba. */
+.login__recover-hint--after {
+  margin: var(--sp-3) 0 0;
+}

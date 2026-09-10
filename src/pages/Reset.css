@@ -1,0 +1,26 @@
+/* Poner una contraseña nueva desde el link de recuperación. */
+
+.reset {
+  display: grid;
+  place-items: center;
+  min-height: 60vh;
+}
+
+.reset__card {
+  display: grid;
+  gap: var(--sp-4);
+  width: 100%;
+  max-width: 420px;
+}
+
+.reset__title {
+  margin: 0;
+  font-size: var(--fs-h3);
+}
+
+.reset__text {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--ink-3);
+}

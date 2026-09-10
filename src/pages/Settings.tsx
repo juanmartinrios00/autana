@@ -252,8 +252,9 @@ export function Settings() {
           </div>
 
           <p className="settings__hint">
-            ¿Entraste con un link por mail porque no la recordás? Todavía no se puede
-            cambiar sin saber la actual. Podés seguir entrando con el link mientras tanto.
+            ¿No la recordás? Cerrá sesión y usá{' '}
+            <Link to="/login">¿Olvidaste tu contraseña?</Link> en la pantalla de ingreso: te
+            mandamos un link al correo y desde ahí la cambiás sin la anterior.
           </p>
         </form>
       </div>

@@ -29,6 +29,7 @@ const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login
 const MyListings = lazy(() => import('./pages/MyListings').then((m) => ({ default: m.MyListings })))
 const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.Profile })))
 const Settings = lazy(() => import('./pages/Settings').then((m) => ({ default: m.Settings })))
+const Reset = lazy(() => import('./pages/Reset').then((m) => ({ default: m.Reset })))
 const Sell = lazy(() => import('./pages/Sell').then((m) => ({ default: m.Sell })))
 const VehicleDetail = lazy(() =>
   import('./pages/VehicleDetail').then((m) => ({ default: m.VehicleDetail })),
@@ -64,6 +65,11 @@ export default function App() {
                     registro para leer una explicación es la forma más rápida
                     de que no la lea. */}
                 <Route path="levels" element={<Levels />} />
+
+                {/* Donde cae el link de recuperacion. Fuera de `RequireAuth`:
+                    la sesion la abre el propio link, y mandarlo a login seria
+                    devolverlo al problema que vino a resolver. */}
+                <Route path="reset" element={<Reset />} />
 
                 {/* Capta concesionarias, asi que no exige sesion: la lee alguien
                     que todavia no decidio abrir cuenta. */}

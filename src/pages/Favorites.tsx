@@ -7,7 +7,12 @@ import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { useFavorites } from '../hooks/useFavorites'
-import { getVehiclesByIds } from '../lib/api'
+import {
+  getVehiclesByIds,
+  listSavedSearches,
+  removeSavedSearch,
+  type SavedSearchRow,
+} from '../lib/api'
 import type { Vehicle } from '../types'
 import './Favorites.css'
 
@@ -23,6 +28,10 @@ export function Favorites() {
   const { session } = useAuth()
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
+  /* Las busquedas guardadas viven acá y no en una pantalla aparte: es el lugar
+     al que alguien entra buscando "lo mío". Sin sesión no hay ninguna, porque
+     guardar una exige cuenta. */
+  const [fetchedSearches, setFetchedSearches] = useState<SavedSearchRow[]>([])
   /* Para qué lista de ids son los vehículos que hay en memoria. Comparándolo
      con la lista actual sale si estamos esperando, sin un `loading` que haya
      que prender y apagar a mano dentro del efecto. */
@@ -68,6 +77,37 @@ export function Favorites() {
   /* Un favorito puede dejar de estar disponible: si el vendedor lo pausó o lo
      marcó vendido, la política de RLS deja de mostrarlo. Callarlo haría que la
      lista se achique sola sin explicación. */
+  const userId = session?.user.id ?? ''
+
+  useEffect(() => {
+    if (!userId) return
+
+    let alive = true
+    /* Si falla, los favoritos se muestran igual: son lo que la persona vino a
+       ver, y las búsquedas son el agregado. */
+    void listSavedSearches(userId)
+      .catch(() => [])
+      .then((rows) => {
+        if (alive) setFetchedSearches(rows)
+      })
+
+    return () => {
+      alive = false
+    }
+  }, [userId])
+
+  /* Sin sesión no hay ninguna que pedir, así que el vacío se deriva en el
+     render en vez de escribirse en el estado desde el efecto. */
+  const searches = userId ? fetchedSearches : []
+
+  async function dropSearch(id: string) {
+    setFetchedSearches((rows) => rows.filter((row) => row.id !== id))
+    await removeSavedSearch(id).catch(() => {
+      /* Si el borrado falla, la fila vuelve en la próxima carga. Devolverla acá
+         a mano seria adivinar en que orden estaba. */
+    })
+  }
+
   const gone = ids.length - vehicles.length
   const busy = syncing || loadedKey !== key
 
@@ -151,6 +191,32 @@ export function Favorites() {
             </p>
           )}
         </>
+      )}
+
+      {searches.length > 0 && (
+        <section className="searches">
+          <h2 className="searches__title">Búsquedas guardadas</h2>
+          <ul className="searches__list">
+            {searches.map((search) => (
+              <li className="searches__item" key={search.id}>
+                {/* El link es la busqueda: se guarda la query string y se
+                    restaura poniendola de vuelta en la URL. */}
+                <Link to={`/cars?${search.query}`} className="searches__link">
+                  <Icon name="search" size={15} />
+                  {search.name}
+                </Link>
+                <button
+                  type="button"
+                  className="searches__drop"
+                  aria-label={`Quitar la búsqueda ${search.name}`}
+                  onClick={() => void dropSearch(search.id)}
+                >
+                  <Icon name="close" size={14} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   )
