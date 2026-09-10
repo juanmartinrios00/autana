@@ -1,0 +1,21 @@
+# Cache de los archivos estaticos, servido por Cloudflare Workers Assets.
+#
+# Hasta ahora todo salia con `max-age=0, must-revalidate`, que es exactamente
+# al reves de lo que necesita una SPA con nombres hasheados.
+
+# Los assets llevan un hash del contenido en el nombre: si el contenido
+# cambia, cambia el nombre. Entonces nunca hay que revalidarlos — un
+# `index-CY36iryu.js` es ese archivo para siempre. Con `must-revalidate` el
+# navegador preguntaba por cada uno en cada visita, que son quince viajes de
+# ida y vuelta para que le contesten "no cambio". `immutable` corta eso.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# El HTML es lo contrario: es el unico archivo con nombre fijo y es el que
+# dice que hashes pedir. Si se sirve cacheado, la pagina queda apuntando a un
+# build viejo. Peor todavia desde que las pantallas viajan en chunks: si el
+# deploy ya borro el chunk que ese HTML viejo pide, la navegacion muere.
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
