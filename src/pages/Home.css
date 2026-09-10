@@ -204,17 +204,6 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* --- Placeholder -------------------------------------------------------- */
-
-.placeholder__title,
-.placeholder__text {
-  margin-top: var(--sp-3);
-}
-
-.placeholder__text {
-  color: var(--ink-3);
-}
-
 /* --- Secciones de la home ----------------------------------------------- */
 
 /* El aire entre secciones es largo a propósito: es lo que hace que cada

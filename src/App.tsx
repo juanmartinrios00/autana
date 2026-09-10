@@ -6,10 +6,10 @@ import { AuthProvider } from './context/AuthProvider'
 import { CompareProvider } from './context/CompareProvider'
 import { FavoritesProvider } from './context/FavoritesProvider'
 import { Home } from './pages/Home'
-import { Placeholder } from './pages/Placeholder'
+import { NotFound } from './pages/NotFound'
 
 /* Cada pantalla viaja en su propio chunk, que baja cuando alguien entra a la
-   ruta. `Home` y `Placeholder` quedan afuera a proposito: la primera es la que
+   ruta. `Home` y `NotFound` quedan afuera a proposito: la primera es la que
    recibe la visita por defecto y la segunda es el 404, asi que diferirlas
    agregaria un viaje de red justo cuando no hay nada pintado todavia.
 
@@ -101,7 +101,7 @@ export default function App() {
                   <Route path="profile" element={<Profile />} />
                 </Route>
 
-                <Route path="*" element={<Placeholder title="Página no encontrada" phase="Fase 5" />} />
+                <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
           </BrowserRouter>
