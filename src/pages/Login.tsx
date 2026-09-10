@@ -4,7 +4,12 @@ import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
 import { Input } from '../components/ui/Input'
 import { useAuth } from '../hooks/useAuth'
-import { MIN_PASSWORD, NeedsConfirmationError, sendPasswordReset } from '../lib/auth'
+import {
+  MIN_PASSWORD,
+  NeedsConfirmationError,
+  resendConfirmation,
+  sendPasswordReset,
+} from '../lib/auth'
 import { describeError } from '../lib/errors'
 import type { SellerType } from '../types'
 import './Login.css'
@@ -51,6 +56,7 @@ export function Login() {
   const [linkSent, setLinkSent] = useState(false)
   const [resetSent, setResetSent] = useState(false)
   const [checkYourMail, setCheckYourMail] = useState(false)
+  const [resent, setResent] = useState(false)
 
   const from = (location.state as { from?: string } | null)?.from ?? '/'
 
@@ -109,6 +115,28 @@ export function Login() {
         mode === 'signup' ? { name: name.trim() || undefined, sellerType: kind } : undefined,
       )
       setLinkSent(true)
+    } catch (cause) {
+      setError(describeError(cause, 'No pudimos mandar el mail. Probá de nuevo en un momento.'))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  /**
+   * Reenviar el mail que no llegó, sin salir de esta pantalla.
+   *
+   * Cuál se reenvía depende de cuál se mandó: el de confirmación de la cuenta o
+   * el link para entrar. Antes acá había un "volvé a intentar" que sólo volvía
+   * al formulario, y desde el formulario el alta ya no se podía repetir — el
+   * mail estaba tomado por la cuenta sin confirmar.
+   */
+  async function handleResend() {
+    setError(null)
+    setBusy(true)
+    try {
+      if (checkYourMail) await resendConfirmation(email)
+      else await sendMagicLink(email)
+      setResent(true)
     } catch (cause) {
       setError(describeError(cause, 'No pudimos mandar el mail. Probá de nuevo en un momento.'))
     } finally {
@@ -177,15 +205,26 @@ export function Login() {
             <button
               type="button"
               className="login__again"
+              disabled={busy}
+              onClick={() => void handleResend()}
+            >
+              que te lo mandemos de nuevo
+            </button>
+            .{' '}
+            <button
+              type="button"
+              className="login__again"
               onClick={() => {
                 setLinkSent(false)
                 setCheckYourMail(false)
+                setResent(false)
               }}
             >
-              volvé a intentar
+              Volver
             </button>
-            .
           </p>
+          {resent && <p className="login__resent">Listo, lo mandamos de nuevo.</p>}
+          {error && <p className="login__resent login__resent--bad">{error}</p>}
         </div>
       </div>
     )

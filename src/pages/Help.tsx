@@ -233,8 +233,10 @@ const TOPICS: Topic[] = [
         q: '¿Cómo me registro?',
         a: (
           <p>
-            Con tu mail y una contraseña, en <Link to="/login">Ingresar</Link>. Quedás
-            dentro en el momento, sin esperar ningún correo. En el mismo formulario elegís
+            Con tu mail y una contraseña, en <Link to="/login">Ingresar</Link>. Si te
+            pedimos confirmar el mail, te llega un link: lo abrís y ya estás dentro, y si
+            no aparece podés pedir desde esa misma pantalla que te lo mandemos de nuevo.
+            En el mismo formulario elegís
             si publicás como <strong>particular</strong> o como{' '}
             <strong>concesionaria</strong>: es lo que define si tenés 5 o 25 avisos
             activos, y se puede cambiar después en <Link to="/settings">Ajustes</Link>.

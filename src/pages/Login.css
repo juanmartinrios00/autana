@@ -213,3 +213,15 @@
   color: var(--ink-2);
   box-shadow: inset 0 -1px 0 var(--line-strong);
 }
+
+/* El resultado de reenviar el mail. Va debajo del botón que lo pide y no en el
+   lugar del error del formulario: ese formulario no está en pantalla acá. */
+.login__resent {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--success);
+}
+
+.login__resent--bad {
+  color: var(--danger);
+}

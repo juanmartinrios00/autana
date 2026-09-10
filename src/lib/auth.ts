@@ -113,7 +113,13 @@ export async function signUpWithPassword(
   const { data, error } = await client.auth.signUp({
     email,
     password,
-    options: { data: { name, seller_type: sellerType } },
+    options: {
+      data: { name, seller_type: sellerType },
+      /* A dónde vuelve el link de confirmación. Sin esto Supabase usa la Site
+         URL del proyecto, que arranca apuntando a localhost: el mail llegaría
+         con un link que sólo funciona en la máquina del que programa. */
+      emailRedirectTo: `${window.location.origin}/`,
+    },
   })
 
   if (error) throw describe(error)
@@ -148,6 +154,31 @@ export async function signInWithMagicLink(
     },
   })
 
+  if (error) throw describe(error)
+}
+
+/**
+ * Vuelve a mandar el mail de confirmación.
+ *
+ * Hace falta porque el mail de alta se pierde: cae en spam, se cierra sin
+ * abrir, o se tipea mal la dirección y hay que empezar de nuevo. Sin esto la
+ * única salida era crear otra cuenta, y el mail ya estaba tomado por la
+ * primera.
+ *
+ * Supabase responde igual exista o no la cuenta, y eso está bien: contestar
+ * distinto convertiría este botón en una forma de averiguar qué mails están
+ * registrados.
+ *
+ * Mientras `mailer_autoconfirm` esté prendido en Supabase esto no se usa nunca:
+ * las cuentas nacen confirmadas y no hay mail que reenviar.
+ */
+export async function resendConfirmation(email: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.auth.resend({
+    type: 'signup',
+    email,
+    options: { emailRedirectTo: `${window.location.origin}/` },
+  })
   if (error) throw describe(error)
 }
 
