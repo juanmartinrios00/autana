@@ -1,5 +1,6 @@
 import type { LevelInput } from './levels'
 import { computeTrust, type TrustSignal } from './trust'
+import { applyVehicleFilters } from './search-query'
 import { photoUrl, requireSupabase } from './supabase'
 import type {
   ListingStatus,
@@ -197,15 +198,6 @@ const orderBy: Record<SortOption, { column: string; ascending: boolean }> = {
  *
  * El tope de terminos evita que pegar un parrafo arme una consulta enorme.
  */
-function searchTerms(q: string): string[] {
-  return q
-    .trim()
-    .split(/\s+/)
-    .map((term) => term.replace(/[^\p{L}\p{N}-]/gu, ''))
-    .filter(Boolean)
-    .slice(0, 6)
-}
-
 export interface ListVehiclesOptions {
   filters?: VehicleFilters
   sort?: SortOption
@@ -227,37 +219,21 @@ export async function listVehicles({
     .select(LISTING_COLUMNS, { count: 'exact' })
     .eq('status', 'active')
 
-  /* Cada palabra tiene que aparecer en la marca o en el modelo. Antes se
-     pedia la frase entera en una sola columna, asi que "Renault Symbol" —la
-     marca en una columna y el modelo en la otra— no encontraba nada. Los
-     `or` encadenados se combinan con AND, que es justo lo que queremos. */
-  for (const term of searchTerms(filters.q ?? '')) {
-    query = query.or(`make.ilike.%${term}%,model.ilike.%${term}%`)
-  }
-
-  if (filters.make) query = query.eq('make', filters.make)
-  if (filters.model) query = query.eq('model', filters.model)
-  if (filters.province) query = query.eq('province', filters.province)
-  if (filters.minYear) query = query.gte('year', filters.minYear)
-  if (filters.maxYear) query = query.lte('year', filters.maxYear)
-  if (filters.minPrice) query = query.gte('price', filters.minPrice)
-  if (filters.maxPrice) query = query.lte('price', filters.maxPrice)
-  if (filters.maxMileage !== undefined) query = query.lte('mileage', filters.maxMileage)
-  if (filters.transmission) query = query.eq('transmission', filters.transmission)
-  if (filters.fuelType?.length) query = query.in('fuel_type', filters.fuelType)
-  if (filters.bodyType?.length) query = query.in('body_type', filters.bodyType)
-  if (filters.condition?.length) query = query.in('condition', filters.condition)
-
   /* El tipo de vendedor vive en `profiles`, asi que hay que resolverlo ANTES
      de paginar. Filtrando despues del `.range()` se recortaba la pagina ya
      traida: salian menos de `pageSize` resultados, el total venia sin filtrar
      —con lo cual el paginador mostraba paginas de mas— y quedaban avisos a
      los que no se llegaba desde ninguna pagina. */
+  let sellerIds: string[] | undefined
   if (filters.sellerType) {
-    const sellerIds = (await listSellersOfType(filters.sellerType)).map((seller) => seller.id)
+    sellerIds = (await listSellersOfType(filters.sellerType)).map((seller) => seller.id)
     if (sellerIds.length === 0) return { items: [], total: 0, page, pageSize }
-    query = query.in('seller_id', sellerIds)
   }
+
+  /* Los filtros los aplica `lib/search-query`, que es el mismo modulo que usa
+     el trabajo programado de las busquedas guardadas. Si cada uno tuviera su
+     copia, el aviso podria mandar mails por autos que la pantalla no muestra. */
+  query = applyVehicleFilters(query, filters, sellerIds)
 
   const { column, ascending } = orderBy[sort]
   const { data, error, count } = await query
