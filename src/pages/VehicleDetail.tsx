@@ -204,7 +204,7 @@ export function VehicleDetail() {
           <section className="detail__section">
             <h2 className="detail__heading">Vendedor</h2>
             {seller ? (
-              <SellerCard seller={seller} level={vehicle.sellerLevel} />
+              <SellerCard seller={seller} trust={vehicle.sellerTrust} />
             ) : (
               <Skeleton height="116px" />
             )}

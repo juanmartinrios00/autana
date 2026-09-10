@@ -213,9 +213,12 @@ export function Compare() {
                       {vehicleTitle(vehicle)}
                     </Link>
 
-                    {vehicle.sellerLevel && vehicle.sellerLevel.level > 1 && (
-                      <Badge tone="tint">{vehicle.sellerLevel.title}</Badge>
-                    )}
+                    {vehicle.sellerTrust &&
+                      (vehicle.sellerTrust.verified ? (
+                        <Badge tone="success">Verificada</Badge>
+                      ) : (
+                        <Badge tone="tint">{vehicle.sellerTrust.sinceShort}</Badge>
+                      ))}
                   </div>
                 </th>
               ))}

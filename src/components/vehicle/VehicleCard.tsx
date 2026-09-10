@@ -54,14 +54,26 @@ export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
         <div className="vcard__foot">
           <span className="vcard__location">{locationLabel(vehicle.location)}</span>
           <span className="vcard__seller-info">
-            {/* Desde nivel 2. En el primero el sello diria "Recién llegado" en
-                cada card de un marketplace nuevo, y eso castiga justo a quien
-                recien se suma. En el detalle si se muestra siempre. */}
-            {vehicle.sellerLevel && vehicle.sellerLevel.level > 1 && (
-              <Badge tone="tint" className="vcard__level">
-                {vehicle.sellerLevel.title}
-              </Badge>
-            )}
+            {/* Hechos, no un sello ganado. `Verificada` la pone una persona a
+                mano y es la senial fuerte; cuando no esta, queda la antiguedad,
+                que es lo unico que no se puede falsificar apurado. Una cuenta
+                de esta semana publicando un auto caro es justo lo que conviene
+                que se vea. */}
+            {vehicle.sellerTrust &&
+              (vehicle.sellerTrust.verified ? (
+                <Badge tone="success" className="vcard__trust">
+                  Verificada
+                </Badge>
+              ) : (
+                /* "Cuenta nueva" va en tono neutro, no de alerta. Una cuenta
+                   recien creada no es evidencia de nada malo, y ademas en un
+                   marketplace que arranca son casi todas: pintarlas de amarillo
+                   haria ver sospechoso al sitio entero. El hecho informa, el
+                   color no opina. */
+                <Badge tone="tint" className="vcard__trust">
+                  {vehicle.sellerTrust.sinceShort}
+                </Badge>
+              ))}
             {vehicle.sellerType && (
               <Badge className="vcard__seller">{sellerTypeLabels[vehicle.sellerType]}</Badge>
             )}

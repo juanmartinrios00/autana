@@ -7,6 +7,12 @@
  * quien borró una publicación. Si el dato cambia, el nivel cambia solo.
  *
  * Todos los logros son verificables. Ninguno se otorga "por participar".
+ *
+ * Lo que el nivel NO es: una señal de confianza. Dos de los seis logros son
+ * del garage —el primer auto, el que más se extraña—, que es nostalgia y no
+ * dice nada sobre con quién es seguro encontrarse a entregar plata. Por eso
+ * vive solo en el perfil. Lo que ve el comprador junto al precio son hechos
+ * verificables y está en `trust.ts`; no mezclar las dos cosas otra vez.
  */
 
 export type AchievementId =

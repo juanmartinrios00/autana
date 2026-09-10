@@ -204,7 +204,13 @@ export function Profile() {
           </div>
 
           {/* El nivel sale de datos reales, no de un contador guardado: si
-              borrás una publicación, baja. */}
+              borrás una publicación, baja.
+
+              Vive acá y en ningún otro lado. Estuvo un tiempo al lado del
+              precio en cada aviso, y ahí engañaba: se gana en parte cargando
+              autos en el garage, que es nostalgia, y un comprador lo leía como
+              una medida de con quién es seguro encontrarse. Al comprador le
+              van hechos ahora — ver `src/lib/trust.ts`. */}
           <div className="levelcard">
             <div className="levelcard__top">
               <span className="over over--invert levelcard__number">Nivel {level.level}</span>
@@ -283,6 +289,11 @@ export function Profile() {
               <div>
                 <span className="over">Progreso</span>
                 <h2 className="profile__section-title">Logros</h2>
+                <p className="profile__section-note">
+                  Es un juego del perfil, no una calificación de vendedor. A quien
+                  mira tus autos le mostramos hechos: si estás verificada y desde
+                  cuándo tenés cuenta.
+                </p>
               </div>
             </header>
 

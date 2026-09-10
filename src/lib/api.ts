@@ -1,4 +1,4 @@
-import { computeLevel } from './levels'
+import { computeTrust, type TrustSignal } from './trust'
 import { photoUrl, requireSupabase } from './supabase'
 import type {
   ListingStatus,
@@ -260,19 +260,19 @@ export async function listVehicles({
 
   const items = (data as ListingRow[]).map(toVehicle)
 
-  return { items: await withSellerLevels(items), total: count ?? items.length, page, pageSize }
+  return { items: await withSellerTrust(items), total: count ?? items.length, page, pageSize }
 }
 
 /** Adjunta el nivel del vendedor a un lote de avisos, en una sola consulta. */
-async function withSellerLevels(items: Vehicle[]): Promise<Vehicle[]> {
+async function withSellerTrust(items: Vehicle[]): Promise<Vehicle[]> {
   if (items.length === 0) return items
 
   /* Si la vista todavia no existe o falla, los avisos se muestran igual sin
-     el sello: es un adorno de confianza, no el contenido. */
-  const levels = await getSellerLevels(items.map((item) => item.sellerId)).catch(() => null)
-  if (!levels) return items
+     el sello: acompania a la decision, no es el contenido. */
+  const trust = await getSellerTrust(items.map((item) => item.sellerId)).catch(() => null)
+  if (!trust) return items
 
-  return items.map((item) => ({ ...item, sellerLevel: levels.get(item.sellerId) }))
+  return items.map((item) => ({ ...item, sellerTrust: trust.get(item.sellerId) }))
 }
 
 async function listSellersOfType(type: Seller['type']): Promise<{ id: string }[]> {
@@ -293,7 +293,7 @@ export async function getVehicleBySlug(slug: string): Promise<Vehicle> {
   if (error) throw error
   if (!data) throw new NotFoundError('esa publicación')
 
-  const [vehicle] = await withSellerLevels([toVehicle(data as ListingRow)])
+  const [vehicle] = await withSellerTrust([toVehicle(data as ListingRow)])
   return vehicle!
 }
 
@@ -333,7 +333,7 @@ export async function getSimilarVehicles(vehicle: Vehicle, limit = 3): Promise<V
     .sort((a, b) => Math.abs(a.price - vehicle.price) - Math.abs(b.price - vehicle.price))
     .slice(0, limit)
 
-  return withSellerLevels(similar)
+  return withSellerTrust(similar)
 }
 
 /**
@@ -349,7 +349,7 @@ export async function getVehiclesBySlugs(slugs: string[]): Promise<Vehicle[]> {
   const client = requireSupabase()
   const { data, error } = await client.from('listings').select(LISTING_COLUMNS).in('slug', slugs)
   if (error) throw error
-  return withSellerLevels((data as ListingRow[]).map(toVehicle))
+  return withSellerTrust((data as ListingRow[]).map(toVehicle))
 }
 
 export async function getVehiclesByIds(ids: string[]): Promise<Vehicle[]> {
@@ -884,7 +884,7 @@ export async function listRecentVehicles(limit = 8): Promise<Vehicle[]> {
     .limit(limit)
 
   if (error) throw error
-  return withSellerLevels((data as ListingRow[]).map(toVehicle))
+  return withSellerTrust((data as ListingRow[]).map(toVehicle))
 }
 
 /**
@@ -902,7 +902,7 @@ export async function listPopularVehicles(limit = 8, minViews = 1): Promise<Vehi
     .limit(limit)
 
   if (error) throw error
-  return withSellerLevels((data as ListingRow[]).map(toVehicle))
+  return withSellerTrust((data as ListingRow[]).map(toVehicle))
 }
 
 /** Cuántas publicaciones activas hay por marca o por carrocería. */
@@ -1108,41 +1108,47 @@ interface StatsRow {
   name: string
   whatsapp: string | null
   city: string | null
+  verified: boolean
+  created_at: string
   active_listings: number
   best_photos: number
   garage_cars: number
 }
 
+/** @deprecated El nivel ya no viaja con los avisos. Ver `getSellerTrust`. */
 export interface SellerLevel {
   level: number
   title: string
 }
 
 /**
- * Nivel de varios vendedores de una sola consulta.
+ * La señal de confianza de varios vendedores de una sola consulta.
  *
- * La vista `profile_stats` devuelve números crudos y el nivel se calcula acá
- * con `computeLevel`, que es la única fuente de las reglas. Sin esto habría
- * que pedir los datos de cada vendedor por separado al pintar una grilla.
+ * Acá antes se calculaba el nivel, que es lo que se mostraba junto al precio.
+ * El nivel se gana en parte cargando autos en el garage, así que no era una
+ * medida de nada que le sirviera a quien está por escribirle a un desconocido:
+ * ver `src/lib/trust.ts`. El nivel sigue existiendo, pero se calcula en el
+ * perfil y no viaja con cada aviso.
+ *
+ * Sin esto habría que pedir los datos de cada vendedor por separado al pintar
+ * una grilla.
  */
-export async function getSellerLevels(userIds: string[]): Promise<Map<string, SellerLevel>> {
+export async function getSellerTrust(userIds: string[]): Promise<Map<string, TrustSignal>> {
   const unique = [...new Set(userIds)].filter(Boolean)
   if (unique.length === 0) return new Map()
 
   const client = requireSupabase()
-  const { data, error } = await client.from('profile_stats').select('*').in('user_id', unique)
+  const { data, error } = await client
+    .from('profile_stats')
+    .select('user_id, verified, created_at')
+    .in('user_id', unique)
   if (error) throw error
 
   return new Map(
-    (data as StatsRow[]).map((row) => {
-      const state = computeLevel({
-        profile: { name: row.name, whatsapp: row.whatsapp, city: row.city },
-        activeListings: row.active_listings,
-        bestPhotoCount: row.best_photos,
-        garageCars: row.garage_cars,
-      })
-      return [row.user_id, { level: state.level, title: state.title }]
-    }),
+    (data as Pick<StatsRow, 'user_id' | 'verified' | 'created_at'>[]).map((row) => [
+      row.user_id,
+      computeTrust({ verified: row.verified, memberSince: row.created_at }),
+    ]),
   )
 }
 

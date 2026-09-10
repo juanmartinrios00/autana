@@ -1,3 +1,5 @@
+import type { TrustSignal } from '../lib/trust'
+
 /**
  * Modelo de dominio de Autana.
  *
@@ -103,8 +105,12 @@ export interface Vehicle {
      por cada card de la grilla. */
   sellerName?: string
   sellerType?: SellerType
-  /** Nivel del vendedor, para que el comprador sepa a quien le escribe. */
-  sellerLevel?: { level: number; title: string }
+  /**
+   * Hechos verificables del vendedor, para que el comprador sepa a quien le
+   * escribe. No es el nivel: el nivel se gana tambien cargando autos en el
+   * garage y no dice nada de esto. Ver `src/lib/trust.ts`.
+   */
+  sellerTrust?: TrustSignal
 }
 
 export interface Favorite {
