@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { GarageSlotCard } from '../components/garage/GarageSlotCard'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -16,19 +16,23 @@ import type { GarageEntry } from '../types'
 import './Profile.css'
 
 /**
- * Sirve para dos cosas: el perfil propio, con el garage editable, y el garage
- * público de cualquiera en `/g/:id`. La única diferencia es si se puede editar.
+ * El perfil propio: la foto, el nivel, la puerta al panel de venta y el garage
+ * editable.
+ *
+ * Hasta hace poco esta misma pantalla servía también el garage público de otra
+ * persona en `/g/:id`, y por eso tenía todo duplicado en dos modos. Ese caso
+ * se fue a `Garage`, que es una pantalla pensada para que la abra alguien que
+ * no puede tocar nada. Acá `editable` es siempre verdadero: la ruta vive detrás
+ * de `RequireAuth`.
  */
 export function Profile() {
-  const { id } = useParams()
   const { session } = useAuth()
 
-  const userId = id ?? session?.user.id ?? ''
-  const editable = Boolean(session && session.user.id === userId)
+  const userId = session?.user.id ?? ''
+  const editable = true
 
-  /* Los datos se guardan junto al usuario que los pidió. Comparar ese id con
-     el de la URL es lo que dice si estamos cargando, y de paso evita mostrar
-     el garage del perfil anterior al navegar de `/profile` a `/g/otro`. */
+  /* Los datos se guardan junto al usuario que los pidió, y comparar ese id con
+     el actual es lo que dice si todavía estamos cargando. */
   const [loaded, setLoaded] = useState<{
     userId: string
     profile: ProfileSummary | null
@@ -262,11 +266,10 @@ export function Profile() {
               <span className="over">El garage</span>
               <h2 className="profile__section-title">Los autos que te marcaron</h2>
             </div>
-            {editable && (
-              <p className="profile__section-note">
-                Es público: podés compartir el link con quien quieras.
-              </p>
-            )}
+            <p className="profile__section-note">
+              Es público y tiene pantalla propia:{' '}
+              <Link to={`/g/${userId}`}>vela como la ve el resto</Link> y compartila.
+            </p>
           </header>
 
           <div className="garage">

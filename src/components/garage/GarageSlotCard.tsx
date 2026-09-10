@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import { Input } from '../ui/Input'
+import { GarageScene } from './scenes'
 import { SLOTS, type GarageInput } from '../../lib/garage'
 import type { GarageEntry, GarageSlot } from '../../types'
 
@@ -144,7 +145,9 @@ export function GarageSlotCard({ slot, entry, editable, onSave, onRemove }: Gara
   if (!entry) {
     return (
       <article className="gslot gslot--empty">
-        <div className="gslot__media gslot__media--empty" aria-hidden="true" />
+        <div className="gslot__media gslot__media--scene">
+          <GarageScene slot={slot} className="gslot__scene" />
+        </div>
         <div className="gslot__body">
           <h3 className="gslot__title">{meta.title}</h3>
           <p className="gslot__hint">{meta.hint}</p>
@@ -165,7 +168,10 @@ export function GarageSlotCard({ slot, entry, editable, onSave, onRemove }: Gara
         {entry.photoUrl ? (
           <img src={entry.photoUrl} alt="" className="gslot__img" loading="lazy" />
         ) : (
-          <span className="gslot__media--empty" aria-hidden="true" />
+          /* Sin foto la escena hace de retrato. No es un placeholder gris
+             esperando una imagen: para la mayoría este es el estado final,
+             porque nadie tiene a mano una foto del auto que vendió en 2011. */
+          <GarageScene slot={slot} className="gslot__scene" />
         )}
       </div>
 

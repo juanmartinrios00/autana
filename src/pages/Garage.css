@@ -1,0 +1,51 @@
+/* La pantalla propia del garage. La grilla de slots (`.garage`, `.gslot`) vive
+   en Profile.css, que es donde nació y donde se sigue usando. */
+
+.garagepage__head {
+  padding-block: var(--sp-8);
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.garagepage__title {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-h2);
+}
+
+.garagepage__lead {
+  max-width: 54ch;
+  margin-top: var(--sp-3);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.garagepage__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+
+/* Cuántos espacios están llenos. Va en mono porque es un dato, no una
+   etiqueta, y así no compite con el botón de compartir. */
+.garagepage__count {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.garagepage__back {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.garagepage__body {
+  padding-block: var(--sp-7) var(--sp-9);
+}
+
+/* La invitación al que llegó por un link ajeno. Es lo último de la página a
+   propósito: primero se miran los autos de la otra persona. */
+.garagepage__cta {
+  margin-top: var(--sp-7);
+  text-align: center;
+  color: var(--ink-3);
+}

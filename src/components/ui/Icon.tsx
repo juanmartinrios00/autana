@@ -22,6 +22,7 @@ const paths = {
   user: <><circle cx="12" cy="8" r="4" /><path d="M4.5 21c.5-4.1 3.3-6.5 7.5-6.5s7 2.4 7.5 6.5" /></>,
   camera: <><path d="M3 7.5h4l1.5-2h7l1.5 2h4v12H3z" /><circle cx="12" cy="13.5" r="3.5" /></>,
   plus: <><path d="M12 3.5v17" /><path d="M3.5 12h17" /></>,
+  link: <><path d="M10.5 13.5a4.5 4.5 0 0 0 6.4 0l2.6-2.6a4.5 4.5 0 0 0-6.4-6.4l-1.5 1.5" /><path d="M13.5 10.5a4.5 4.5 0 0 0-6.4 0l-2.6 2.6a4.5 4.5 0 0 0 6.4 6.4l1.5-1.5" /></>,
   mapPin: <><path d="M12 21.5 5.5 13.2a7.2 7.2 0 1 1 13 0z" /><path d="M9.5 9.5h5v5h-5z" /></>,
   message: <><path d="M3.5 4.5h17v12h-11l-6 4.5z" /></>,
   /* Perfil lateral de auto, en trazo: da el mismo registro técnico. */

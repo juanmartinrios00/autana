@@ -19,6 +19,7 @@ const Admin = lazy(() => import('./pages/Admin').then((m) => ({ default: m.Admin
 const Cars = lazy(() => import('./pages/Cars').then((m) => ({ default: m.Cars })))
 const Compare = lazy(() => import('./pages/Compare').then((m) => ({ default: m.Compare })))
 const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default: m.Favorites })))
+const Garage = lazy(() => import('./pages/Garage').then((m) => ({ default: m.Garage })))
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })))
 const MyListings = lazy(() => import('./pages/MyListings').then((m) => ({ default: m.MyListings })))
 const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.Profile })))
@@ -53,8 +54,9 @@ export default function App() {
                 <Route path="dashboard/*" element={<Placeholder title="Dashboard" phase="Fase 3" />} />
                 <Route path="login" element={<Login />} />
 
-                {/* El garage es público: se comparte por link. */}
-                <Route path="g/:id" element={<Profile />} />
+                {/* El garage es público y tiene pantalla propia: el link que
+                    alguien manda por WhatsApp abre los autos, no el panel. */}
+                <Route path="g/:id" element={<Garage />} />
 
                 {/* Publicar y el perfil propio exigen sesión: mandan a login y
                     después vuelven acá. */}
