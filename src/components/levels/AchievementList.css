@@ -1,0 +1,56 @@
+/* La lista de logros.
+   Igual que las tarjetas del garage: la usan el perfil y la pantalla de
+   niveles, asi que el CSS va con el componente y no con una de las dos
+   pantallas. */
+
+.achievements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-3);
+}
+
+.achievement {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+.achievement.is-done {
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+}
+
+.achievement__mark {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  color: var(--ink);
+}
+
+.achievement.is-done .achievement__mark {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+.achievement__title {
+  font-size: 1rem;
+  color: var(--ink-4);
+}
+
+.achievement.is-done .achievement__title {
+  color: var(--ink);
+}
+
+.achievement__hint {
+  margin-top: var(--sp-1);
+  font-size: 0.84rem;
+  color: var(--ink-3);
+}

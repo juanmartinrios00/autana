@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { GarageSlotCard } from '../components/garage/GarageSlotCard'
-import { GarageSketchDefs } from '../components/garage/scenes'
+import { SketchDefs } from '../components/ui/SketchDefs'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
@@ -132,7 +132,7 @@ export function Garage() {
     <>
       {/* El filtro que le da el temblor al trazo. Una sola vez por página: las
           cuatro escenas lo referencian por id. */}
-      <GarageSketchDefs />
+      <SketchDefs />
 
       <section className="garagepage__head">
         <div className="page garagepage__head-inner">

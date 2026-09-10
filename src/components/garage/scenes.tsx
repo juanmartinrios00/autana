@@ -24,53 +24,22 @@
  *    poco, escalan, y siguen al tema. Un hero de 2,3 MB ya nos pasó una vez.
  *
  * 5. Sin `id` duplicados entre escenas: las cuatro conviven en el mismo
- *    documento. El filtro compartido vive en `GarageSketchDefs`.
+ *    documento. El filtro que le da el temblor al trazo es compartido y vive
+ *    en `components/ui/SketchDefs`; la pantalla lo declara una vez.
  */
 
+import { sceneSvgProps } from '../ui/sketch'
 import type { GarageSlot } from '../../types'
-
-/**
- * El temblor del trazo.
- *
- * Una línea recta de SVG se lee como diagrama. `feTurbulence` genera ruido y
- * `feDisplacementMap` empuja cada punto del trazo con ese ruido, así que la
- * recta queda apenas ondulada — que es lo que hace la mano. La escala es baja
- * a propósito: pasando de 3 deja de parecer dibujado y empieza a parecer roto.
- *
- * Se declara una sola vez por página. Si no está, los dibujos se ven igual
- * pero con el trazo recto: el filtro es una mejora, no un requisito.
- */
-export function GarageSketchDefs() {
-  return (
-    <svg width="0" height="0" aria-hidden="true" focusable="false" style={{ position: 'absolute' }}>
-      <defs>
-        <filter id="garage-sketch" x="-10%" y="-10%" width="120%" height="120%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="7" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </defs>
-    </svg>
-  )
-}
 
 interface SceneProps {
   className?: string
 }
 
-/* Todas las escenas comparten estos atributos. El `aria-hidden` es deliberado:
+/* Los atributos comunes viven en `ui/SketchDefs`, porque los comparte con los
+   dibujos de la pantalla de niveles. El `aria-hidden` que traen es deliberado:
    la escena ilustra un texto que ya está al lado, así que anunciarla de nuevo
    es ruido para quien usa lector de pantalla. */
-const svgProps = {
-  viewBox: '0 0 320 200',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 2.5,
-  strokeLinecap: 'round' as const,
-  strokeLinejoin: 'round' as const,
-  filter: 'url(#garage-sketch)',
-  'aria-hidden': true,
-  focusable: 'false' as const,
-}
+const svgProps = sceneSvgProps
 
 /** El auto de tres puertas con el que casi todos aprendieron. */
 function FirstScene({ className }: SceneProps) {

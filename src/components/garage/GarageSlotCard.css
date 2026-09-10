@@ -1,0 +1,147 @@
+/* Las tarjetas del garage.
+   Viven acá y no en `Profile.css` porque las usan dos pantallas: el perfil
+   propio y el garage público de `/g/:id`. Cuando estaban en la hoja del perfil,
+   la pantalla del garage se servia sin ninguna de estas reglas — el CSS viaja
+   con el chunk de la pagina que lo importa, y `/g/:id` nunca carga el perfil. */
+
+.garage {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-5);
+}
+
+.gslot {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  background: var(--canvas);
+  box-shadow: var(--sh-flat);
+}
+
+.gslot--empty {
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.gslot--editing {
+  box-shadow:
+    0 0 0 1.5px var(--ink),
+    0 0 0 5px var(--accent-tint);
+}
+
+.gslot__media {
+  height: 180px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+/* Sin foto va la escena dibujada del slot. El trazo hereda el color del texto,
+   así que el mismo dibujo sirve en tema claro y en oscuro sin tener dos
+   versiones. El padding va en el SVG y no en el contenedor porque la escena
+   aparece en dos cajas distintas —el slot vacío y el slot sin foto— y así las
+   dos quedan iguales sin repetir la regla. */
+.gslot__media--scene {
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+}
+
+.gslot__scene {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: var(--sp-4);
+  color: var(--ink-3);
+}
+
+.gslot--empty .gslot__media {
+  height: 120px;
+}
+
+.gslot__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gslot__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-5);
+}
+
+.gslot__slot {
+  color: var(--ink-4);
+}
+
+.gslot__title {
+  font-size: 1.06rem;
+}
+
+.gslot__car {
+  font-size: 1.25rem;
+}
+
+.gslot__year {
+  font-size: 0.84rem;
+  color: var(--ink-3);
+}
+
+.gslot__hint {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+.gslot__note {
+  margin-top: var(--sp-1);
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+
+.gslot__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-top: var(--sp-3);
+}
+
+.gslot__actions--quiet {
+  margin-top: var(--sp-4);
+  margin-inline: calc(var(--sp-4) * -1);
+}
+
+.gslot__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+}
+
+.gslot__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.gslot__note-input {
+  height: auto;
+  padding: var(--sp-3) 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* --- Logros ------------------------------------------------------------- */
+
+/* Los logros dejan de ser una grilla continua entre hairlines: cada uno es
+   una ficha propia, y las conseguidas se despegan del fondo en blanco. */
+
+@media (max-width: 899px) {
+  .gslot__pair {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GarageSlotCard } from '../components/garage/GarageSlotCard'
+import { AchievementList } from '../components/levels/AchievementList'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
@@ -295,27 +296,13 @@ export function Profile() {
                 <p className="profile__section-note">
                   Es un juego del perfil, no una calificación de vendedor. A quien
                   mira tus autos le mostramos hechos: si estás verificada y desde
-                  cuándo tenés cuenta.
+                  cuándo tenés cuenta.{' '}
+                  <Link to="/levels">Cómo funcionan los niveles</Link>.
                 </p>
               </div>
             </header>
 
-            <ul className="achievements">
-              {level.achievements.map((item) => (
-                <li
-                  key={item.id}
-                  className={item.done ? 'achievement is-done' : 'achievement'}
-                >
-                  <span className="achievement__mark" aria-hidden="true">
-                    {item.done && <Icon name="check" size={14} />}
-                  </span>
-                  <div>
-                    <h3 className="achievement__title">{item.title}</h3>
-                    <p className="achievement__hint">{item.hint}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <AchievementList achievements={level.achievements} />
           </section>
         )}
       </div>

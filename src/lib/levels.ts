@@ -43,7 +43,15 @@ export interface LevelState {
   progress: number
 }
 
-const LEVELS = [
+/**
+ * La escalera. `at` es cuántos logros hacen falta para entrar al nivel.
+ *
+ * Se exporta porque la pantalla de niveles muestra los cuatro, no sólo el
+ * actual: si sólo se ve el propio, nadie entiende de qué se trata ni qué falta.
+ * Es la única definición de los niveles que hay, así que agregar uno acá lo
+ * agrega en todas partes.
+ */
+export const LEVELS = [
   { at: 0, title: 'Recién llegado' },
   { at: 2, title: 'Vendedor' },
   { at: 4, title: 'Fierrero' },

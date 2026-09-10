@@ -5,6 +5,7 @@ import { Input } from '../ui/Input'
 import { GarageScene } from './scenes'
 import { SLOTS, type GarageInput } from '../../lib/garage'
 import type { GarageEntry, GarageSlot } from '../../types'
+import './GarageSlotCard.css'
 
 interface GarageSlotCardProps {
   slot: GarageSlot

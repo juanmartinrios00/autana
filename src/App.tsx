@@ -20,6 +20,7 @@ const Cars = lazy(() => import('./pages/Cars').then((m) => ({ default: m.Cars })
 const Compare = lazy(() => import('./pages/Compare').then((m) => ({ default: m.Compare })))
 const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default: m.Favorites })))
 const Garage = lazy(() => import('./pages/Garage').then((m) => ({ default: m.Garage })))
+const Levels = lazy(() => import('./pages/Levels').then((m) => ({ default: m.Levels })))
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })))
 const MyListings = lazy(() => import('./pages/MyListings').then((m) => ({ default: m.MyListings })))
 const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.Profile })))
@@ -53,6 +54,12 @@ export default function App() {
                 <Route path="compare" element={<Compare />} />
                 <Route path="dashboard/*" element={<Placeholder title="Dashboard" phase="Fase 3" />} />
                 <Route path="login" element={<Login />} />
+
+                {/* Explica los niveles y no exige sesión: es la pantalla a la
+                    que se manda a alguien que pregunta qué son, y pedirle
+                    registro para leer una explicación es la forma más rápida
+                    de que no la lea. */}
+                <Route path="levels" element={<Levels />} />
 
                 {/* El garage es público y tiene pantalla propia: el link que
                     alguien manda por WhatsApp abre los autos, no el panel. */}

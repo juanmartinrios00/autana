@@ -1,3 +1,4 @@
+import type { LevelInput } from './levels'
 import { computeTrust, type TrustSignal } from './trust'
 import { photoUrl, requireSupabase } from './supabase'
 import type {
@@ -1150,6 +1151,32 @@ export async function getSellerTrust(userIds: string[]): Promise<Map<string, Tru
       computeTrust({ verified: row.verified, memberSince: row.created_at }),
     ]),
   )
+}
+
+/**
+ * Todo lo que `computeLevel` necesita, en una sola consulta.
+ *
+ * `profile_stats` ya trae los contadores y los tres campos que definen el
+ * perfil completo, así que la pantalla de niveles no necesita pedir el perfil
+ * por separado ni contar el garage a mano.
+ */
+export async function getLevelInput(userId: string): Promise<LevelInput> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('profile_stats')
+    .select('name, whatsapp, city, active_listings, best_photos, garage_cars')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (error) throw error
+  const row = data as Omit<StatsRow, 'user_id' | 'verified' | 'created_at'> | null
+
+  return {
+    profile: row ? { name: row.name, whatsapp: row.whatsapp, city: row.city } : null,
+    activeListings: row?.active_listings ?? 0,
+    bestPhotoCount: row?.best_photos ?? 0,
+    garageCars: row?.garage_cars ?? 0,
+  }
 }
 
 /** Los números crudos de un perfil, para la pantalla propia. */
