@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { AccountMenu } from './AccountMenu'
 import { Icon } from '../ui/Icon'
 import { NavSearch } from './NavSearch'
 
@@ -65,27 +66,7 @@ export function Navbar({ atTop }: NavbarProps) {
 
         <div className="navbar__actions">
           {session ? (
-            <>
-              <button
-                type="button"
-                className="navbar__link navbar__desktop-only"
-                onClick={() => void signOut()}
-              >
-                Salir
-              </button>
-              <Link
-                to="/profile"
-                className="navbar__avatar"
-                title={`${session.user.name} — ver mi perfil`}
-                aria-label="Mi perfil y garage"
-              >
-                {session.user.avatarUrl ? (
-                  <img src={session.user.avatarUrl} alt="" className="navbar__avatar-img" />
-                ) : (
-                  <Icon name="user" size={19} />
-                )}
-              </Link>
-            </>
+            <AccountMenu user={session.user} onSignOut={() => void signOut()} />
           ) : (
             <Link to="/login" className="navbar__link navbar__desktop-only">
               Ingresar
@@ -120,15 +101,31 @@ export function Navbar({ atTop }: NavbarProps) {
                 <Link to="/profile" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
                   Mi perfil <Icon name="arrowRight" size={18} />
                 </Link>
+                <Link
+                  to="/my-listings"
+                  className="navbar__mobile-link"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Mis publicaciones <Icon name="arrowRight" size={18} />
+                </Link>
+                <Link
+                  to={`/g/${session.user.id}`}
+                  className="navbar__mobile-link"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Mi garage <Icon name="arrowRight" size={18} />
+                </Link>
+                {/* Mismo criterio que en el menú de escritorio: cerrar sesión
+                    al final y marcado, no mezclado con la navegación. */}
                 <button
                   type="button"
-                  className="navbar__mobile-link"
+                  className="navbar__mobile-link navbar__mobile-link--out"
                   onClick={() => {
                     setMenuOpen(false)
                     void signOut()
                   }}
                 >
-                  Salir
+                  Cerrar sesión
                 </button>
               </>
             ) : (

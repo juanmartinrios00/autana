@@ -146,30 +146,6 @@ button.navbar__link {
   margin-left: 0;
 }
 
-.navbar__avatar {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--r-pill);
-  background: var(--ink);
-  color: var(--ink-inverse);
-  font-size: 0.84rem;
-  font-weight: 600;
-}
-
-.navbar__avatar-img {
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
-  object-fit: cover;
-}
-
-.navbar--over .navbar__avatar {
-  background: var(--ink-inverse);
-  color: var(--ink);
-}
-
 /* La accion principal del sitio esta siempre a la vista y se ve como lo que
    es: una capsula solida. Sobre el hero oscuro se invierte a blanco para no
    pelearse con el amarillo del buscador, que ahi manda. */
@@ -587,4 +563,11 @@ button.navbar__link {
    leerse, y lo unico que hace falta evitar es que el pie salte. */
 .route-fallback {
   min-height: 70vh;
+}
+
+/* Cerrar sesión en el menú de celular: separado del resto y en rojo, igual que
+   en el menú de cuenta de escritorio. Es la única acción del menú que no se
+   deshace con el botón de atrás. */
+.navbar__mobile-link--out {
+  color: var(--danger);
 }
