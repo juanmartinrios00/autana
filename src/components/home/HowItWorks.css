@@ -1,0 +1,137 @@
+/* ---------------------------------------------------------------------------
+   Cómo funciona, en solapas.
+
+   Mismo lenguaje que el resto de la portada: esquinas rectas, borde de 1px y
+   el amarillo puesto sólo donde marca algo.
+--------------------------------------------------------------------------- */
+.how {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  padding: clamp(var(--sp-6), 4vw, var(--sp-9));
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.how__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.how__title {
+  max-width: 18ch;
+  font-size: var(--fs-h2);
+}
+
+/* Las solapas. La activa se marca con el fondo amarillo y no sólo con el peso
+   de la letra: hay que poder ver cuál está elegida de un vistazo, y de lejos. */
+.how__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.how__tab {
+  padding: var(--sp-3) var(--sp-5);
+  border: 1px solid var(--line-strong);
+  border-bottom: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.how__tab + .how__tab {
+  margin-left: -1px;
+}
+
+.how__tab:hover {
+  color: var(--ink);
+}
+
+.how__tab--on {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.how__tab:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+
+.how__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.how__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hstep {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  grid-template-rows: auto minmax(34px, auto) auto;
+  column-gap: var(--sp-4);
+  row-gap: var(--sp-3);
+  padding: var(--sp-5);
+  background: var(--canvas);
+  border: 1px solid var(--line);
+}
+
+.hstep__art {
+  grid-column: span 2;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+.hstep__scene {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+}
+
+/* La ficha del número, igual que la que ya usaban los pasos de antes: ancla el
+   paso y hace que las tres cajas se lean como una secuencia. */
+.hstep__n {
+  grid-row: span 2;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--ink);
+  background: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.hstep__title {
+  align-self: center;
+  font-size: 1.02rem;
+}
+
+.hstep__text {
+  font-size: 0.94rem;
+  color: var(--ink-3);
+}
+
+@media (max-width: 899px) {
+  .how__steps {
+    grid-template-columns: 1fr;
+  }
+}

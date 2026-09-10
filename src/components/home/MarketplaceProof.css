@@ -1,0 +1,85 @@
+/* ---------------------------------------------------------------------------
+   La banda de números.
+
+   Ocupa todo el ancho, sin el margen lateral del resto de la portada. Por eso
+   el componente se monta fuera de `.page`: llegar al borde con un truco de
+   `100vw` desde adentro suma una barra de scroll horizontal en cuanto el
+   navegador muestra la suya.
+--------------------------------------------------------------------------- */
+.proof {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.proof__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding-block: clamp(var(--sp-6), 4vw, var(--sp-8)) var(--sp-6);
+}
+
+.proof__title {
+  max-width: 20ch;
+  font-size: var(--fs-h2);
+}
+
+/* Las celdas se separan con una línea, no con espacio: es lo que hace que se
+   lean como una tira continua y no como cuatro tarjetas sueltas. */
+.proof__band {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.proof__cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--sp-7);
+  min-height: 220px;
+  padding: var(--sp-6) clamp(var(--sp-4), 2.5vw, var(--sp-6));
+  /* Sobre amarillo, `--line` no se ve. El divisor es la misma tinta del texto
+     bajada de opacidad, así que acompaña al fondo en vez de pelearse. */
+  border-top: 1px solid rgb(10 16 12 / 0.18);
+}
+
+/* El divisor va entre celdas, no alrededor: en los bordes de la pantalla una
+   línea vertical no separa nada de nada. */
+.proof__cell + .proof__cell {
+  border-left: 1px solid rgb(10 16 12 / 0.18);
+}
+
+.proof__value {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 5vw, 4.25rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.proof__label {
+  max-width: 22ch;
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+@media (max-width: 899px) {
+  .proof__band {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .proof__cell {
+    min-height: 170px;
+    gap: var(--sp-5);
+  }
+}
+
+@media (max-width: 479px) {
+  .proof__band {
+    grid-template-columns: 1fr;
+  }
+
+  .proof__cell {
+    min-height: 0;
+  }
+}

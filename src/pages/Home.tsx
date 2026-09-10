@@ -15,6 +15,7 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Icon } from '../components/ui/Icon'
 import { Select } from '../components/ui/Select'
+import { SketchDefs } from '../components/ui/SketchDefs'
 import { brands } from '../data/brands'
 import { priceCaps, provinces } from '../data/makes'
 import {
@@ -94,6 +95,11 @@ export function Home() {
 
   return (
     <>
+      {/* El filtro que le da el temblor al trazo de los dibujos de "Cómo
+          funciona". Se declara una vez por página; si faltara, los dibujos se
+          verían igual pero con la línea recta. */}
+      <SketchDefs />
+
       <section className="hero">
         <div className="page hero__inner">
         <span className="over over--invert">Marketplace de autos · Argentina</span>
@@ -162,10 +168,13 @@ export function Home() {
         </div>
       </section>
 
+      {/* Fuera de `.page` a propósito: es la única sección que llega a los dos
+          bordes de la pantalla, y desde adentro del contenedor con márgenes no
+          hay forma de llegar sin sumar una barra de scroll horizontal. */}
+      {stats && stats.listings > 0 && <MarketplaceProof stats={stats} />}
+
       <div className="page home__sections">
         <BrandSlider />
-
-        {stats && stats.listings > 0 && <MarketplaceProof stats={stats} />}
 
         <VehicleSlider
           eyebrow="Lo último"

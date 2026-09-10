@@ -1,6 +1,6 @@
 import { formatCount } from '../../lib/format'
 import type { MarketplaceStats } from '../../lib/api'
-import './HomeSections.css'
+import './MarketplaceProof.css'
 
 interface MarketplaceProofProps {
   stats: MarketplaceStats
@@ -9,47 +9,51 @@ interface MarketplaceProofProps {
 const label = (value: number, singular: string, plural: string) =>
   `${value === 1 ? singular : plural} en Autana`
 
+/**
+ * La banda de números, a todo el ancho.
+ *
+ * Va pegada al hero y sin margen a los costados a propósito: es un corte de
+ * color entre dos bloques de contenido, y una banda con aire alrededor deja de
+ * cortar.
+ *
+ * Los números salen de la base, no de un archivo de constantes. Si hay una
+ * publicación, dice una. Es la misma regla que sigue /dealers: un número
+ * inflado en la portada se desmiente solo en cuanto alguien toca "ver todos".
+ */
 export function MarketplaceProof({ stats }: MarketplaceProofProps) {
   const items = [
     {
-      category: 'Inventario',
-      description: label(stats.listings, 'publicación activa', 'publicaciones activas'),
       value: formatCount(stats.listings),
+      description: label(stats.listings, 'publicación activa', 'publicaciones activas'),
     },
     {
-      category: 'Variedad',
-      description: label(stats.makes, 'marca disponible', 'marcas disponibles'),
       value: formatCount(stats.makes),
+      description: label(stats.makes, 'marca disponible', 'marcas disponibles'),
     },
     {
-      category: 'Cobertura',
-      description: label(stats.provinces, 'provincia representada', 'provincias representadas'),
       value: formatCount(stats.provinces),
+      description: label(stats.provinces, 'provincia representada', 'provincias representadas'),
     },
     {
-      category: 'Publicación',
-      description: 'comisión por vender tu vehículo',
       value: '0%',
+      description: 'comisión por vender tu vehículo',
     },
   ]
 
   return (
     <section className="proof" aria-labelledby="proof-title">
-      <header className="proof__head">
+      <div className="page proof__head">
         <span className="over">Datos del marketplace</span>
         <h2 className="proof__title" id="proof-title">
           Lo importante, sin letra chica.
         </h2>
-      </header>
+      </div>
 
-      <div className="proof__grid">
+      <div className="proof__band">
         {items.map((item) => (
-          <article className="proof__card" key={item.category}>
-            <div className="proof__meta">
-              <span className="proof__category">▸ {item.category}</span>
-              <span className="proof__description">{item.description}</span>
-            </div>
+          <article className="proof__cell" key={item.description}>
             <strong className="proof__value">{item.value}</strong>
+            <span className="proof__label">{item.description}</span>
           </article>
         ))}
       </div>
