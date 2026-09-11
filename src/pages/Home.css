@@ -13,22 +13,32 @@
      una banda que corta la pantalla en dos. */
   border-radius: 0 0 var(--r-2xl) var(--r-2xl);
   overflow: hidden;
-  background: #6d726f;
+  /* El color de fondo es el del asfalto de la foto: si la imagen tarda en
+     llegar, el hero no parpadea de gris a negro. */
+  background: #0d0f10 url('../assets/hero/bmw-atardecer.jpg') no-repeat;
+  /* El sol cae a la derecha del centro y el auto a la izquierda; anclando
+     un poco abajo del medio se conservan los dos cuando el recorte es apaisado. */
+  background-position: 50% 58%;
+  background-size: cover;
   color: var(--ink);
-  background-image: none;
 }
 
-/* Sin foto el negro plano queda muerto. Este halo cálido —amarillo al 10%,
-   apagándose hacia los bordes— le da un centro de luz sin sumar un color
-   nuevo a la paleta. Cuando llegue la foto, el velo de abajo lo tapa. */
 .hero::after {
   display: none;
 }
 
-/* Velo para que el texto se lea sobre cualquier foto. Sin imagen es
-   transparente y no ensucia el negro. */
+/* Velo para que el texto blanco se lea sobre el cielo, que en esta foto es
+   casi crema. Oscurece más a la izquierda, donde va el título, y deja
+   respirar el atardecer a la derecha. */
 .hero::before {
-  display: none;
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(8, 9, 10, 0.72) 0%, rgba(8, 9, 10, 0.4) 45%, rgba(8, 9, 10, 0.08) 80%),
+    linear-gradient(180deg, rgba(8, 9, 10, 0.5) 0%, rgba(8, 9, 10, 0) 35%, rgba(8, 9, 10, 0.35) 100%);
+  pointer-events: none;
 }
 
 .hero__inner {
@@ -122,6 +132,10 @@
 
 .search-module .field__control--select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  /* El `background: transparent` de arriba devuelve repeat y posición a sus
+     valores por defecto; sin esto la flecha se repite en todo el campo. */
+  background-repeat: no-repeat;
+  background-position: right 16px center;
 }
 
 .search-module .field__control option {
@@ -226,6 +240,18 @@
 @media (max-width: 899px) {
   .hero {
     border-radius: 0 0 var(--r-xl) var(--r-xl);
+  }
+
+  /* En angosto el texto ocupa todo el ancho y cae sobre la parte más clara
+     del cielo: el velo pasa a ser vertical y más cargado arriba. */
+  .hero::before {
+    background: linear-gradient(
+      180deg,
+      rgba(8, 9, 10, 0.72) 0%,
+      rgba(8, 9, 10, 0.6) 45%,
+      rgba(8, 9, 10, 0.25) 65%,
+      rgba(8, 9, 10, 0.45) 100%
+    );
   }
 
   .hero__inner {
