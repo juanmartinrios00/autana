@@ -172,7 +172,7 @@ export function GarageSlotCard({ slot, entry, editable, onSave, onRemove }: Gara
           /* Sin foto la escena hace de retrato. No es un placeholder gris
              esperando una imagen: para la mayoría este es el estado final,
              porque nadie tiene a mano una foto del auto que vendió en 2011. */
-          <GarageScene slot={slot} className="gslot__scene" />
+          <GarageScene slot={slot} car={entry} className="gslot__scene" />
         )}
       </div>
 
