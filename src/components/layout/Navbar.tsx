@@ -5,12 +5,24 @@ import { AccountMenu } from './AccountMenu'
 import { Icon } from '../ui/Icon'
 import { NavSearch } from './NavSearch'
 
-const links = [
+/* "Vender" no está: el botón amarillo "Publicar vehículo" lleva al mismo lugar
+   y se ve en todos los tamaños. Su lugar lo toma el garage, que hasta acá era
+   invisible para quien no tenía cuenta.
+
+   `matches` es para marcar el link activo en más de una ruta: el garage vive
+   repartido entre la página que lo explica, el de cada persona, el buscador y
+   a quién seguís, y en cualquiera de esas uno está "en el garage". */
+const links: { to: string; label: string; matches?: string[] }[] = [
   { to: '/cars', label: 'Comprar' },
-  { to: '/sell', label: 'Vender' },
+  { to: '/garage', label: 'Garage', matches: ['/garage', '/g/', '/gente', '/siguiendo'] },
   { to: '/favorites', label: 'Favoritos' },
   { to: '/compare', label: 'Comparar' },
 ]
+
+function isActiveLink(link: (typeof links)[number], pathname: string, routerActive: boolean) {
+  if (!link.matches) return routerActive
+  return link.matches.some((prefix) => pathname === prefix || pathname.startsWith(prefix.endsWith('/') ? prefix : `${prefix}/`))
+}
 
 interface NavbarProps {
   /** `true` mientras la página está arriba de todo, sin scrollear. */
@@ -57,7 +69,9 @@ export function Navbar({ atTop }: NavbarProps) {
             <NavLink
               key={link.to}
               to={link.to}
-              className={({ isActive }) => (isActive ? 'navbar__link is-active' : 'navbar__link')}
+              className={({ isActive }) =>
+                isActiveLink(link, location.pathname, isActive) ? 'navbar__link is-active' : 'navbar__link'
+              }
             >
               {link.label}
             </NavLink>
@@ -89,7 +103,9 @@ export function Navbar({ atTop }: NavbarProps) {
                 to={link.to}
                 onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
-                  isActive ? 'navbar__mobile-link is-active' : 'navbar__mobile-link'
+                  isActiveLink(link, location.pathname, isActive)
+                    ? 'navbar__mobile-link is-active'
+                    : 'navbar__mobile-link'
                 }
               >
                 {link.label}
@@ -114,6 +130,18 @@ export function Navbar({ atTop }: NavbarProps) {
                   onClick={() => setMenuOpen(false)}
                 >
                   Mi garage <Icon name="arrowRight" size={18} />
+                </Link>
+                {/* Estaban en el menú de escritorio y faltaban acá, que es de
+                    donde entra la mayoría. */}
+                <Link to="/gente" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                  Buscar personas <Icon name="arrowRight" size={18} />
+                </Link>
+                <Link
+                  to="/siguiendo"
+                  className="navbar__mobile-link"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Siguiendo <Icon name="arrowRight" size={18} />
                 </Link>
                 <Link
                   to="/settings"

@@ -1,0 +1,47 @@
+/* ---------------------------------------------------------------------------
+   El garage en la portada. Banda oscura con el mismo lenguaje que el resto:
+   esquinas rectas y el amarillo sólo en el botón.
+--------------------------------------------------------------------------- */
+.gsection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  padding: clamp(var(--sp-6), 4vw, var(--sp-9));
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.gsection__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.gsection__title {
+  max-width: 20ch;
+  font-size: var(--fs-h2);
+}
+
+.gsection__lead {
+  max-width: 56ch;
+  margin: 0;
+  line-height: var(--lh-body);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.gsection__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.gsection__more {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.gsection__more:hover {
+  color: var(--ink-inverse);
+}

@@ -24,6 +24,12 @@ const Garage = lazy(() => import('./pages/Garage').then((m) => ({ default: m.Gar
 const Help = lazy(() => import('./pages/Help').then((m) => ({ default: m.Help })))
 const Levels = lazy(() => import('./pages/Levels').then((m) => ({ default: m.Levels })))
 const Following = lazy(() => import('./pages/Following').then((m) => ({ default: m.Following })))
+const GarageLanding = lazy(() =>
+  import('./pages/GarageLanding').then((m) => ({ default: m.GarageLanding })),
+)
+const MyGarageRedirect = lazy(() =>
+  import('./pages/GarageLanding').then((m) => ({ default: m.MyGarageRedirect })),
+)
 const People = lazy(() => import('./pages/People').then((m) => ({ default: m.People })))
 const Privacy = lazy(() => import('./pages/Privacy').then((m) => ({ default: m.Privacy })))
 const Terms = lazy(() => import('./pages/Terms').then((m) => ({ default: m.Terms })))
@@ -88,6 +94,11 @@ export default function App() {
                     alguien manda por WhatsApp abre los autos, no el panel. */}
                 <Route path="g/:id" element={<Garage />} />
 
+                {/* Qué es el garage, para quien no tiene uno. Es el destino del
+                    link de la navbar y de la portada: `/g/:id` necesita saber
+                    de quién es, y `/profile` pide sesión. */}
+                <Route path="garage" element={<GarageLanding />} />
+
                 {/* La otra mitad del garage: encontrar a alguien sin que te
                     tenga que pasar el link. No exige sesión — mirar el garage
                     de otro nunca la exigió. */}
@@ -101,6 +112,9 @@ export default function App() {
                   <Route path="sell/:slug/edit" element={<Sell />} />
                   <Route path="my-listings" element={<MyListings />} />
                   <Route path="settings" element={<Settings />} />
+                  {/* El garage propio sin saber el id: sin sesión pasa por el
+                      login y vuelve acá. Es lo que usa "Armá el tuyo". */}
+                  <Route path="garage/mio" element={<MyGarageRedirect />} />
                   {/* A quién seguís: es de cada uno, así que exige sesión. */}
                   <Route path="siguiendo" element={<Following />} />
                 {/* Quién entra lo decide la base, no esta ruta: las políticas

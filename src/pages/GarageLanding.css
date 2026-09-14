@@ -1,0 +1,94 @@
+/* Qué es el garage. La cabecera repite la de `/g/:id` —fondo `--ink`— para
+   que pasar de una a otra se sienta como la misma sección. */
+
+.glanding__head {
+  padding-block: var(--sp-8);
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.glanding__title {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-h1);
+  max-width: 18ch;
+}
+
+.glanding__lead {
+  max-width: 58ch;
+  margin-top: var(--sp-3);
+  line-height: var(--lh-body);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.glanding__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+
+.glanding__more {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.glanding__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+  padding-block: var(--sp-7) var(--sp-9);
+}
+
+.glanding__subtitle {
+  margin: 0 0 var(--sp-5);
+  font-size: var(--fs-h3);
+}
+
+.glanding__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.glanding__steps li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line-strong);
+}
+
+.glanding__steps h3 {
+  margin: 0;
+  font-size: var(--fs-body);
+}
+
+.glanding__steps p {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--ink-3);
+}
+
+.glanding__n {
+  font-size: var(--fs-xs);
+  color: var(--ink-4);
+}
+
+.glanding__note {
+  max-width: 60ch;
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--ink-3);
+}
+
+@media (max-width: 799px) {
+  .glanding__steps {
+    grid-template-columns: 1fr;
+  }
+}

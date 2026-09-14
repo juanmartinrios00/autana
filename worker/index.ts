@@ -290,6 +290,7 @@ function robots(origin: string): Response {
     'Disallow: /favorites',
     'Disallow: /gente',
     'Disallow: /siguiendo',
+    'Disallow: /garage/mio',
     '',
     `Sitemap: ${origin}/sitemap.xml`,
     '',
@@ -368,6 +369,7 @@ async function sitemap(origin: string): Promise<Response> {
   const entries: { loc: string; lastmod?: string }[] = [
     { loc: `${origin}/` },
     { loc: `${origin}/cars` },
+    { loc: `${origin}/garage` },
   ]
 
   for (const row of listings) {

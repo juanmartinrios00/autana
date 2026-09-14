@@ -7,6 +7,7 @@ import { CategorySlider } from '../components/home/CategorySlider'
 import { ClosingBand } from '../components/home/ClosingBand'
 import { DealerSlider } from '../components/home/DealerSlider'
 import { Faq } from '../components/home/Faq'
+import { GarageSection } from '../components/home/GarageSection'
 import { HowItWorks } from '../components/home/HowItWorks'
 import { PopularModels } from '../components/home/PopularModels'
 import { ProvinceMap } from '../components/home/ProvinceMap'
@@ -226,6 +227,8 @@ export function Home() {
         <AudienceSection />
 
         <HowItWorks />
+
+        <GarageSection />
 
         <VehicleSlider eyebrow="Los que más miran" title="Más vistos" vehicles={mostSeen} />
 

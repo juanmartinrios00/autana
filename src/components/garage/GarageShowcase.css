@@ -1,0 +1,93 @@
+/* Las cuatro consignas dibujadas. Vive con su propia hoja porque la usan la
+   portada y `/garage`, y el CSS viaja con el chunk de quien lo importa. */
+
+.gshow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gshow__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+/* Misma proporción que el viewBox de las escenas (320×200): si la caja tuviera
+   otra, el dibujo quedaría con bandas vacías arriba y abajo. */
+.gshow__art {
+  aspect-ratio: 320 / 200;
+  max-width: 100%;
+  margin-bottom: var(--sp-2);
+  border: 1px solid var(--line);
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.gshow__scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gshow__title {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.gshow__hint {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--ink-3);
+}
+
+.gshow__example {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--ink-4);
+}
+
+/* Sobre fondo oscuro. Los dibujos no necesitan una versión propia: el trazo es
+   `currentColor`, así que alcanza con cambiar el color de la caja. */
+.gshow--dark .gshow__art {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink-inverse);
+}
+
+.gshow--dark .gshow__hint {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.gshow--dark .gshow__example {
+  color: rgba(255, 255, 255, 0.44);
+}
+
+@media (max-width: 999px) {
+  .gshow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--sp-6);
+  }
+}
+
+/* En celular siguen de a dos y no de a una: apiladas, las cuatro escenas
+   hacen una sección de casi 1.400 px en la portada, que es pasar de largo
+   medio scroll para llegar a lo siguiente. Los dibujos son de línea y se
+   leen igual a la mitad de ancho. Lo que se va es la pista, que a ese ancho
+   parte el título en tres renglones. */
+@media (max-width: 479px) {
+  .gshow {
+    column-gap: var(--sp-3);
+    row-gap: var(--sp-5);
+  }
+
+  .gshow__hint {
+    display: none;
+  }
+}
