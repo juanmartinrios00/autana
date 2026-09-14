@@ -6,9 +6,10 @@ import { Icon } from '../ui/Icon'
    que se usa seguido, y meter ahí un desplegable con esto cuesta caro en
    celular, que es de donde entra la mayoría.
 
-   Cuando sean más, se parten en grupos por tópico. Con cinco todavía no hace
-   falta: agrupar cuatro cosas en dos columnas de dos es más ruido que ayuda. */
+   Cuando sean más, se parten en grupos por tópico. Con seis todavía no hace
+   falta: agrupar en dos columnas de tres es más ruido que ayuda. */
 const links = [
+  { to: '/gente', label: 'Buscar personas' },
   { to: '/dealers', label: 'Para concesionarias' },
   { to: '/levels', label: 'Los niveles' },
   { to: '/help', label: 'Ayuda' },

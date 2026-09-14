@@ -75,6 +75,50 @@
   color: var(--success);
 }
 
+.settings__error {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--danger);
+}
+
+/* El interruptor de visibilidad. Toda la fila es la etiqueta, así que el área
+   clickeable es el texto entero y no un cuadradito de 13px. */
+.settings__check {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: var(--sp-3);
+  cursor: pointer;
+}
+
+.settings__check input {
+  margin: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+.settings__check input:disabled {
+  cursor: progress;
+}
+
+.settings__check > span {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.settings__check-title {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+
+.settings__check-hint {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--ink-3);
+}
+
 /* La zona de borrado. Se distingue del resto de las tarjetas con un borde, no
    con un fondo rojo: el fondo grita antes de que alguien haya hecho nada, y a
    los tres días deja de verse. El borde alcanza para que no se confunda con un

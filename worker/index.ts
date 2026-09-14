@@ -105,6 +105,7 @@ interface GarageEntryRow {
 
 interface GarageRow {
   name: string
+  discoverable: boolean
   garage_entries: GarageEntryRow[] | null
 }
 
@@ -118,7 +119,7 @@ interface GarageRow {
  */
 async function fetchGarage(id: string): Promise<GarageRow | null> {
   const params = new URLSearchParams({
-    select: 'name,garage_entries(slot,make,model,year,photo_path)',
+    select: 'name,discoverable,garage_entries(slot,make,model,year,photo_path)',
     id: `eq.${id}`,
     limit: '1',
   })
@@ -274,7 +275,11 @@ function appendToHead(html: string): HTMLRewriterElementContentHandlers {
 function robots(origin: string): Response {
   /* Se bloquea lo que es de cada usuario o parte de un flujo: no aporta nada
      en un buscador y gasta presupuesto de rastreo. El garage publico (`/g/`)
-     si se indexa, que para eso se comparte. */
+     si se indexa, que para eso se comparte — salvo el de quien se saco del
+     buscador, que el worker marca `noindex` en la propia pagina.
+
+     `/gente` se bloquea aunque sea publica: es un formulario de busqueda, y lo
+     unico que Google indexaria son resultados para nombres sueltos. */
   const body = [
     'User-agent: *',
     'Allow: /',
@@ -283,6 +288,7 @@ function robots(origin: string): Response {
     'Disallow: /profile',
     'Disallow: /my-listings',
     'Disallow: /favorites',
+    'Disallow: /gente',
     '',
     `Sitemap: ${origin}/sitemap.xml`,
     '',
@@ -310,23 +316,51 @@ interface SitemapRow {
   updated_at: string
 }
 
-async function sitemap(origin: string): Promise<Response> {
-  const params = new URLSearchParams({
-    select: 'slug,updated_at',
-    status: 'eq.active',
-    order: 'updated_at.desc',
-    /* Un sitemap admite 50.000 URLs. Con este tope estamos lejos; el dia que
-       se acerque hay que partirlo en un indice de sitemaps. */
-    limit: '5000',
-  })
+interface GarageSitemapRow {
+  user_id: string
+  updated_at: string
+}
 
-  const response = await fetch(`${SUPABASE_PUBLIC.url}/rest/v1/listings?${params}`, {
+/** Una tanda del sitemap, o lista vacia si la base no contesta. */
+async function sitemapRows<T>(path: string, params: URLSearchParams): Promise<T[]> {
+  const response = await fetch(`${SUPABASE_PUBLIC.url}/rest/v1/${path}?${params}`, {
     headers: {
       apikey: SUPABASE_PUBLIC.anonKey,
       Authorization: `Bearer ${SUPABASE_PUBLIC.anonKey}`,
     },
     cf: { cacheTtl: 300, cacheEverything: true },
   })
+
+  if (!response.ok) return []
+  return (await response.json()) as T[]
+}
+
+async function sitemap(origin: string): Promise<Response> {
+  /* Un sitemap admite 50.000 URLs. Con estos topes estamos lejos; el dia que
+     se acerque hay que partirlo en un indice de sitemaps. */
+  const [listings, garages] = await Promise.all([
+    sitemapRows<SitemapRow>(
+      'listings',
+      new URLSearchParams({
+        select: 'slug,updated_at',
+        status: 'eq.active',
+        order: 'updated_at.desc',
+        limit: '5000',
+      }),
+    ),
+    /* La vista `garage_sitemap` ya filtra: solo los que se dejan encontrar y
+       ademas tienen algun auto cargado. Un garage vacio es una pagina sin
+       contenido — no le sirve a quien la abre desde Google, y gastaria
+       presupuesto de rastreo en nada. */
+    sitemapRows<GarageSitemapRow>(
+      'garage_sitemap',
+      new URLSearchParams({
+        select: 'user_id,updated_at',
+        order: 'updated_at.desc',
+        limit: '5000',
+      }),
+    ),
+  ])
 
   /* Las fijas van siempre, aunque la base no conteste: mas vale un sitemap
      con la home que un 500 que Google reintenta y termina penalizando. */
@@ -335,14 +369,18 @@ async function sitemap(origin: string): Promise<Response> {
     { loc: `${origin}/cars` },
   ]
 
-  if (response.ok) {
-    const rows = (await response.json()) as SitemapRow[]
-    for (const row of rows) {
-      entries.push({
-        loc: `${origin}/cars/${row.slug}`,
-        lastmod: row.updated_at.slice(0, 10),
-      })
-    }
+  for (const row of listings) {
+    entries.push({
+      loc: `${origin}/cars/${row.slug}`,
+      lastmod: row.updated_at.slice(0, 10),
+    })
+  }
+
+  for (const row of garages) {
+    entries.push({
+      loc: `${origin}/g/${row.user_id}`,
+      lastmod: row.updated_at.slice(0, 10),
+    })
   }
 
   const body = [
@@ -370,6 +408,8 @@ interface Preview {
   description: string
   image: string | null
   canonical: string
+  /** Que los buscadores no lo indexen. El preview al compartir va igual. */
+  noindex?: boolean
 }
 
 /**
@@ -379,7 +419,7 @@ interface Preview {
  * textos distintos, pero las etiquetas que hay que tocar son las mismas.
  */
 function renderPreview(assetResponse: Response, preview: Preview): Response {
-  const { title, description, image, canonical } = preview
+  const { title, description, image, canonical, noindex } = preview
 
   const extra = [
     `<meta property="og:url" content="${attr(canonical)}">`,
@@ -392,6 +432,11 @@ function renderPreview(assetResponse: Response, preview: Preview): Response {
        clientes muestran un recuadro vacío. Twitter cae solo en las og:* para
        titulo, descripcion e imagen, así que no hace falta repetirlas. */
     `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">`,
+    /* `noindex` saca la pagina del buscador; `nofollow` no va, porque los
+       links de adentro son del propio sitio y no hay nada que no rastrear.
+       El preview al compartir se arma igual: apagar Google no es apagar
+       WhatsApp, y el link sigue siendo para mandarlo. */
+    noindex ? `<meta name="robots" content="noindex">` : '',
   ]
     .filter(Boolean)
     .join('')
@@ -465,6 +510,11 @@ async function renderGarage(request: Request, env: Env, id: string): Promise<Res
        renderiza. Generar una lámina es otro trabajo. */
     image: garageImage(entries),
     canonical: `${url.origin}/g/${id}`,
+    /* Quien se sacó del buscador se saca también de Google. Es lo que hace que
+       el interruptor de Ajustes signifique algo afuera del sitio: sin esto
+       seguiría apareciendo en una búsqueda por su nombre, que es exactamente
+       lo que pidió que no pasara. */
+    noindex: !row.discoverable,
   })
 }
 

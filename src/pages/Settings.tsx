@@ -7,7 +7,14 @@ import { Skeleton } from '../components/ui/Skeleton'
 import { provinces } from '../data/makes'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
-import { deleteAccount, getOwnWhatsapp, getProfile, updateProfile } from '../lib/api'
+import {
+  deleteAccount,
+  getDiscoverable,
+  getOwnWhatsapp,
+  getProfile,
+  setDiscoverable,
+  updateProfile,
+} from '../lib/api'
 import { changePassword, MIN_PASSWORD } from '../lib/auth'
 import type { Seller } from '../types'
 import './Settings.css'
@@ -41,6 +48,10 @@ export function Settings() {
   const [province, setProvince] = useState('')
   const [sellerType, setSellerType] = useState<Seller['type']>('private')
 
+  const [discoverable, setDiscoverableState] = useState(true)
+  const [visibilityBusy, setVisibilityBusy] = useState(false)
+  const [visibilityError, setVisibilityError] = useState('')
+
   const [dataBusy, setDataBusy] = useState(false)
   const [dataError, setDataError] = useState('')
   const [dataSaved, setDataSaved] = useState(false)
@@ -63,14 +74,22 @@ export function Settings() {
 
     /* El WhatsApp va por su propia función: desde la migración 008 no se lee de
        `profiles`, y la base sólo devuelve el propio. */
-    void Promise.all([getProfile(userId), getOwnWhatsapp().catch(() => null)])
-      .then(([profile, own]) => {
+    void Promise.all([
+      getProfile(userId),
+      getOwnWhatsapp().catch(() => null),
+      /* Si falla, se asume que aparece: es el default de la columna, y
+         mostrar el interruptor apagado cuando en realidad está prendido
+         diría una mentira sobre lo que se ve de vos. */
+      getDiscoverable(userId).catch(() => true),
+    ])
+      .then(([profile, own, listed]) => {
         if (!alive) return
         setName(profile.name)
         setCity(profile.city ?? '')
         setProvince(profile.province ?? '')
         setSellerType(profile.sellerType)
         setWhatsapp(own ?? '')
+        setDiscoverableState(listed)
         setReady(true)
       })
       .catch(() => {
@@ -81,6 +100,28 @@ export function Settings() {
       alive = false
     }
   }, [userId])
+
+  /**
+   * Este no tiene botón de guardar: se aplica al tocarlo.
+   *
+   * Es un interruptor de una sola cosa, y hacerle apretar "Guardar" a alguien
+   * que acaba de decidir que no quiere aparecer agrega un paso donde no tiene
+   * que haberlo. Si la base rechaza, se vuelve atrás y se avisa — no se deja
+   * el interruptor mostrando algo que no pasó.
+   */
+  async function toggleDiscoverable(value: boolean) {
+    setDiscoverableState(value)
+    setVisibilityBusy(true)
+    setVisibilityError('')
+    try {
+      await setDiscoverable(userId, value)
+    } catch {
+      setDiscoverableState(!value)
+      setVisibilityError('No pudimos guardar el cambio. Probá de nuevo.')
+    } finally {
+      setVisibilityBusy(false)
+    }
+  }
 
   async function saveData(event: FormEvent) {
     event.preventDefault()
@@ -242,6 +283,45 @@ export function Settings() {
             {dataSaved && <span className="settings__ok">Guardado.</span>}
           </div>
         </form>
+
+        <section className="settings__card">
+          <h2 className="settings__section-title">Quién te encuentra</h2>
+          <p className="settings__note">
+            Tu garage es público: cualquiera que tenga el link lo abre, y esa es la idea —
+            está hecho para mandarlo por WhatsApp. Lo que se apaga acá es que te{' '}
+            <em>encuentren</em> sin tenerlo.
+          </p>
+
+          <label className="settings__check">
+            <input
+              type="checkbox"
+              checked={discoverable}
+              disabled={visibilityBusy}
+              onChange={(event) => void toggleDiscoverable(event.target.checked)}
+            />
+            <span>
+              <span className="settings__check-title">
+                Aparecer en <Link to="/gente">el buscador de personas</Link> y en Google
+              </span>
+              <span className="settings__check-hint">
+                {discoverable
+                  ? 'Alguien que escriba tu nombre te encuentra, y tu garage puede salir en buscadores.'
+                  : 'No aparecés en el buscador ni en Google. El link directo a tu garage sigue funcionando para quien ya lo tenga.'}
+              </span>
+            </span>
+          </label>
+
+          {visibilityError && (
+            <p className="settings__error" role="alert">
+              {visibilityError}
+            </p>
+          )}
+
+          <p className="settings__hint">
+            Esto no toca tus avisos: si publicás un auto, te mostrás como vendedor de ese
+            aviso igual. Eso se cambia despublicando.
+          </p>
+        </section>
 
         <form className="settings__card" onSubmit={(event) => void savePassword(event)}>
           <h2 className="settings__section-title">Tu contraseña</h2>

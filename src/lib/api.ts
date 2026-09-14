@@ -1156,6 +1156,84 @@ export interface SavedSearchRow {
   createdAt: string
 }
 
+/* ---------------------------------------------------------------------------
+   Buscar personas
+--------------------------------------------------------------------------- */
+
+export interface PersonResult {
+  id: string
+  name: string
+  avatarUrl: string | null
+  city: string | null
+  province: string | null
+  /** Cuantos autos tiene cargados. Es lo que desambigua entre dos homonimos. */
+  garageCars: number
+}
+
+interface PersonRow {
+  id: string
+  name: string
+  avatar_url: string | null
+  city: string | null
+  province: string | null
+  garage_cars: number
+}
+
+/** Abajo de esto la busqueda devuelve medio padron y no ayuda a nadie. */
+export const MIN_PERSON_TERM = 2
+
+/**
+ * Busca personas por nombre.
+ *
+ * El orden, el tope y el filtro de `discoverable` viven en la funcion
+ * `search_people` de la base, no aca: un tope que manda el cliente es un tope
+ * que el cliente puede sacar.
+ *
+ * Devuelve vacio sin ir a la base cuando el termino es muy corto, para no
+ * pegarle en cada tecla mientras alguien escribe las primeras letras.
+ */
+export async function searchPeople(term: string): Promise<PersonResult[]> {
+  const clean = term.trim()
+  if (clean.length < MIN_PERSON_TERM) return []
+
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('search_people', { term: clean })
+  if (error) throw error
+
+  return (data as PersonRow[]).map((row) => ({
+    id: row.id,
+    name: row.name,
+    avatarUrl: row.avatar_url
+      ? row.avatar_url.startsWith('http')
+        ? row.avatar_url
+        : photoUrl(row.avatar_url)
+      : null,
+    city: row.city,
+    province: row.province,
+    garageCars: Number(row.garage_cars),
+  }))
+}
+
+/** Si aparece en el buscador, en el sitemap y en Google. */
+export async function getDiscoverable(userId: string): Promise<boolean> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('profiles')
+    .select('discoverable')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (error) throw error
+  /* Si la fila no esta, el default de la columna es aparecer. */
+  return (data as { discoverable: boolean } | null)?.discoverable ?? true
+}
+
+export async function setDiscoverable(userId: string, value: boolean): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('profiles').update({ discoverable: value }).eq('id', userId)
+  if (error) throw error
+}
+
 export async function listSavedSearches(userId: string): Promise<SavedSearchRow[]> {
   const client = requireSupabase()
   const { data, error } = await client

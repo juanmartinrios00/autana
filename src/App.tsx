@@ -23,6 +23,7 @@ const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default:
 const Garage = lazy(() => import('./pages/Garage').then((m) => ({ default: m.Garage })))
 const Help = lazy(() => import('./pages/Help').then((m) => ({ default: m.Help })))
 const Levels = lazy(() => import('./pages/Levels').then((m) => ({ default: m.Levels })))
+const People = lazy(() => import('./pages/People').then((m) => ({ default: m.People })))
 const Privacy = lazy(() => import('./pages/Privacy').then((m) => ({ default: m.Privacy })))
 const Terms = lazy(() => import('./pages/Terms').then((m) => ({ default: m.Terms })))
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })))
@@ -85,6 +86,11 @@ export default function App() {
                 {/* El garage es público y tiene pantalla propia: el link que
                     alguien manda por WhatsApp abre los autos, no el panel. */}
                 <Route path="g/:id" element={<Garage />} />
+
+                {/* La otra mitad del garage: encontrar a alguien sin que te
+                    tenga que pasar el link. No exige sesión — mirar el garage
+                    de otro nunca la exigió. */}
+                <Route path="gente" element={<People />} />
 
                 {/* Publicar y el perfil propio exigen sesión: mandan a login y
                     después vuelven acá. */}

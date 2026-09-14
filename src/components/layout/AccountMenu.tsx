@@ -104,6 +104,13 @@ export function AccountMenu({ user, onSignOut }: AccountMenuProps) {
             <Icon name="car" size={16} />
             Mi garage
           </Link>
+
+          {/* Al lado del propio garage: el que acaba de ver el suyo es el que
+              se pregunta si el de otro tambien esta. */}
+          <Link to="/gente" className="account__item" role="menuitem" onClick={close}>
+            <Icon name="search" size={16} />
+            Buscar personas
+          </Link>
           <Link to="/settings" className="account__item" role="menuitem" onClick={close}>
             <Icon name="check" size={16} />
             Ajustes

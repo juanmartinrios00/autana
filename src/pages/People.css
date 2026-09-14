@@ -1,0 +1,159 @@
+/* Buscar personas.
+   Se apoya en las clases compartidas (`page`, `over`, `mono`) y sólo define lo
+   propio de esta pantalla. */
+
+.people__head {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.people__head-inner {
+  padding-block: var(--sp-7) var(--sp-6);
+}
+
+.people__title {
+  margin: var(--sp-2) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-display);
+  letter-spacing: var(--ls-display);
+  line-height: var(--lh-tight);
+}
+
+.people__sub {
+  margin: var(--sp-3) 0 0;
+  max-width: 52ch;
+  color: var(--ink-2);
+  line-height: var(--lh-body);
+}
+
+/* El buscador: la lupa adentro del marco, no al lado. */
+.people__form {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+  max-width: 30rem;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--canvas);
+  color: var(--ink-3);
+}
+
+.people__form:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+.people__input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--sp-3) 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.people__input:focus {
+  outline: none;
+}
+
+/* Le saca la cruz de limpiar que Chrome mete en los `type=search`: pisa el
+   borde del marco y no hace falta, porque borrar el texto ya vacía la URL. */
+.people__input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.people__body {
+  padding-block: var(--sp-6) var(--sp-8);
+}
+
+.people__idle {
+  margin: 0;
+  max-width: 56ch;
+  color: var(--ink-2);
+  line-height: var(--lh-body);
+}
+
+.people__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--sp-2);
+  max-width: 34rem;
+}
+
+.people__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--canvas);
+}
+
+.people__row--link {
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+
+.people__row--link:hover,
+.people__row--link:focus-visible {
+  border-color: var(--line-ink);
+  background: var(--surface);
+}
+
+.people__avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-pill);
+  object-fit: cover;
+  background: var(--surface-2);
+}
+
+.people__avatar--empty {
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.people__lines {
+  display: grid;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.people__name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.people__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+}
+
+.people__dot {
+  color: var(--line-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .people__row--link {
+    transition: none;
+  }
+}

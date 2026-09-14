@@ -30,3 +30,6 @@ dist-ssr
 
 # Estado local de wrangler dev (cache de miniflare, temporales).
 .wrangler
+
+# Artefactos del CLI de Supabase
+supabase/.temp

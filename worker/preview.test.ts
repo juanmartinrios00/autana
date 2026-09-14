@@ -25,6 +25,7 @@ describe('orderedEntries', () => {
   it('ordena por consigna y no por como vino de la base', () => {
     const row = {
       name: 'Juan',
+      discoverable: true,
       garage_entries: [
         car('dream', 'Porsche', '911'),
         car('first', 'Renault', '12'),
@@ -42,13 +43,14 @@ describe('orderedEntries', () => {
   })
 
   it('aguanta un garage vacío y uno nulo', () => {
-    expect(orderedEntries({ name: 'Juan', garage_entries: [] })).toEqual([])
-    expect(orderedEntries({ name: 'Juan', garage_entries: null })).toEqual([])
+    expect(orderedEntries({ name: 'Juan', discoverable: true, garage_entries: [] })).toEqual([])
+    expect(orderedEntries({ name: 'Juan', discoverable: true, garage_entries: null })).toEqual([])
   })
 
   it('no rompe el orden si aparece una consigna que no conoce', () => {
     const row = {
       name: 'Juan',
+      discoverable: true,
       garage_entries: [car('inventada', 'X', 'Y'), car('first', 'Renault', '12')],
     }
     /* `indexOf` da -1 para la desconocida, así que queda primera. Lo que
