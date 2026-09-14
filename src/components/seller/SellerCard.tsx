@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 import { locationLabel, sellerTypeLabels } from '../../lib/format'
@@ -63,12 +64,16 @@ export function SellerCard({ seller, trust }: SellerCardProps) {
       </div>
 
       <div className="seller__actions">
-        <Button variant="outline" size="sm">
-          Ver publicaciones
-        </Button>
-        <Button variant="outline" size="sm">
-          Contactar
-        </Button>
+        {/* "Ver publicaciones" no llevaba a ningún lado. Va al garage de la
+            persona, que muestra sus avisos activos además de sus autos.
+            "Contactar" se fue: tampoco hacía nada, y ahora el contacto es
+            "Me interesa", arriba en la ficha. Dos botones de contacto hacen
+            pensar que hay dos caminos. */}
+        <Link to={`/g/${seller.id}#avisos`}>
+          <Button variant="outline" size="sm">
+            Ver publicaciones
+          </Button>
+        </Link>
       </div>
     </div>
   )

@@ -98,6 +98,12 @@
   color: var(--ink-3);
 }
 
+.mylisting__interest {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
 .mylisting__actions {
   display: flex;
   align-items: center;

@@ -12,6 +12,7 @@ import { VehicleGallery } from '../components/vehicle/VehicleGallery'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { VehicleSpecs } from '../components/vehicle/VehicleSpecs'
 import { ReportDialog } from '../components/vehicle/ReportDialog'
+import { useCompare } from '../hooks/useCompare'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { useFavorites } from '../hooks/useFavorites'
 import {
@@ -38,6 +39,7 @@ type Status = 'loading' | 'ready' | 'notfound'
 export function VehicleDetail() {
   const { slug = '' } = useParams()
   const { has, toggle } = useFavorites()
+  const compare = useCompare()
 
   /* La publicación cargada se guarda junto al slug que la pidió: comparar ese
      slug con el de la URL es lo que dice si estamos cargando. */
@@ -254,9 +256,24 @@ export function VehicleDetail() {
                   <Icon name="heart" size={16} />
                   {saved ? 'Guardado' : 'Guardar'}
                 </Button>
-                <Button variant="outline" block>
-                  <Icon name="grid" size={16} />
-                  Comparar
+                {/* Este botón no hacía nada: tenía el ícono y el texto pero no
+                    la acción. El de las cajas del listado sí andaba porque es
+                    otro componente. Mismo criterio que ese: con tres elegidos
+                    no se suma otro, pero sacar el propio sigue disponible. */}
+                <Button
+                  variant="outline"
+                  block
+                  aria-pressed={compare.has(vehicle.slug)}
+                  disabled={compare.full && !compare.has(vehicle.slug)}
+                  title={
+                    compare.full && !compare.has(vehicle.slug)
+                      ? 'Ya elegiste tres autos para comparar'
+                      : undefined
+                  }
+                  onClick={() => compare.toggle(vehicle.slug)}
+                >
+                  <Icon name={compare.has(vehicle.slug) ? 'check' : 'grid'} size={16} />
+                  {compare.has(vehicle.slug) ? 'Comparando' : 'Comparar'}
                 </Button>
               </div>
             </div>

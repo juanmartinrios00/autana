@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import { Select } from '../ui/Select'
@@ -19,6 +19,7 @@ import './ReportDialog.css'
  */
 export function ReportDialog({ listingId, title }: { listingId: string; title: string }) {
   const { session } = useAuth()
+  const location = useLocation()
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   const [reason, setReason] = useState<ReportReason | ''>('')
@@ -111,7 +112,13 @@ export function ReportDialog({ listingId, title }: { listingId: string; title: s
                 Para reportar hace falta tener cuenta. Es lo que evita que alguien tire cientos
                 de reportes falsos con un script.
               </p>
-              <Link to="/login" className="report__login">
+              {/* Con `from`, el login devuelve al aviso: sin eso terminaba en la
+                  portada y había que volver a buscar qué se quería reportar. */}
+              <Link
+                to="/login"
+                state={{ from: location.pathname + location.search }}
+                className="report__login"
+              >
                 <Button variant="yellow" block>
                   Entrar a mi cuenta
                 </Button>

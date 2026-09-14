@@ -5,6 +5,7 @@ import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import { describeError } from '../../lib/errors'
 import { formatPrice, statusLabels, vehicleTitle } from '../../lib/format'
+import { interestLabel } from '../../lib/contact'
 import type { ListingStatus, Vehicle } from '../../types'
 import './ListingManager.css'
 
@@ -114,6 +115,12 @@ export function ListingManager({ listings, onStatusChange, onDelete }: ListingMa
                   {vehicle.images.length === 1 ? 'foto' : 'fotos'} · {vehicle.viewCount}{' '}
                   {vehicle.viewCount === 1 ? 'visita' : 'visitas'}
                 </p>
+                {/* Es público en la ficha, y el dueño era el único que no lo veía
+                    en su panel. Va en su propia línea y no mezclado con las
+                    visitas: visitas es mirar, esto es haber pedido el contacto. */}
+                {interestLabel(vehicle.interestCount) && (
+                  <p className="mylisting__interest">{interestLabel(vehicle.interestCount)}</p>
+                )}
 
                 {isConfirming ? (
                   <div className="mylisting__actions mylisting__actions--confirm">
