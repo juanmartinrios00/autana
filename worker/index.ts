@@ -32,6 +32,13 @@ interface Env {
  */
 const LISTING_URL = /^\/cars\/([A-Za-z0-9-]{1,120})\/?$/
 
+/**
+ * El garage se direcciona por el uuid del usuario, así que se exige la forma
+ * exacta de un uuid. Mismo motivo que el slug: se interpola en un filtro.
+ */
+const GARAGE_URL =
+  /^\/g\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\/?$/
+
 interface ListingRow {
   slug: string
   make: string
@@ -76,6 +83,66 @@ async function fetchListing(slug: string): Promise<ListingRow | null> {
   return rows[0] ?? null
 }
 
+/**
+ * El orden de las consignas, para que el preview cuente la historia en el
+ * mismo orden que la pantalla: el primero, el de hoy, el soñado, el extrañado.
+ *
+ * Está duplicado de `src/lib/garage.ts` a propósito. Importarlo de ahí
+ * arrastraría el cliente de Supabase y la compresión de imágenes a un Worker
+ * que sólo necesita cuatro strings. Y si algún día se desincronizan, lo peor
+ * que pasa es que el preview liste los autos en otro orden — no es el caso de
+ * `search-query`, donde interpretar distinto cambia lo que se muestra.
+ */
+const SLOT_ORDER = ['first', 'current', 'dream', 'missed']
+
+interface GarageEntryRow {
+  slot: string
+  make: string
+  model: string
+  year: number | null
+  photo_path: string | null
+}
+
+interface GarageRow {
+  name: string
+  garage_entries: GarageEntryRow[] | null
+}
+
+/**
+ * El garage de alguien, con su nombre.
+ *
+ * Va en una sola consulta con el embed de PostgREST porque son dos pedidos al
+ * pedo si no: el nombre vive en `profiles` y los autos cuelgan de ahí por la
+ * clave foránea. Las columnas que se piden son las que la migración 008 dejó
+ * legibles; el WhatsApp no está entre ellas y acá no hace falta.
+ */
+async function fetchGarage(id: string): Promise<GarageRow | null> {
+  const params = new URLSearchParams({
+    select: 'name,garage_entries(slot,make,model,year,photo_path)',
+    id: `eq.${id}`,
+    limit: '1',
+  })
+
+  const response = await fetch(`${SUPABASE_PUBLIC.url}/rest/v1/profiles?${params}`, {
+    headers: {
+      apikey: SUPABASE_PUBLIC.anonKey,
+      Authorization: `Bearer ${SUPABASE_PUBLIC.anonKey}`,
+    },
+    cf: { cacheTtl: 60, cacheEverything: true },
+  })
+
+  if (!response.ok) return null
+  const rows = (await response.json()) as GarageRow[]
+  return rows[0] ?? null
+}
+
+/** Los autos del garage en el orden de las consignas. */
+export function orderedEntries(row: GarageRow): GarageEntryRow[] {
+  return (row.garage_entries ?? [])
+    .slice()
+    .sort((a, b) => SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot))
+}
+
 function money(price: number, currency: string): string {
   return `${currency} ${price.toLocaleString('es-AR')}`
 }
@@ -93,6 +160,54 @@ function buildDescription(row: ListingRow): string {
   const room = 200 - head.length - 3
   if (!text) return head
   return text.length > room ? `${head}. ${text.slice(0, room).trimEnd()}…` : `${head}. ${text}`
+}
+
+/**
+ * El texto del preview del garage.
+ *
+ * Lo que se ve en WhatsApp es esto, así que dice los autos y no una promesa:
+ * "4 autos" no le interesa a nadie, "Ford Escort 1998, VW Gol 2012" sí — es lo
+ * que hace que alguien del grupo abra el link.
+ *
+ * Sin adjetivos sobre la persona: el nombre sale de lo que cada uno cargó y no
+ * sabemos nada más, así que nada de concordancias inventadas.
+ */
+export function buildGarageDescription(name: string, entries: GarageEntryRow[]): string {
+  if (!entries.length) {
+    return `${name} todavía no cargó ningún auto en su garage.`
+  }
+
+  const cars = entries.map((entry) =>
+    [entry.make, entry.model, entry.year].filter(Boolean).join(' '),
+  )
+
+  const head =
+    entries.length === 1
+      ? `Un auto en el garage de ${name}`
+      : `${entries.length} autos en el garage de ${name}`
+
+  /* Mismo tope que en los avisos: se corta acá para elegir nosotros dónde. */
+  let text = `${head}: `
+  const room = 200 - text.length
+  const shown: string[] = []
+  let used = 0
+  for (const car of cars) {
+    const cost = used === 0 ? car.length : car.length + 2
+    if (used + cost > room) break
+    shown.push(car)
+    used += cost
+  }
+
+  if (!shown.length) return head + '.'
+  text += shown.join(', ')
+  return shown.length === cars.length ? `${text}.` : `${text}…`
+}
+
+/** La primera foto que haya, en el orden de las consignas. */
+export function garageImage(entries: GarageEntryRow[]): string | null {
+  const withPhoto = entries.find((entry) => entry.photo_path)
+  if (!withPhoto?.photo_path) return null
+  return `${SUPABASE_PUBLIC.url}/storage/v1/object/public/garage-photos/${withPhoto.photo_path}`
 }
 
 function coverImage(row: ListingRow): string | null {
@@ -250,23 +365,21 @@ async function sitemap(origin: string): Promise<Response> {
   })
 }
 
-async function renderListing(request: Request, env: Env, slug: string): Promise<Response> {
-  const assetResponse = await env.ASSETS.fetch(request)
+interface Preview {
+  title: string
+  description: string
+  image: string | null
+  canonical: string
+}
 
-  /* Si el fallback de SPA no devolvió HTML no hay nada que reescribir. */
-  const type = assetResponse.headers.get('content-type') ?? ''
-  if (!type.includes('text/html')) return assetResponse
-
-  const row = await fetchListing(slug)
-  /* Aviso inexistente, pausado o vendido: que la SPA muestre lo que
-     corresponda con las etiquetas genéricas. */
-  if (!row) return assetResponse
-
-  const title = buildTitle(row)
-  const description = buildDescription(row)
-  const image = coverImage(row)
-  const url = new URL(request.url)
-  const canonical = `${url.origin}/cars/${row.slug}`
+/**
+ * Escribe un preview sobre el HTML que devolvió la SPA.
+ *
+ * Es lo único que comparten el aviso y el garage: las dos pantallas arman
+ * textos distintos, pero las etiquetas que hay que tocar son las mismas.
+ */
+function renderPreview(assetResponse: Response, preview: Preview): Response {
+  const { title, description, image, canonical } = preview
 
   const extra = [
     `<meta property="og:url" content="${attr(canonical)}">`,
@@ -292,6 +405,69 @@ async function renderListing(request: Request, env: Env, slug: string): Promise<
     .transform(assetResponse)
 }
 
+/** El HTML de la SPA, o `null` si lo que volvió no es HTML y no hay qué tocar. */
+async function htmlFor(request: Request, env: Env): Promise<Response | null> {
+  const assetResponse = await env.ASSETS.fetch(request)
+  const type = assetResponse.headers.get('content-type') ?? ''
+  return type.includes('text/html') ? assetResponse : null
+}
+
+async function renderListing(request: Request, env: Env, slug: string): Promise<Response> {
+  const assetResponse = await htmlFor(request, env)
+  if (!assetResponse) return env.ASSETS.fetch(request)
+
+  const row = await fetchListing(slug)
+  /* Aviso inexistente, pausado o vendido: que la SPA muestre lo que
+     corresponda con las etiquetas genéricas. */
+  if (!row) return assetResponse
+
+  const title = buildTitle(row)
+  const url = new URL(request.url)
+
+  return renderPreview(assetResponse, {
+    title,
+    description: buildDescription(row),
+    image: coverImage(row),
+    canonical: `${url.origin}/cars/${row.slug}`,
+  })
+}
+
+/**
+ * El preview del garage.
+ *
+ * La pantalla existe para mandarse por WhatsApp —lo dice la migración 002 y lo
+ * dice el botón de copiar link—, y hasta acá ese link mostraba el preview
+ * genérico de Autana: ni el nombre ni los autos. Era el mismo problema que
+ * este Worker ya resolvía para los avisos, en la única pantalla cuyo propósito
+ * es compartirse.
+ */
+async function renderGarage(request: Request, env: Env, id: string): Promise<Response> {
+  const assetResponse = await htmlFor(request, env)
+  if (!assetResponse) return env.ASSETS.fetch(request)
+
+  const row = await fetchGarage(id)
+  /* Usuario que no existe, o sin nombre cargado: que la SPA muestre lo que
+     corresponda con las etiquetas genéricas. */
+  if (!row) return assetResponse
+
+  const name = row.name.trim()
+  if (!name) return assetResponse
+
+  const entries = orderedEntries(row)
+  const url = new URL(request.url)
+
+  return renderPreview(assetResponse, {
+    title: `El garage de ${name} | Autana`,
+    description: buildGarageDescription(name, entries),
+    /* La foto que subió el dueño. Si no hay ninguna, el garage se ve igual en
+       el sitio —las escenas dibujadas hacen de retrato— pero el preview se
+       queda sin imagen: un SVG no sirve como `og:image`, WhatsApp no lo
+       renderiza. Generar una lámina es otro trabajo. */
+    image: garageImage(entries),
+    canonical: `${url.origin}/g/${id}`,
+  })
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
@@ -299,20 +475,32 @@ export default {
     if (url.pathname === '/robots.txt') return robots(url.origin)
     if (url.pathname === '/sitemap.xml') return sitemap(url.origin)
 
-    const match = url.pathname.match(LISTING_URL)
-
-    /* Sólo las fichas de vehículo, y sólo lecturas: el resto del sitio no
-       necesita que el servidor toque nada. */
-    if (!match || (request.method !== 'GET' && request.method !== 'HEAD')) {
+    /* Sólo lecturas: el resto del sitio no necesita que el servidor toque nada. */
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
       return env.ASSETS.fetch(request)
     }
 
-    try {
-      return await renderListing(request, env, match[1]!)
-    } catch (cause) {
-      console.error('preview del aviso', cause)
-      /* La página vale más que el preview. */
-      return env.ASSETS.fetch(request)
+    const listing = url.pathname.match(LISTING_URL)
+    if (listing) {
+      try {
+        return await renderListing(request, env, listing[1]!)
+      } catch (cause) {
+        console.error('preview del aviso', cause)
+        /* La página vale más que el preview. */
+        return env.ASSETS.fetch(request)
+      }
     }
+
+    const garage = url.pathname.match(GARAGE_URL)
+    if (garage) {
+      try {
+        return await renderGarage(request, env, garage[1]!)
+      } catch (cause) {
+        console.error('preview del garage', cause)
+        return env.ASSETS.fetch(request)
+      }
+    }
+
+    return env.ASSETS.fetch(request)
   },
 } satisfies ExportedHandler<Env>
