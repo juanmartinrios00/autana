@@ -19,10 +19,12 @@ import { Icon } from '../components/ui/Icon'
 import { Select } from '../components/ui/Select'
 import { brands } from '../data/brands'
 import { priceCaps, provinces } from '../data/makes'
+import { modelsForMake } from '../data/models'
 import {
   countsBy,
   getStats,
   listDealers,
+  listModels,
   listPopularVehicles,
   listRecentVehicles,
   type MarketplaceStats,
@@ -49,6 +51,7 @@ export function Home() {
   })
 
   const [make, setMake] = useState('')
+  const [model, setModel] = useState('')
   const [province, setProvince] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
 
@@ -58,6 +61,7 @@ export function Home() {
   const [provinceCounts, setProvinceCounts] = useState<Record<string, number>>({})
   const [dealers, setDealers] = useState<Seller[]>([])
   const [stats, setStats] = useState<MarketplaceStats | null>(null)
+  const [publishedModels, setPublishedModels] = useState<Record<string, string[]>>({})
   const [loadingRecent, setLoadingRecent] = useState(true)
 
   useEffect(() => {
@@ -87,11 +91,35 @@ export function Home() {
     }
   }, [])
 
+  /* Los modelos publicados de la marca elegida, para sumarlos al catálogo. Se
+     cachean por marca porque el usuario va y viene entre marcas mientras
+     arma la búsqueda, y cada vuelta sería otra consulta por lo mismo.
+
+     Si la consulta falla no hay nada que avisar: el select ya tiene el
+     catálogo, que es la mayor parte de lo que el usuario espera ver. */
+  useEffect(() => {
+    if (!make || publishedModels[make]) return
+    let current = true
+
+    void listModels(make)
+      .then((list) => {
+        if (current) setPublishedModels((prev) => ({ ...prev, [make]: list }))
+      })
+      .catch(() => {})
+
+    return () => {
+      current = false
+    }
+  }, [make, publishedModels])
+
+  const models = make ? modelsForMake(make, publishedModels[make]) : []
+
   /* Los filtros viven en la URL: buscar es navegar a /cars con la query. */
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const params = new URLSearchParams()
     if (make) params.set('make', make)
+    if (model) params.set('model', model)
     if (province) params.set('province', province)
     if (maxPrice) params.set('maxPrice', maxPrice)
     navigate({ pathname: '/cars', search: params.toString() })
@@ -117,13 +145,19 @@ export function Home() {
                 placeholder="Todas"
                 options={brands.map((brand) => ({ value: brand.name, label: brand.name }))}
                 value={make}
-                onChange={(event) => setMake(event.target.value)}
+                onChange={(event) => {
+                  setMake(event.target.value)
+                  /* El modelo elegido no existe en la marca nueva. */
+                  setModel('')
+                }}
               />
               <Select
                 label="Modelo"
                 placeholder={make ? 'Todos' : 'Elegí una marca primero'}
-                options={[]}
+                options={models.map((item) => ({ value: item, label: item }))}
+                value={model}
                 disabled={!make}
+                onChange={(event) => setModel(event.target.value)}
               />
               <Select
                 label="Ubicación"
