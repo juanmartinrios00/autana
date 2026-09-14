@@ -24,8 +24,7 @@
  *    poco, escalan, y siguen al tema. Un hero de 2,3 MB ya nos pasó una vez.
  *
  * 5. Sin `id` duplicados entre escenas: las cuatro conviven en el mismo
- *    documento. El filtro que le da el temblor al trazo es compartido y vive
- *    en `components/ui/SketchDefs`; la pantalla lo declara una vez.
+ *    documento, así que un `id` repetido lo gana la primera.
  */
 
 import { sceneSvgProps } from '../ui/sketch'
@@ -35,7 +34,7 @@ interface SceneProps {
   className?: string
 }
 
-/* Los atributos comunes viven en `ui/SketchDefs`, porque los comparte con los
+/* Los atributos comunes viven en `ui/sketch`, porque los comparte con los
    dibujos de la pantalla de niveles. El `aria-hidden` que traen es deliberado:
    la escena ilustra un texto que ya está al lado, así que anunciarla de nuevo
    es ruido para quien usa lector de pantalla. */

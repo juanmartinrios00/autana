@@ -4,7 +4,6 @@ import { AchievementList } from '../components/levels/AchievementList'
 import { LevelScene } from '../components/levels/scenes'
 import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
-import { SketchDefs } from '../components/ui/SketchDefs'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getLevelInput } from '../lib/api'
@@ -70,8 +69,6 @@ export function Levels() {
 
   return (
     <>
-      <SketchDefs />
-
       <section className="levels__head">
         <div className="page levels__head-inner">
           <span className="over over--invert">Los niveles</span>

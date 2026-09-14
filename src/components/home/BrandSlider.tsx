@@ -41,7 +41,12 @@ export function BrandSlider() {
           >
             <span className="brand__circle">
               {logo ? (
-                <img src={logo} alt="" className="brand__logo" loading="lazy" />
+                <img
+                  src={logo}
+                  alt=""
+                  className={`brand__logo brand__logo--${brand.slug}`}
+                  loading="lazy"
+                />
               ) : (
                 <span className="brand__initial" aria-hidden="true">
                   {brand.name.slice(0, 1)}

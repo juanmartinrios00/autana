@@ -24,6 +24,7 @@
   border: 1px solid transparent;
   border-radius: var(--r-pill);
   background: var(--surface-2);
+  overflow: hidden;
   transition:
     border-color var(--dur-med) var(--ease),
     background var(--dur-med) var(--ease);
@@ -141,7 +142,7 @@
   width: 126px;
   height: 126px;
   object-fit: contain;
-  opacity: 0.34;
+  opacity: 0.52;
   transform: translateY(-50%) scale(1.14);
   transform-origin: center;
   transition:
@@ -150,13 +151,51 @@
 }
 
 .model:hover .model__logo {
-  opacity: 0.5;
+  opacity: 0.72;
   transform: translate(-5px, -50%) scale(1.18);
 }
 
 .model:hover {
   border-color: var(--ink);
   background: var(--surface);
+}
+
+.brand__logo {
+  display: block;
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+}
+
+.brand__logo--peugeot {
+  width: 52px;
+  height: 52px;
+}
+
+/* Los archivos base son monocromos. Cada marca recupera su color reconocible
+   sin sumar una segunda colección de assets ni alterar la forma de los logos. */
+.model__logo--toyota,
+.model__logo--honda,
+.model__logo--fiat {
+  filter: brightness(0) saturate(100%) invert(18%) sepia(95%) saturate(5448%) hue-rotate(351deg) brightness(92%) contrast(94%);
+}
+
+.model__logo--volkswagen,
+.model__logo--ford,
+.model__logo--peugeot {
+  filter: brightness(0) saturate(100%) invert(20%) sepia(57%) saturate(2894%) hue-rotate(183deg) brightness(83%) contrast(101%);
+}
+
+.model__logo--chevrolet {
+  filter: brightness(0) saturate(100%) invert(72%) sepia(87%) saturate(1378%) hue-rotate(357deg) brightness(98%) contrast(96%);
+}
+
+.model__logo--renault {
+  filter: brightness(0) saturate(100%) invert(79%) sepia(99%) saturate(1871%) hue-rotate(359deg) brightness(101%) contrast(103%);
+}
+
+.model__logo--jeep {
+  filter: brightness(0) saturate(100%) invert(38%) sepia(27%) saturate(810%) hue-rotate(42deg) brightness(86%) contrast(89%);
 }
 
 .model__make {

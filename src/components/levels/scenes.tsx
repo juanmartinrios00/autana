@@ -2,8 +2,8 @@
  * Un dibujo por nivel.
  *
  * Mismo contrato que las escenas del garage —está escrito arriba de
- * `components/garage/scenes.tsx`— y mismo filtro de trazo. Estos cuatro
- * también son un piso: se reemplazan sin tocar la pantalla.
+ * `components/garage/scenes.tsx`— y mismo trazo. Estos cuatro también son un
+ * piso: se reemplazan sin tocar la pantalla.
  *
  * La progresión no es de premios, es de la relación con el auto. Se arranca
  * con una llave suelta y se termina con un tipo al que le preguntan. Un trofeo

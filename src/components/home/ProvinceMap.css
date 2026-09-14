@@ -1,0 +1,118 @@
+.province-map {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(420px, 1.28fr);
+  min-height: 650px;
+  align-items: center;
+}
+
+.province-map__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(var(--sp-6), 4vw, var(--sp-8));
+}
+
+.province-map__title {
+  max-width: 12ch;
+  margin-top: var(--sp-3);
+  font-size: var(--fs-h2);
+}
+
+.province-map__intro {
+  max-width: 45ch;
+  margin-top: var(--sp-4);
+  color: var(--ink-3);
+}
+
+.province-map__cta {
+  margin-top: var(--sp-6);
+}
+
+.province-map__visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: var(--sp-2);
+}
+
+.province-map__visual::before {
+  content: 'Cargando mapa';
+  position: absolute;
+  color: var(--ink-4);
+  font-size: 0.78rem;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+}
+
+.province-map__visual--ready::before {
+  content: none;
+}
+
+.province-map__visual canvas {
+  display: block;
+  width: 100%;
+  max-width: 650px;
+  max-height: 650px;
+  object-fit: contain;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity var(--dur-med) var(--ease);
+}
+
+.province-map__visual--ready canvas {
+  opacity: 1;
+}
+
+.province-map__tooltip {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 160px;
+  padding: 10px 12px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--ink-inverse);
+  pointer-events: none;
+  transform: translate(14px, calc(-100% - 14px));
+}
+
+.province-map__tooltip strong {
+  font-size: 0.86rem;
+}
+
+.province-map__tooltip span {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.76rem;
+}
+
+@media (max-width: 899px) {
+  .province-map {
+    grid-template-columns: 1fr;
+  }
+
+  .province-map__content {
+    padding-bottom: var(--sp-4);
+  }
+
+  .province-map__visual {
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 599px) {
+  .province-map {
+    min-height: 0;
+  }
+
+  .province-map__visual {
+    min-height: 420px;
+    padding: var(--sp-3);
+  }
+
+  .province-map__tooltip {
+    min-width: 145px;
+  }
+}

@@ -42,6 +42,7 @@ export function PopularModels() {
     <Slider eyebrow="Lo que más se busca" title="Modelos más buscados" itemWidth="212px">
       {models.map((item) => {
         const logo = logoFor(item.make)
+        const brandSlug = item.make.toLowerCase().replace(/\s+/g, '-')
 
         return (
           <Link
@@ -53,7 +54,14 @@ export function PopularModels() {
               <span className="model__make">{item.make}</span>
               <span className="model__name">{item.model}</span>
             </span>
-            {logo && <img src={logo} alt="" className="model__logo" loading="lazy" />}
+            {logo && (
+              <img
+                src={logo}
+                alt=""
+                className={`model__logo model__logo--${brandSlug}`}
+                loading="lazy"
+              />
+            )}
           </Link>
         )
       })}

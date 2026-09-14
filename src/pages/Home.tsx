@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BrandSlider } from '../components/home/BrandSlider'
+import { AudienceSection } from '../components/home/AudienceSection'
 import { BudgetSlider } from '../components/home/BudgetSlider'
 import { CategorySlider } from '../components/home/CategorySlider'
 import { ClosingBand } from '../components/home/ClosingBand'
@@ -8,6 +9,7 @@ import { DealerSlider } from '../components/home/DealerSlider'
 import { Faq } from '../components/home/Faq'
 import { HowItWorks } from '../components/home/HowItWorks'
 import { PopularModels } from '../components/home/PopularModels'
+import { ProvinceMap } from '../components/home/ProvinceMap'
 import { MarketplaceProof } from '../components/home/MarketplaceProof'
 import { VehicleSlider } from '../components/home/VehicleSlider'
 import { Badge } from '../components/ui/Badge'
@@ -15,7 +17,6 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Icon } from '../components/ui/Icon'
 import { Select } from '../components/ui/Select'
-import { SketchDefs } from '../components/ui/SketchDefs'
 import { brands } from '../data/brands'
 import { priceCaps, provinces } from '../data/makes'
 import {
@@ -54,6 +55,7 @@ export function Home() {
   const [recent, setRecent] = useState<Vehicle[]>([])
   const [mostSeen, setMostSeen] = useState<Vehicle[]>([])
   const [bodyCounts, setBodyCounts] = useState<Record<string, number>>({})
+  const [provinceCounts, setProvinceCounts] = useState<Record<string, number>>({})
   const [dealers, setDealers] = useState<Seller[]>([])
   const [stats, setStats] = useState<MarketplaceStats | null>(null)
   const [loadingRecent, setLoadingRecent] = useState(true)
@@ -65,14 +67,16 @@ export function Home() {
       listRecentVehicles(8),
       listPopularVehicles(8),
       countsBy('body_type'),
+      countsBy('province'),
       getStats(),
       listDealers(8),
-    ]).then(([recentResult, popularResult, bodiesResult, statsResult, dealersResult]) => {
+    ]).then(([recentResult, popularResult, bodiesResult, provincesResult, statsResult, dealersResult]) => {
       if (!current) return
 
       if (recentResult.status === 'fulfilled') setRecent(recentResult.value)
       if (popularResult.status === 'fulfilled') setMostSeen(popularResult.value)
       if (bodiesResult.status === 'fulfilled') setBodyCounts(bodiesResult.value)
+      if (provincesResult.status === 'fulfilled') setProvinceCounts(provincesResult.value)
       if (statsResult.status === 'fulfilled') setStats(statsResult.value)
       if (dealersResult.status === 'fulfilled') setDealers(dealersResult.value)
       setLoadingRecent(false)
@@ -95,11 +99,6 @@ export function Home() {
 
   return (
     <>
-      {/* El filtro que le da el temblor al trazo de los dibujos de "Cómo
-          funciona". Se declara una vez por página; si faltara, los dibujos se
-          verían igual pero con la línea recta. */}
-      <SketchDefs />
-
       <section className="hero">
         <div className="page hero__inner">
         <span className="over over--invert">Marketplace de autos · Argentina</span>
@@ -187,6 +186,10 @@ export function Home() {
         <CategorySlider counts={bodyCounts} />
 
         <PopularModels />
+
+        <ProvinceMap counts={provinceCounts} />
+
+        <AudienceSection />
 
         <HowItWorks />
 

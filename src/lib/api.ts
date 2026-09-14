@@ -890,7 +890,7 @@ export async function listPopularVehicles(limit = 8, minViews = 1): Promise<Vehi
 }
 
 /** Cuántas publicaciones activas hay por marca o por carrocería. */
-export async function countsBy(column: 'make' | 'body_type'): Promise<Record<string, number>> {
+export async function countsBy(column: 'make' | 'body_type' | 'province'): Promise<Record<string, number>> {
   const client = requireSupabase()
   const { data, error } = await client.from('listings').select(column).eq('status', 'active')
   if (error) throw error
