@@ -1095,6 +1095,14 @@ export async function uploadProfileAvatar(userId: string, file: File): Promise<s
 
   if (profileError) throw profileError
   if (authError) throw authError
+
+  /* Borrar las fotos anteriores. Cada una se sube con otro nombre, y antes la
+     vieja quedaba publicada para siempre: quien cambiaba su foto porque no
+     quería que se viera seguía teniéndola abierta para cualquiera con el link.
+     Va después de que el perfil apunta a la nueva, así nunca queda apuntando a
+     un archivo borrado. Si falla, la foto nueva ya está puesta y la vieja la
+     levanta `cleanOrphanPhotos` en la próxima sesión. */
+  await removeAllBut('listing-photos', `${userId}/avatar`, [path]).catch(() => {})
   return publicUrl
 }
 
@@ -1731,6 +1739,80 @@ const OWN_BUCKETS = ['listing-photos', 'garage-photos'] as const
  * así también se lleva lo que quedó colgado de una subida que se cortó a la
  * mitad y nunca llegó a `listing_images`.
  */
+/**
+ * Borra los archivos de una carpeta que no están en `keep`. Sólo el primer
+ * nivel: las carpetas de avatar y de garage no tienen subcarpetas.
+ *
+ * Devuelve cuántos borró.
+ */
+async function removeAllBut(bucket: string, prefix: string, keep: string[]): Promise<number> {
+  const client = requireSupabase()
+  const { data, error } = await client.storage.from(bucket).list(prefix, { limit: 1000 })
+  if (error || !data) return 0
+
+  const kept = new Set(keep)
+  const stale = data
+    .filter((entry) => entry.id !== null)
+    .map((entry) => `${prefix}/${entry.name}`)
+    .filter((path) => !kept.has(path))
+
+  if (stale.length === 0) return 0
+  const { error: removeError } = await client.storage.from(bucket).remove(stale)
+  if (removeError) throw removeError
+  return stale.length
+}
+
+/**
+ * La ruta dentro del bucket a partir de lo que guardó la base, que puede ser
+ * la ruta o la URL pública entera (las cuentas viejas guardaban la URL).
+ */
+function storagePath(bucket: string, value: string | null): string | null {
+  if (!value) return null
+  const marker = `/object/public/${bucket}/`
+  const at = value.indexOf(marker)
+  if (at !== -1) return decodeURIComponent(value.slice(at + marker.length))
+  return value.startsWith('http') ? null : value
+}
+
+/**
+ * Borra las fotos propias que ya no usa nada: avatares viejos y fotos de autos
+ * que se sacaron del garage.
+ *
+ * Existe porque durante un tiempo esas dos cosas no borraban el archivo, y hay
+ * fotos que la persona cree borradas y siguen publicadas. Corre una vez por
+ * sesión, desde el cliente de la propia persona, porque las políticas de
+ * Storage sólo dejan borrar lo de la propia carpeta: una limpieza general
+ * necesitaría la clave de servicio, que acá no existe a propósito.
+ *
+ * Nunca borra lo que está en uso: se lee de la base qué avatar y qué fotos del
+ * garage están puestos, y se conserva exactamente eso.
+ */
+export async function cleanOrphanPhotos(userId: string): Promise<number> {
+  const client = requireSupabase()
+
+  const [profile, garage] = await Promise.all([
+    client.from('profiles').select('avatar_url').eq('id', userId).maybeSingle(),
+    client.from('garage_entries').select('photo_path').eq('user_id', userId),
+  ])
+  /* Sin poder leer qué está en uso no se borra nada: mejor dejar una huérfana
+     que borrar la foto de alguien. */
+  if (profile.error || garage.error) return 0
+
+  const avatar = storagePath(
+    'listing-photos',
+    (profile.data as { avatar_url: string | null } | null)?.avatar_url ?? null,
+  )
+  const garagePhotos = ((garage.data as { photo_path: string | null }[]) ?? [])
+    .map((row) => row.photo_path)
+    .filter((path): path is string => Boolean(path))
+
+  const [avatars, cars] = await Promise.all([
+    removeAllBut('listing-photos', `${userId}/avatar`, avatar ? [avatar] : []),
+    removeAllBut('garage-photos', userId, garagePhotos),
+  ])
+  return avatars + cars
+}
+
 async function emptyFolder(bucket: string, prefix: string): Promise<void> {
   const client = requireSupabase()
   const { data, error } = await client.storage.from(bucket).list(prefix, { limit: 1000 })

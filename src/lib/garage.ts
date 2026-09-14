@@ -116,13 +116,23 @@ export async function saveGarageEntry(
 
 export async function removeGarageEntry(userId: string, slot: GarageSlot): Promise<void> {
   const client = requireSupabase()
-  const { error } = await client
+  const { data, error } = await client
     .from('garage_entries')
     .delete()
     .eq('user_id', userId)
     .eq('slot', slot)
+    .select('photo_path')
 
   if (error) throw error
-  /* La foto queda huerfana en el bucket. Es barato y evita borrar algo que
-     todavia se este mostrando en una pestana abierta; se limpia despues. */
+
+  /* Antes la foto quedaba en el bucket, publicada, con la idea de limpiarla
+     "después" — y ese después no existía. Una foto de garage puede mostrar una
+     patente o la puerta de una casa: quien saca el auto espera que la foto se
+     vaya. Se borra después de la fila, así el garage nunca apunta a una foto
+     que ya no está. Si falla, la levanta `cleanOrphanPhotos` en la próxima
+     sesión. */
+  const path = (data as { photo_path: string | null }[] | null)?.[0]?.photo_path
+  if (path) {
+    await client.storage.from('garage-photos').remove([path]).catch(() => {})
+  }
 }

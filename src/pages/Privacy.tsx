@@ -158,7 +158,8 @@ export function Privacy() {
       <LegalSection n={6} title="Borrar tus cosas">
         <p>
           Podés borrar cualquier aviso y cualquier auto del garage desde tu cuenta. Cuando
-          borrás un aviso, se borran también sus fotos.
+          borrás un aviso o sacás un auto del garage, se borran también sus fotos. Cuando
+          cambiás tu foto de perfil, la anterior se borra: no queda publicada en otro link.
         </p>
         <p>
           Y podés borrar la cuenta entera desde <Link to="/settings">Ajustes</Link>, abajo

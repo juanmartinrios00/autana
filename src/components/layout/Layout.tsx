@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { useOrphanPhotoCleanup } from '../../hooks/useOrphanPhotoCleanup'
 import { CompareBar } from '../compare/CompareBar'
 import { ErrorBoundary } from './ErrorBoundary'
 import { Footer } from './Footer'
@@ -8,6 +9,7 @@ import { Navbar } from './Navbar'
 export function Layout() {
   const sentinel = useRef<HTMLDivElement>(null)
   const location = useLocation()
+  useOrphanPhotoCleanup()
 
   /* Se arranca leyendo la posición real: si alguien recarga a mitad de página,
      la navbar tiene que nacer sólida y no transparente sobre contenido blanco. */
