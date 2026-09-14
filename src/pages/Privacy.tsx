@@ -60,6 +60,13 @@ export function Privacy() {
         <p>Y, si los usás:</p>
         <ul>
           <li>Tu foto de perfil.</li>
+          <li>Tu Instagram y un mail de contacto, si los cargás. Son opcionales.</li>
+          <li>
+            Los avisos en los que tocaste "Me interesa", y de quién viste los datos de
+            contacto y cuándo. Lo primero es para que el botón te diga que ya lo tocaste y
+            para contar cuánta gente se interesó; lo segundo, para aplicar el máximo diario
+            de contactos. Quien publicó ve cuántas personas se interesaron, no quiénes.
+          </li>
           <li>Los autos de tu garage, con sus fotos y sus notas.</li>
           <li>Tus favoritos, si tenés cuenta. Sin cuenta viven en tu navegador y no llegan hasta nosotros.</li>
           <li>Los reportes que hagas sobre un aviso.</li>
@@ -77,9 +84,8 @@ export function Privacy() {
         </p>
         <ul>
           <li>Tu nombre, tu foto de perfil, tu ciudad y tu provincia.</li>
-          <li>
-            <strong>Tu WhatsApp.</strong> Es el número con el que te van a escribir.
-          </li>
+          <li>Tu Instagram, si lo cargaste.</li>
+          <li>Cuántas personas tocaron "Me interesa" en cada aviso tuyo.</li>
           <li>Tus avisos activos, con sus fotos y su precio.</li>
           <li>
             Tu garage, que además tiene su propio link para compartir. Si no querés que se
@@ -88,8 +94,14 @@ export function Privacy() {
           <li>Desde cuándo tenés cuenta, y si estás verificada.</li>
         </ul>
         <p>
-          No son públicos: tu mail, tu contraseña, tus favoritos, ni los reportes que hayas
-          hecho. Un reporte lo ve quien lo hizo y quien modera.
+          <strong>Tu WhatsApp y tu mail de contacto</strong> los ve sólo quien tiene cuenta, al
+          tocar "Me interesa" en un aviso tuyo publicado o al pedirlos desde tu garage. Cada
+          cuenta puede ver los datos de hasta 30 personas nuevas por día. Es lo que evita que
+          alguien baje la lista de teléfonos de todo el sitio.
+        </p>
+        <p>
+          No son públicos: el mail de tu cuenta, tu contraseña, tus favoritos, en qué avisos
+          tocaste "Me interesa", ni los reportes que hayas hecho. Un reporte lo ve quien lo hizo y quien modera.
         </p>
       </LegalSection>
 

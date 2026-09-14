@@ -309,6 +309,18 @@
   color: var(--ink-3);
 }
 
+/* A cuántas personas les interesa. Tono de dato, no de alerta: no es un
+   "¡apurate!", es un hecho sobre el aviso. */
+.detail__interest {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
 .detail__actions {
   display: flex;
   flex-direction: column;

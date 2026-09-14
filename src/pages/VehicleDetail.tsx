@@ -7,6 +7,7 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
 import { FavoriteButton } from '../components/vehicle/FavoriteButton'
+import { InterestButton } from '../components/vehicle/InterestButton'
 import { VehicleGallery } from '../components/vehicle/VehicleGallery'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { VehicleSpecs } from '../components/vehicle/VehicleSpecs'
@@ -14,7 +15,6 @@ import { ReportDialog } from '../components/vehicle/ReportDialog'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { useFavorites } from '../hooks/useFavorites'
 import {
-  getListingWhatsapp,
   getSeller,
   getSimilarVehicles,
   getVehicleBySlug,
@@ -29,7 +29,7 @@ import {
   vehicleMeta,
   vehicleTitle,
 } from '../lib/format'
-import { listingMessage, whatsappLink } from '../lib/whatsapp'
+import { interestLabel } from '../lib/contact'
 import type { Seller, Vehicle } from '../types'
 import './VehicleDetail.css'
 
@@ -48,9 +48,10 @@ export function VehicleDetail() {
   }>({ slug: '', vehicle: null, failed: false })
 
   const [seller, setSeller] = useState<Seller | null>(null)
-  /* El numero ya no viene con el vendedor: se pide contra el slug del aviso y
-     la base solo lo devuelve si el aviso esta activo. Ver la migracion 008. */
-  const [contact, setContact] = useState<string | null>(null)
+  /* El contacto ya no se pide al abrir la ficha: lo trae "Me interesa", que
+     pide cuenta y suma al contador (migración 014). Acá sólo queda el número
+     de interesados, que sube si se toca en esta misma ficha. */
+  const [interest, setInterest] = useState<{ slug: string; count: number } | null>(null)
   const [similar, setSimilar] = useState<Vehicle[]>([])
 
   useEffect(() => {
@@ -65,17 +66,13 @@ export function VehicleDetail() {
            métrica, no el contenido de la página. */
         void registerView(slug)
 
-        const [itsSeller, alike, number] = await Promise.all([
+        const [itsSeller, alike] = await Promise.all([
           getSeller(found.sellerId),
           getSimilarVehicles(found),
-          /* Si falla, la ficha se muestra igual y sin boton de contacto. Es
-             preferible a un boton que abre WhatsApp sin numero. */
-          getListingWhatsapp(slug).catch(() => null),
         ])
         if (!current) return
         setSeller(itsSeller)
         setSimilar(alike)
-        setContact(number)
       })
       .catch((cause: unknown) => {
         /* Un fallo de red no es lo mismo que un aviso inexistente: decirle al
@@ -168,10 +165,8 @@ export function VehicleDetail() {
   const title = vehicleTitle(vehicle)
   const saved = has(vehicle.id)
 
-  /* El comprador escribe al vendedor por WhatsApp con el link ya armado. */
-  const contactHref = contact
-    ? whatsappLink(contact, listingMessage(title, window.location.href))
-    : null
+  const interestCount = interest?.slug === vehicle.slug ? interest.count : vehicle.interestCount
+  const interestText = interestLabel(interestCount)
 
   return (
     <>
@@ -238,22 +233,22 @@ export function VehicleDetail() {
               <p className="detail__negotiable">El vendedor acepta ofertas</p>
             )}
 
+            {interestText && (
+              /* El cartel va arriba del botón y no abajo: es lo que empuja a
+                 tocarlo, y leído después ya no empuja nada. */
+              <p className="detail__interest">
+                <Icon name="user" size={15} />
+                {interestText} este vehículo
+              </p>
+            )}
+
             <div className="detail__actions">
-              {contactHref ? (
-                <a
-                  className="btn btn--yellow btn--lg btn--block"
-                  href={contactHref}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <Icon name="message" size={18} />
-                  Contactar por WhatsApp
-                </a>
-              ) : (
-                <Button variant="yellow" size="lg" block disabled>
-                  Contacto no disponible
-                </Button>
-              )}
+              <InterestButton
+                vehicle={vehicle}
+                title={title}
+                size="detail"
+                onCount={(count) => setInterest({ slug: vehicle.slug, count })}
+              />
               <div className="detail__actions-pair">
                 <Button variant="outline" block onClick={() => toggle(vehicle.id)}>
                   <Icon name="heart" size={16} />

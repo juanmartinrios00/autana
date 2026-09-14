@@ -65,7 +65,7 @@ const buying: Step[] = [
   },
   {
     title: 'Escribile al vendedor',
-    text: 'El contacto va directo por WhatsApp. Sin intermediarios, sin dejar tu teléfono y sin que nadie te llame después para ofrecerte otra cosa.',
+    text: 'Tocá "Me interesa" y ves su WhatsApp, Instagram o mail, lo que haya dejado. Sin intermediarios, sin dejar tu teléfono y sin que nadie te llame después para ofrecerte otra cosa.',
     Scene: ContactScene,
   },
 ]

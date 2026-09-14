@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { FollowControls } from '../components/garage/FollowControls'
 import { GarageSlotCard } from '../components/garage/GarageSlotCard'
+import { ProfileContact } from '../components/garage/ProfileContact'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
@@ -157,6 +158,7 @@ export function Garage() {
           </div>
 
           <FollowControls targetId={userId} targetName={profile.name} />
+          <ProfileContact targetId={userId} instagram={profile.instagram} />
         </div>
       </section>
 

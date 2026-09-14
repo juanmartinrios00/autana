@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge } from '../ui/Badge'
 import { CompareButton } from './CompareButton'
 import { FavoriteButton } from './FavoriteButton'
+import { InterestButton } from './InterestButton'
 import { VehicleMedia } from './VehicleMedia'
 import {
   conditionLabels,
@@ -22,6 +24,10 @@ interface VehicleCardProps {
 
 export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
   const title = vehicleTitle(vehicle)
+  /* Arranca con el número que vino con el aviso y sube si se toca acá mismo:
+     esperar a recargar la página para ver el propio toque se lee como que
+     no contó. */
+  const [interest, setInterest] = useState(vehicle.interestCount)
 
   return (
     <article className={`vcard vcard--${layout}`}>
@@ -82,7 +88,17 @@ export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
 
         {/* Va en su propia fila y no dentro del pie: ahí conviven la ubicación
             y los sellos del vendedor, y un tercer elemento rompe el reparto. */}
-        <CompareButton slug={vehicle.slug} title={title} className="vcard__compare" />
+        <div className="vcard__actions">
+          <InterestButton vehicle={vehicle} title={title} onCount={setInterest} />
+          <CompareButton slug={vehicle.slug} title={title} className="vcard__compare" />
+        </div>
+        {interest > 0 && (
+          /* En cero no se muestra: un aviso recién publicado no tiene por qué
+             anunciar que todavía no le interesa a nadie. */
+          <span className="vcard__interest mono">
+            A {interest} {interest === 1 ? 'persona le' : 'personas les'} interesa
+          </span>
+        )}
       </div>
     </article>
   )

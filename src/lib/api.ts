@@ -78,6 +78,7 @@ interface ListingRow {
   status: Vehicle['status']
   view_count: number
   favorite_count: number
+  interest_count: number
   created_at: string
   updated_at: string
   listing_images?: ImageRow[] | null
@@ -96,6 +97,8 @@ interface ProfileRow {
   city: string | null
   province: string | null
   verified: boolean
+  /** Público desde la 014. El WhatsApp y el mail de contacto no están, igual que antes. */
+  instagram: string | null
 }
 
 /* `profiles` a secas es ambiguo: PostgREST ve dos relaciones entre listings y
@@ -148,6 +151,9 @@ function toVehicle(row: ListingRow): Vehicle {
     updatedAt: row.updated_at,
     viewCount: row.view_count,
     favoriteCount: row.favorite_count,
+    /* `?? 0` por si la migración 014 todavía no corrió: un aviso sin la
+       columna tiene que seguir mostrándose. */
+    interestCount: row.interest_count ?? 0,
     sellerName: row.profiles?.name,
     sellerType: row.profiles?.seller_type,
   }
@@ -156,7 +162,8 @@ function toVehicle(row: ListingRow): Vehicle {
 /* Las columnas de `profiles` que se pueden leer. Desde la migracion 008 el
    permiso es por columna: `select('*')` falla, y esta bien que falle — es lo
    que avisa que alguien agrego una columna sin decidir si es publica. */
-const PROFILE_COLUMNS = 'id, name, avatar_url, seller_type, city, province, verified, created_at'
+const PROFILE_COLUMNS =
+  'id, name, avatar_url, seller_type, city, province, verified, created_at, instagram'
 
 function toSeller(row: ProfileRow, listingCount: number): Seller {
   return {
@@ -985,6 +992,8 @@ export interface ProfileSummary {
   city: string | null
   province: string | null
   verified: boolean
+  /** Usuario de Instagram, sin arroba. Es el único dato de contacto público. */
+  instagram: string | null
   /** Publicaciones activas. */
   activeListings: number
   /** Fotos de la publicación que más tiene. Alimenta el logro correspondiente. */
@@ -1022,6 +1031,7 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
     city: profileRow.city,
     province: profileRow.province,
     verified: profileRow.verified,
+    instagram: profileRow.instagram ?? null,
     activeListings: rows.length,
     bestPhotoCount: rows.reduce((max, row) => Math.max(max, row.listing_images?.length ?? 0), 0),
   }
@@ -1063,6 +1073,9 @@ export interface ProfileUpdate {
   city: string
   province: string
   sellerType: Seller['type']
+  /** Ya normalizado: sin arroba ni link. Vacío se guarda como `null`. */
+  instagram: string | null
+  contactEmail: string | null
 }
 
 export async function updateProfile(userId: string, input: ProfileUpdate): Promise<void> {
@@ -1075,6 +1088,8 @@ export async function updateProfile(userId: string, input: ProfileUpdate): Promi
       city: input.city,
       province: input.province,
       seller_type: input.sellerType,
+      instagram: input.instagram,
+      contact_email: input.contactEmail,
     })
     .eq('id', userId)
 
@@ -1429,11 +1444,115 @@ export async function removeSavedSearch(id: string): Promise<void> {
  * Devuelve `null` si el aviso no esta activo, que es lo correcto: un aviso
  * bloqueado esta bloqueado por algo.
  */
-export async function getListingWhatsapp(slug: string): Promise<string | null> {
+/* ---------------------------------------------------------------------------
+   Me interesa, y el contacto
+--------------------------------------------------------------------------- */
+
+/**
+ * El contacto de quien publicó, tal como lo devuelve "Me interesa".
+ *
+ * Cualquiera de los tres puede venir vacío: son opcionales. Que vengan los tres
+ * vacíos también puede pasar, y la pantalla lo dice en vez de mostrar un panel
+ * en blanco.
+ */
+export interface SellerContact {
+  sellerName: string
+  whatsapp: string | null
+  instagram: string | null
+  contactEmail: string | null
+  /** El número actualizado, ya contando este toque si era el primero. */
+  interestCount: number
+}
+
+/**
+ * Se llegó al tope diario de contactos nuevos (migración 014). Se separa del
+ * resto de los errores porque la pantalla dice qué pasó y cuándo se destraba,
+ * en vez de un "algo salió mal".
+ */
+export class ContactLimitError extends Error {}
+
+function isContactLimit(error: { code?: string; hint?: string | null }): boolean {
+  return error.code === 'PT429' || error.hint === 'contact_limit'
+}
+
+/**
+ * Tocar "Me interesa": anota el interés y devuelve el contacto, en una sola
+ * llamada. Si fueran dos se podría pedir el contacto sin sumar, y el número
+ * público dejaría de decir cuánta gente contactó.
+ *
+ * `null` si el aviso ya no está activo.
+ */
+export async function expressInterest(slug: string): Promise<SellerContact | null> {
   const client = requireSupabase()
-  const { data, error } = await client.rpc('listing_whatsapp', { p_slug: slug })
+  const { data, error } = await client.rpc('express_interest', { p_slug: slug })
+  if (error) {
+    if (isContactLimit(error)) throw new ContactLimitError(error.message)
+    throw error
+  }
+
+  const row = (data as {
+    seller_name: string
+    whatsapp: string | null
+    instagram: string | null
+    contact_email: string | null
+    interest_count: number
+  }[])[0]
+  if (!row) return null
+
+  return {
+    sellerName: row.seller_name,
+    whatsapp: row.whatsapp,
+    instagram: row.instagram,
+    contactEmail: row.contact_email,
+    interestCount: Number(row.interest_count),
+  }
+}
+
+/** Si ya tocó "Me interesa" en este aviso, para que el botón lo diga. */
+export async function hasInterest(userId: string, listingId: string): Promise<boolean> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('listing_interests')
+    .select('listing_id')
+    .eq('user_id', userId)
+    .eq('listing_id', listingId)
+    .maybeSingle()
   if (error) throw error
-  return (data as string | null) ?? null
+  return Boolean(data)
+}
+
+/**
+ * WhatsApp y mail de una persona, para quien tiene sesión. `null` si no cargó
+ * ninguno de los dos — y en ese caso no gasta tope.
+ */
+export async function getProfileContact(
+  targetId: string,
+): Promise<{ whatsapp: string | null; contactEmail: string | null } | null> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('profile_contact', { target: targetId })
+  if (error) {
+    if (isContactLimit(error)) throw new ContactLimitError(error.message)
+    throw error
+  }
+  const row = (data as { whatsapp: string | null; contact_email: string | null }[])[0]
+  return row ? { whatsapp: row.whatsapp, contactEmail: row.contact_email } : null
+}
+
+/** Los datos de contacto propios, para Ajustes. */
+export async function getMyContact(): Promise<{
+  whatsapp: string | null
+  instagram: string | null
+  contactEmail: string | null
+}> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('my_contact')
+  if (error) throw error
+  const row = (data as { whatsapp: string | null; instagram: string | null; contact_email: string | null }[])[0]
+  return {
+    whatsapp: row?.whatsapp ?? null,
+    instagram: row?.instagram ?? null,
+    contactEmail: row?.contact_email ?? null,
+  }
 }
 
 /** El propio numero. La funcion resuelve de quien es con `auth.uid()`, asi que

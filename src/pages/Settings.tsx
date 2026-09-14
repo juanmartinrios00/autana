@@ -11,7 +11,7 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
   deleteAccount,
   getDiscoverable,
-  getOwnWhatsapp,
+  getMyContact,
   getProfile,
   listBlocked,
   setDiscoverable,
@@ -20,6 +20,7 @@ import {
   updateProfile,
 } from '../lib/api'
 import { changePassword, MIN_PASSWORD } from '../lib/auth'
+import { isContactEmail, normalizeInstagram } from '../lib/contact'
 import type { Seller } from '../types'
 import './Settings.css'
 
@@ -48,6 +49,8 @@ export function Settings() {
   const [ready, setReady] = useState(false)
   const [name, setName] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
+  const [instagram, setInstagram] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
   const [city, setCity] = useState('')
   const [province, setProvince] = useState('')
   const [sellerType, setSellerType] = useState<Seller['type']>('private')
@@ -78,11 +81,11 @@ export function Settings() {
     if (!userId) return
     let alive = true
 
-    /* El WhatsApp va por su propia función: desde la migración 008 no se lee de
-       `profiles`, y la base sólo devuelve el propio. */
+    /* El contacto va por su propia función: WhatsApp y mail no se leen de
+       `profiles` (migraciones 008 y 014), y la base sólo devuelve el propio. */
     void Promise.all([
       getProfile(userId),
-      getOwnWhatsapp().catch(() => null),
+      getMyContact().catch(() => null),
       /* Si falla, se asume que aparece: es el default de la columna, y
          mostrar el interruptor apagado cuando en realidad está prendido
          diría una mentira sobre lo que se ve de vos. */
@@ -94,7 +97,9 @@ export function Settings() {
         setCity(profile.city ?? '')
         setProvince(profile.province ?? '')
         setSellerType(profile.sellerType)
-        setWhatsapp(own ?? '')
+        setWhatsapp(own?.whatsapp ?? '')
+        setInstagram(own?.instagram ?? '')
+        setContactEmail(own?.contactEmail ?? '')
         setDiscoverableState(listed)
         setReady(true)
       })
@@ -171,6 +176,18 @@ export function Settings() {
       return
     }
 
+    /* Se normaliza antes de validar: el que pega el link de su perfil o pone
+       la arroba no se equivocó, sólo lo escribió como se escribe. */
+    const handle = normalizeInstagram(instagram)
+    if (handle === undefined) {
+      setDataError('Ese Instagram no parece un usuario. Poné sólo el nombre, sin espacios.')
+      return
+    }
+    if (contactEmail.trim() && !isContactEmail(contactEmail)) {
+      setDataError('Ese mail de contacto no tiene forma de mail.')
+      return
+    }
+
     setDataBusy(true)
     setDataError('')
     setDataSaved(false)
@@ -181,7 +198,11 @@ export function Settings() {
         city: city.trim(),
         province,
         sellerType,
+        instagram: handle,
+        contactEmail: contactEmail.trim() || null,
       })
+      /* Lo que quedó guardado es la forma normalizada: se muestra esa. */
+      setInstagram(handle ?? '')
       setDataSaved(true)
     } catch {
       setDataError('No pudimos guardar los cambios. Probá de nuevo.')
@@ -263,8 +284,9 @@ export function Settings() {
         <form className="settings__card" onSubmit={(event) => void saveData(event)}>
           <h2 className="settings__section-title">Tus datos</h2>
           <p className="settings__note">
-            El nombre y la ubicación se ven en tus avisos. El WhatsApp es el número con el
-            que te escriben, y sólo lo recibe quien abre un aviso tuyo publicado.
+            El nombre y la ubicación se ven en tus avisos. Los datos de contacto son opcionales:
+            Instagram lo ve cualquiera; el WhatsApp y el mail, sólo quien tiene cuenta y toca
+            "Me interesa" en un aviso tuyo o los pide desde tu garage.
           </p>
 
           <div className="settings__pair">
@@ -275,6 +297,26 @@ export function Settings() {
               placeholder="Ej. 11 2345 6789"
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
+            />
+          </div>
+
+          <div className="settings__pair">
+            <Input
+              label="Instagram (opcional)"
+              placeholder="Ej. autosjuan"
+              autoComplete="off"
+              value={instagram}
+              onChange={(e) => setInstagram(e.target.value)}
+            />
+            {/* No es el mail de la cuenta: ese nunca se muestra. Éste lo pone
+                quien quiere que le escriban por mail. */}
+            <Input
+              label="Mail de contacto (opcional)"
+              type="email"
+              inputMode="email"
+              placeholder="No hace falta que sea el de tu cuenta"
+              value={contactEmail}
+              onChange={(e) => setContactEmail(e.target.value)}
             />
           </div>
 

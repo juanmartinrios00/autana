@@ -98,6 +98,11 @@ export interface Vehicle {
   /** Metricas de la publicacion; solo llegan al dueño. */
   viewCount?: number
   favoriteCount?: number
+  /**
+   * Cuántas personas con cuenta tocaron "Me interesa". Es público: lo ve
+   * cualquiera, en la card y en la ficha.
+   */
+  interestCount: number
 
   /* Datos del vendedor que viajan con el aviso para no pedir otra consulta
      por cada card de la grilla. */

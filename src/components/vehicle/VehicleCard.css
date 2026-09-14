@@ -269,5 +269,19 @@
 .vcard__compare {
   position: relative;
   z-index: 2;
+}
+
+/* "Me interesa" adelante porque es la acción; comparar queda al lado, más
+   callado. Se envuelven si la caja es angosta. */
+.vcard__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
   margin-top: var(--sp-1);
+}
+
+.vcard__interest {
+  font-size: 0.74rem;
+  color: var(--ink-3);
 }

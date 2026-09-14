@@ -1,0 +1,61 @@
+/* El contacto en la cabecera del garage, que es oscura: mismos blancos con
+   transparencia que `FollowControls.css`. */
+
+.pcontact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+.pcontact__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--ink-inverse);
+  text-decoration: none;
+}
+
+.pcontact__item:hover .mono,
+.pcontact__item:focus-visible .mono {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pcontact__label {
+  font-size: var(--fs-xs);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.pcontact__ask {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.pcontact__ask:hover {
+  color: var(--ink-inverse);
+}
+
+.pcontact__ask:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.pcontact__note {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.pcontact__error {
+  font-size: var(--fs-sm);
+  color: var(--danger);
+}

@@ -39,8 +39,9 @@ const TOPICS: Topic[] = [
         q: '¿Necesito cuenta para buscar?',
         a: (
           <p>
-            No. Buscar, filtrar, abrir una ficha y comparar no piden cuenta. Guardar
-            favoritos tampoco: sin cuenta se guardan en tu navegador. Eso significa que si
+            Para buscar, no. Buscar, filtrar, abrir una ficha y comparar no piden cuenta.
+            Guardar favoritos tampoco: sin cuenta se guardan en tu navegador. Lo que sí pide
+            cuenta es ver el contacto de quien publicó. Eso significa que si
             borrás los datos del navegador, o entrás desde otro teléfono, no van a estar.
             Con cuenta te siguen a donde entres.
           </p>
@@ -50,10 +51,12 @@ const TOPICS: Topic[] = [
         q: '¿Cómo le escribo al vendedor?',
         a: (
           <p>
-            Con el botón de WhatsApp de la ficha. Se abre el chat con un mensaje que ya
-            menciona el auto y el link, así el vendedor sabe de cuál le hablás. El número
-            sólo se entrega desde un aviso publicado: si el aviso está pausado o bloqueado,
-            no hay botón.
+            Tocá "Me interesa" en la ficha o en el listado. Se abre el contacto que dejó:
+            WhatsApp, Instagram o mail. El de WhatsApp abre el chat con un mensaje que ya
+            menciona el auto y el link, así sabe de cuál le hablás. Pide tener cuenta: es lo
+            que evita que alguien se lleve todos los teléfonos del sitio de una vez. Por lo
+            mismo, hay un máximo de 30 contactos nuevos por día, que alcanza de sobra para
+            buscar auto.
           </p>
         ),
       },
@@ -205,9 +208,11 @@ const TOPICS: Topic[] = [
         q: '¿Quién ve mi número de WhatsApp?',
         a: (
           <p>
-            Quien abre uno de tus avisos publicados. Es el número con el que te van a
-            escribir, así que tiene que ser visible ahí, pero no aparece en ninguna lista ni
-            se entrega a quien no esté mirando un aviso tuyo.
+            Quien tiene cuenta y toca "Me interesa" en un aviso tuyo publicado, o lo pide
+            desde tu garage. Es el número con el que te van a escribir, así que tiene que
+            poder verse, pero no aparece en ninguna lista, no se entrega sin cuenta, y cada
+            cuenta tiene un máximo de contactos nuevos por día. Lo mismo vale para el mail de
+            contacto. Tu Instagram, si lo cargás, sí es público: ya lo es en Instagram.
           </p>
         ),
       },
