@@ -12,7 +12,13 @@ interface Province {
 
 /* Las semillas corresponden a una zona interior de cada provincia en el mapa
    provisto. El dibujo conserva así sus límites originales en vez de cubrirlo
-   con una segunda silueta aproximada. */
+   con una segunda silueta aproximada.
+
+   CABA no está: el mapa no la dibuja separada de Buenos Aires —ese sector es
+   relleno continuo—, así que el relleno de Buenos Aires se la comía y su
+   semilla nunca prendía. Quedaba un marcador que mostraba el globo pero no
+   pintaba nada, y al pasarle por arriba Buenos Aires se apagaba. Esa zona es
+   Buenos Aires y listo; a CABA se llega por el filtro de ubicación. */
 const provinces: Province[] = [
   { name: 'Jujuy', query: 'Jujuy', seed: [546, 68] },
   { name: 'Salta', query: 'Salta', seed: [548, 136] },
@@ -31,7 +37,6 @@ const provinces: Province[] = [
   { name: 'Mendoza', query: 'Mendoza', seed: [454, 461] },
   { name: 'San Luis', query: 'San Luis', seed: [550, 456] },
   { name: 'Buenos Aires', query: 'Buenos Aires', seed: [690, 571] },
-  { name: 'CABA', query: 'CABA', seed: [718, 548] },
   { name: 'La Pampa', query: 'La Pampa', seed: [540, 617] },
   { name: 'Neuquén', query: 'Neuquén', seed: [430, 662] },
   { name: 'Río Negro', query: 'Río Negro', seed: [493, 754] },
@@ -40,49 +45,101 @@ const provinces: Province[] = [
   { name: 'Tierra del Fuego', query: 'Tierra del Fuego', seed: [500, 1200] },
 ]
 
-const specialHitAreas = [
-  { provinceIndex: 17, x: 772, y: 512, radius: 22 }, // CABA
-]
-
 interface ProvinceMapProps {
   counts: Record<string, number>
 }
 
 function countFor(counts: Record<string, number>, province: Province) {
-  if (province.query === 'CABA') {
-    return counts.CABA ?? counts['Ciudad Autónoma de Buenos Aires'] ?? 0
-  }
   return counts[province.query] ?? 0
+}
+
+/**
+ * Los píxeles de una provincia, con el rectángulo que los contiene.
+ *
+ * Se arma durante el relleno, que ya pasa por cada uno: guardarlos sale gratis
+ * ahí y evita tener que buscarlos después. El rectángulo es para subir al
+ * canvas sólo esa zona en vez de la lámina entera.
+ */
+interface Region {
+  pixels: Int32Array
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
 }
 
 export function ProvinceMap({ counts }: ProvinceMapProps) {
   const navigate = useNavigate()
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const sourceRef = useRef<ImageData | null>(null)
+  /** La lámina en blanco y negro, sin ninguna provincia encendida. Nunca se toca. */
+  const cleanRef = useRef<ImageData | null>(null)
+  /** Lo que está en pantalla. Es la que se modifica, siempre leyendo de `cleanRef`. */
+  const frameRef = useRef<ImageData | null>(null)
   const labelsRef = useRef<Int16Array | null>(null)
+  const regionsRef = useRef<(Region | null)[] | null>(null)
+  /** Cuál quedó encendida, para saber qué apagar sin recorrer el resto. */
+  const litRef = useRef<number | null>(null)
   const [selected, setSelected] = useState<number | null>(null)
   const [tooltip, setTooltip] = useState<{ x: number; y: number } | null>(null)
   const [ready, setReady] = useState(false)
 
+  /**
+   * Enciende una provincia y apaga la anterior.
+   *
+   * Antes esto copiaba el buffer completo y recorría el millón y medio de
+   * píxeles del mapa en cada cambio: seis megas y seis milisegundos por
+   * provincia, en el hilo principal. Barrer el mapa de punta a punta con el
+   * mouse tiraba ciento cuarenta megas al recolector.
+   *
+   * Ahora toca sólo la que se apaga y la que se enciende —unos quince mil
+   * píxeles— y sube al canvas nada más que sus rectángulos. El color sale
+   * siempre de `cleanRef`, así que encender dos veces la misma no la satura.
+   */
   function paint(index: number | null) {
     const canvas = canvasRef.current
-    const source = sourceRef.current
-    const labels = labelsRef.current
-    if (!canvas || !source || !labels) return
+    const clean = cleanRef.current
+    const frame = frameRef.current
+    const regions = regionsRef.current
+    if (!canvas || !clean || !frame || !regions) return
     const context = canvas.getContext('2d')
     if (!context) return
+    if (litRef.current === index) return
 
-    const pixels = new Uint8ClampedArray(source.data)
-    if (index !== null) {
-      for (let pixel = 0; pixel < labels.length; pixel += 1) {
-        if (labels[pixel] !== index) continue
-        const offset = pixel * 4
-        pixels[offset] = Math.round(pixels[offset] * 0.12 + 255 * 0.88)
-        pixels[offset + 1] = Math.round(pixels[offset + 1] * 0.12 + 209 * 0.88)
-        pixels[offset + 2] = Math.round(pixels[offset + 2] * 0.12)
-      }
+    const blit = (region: Region) => {
+      context.putImageData(
+        frame,
+        0,
+        0,
+        region.minX,
+        region.minY,
+        region.maxX - region.minX + 1,
+        region.maxY - region.minY + 1,
+      )
     }
-    context.putImageData(new ImageData(pixels, source.width, source.height), 0, 0)
+
+    const previous = litRef.current === null ? null : regions[litRef.current]
+    if (previous) {
+      for (const pixel of previous.pixels) {
+        const offset = pixel * 4
+        frame.data[offset] = clean.data[offset]
+        frame.data[offset + 1] = clean.data[offset + 1]
+        frame.data[offset + 2] = clean.data[offset + 2]
+      }
+      blit(previous)
+    }
+
+    const region = index === null ? null : regions[index]
+    if (region) {
+      for (const pixel of region.pixels) {
+        const offset = pixel * 4
+        frame.data[offset] = Math.round(clean.data[offset] * 0.12 + 255 * 0.88)
+        frame.data[offset + 1] = Math.round(clean.data[offset + 1] * 0.12 + 209 * 0.88)
+        frame.data[offset + 2] = Math.round(clean.data[offset + 2] * 0.12)
+      }
+      blit(region)
+    }
+
+    litRef.current = index
   }
 
   useEffect(() => {
@@ -109,6 +166,8 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
         return alpha > 40 && light > 126
       }
 
+      const regions: (Region | null)[] = provinces.map(() => null)
+
       provinces.forEach((province, provinceIndex) => {
         const [seedX, seedY] = province.seed
         const seed = seedY * canvas.width + seedX
@@ -118,9 +177,20 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
         queue[tail++] = seed
         labels[seed] = provinceIndex
 
+        let minX = seedX
+        let maxX = seedX
+        let minY = seedY
+        let maxY = seedY
+
         while (head < tail) {
           const pixel = queue[head++]
           const x = pixel % canvas.width
+          const y = (pixel - x) / canvas.width
+          if (x < minX) minX = x
+          if (x > maxX) maxX = x
+          if (y < minY) minY = y
+          if (y > maxY) maxY = y
+
           const candidates = [pixel - canvas.width, pixel + canvas.width]
           if (x > 0) candidates.push(pixel - 1)
           if (x < canvas.width - 1) candidates.push(pixel + 1)
@@ -131,6 +201,10 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
             queue[tail++] = next
           }
         }
+
+        /* La cola se reusa entre provincias, así que hay que llevarse una copia
+           antes de que la pise la siguiente. */
+        regions[provinceIndex] = { pixels: queue.slice(0, tail), minX, minY, maxX, maxY }
       })
 
       /* El PNG se usa para reconocer cada región, pero la capa visible se
@@ -146,10 +220,19 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
         styledPixels[offset + 1] = tone
         styledPixels[offset + 2] = tone
       }
-      const styledSource = new ImageData(styledPixels, source.width, source.height)
-      sourceRef.current = styledSource
+      /* Dos copias: `clean` es de donde sale el color original de cada píxel y
+         no se toca nunca; `frame` es la que se modifica y se sube al canvas.
+         Separadas, porque encender leyendo de la que ya está encendida iría
+         acumulando el tinte sobre sí mismo. */
+      cleanRef.current = new ImageData(styledPixels, source.width, source.height)
+      frameRef.current = new ImageData(
+        new Uint8ClampedArray(styledPixels),
+        source.width,
+        source.height,
+      )
       labelsRef.current = labels
-      context.putImageData(styledSource, 0, 0)
+      regionsRef.current = regions
+      context.putImageData(frameRef.current, 0, 0)
       setReady(true)
     }
 
@@ -173,8 +256,7 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
     const bounds = canvas.getBoundingClientRect()
     const x = Math.max(0, Math.min(canvas.width - 1, Math.floor(((event.clientX - bounds.left) / bounds.width) * canvas.width)))
     const y = Math.max(0, Math.min(canvas.height - 1, Math.floor(((event.clientY - bounds.top) / bounds.height) * canvas.height)))
-    const special = specialHitAreas.find((area) => Math.hypot(x - area.x, y - area.y) <= area.radius)
-    const index = special?.provinceIndex ?? labels[y * canvas.width + x]
+    const index = labels[y * canvas.width + x]
     const next = index >= 0 ? index : null
 
     if (next !== selected) {
