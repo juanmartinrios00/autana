@@ -271,14 +271,18 @@
   z-index: 2;
 }
 
-/* "Me interesa" adelante porque es la acción; comparar queda al lado, más
-   callado. Se envuelven si la caja es angosta. */
+/* "Me interesa" arriba y a todo el ancho, porque es la acción; comparar
+   abajo. Lado a lado no entran en una caja de la grilla, y envueltos quedaba
+   el botón amarillo chico y comparar ocupando todo el ancho: lo menos
+   importante se veía más grande. */
 .vcard__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sp-2) var(--sp-3);
+  display: grid;
+  gap: var(--sp-2);
   margin-top: var(--sp-1);
+}
+
+.vcard__actions .interest__card-button {
+  width: 100%;
 }
 
 .vcard__interest {
