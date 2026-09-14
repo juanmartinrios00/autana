@@ -1,0 +1,114 @@
+/* Novedades. Cabecera clara como la de `/siguiendo`: es una lista de lo propio,
+   no una pantalla para mostrar. */
+
+.novedades__head {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.novedades__head-inner {
+  padding-block: var(--sp-7) var(--sp-6);
+}
+
+.novedades__title {
+  margin: var(--sp-2) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-display);
+  letter-spacing: var(--ls-display);
+  line-height: var(--lh-tight);
+}
+
+.novedades__sub {
+  margin: var(--sp-3) 0 0;
+  color: var(--ink-2);
+  line-height: var(--lh-body);
+}
+
+.novedades__body {
+  padding-block: var(--sp-6) var(--sp-8);
+}
+
+.novedades__list {
+  display: grid;
+  gap: var(--sp-2);
+  max-width: 38rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.novedad {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--canvas);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+
+.novedad:hover,
+.novedad:focus-visible {
+  border-color: var(--line-ink);
+  background: var(--surface);
+}
+
+/* Las nuevas se marcan con una franja amarilla a la izquierda: se distinguen de
+   un vistazo sin pintar la fila entera. */
+.novedad--unseen {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.novedad__avatar {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-pill);
+  object-fit: cover;
+  background: var(--surface-2);
+}
+
+.novedad__avatar--empty,
+.novedad__avatar--icon {
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.novedad__text {
+  display: grid;
+  gap: var(--sp-1);
+  min-width: 0;
+  line-height: var(--lh-body);
+}
+
+.novedad__when {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+}
+
+.novedad__new {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.novedades__empty-link {
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .novedad {
+    transition: none;
+  }
+}

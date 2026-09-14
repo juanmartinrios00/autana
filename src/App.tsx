@@ -30,6 +30,7 @@ const GarageLanding = lazy(() =>
 const MyGarageRedirect = lazy(() =>
   import('./pages/GarageLanding').then((m) => ({ default: m.MyGarageRedirect })),
 )
+const Novedades = lazy(() => import('./pages/Novedades').then((m) => ({ default: m.Novedades })))
 const People = lazy(() => import('./pages/People').then((m) => ({ default: m.People })))
 const Privacy = lazy(() => import('./pages/Privacy').then((m) => ({ default: m.Privacy })))
 const Terms = lazy(() => import('./pages/Terms').then((m) => ({ default: m.Terms })))
@@ -115,6 +116,8 @@ export default function App() {
                   {/* El garage propio sin saber el id: sin sesión pasa por el
                       login y vuelve acá. Es lo que usa "Armá el tuyo". */}
                   <Route path="garage/mio" element={<MyGarageRedirect />} />
+                  {/* Lo que pasó con lo tuyo: es de cada uno. */}
+                  <Route path="novedades" element={<Novedades />} />
                   {/* A quién seguís: es de cada uno, así que exige sesión. */}
                   <Route path="siguiendo" element={<Following />} />
                 {/* Quién entra lo decide la base, no esta ruta: las políticas

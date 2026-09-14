@@ -146,6 +146,49 @@ button.navbar__link {
   margin-left: 0;
 }
 
+/* La campanita de novedades. Hereda el color de los links para verse igual
+   sobre el hero oscuro y sobre la navbar blanca. */
+.navbar__bell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.navbar__bell:hover {
+  color: var(--ink);
+}
+
+.navbar--over .navbar__bell {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.navbar--over .navbar__bell:hover {
+  color: var(--ink-inverse);
+}
+
+/* El número va en amarillo: es lo único de la navbar que pide atención, y el
+   amarillo en este sistema es para eso. */
+.navbar__bell-count {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 17px;
+  text-align: center;
+}
+
 /* La accion principal del sitio esta siempre a la vista y se ve como lo que
    es: una capsula solida. Sobre el hero oscuro se invierte a blanco para no
    pelearse con el amarillo del buscador, que ahi manda. */

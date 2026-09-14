@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { useUnseenNovedades } from '../../hooks/useUnseenNovedades'
 import { AccountMenu } from './AccountMenu'
 import { Icon } from '../ui/Icon'
 import { NavSearch } from './NavSearch'
@@ -33,6 +34,7 @@ export function Navbar({ atTop }: NavbarProps) {
   const { session, signOut } = useAuth()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const unseen = useUnseenNovedades()
 
   /* La home tiene un hero oscuro a sangre: ahí la navbar flota encima, sin
      fondo. En cuanto se scrollea, o en cualquier otra página, se vuelve
@@ -79,6 +81,27 @@ export function Navbar({ atTop }: NavbarProps) {
         </nav>
 
         <div className="navbar__actions">
+          {session && (
+            /* La campanita va al lado del menú de la cuenta y no adentro: lo que
+               está escondido en un menú no avisa nada. El número es de novedades
+               sin ver, y desaparece en cero en vez de mostrar un "0". */
+            <Link
+              to="/novedades"
+              className="navbar__bell"
+              aria-label={
+                unseen > 0
+                  ? `Novedades: ${unseen} sin ver`
+                  : 'Novedades'
+              }
+            >
+              <Icon name="bell" size={19} />
+              {unseen > 0 && (
+                <span className="navbar__bell-count mono" aria-hidden="true">
+                  {unseen > 9 ? '9+' : unseen}
+                </span>
+              )}
+            </Link>
+          )}
           {session ? (
             <AccountMenu user={session.user} onSignOut={() => void signOut()} />
           ) : (
@@ -133,6 +156,14 @@ export function Navbar({ atTop }: NavbarProps) {
                 </Link>
                 {/* Estaban en el menú de escritorio y faltaban acá, que es de
                     donde entra la mayoría. */}
+                <Link
+                  to="/novedades"
+                  className="navbar__mobile-link"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {unseen > 0 ? `Novedades (${unseen})` : 'Novedades'}{' '}
+                  <Icon name="arrowRight" size={18} />
+                </Link>
                 <Link to="/gente" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
                   Buscar personas <Icon name="arrowRight" size={18} />
                 </Link>

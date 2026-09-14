@@ -1432,6 +1432,63 @@ export async function listBlocked(): Promise<BlockedPerson[]> {
   }))
 }
 
+/* ---------------------------------------------------------------------------
+   Novedades
+--------------------------------------------------------------------------- */
+
+export type NovedadKind = 'interest' | 'follow' | 'garage'
+
+/**
+ * Algo que pasó con lo propio. Se calculan en la base al pedirlas (migración
+ * 016), así que no hay ids: lo que las identifica es qué pasó y cuándo.
+ */
+export interface Novedad {
+  kind: NovedadKind
+  happenedAt: string
+  /** Pasó después de la última vez que se abrió la pantalla. */
+  unseen: boolean
+  /** Quién. `null` en los interesados, que nunca dicen quién. */
+  actor: { id: string; name: string; avatarUrl: string | null } | null
+  listing: { slug: string; title: string } | null
+  /** Cuántos interesados, o cuántos autos del garage cambiaron. */
+  amount: number
+}
+
+interface NovedadRow {
+  kind: NovedadKind
+  happened_at: string
+  unseen: boolean
+  actor_id: string | null
+  actor_name: string | null
+  actor_avatar: string | null
+  listing_slug: string | null
+  listing_title: string | null
+  amount: number
+}
+
+export async function listNovedades(): Promise<Novedad[]> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('my_novedades')
+  if (error) throw error
+
+  return (data as NovedadRow[]).map((row) => ({
+    kind: row.kind,
+    happenedAt: row.happened_at,
+    unseen: row.unseen,
+    actor: row.actor_id
+      ? { id: row.actor_id, name: row.actor_name ?? '', avatarUrl: avatarFrom(row.actor_avatar) }
+      : null,
+    listing: row.listing_slug ? { slug: row.listing_slug, title: row.listing_title ?? '' } : null,
+    amount: Number(row.amount),
+  }))
+}
+
+export async function markNovedadesSeen(): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.rpc('mark_novedades_seen')
+  if (error) throw error
+}
+
 export async function listSavedSearches(userId: string): Promise<SavedSearchRow[]> {
   const client = requireSupabase()
   const { data, error } = await client

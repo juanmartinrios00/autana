@@ -291,6 +291,7 @@ function robots(origin: string): Response {
     'Disallow: /gente',
     'Disallow: /siguiendo',
     'Disallow: /garage/mio',
+    'Disallow: /novedades',
     '',
     `Sitemap: ${origin}/sitemap.xml`,
     '',

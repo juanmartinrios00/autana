@@ -25,6 +25,9 @@ const paths = {
   link: <><path d="M10.5 13.5a4.5 4.5 0 0 0 6.4 0l2.6-2.6a4.5 4.5 0 0 0-6.4-6.4l-1.5 1.5" /><path d="M13.5 10.5a4.5 4.5 0 0 0-6.4 0l-2.6 2.6a4.5 4.5 0 0 0 6.4 6.4l1.5-1.5" /></>,
   mapPin: <><path d="M12 21.5 5.5 13.2a7.2 7.2 0 1 1 13 0z" /><path d="M9.5 9.5h5v5h-5z" /></>,
   message: <><path d="M3.5 4.5h17v12h-11l-6 4.5z" /></>,
+  /* La campana de las novedades: cuerpo recto y badajo como una raya, sin curvas
+     de más, para que no desentone con el resto del set. */
+  bell: <><path d="M5.5 17V11a6.5 6.5 0 0 1 13 0v6l1.5 1.5h-16z" /><path d="M10 21.5h4" /></>,
   /* Perfil lateral de auto, en trazo: da el mismo registro técnico. */
   car: <><path d="M2.5 16.5v-3l2-5h15l2 5v3" /><path d="M2.5 16.5h19v2.5h-19z" /><path d="M6.5 19v1.5" /><path d="M17.5 19v1.5" /><path d="M7 8.5v3" /><path d="M17 8.5v3" /></>,
   grid: <><path d="M3.5 3.5h7v7h-7z" /><path d="M13.5 3.5h7v7h-7z" /><path d="M3.5 13.5h7v7h-7z" /><path d="M13.5 13.5h7v7h-7z" /></>,
