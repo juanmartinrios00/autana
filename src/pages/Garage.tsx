@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { FollowControls } from '../components/garage/FollowControls'
 import { GarageSlotCard } from '../components/garage/GarageSlotCard'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
@@ -154,6 +155,8 @@ export function Garage() {
               </Link>
             )}
           </div>
+
+          <FollowControls targetId={userId} targetName={profile.name} />
         </div>
       </section>
 

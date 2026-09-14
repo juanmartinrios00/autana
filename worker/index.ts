@@ -289,6 +289,7 @@ function robots(origin: string): Response {
     'Disallow: /my-listings',
     'Disallow: /favorites',
     'Disallow: /gente',
+    'Disallow: /siguiendo',
     '',
     `Sitemap: ${origin}/sitemap.xml`,
     '',

@@ -1,0 +1,87 @@
+/* Seguir y bloquear. Va sobre la cabecera del garage, que es oscura
+   (`--ink` de fondo), así que los grises son blancos con transparencia —la
+   misma cuenta que usan `garagepage__count` y `garagepage__lead`— y no los
+   `--ink-*` del resto del sitio, que son para fondo claro. */
+
+.follow {
+  margin-top: var(--sp-4);
+}
+
+.follow__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.follow__count {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.follow__note {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.follow__link {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* Bloquear no es un botón con cuerpo: es una acción de excepción, y al lado de
+   "Seguir" en amarillo no puede competirle. */
+.follow__quiet {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.follow__quiet:hover,
+.follow__quiet:focus-visible {
+  color: var(--ink-inverse);
+}
+
+.follow__quiet:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.follow__confirm {
+  max-width: 34rem;
+  margin-top: var(--sp-4);
+  padding: var(--sp-4);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--r-md);
+}
+
+.follow__confirm-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.follow__confirm-text {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.follow__confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.follow__error {
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--danger);
+}

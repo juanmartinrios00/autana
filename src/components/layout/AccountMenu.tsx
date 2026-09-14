@@ -111,6 +111,10 @@ export function AccountMenu({ user, onSignOut }: AccountMenuProps) {
             <Icon name="search" size={16} />
             Buscar personas
           </Link>
+          <Link to="/siguiendo" className="account__item" role="menuitem" onClick={close}>
+            <Icon name="user" size={16} />
+            Siguiendo
+          </Link>
           <Link to="/settings" className="account__item" role="menuitem" onClick={close}>
             <Icon name="check" size={16} />
             Ajustes

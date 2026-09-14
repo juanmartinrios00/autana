@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { EmptyState } from '../components/ui/EmptyState'
+import { PersonRow, PersonRowsSkeleton } from '../components/people/PersonRow'
 import { Icon } from '../components/ui/Icon'
-import { Skeleton } from '../components/ui/Skeleton'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { MIN_PERSON_TERM, searchPeople, type PersonResult } from '../lib/api'
 import './People.css'
@@ -120,19 +120,7 @@ export function People() {
 
         {short && <p className="people__idle">Escribí al menos {MIN_PERSON_TERM} letras.</p>}
 
-        {searching && (
-          <ul className="people__list">
-            {[0, 1, 2].map((row) => (
-              <li key={row} className="people__row">
-                <Skeleton className="people__avatar" />
-                <div className="people__lines">
-                  <Skeleton width="40%" />
-                  <Skeleton width="25%" />
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+        {searching && <PersonRowsSkeleton />}
 
         {!searching && answer.failed && (
           <EmptyState
@@ -144,38 +132,10 @@ export function People() {
 
         {!searching && !answer.failed && answer.term === term && term.trim() && (
           answer.people.length ? (
-            <ul className="people__list">
+            <ul className="person-list">
               {answer.people.map((person) => (
                 <li key={person.id}>
-                  <Link to={`/g/${person.id}`} className="people__row people__row--link">
-                    {person.avatarUrl ? (
-                      <img src={person.avatarUrl} alt="" className="people__avatar" />
-                    ) : (
-                      <span className="people__avatar people__avatar--empty" aria-hidden="true">
-                        {initials(person.name)}
-                      </span>
-                    )}
-
-                    <span className="people__lines">
-                      <span className="people__name">{person.name}</span>
-                      <span className="people__meta">
-                        {/* Dos datos para distinguir homónimos: de dónde es y
-                            qué tan armado tiene el garage. Sin eso, buscar un
-                            apellido común devuelve una lista de nombres
-                            idénticos. */}
-                        {placeOf(person)}
-                        {person.garageCars > 0 && (
-                          <>
-                            <span className="people__dot" aria-hidden="true">·</span>
-                            <span className="mono">
-                              {person.garageCars} {person.garageCars === 1 ? 'auto' : 'autos'}
-                            </span>
-                          </>
-                        )}
-                      </span>
-                    </span>
-
-                  </Link>
+                  <PersonRow person={person} />
                 </li>
               ))}
             </ul>
@@ -190,25 +150,4 @@ export function People() {
       </div>
     </>
   )
-}
-
-/**
- * De dónde es, con lo que haya cargado.
- *
- * No se usa `locationLabel` de `lib/format` porque ese espera ciudad y
- * provincia presentes —los avisos las exigen— y acá las dos son opcionales:
- * un perfil puede existir sin haber completado nada.
- */
-function placeOf(person: PersonResult): string {
-  const parts = [person.city, person.province].filter(Boolean) as string[]
-  if (!parts.length) return 'Sin ubicación'
-  return parts[0] === parts[1] ? parts[0]! : parts.join(', ')
-}
-
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? '')
-    .join('')
 }

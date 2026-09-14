@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { PersonRow } from '../components/people/PersonRow'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
@@ -12,7 +13,10 @@ import {
   getDiscoverable,
   getOwnWhatsapp,
   getProfile,
+  listBlocked,
   setDiscoverable,
+  unblockUser,
+  type BlockedPerson,
   updateProfile,
 } from '../lib/api'
 import { changePassword, MIN_PASSWORD } from '../lib/auth'
@@ -51,6 +55,8 @@ export function Settings() {
   const [discoverable, setDiscoverableState] = useState(true)
   const [visibilityBusy, setVisibilityBusy] = useState(false)
   const [visibilityError, setVisibilityError] = useState('')
+  const [blocked, setBlocked] = useState<BlockedPerson[]>([])
+  const [unblocking, setUnblocking] = useState<string | null>(null)
 
   const [dataBusy, setDataBusy] = useState(false)
   const [dataError, setDataError] = useState('')
@@ -120,6 +126,33 @@ export function Settings() {
       setVisibilityError('No pudimos guardar el cambio. Probá de nuevo.')
     } finally {
       setVisibilityBusy(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!userId) return
+    let alive = true
+    /* Aparte del resto: si falla, los datos y la contraseña se editan igual, y
+       la lista vacía es un estado honesto hasta que vuelva a cargar. */
+    listBlocked()
+      .then((people) => {
+        if (alive) setBlocked(people)
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [userId])
+
+  async function unblock(targetId: string) {
+    setUnblocking(targetId)
+    try {
+      await unblockUser(userId, targetId)
+      setBlocked((prev) => prev.filter((person) => person.id !== targetId))
+    } catch {
+      /* Queda en la lista, que es la verdad: sigue bloqueada. */
+    } finally {
+      setUnblocking(null)
     }
   }
 
@@ -321,6 +354,33 @@ export function Settings() {
             Esto no toca tus avisos: si publicás un auto, te mostrás como vendedor de ese
             aviso igual. Eso se cambia despublicando.
           </p>
+
+          <h3 className="settings__subtitle">Personas bloqueadas</h3>
+          {blocked.length ? (
+            <ul className="person-list">
+              {blocked.map((person) => (
+                <li key={person.id}>
+                  <PersonRow
+                    person={{ ...person, city: null, province: null, garageCars: 0 }}
+                    action={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={unblocking === person.id}
+                        onClick={() => void unblock(person.id)}
+                      >
+                        {unblocking === person.id ? 'Desbloqueando…' : 'Desbloquear'}
+                      </Button>
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="settings__hint">
+              No bloqueaste a nadie. Se bloquea desde el garage de la persona.
+            </p>
+          )}
         </section>
 
         <form className="settings__card" onSubmit={(event) => void savePassword(event)}>

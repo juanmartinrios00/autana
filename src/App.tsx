@@ -23,6 +23,7 @@ const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default:
 const Garage = lazy(() => import('./pages/Garage').then((m) => ({ default: m.Garage })))
 const Help = lazy(() => import('./pages/Help').then((m) => ({ default: m.Help })))
 const Levels = lazy(() => import('./pages/Levels').then((m) => ({ default: m.Levels })))
+const Following = lazy(() => import('./pages/Following').then((m) => ({ default: m.Following })))
 const People = lazy(() => import('./pages/People').then((m) => ({ default: m.People })))
 const Privacy = lazy(() => import('./pages/Privacy').then((m) => ({ default: m.Privacy })))
 const Terms = lazy(() => import('./pages/Terms').then((m) => ({ default: m.Terms })))
@@ -100,6 +101,8 @@ export default function App() {
                   <Route path="sell/:slug/edit" element={<Sell />} />
                   <Route path="my-listings" element={<MyListings />} />
                   <Route path="settings" element={<Settings />} />
+                  {/* A quién seguís: es de cada uno, así que exige sesión. */}
+                  <Route path="siguiendo" element={<Following />} />
                 {/* Quién entra lo decide la base, no esta ruta: las políticas
                     de `reports` sólo devuelven datos a un admin, así que a
                     cualquier otro la pantalla le llega vacía. */}

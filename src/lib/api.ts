@@ -1234,6 +1234,158 @@ export async function setDiscoverable(userId: string, value: boolean): Promise<v
   if (error) throw error
 }
 
+/* ---------------------------------------------------------------------------
+   Seguir y bloquear
+--------------------------------------------------------------------------- */
+
+/**
+ * La relación entre quien mira y el dueño de un garage.
+ *
+ * `blockedByMe` y `unavailable` se separan porque la pantalla hace cosas
+ * distintas: si bloqueaste vos, se ofrece desbloquear; si te bloqueó el otro,
+ * el botón de seguir simplemente no aparece. No se anuncia "esta persona te
+ * bloqueó": no le sirve a nadie y convierte un límite en una discusión.
+ */
+export interface FollowState {
+  following: boolean
+  blockedByMe: boolean
+  /** Hay un bloqueo que no pusiste vos: no se puede seguir. */
+  unavailable: boolean
+}
+
+export async function getFollowState(userId: string, targetId: string): Promise<FollowState> {
+  const client = requireSupabase()
+
+  const [follow, block, either] = await Promise.all([
+    client
+      .from('follows')
+      .select('followed_id')
+      .eq('follower_id', userId)
+      .eq('followed_id', targetId)
+      .maybeSingle(),
+    client
+      .from('blocks')
+      .select('blocked_id')
+      .eq('blocker_id', userId)
+      .eq('blocked_id', targetId)
+      .maybeSingle(),
+    /* `blocks` sólo deja leer los propios, así que el bloqueo en la otra
+       dirección se pregunta a la base: `blocked_with` responde por los dos
+       lados sin mostrar quién puso cuál. */
+    client.rpc('blocked_with', { target: targetId }),
+  ])
+
+  if (follow.error) throw follow.error
+  if (block.error) throw block.error
+  if (either.error) throw either.error
+
+  const blockedByMe = Boolean(block.data)
+  return {
+    following: Boolean(follow.data),
+    blockedByMe,
+    unavailable: Boolean(either.data) && !blockedByMe,
+  }
+}
+
+export async function followUser(userId: string, targetId: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client
+    .from('follows')
+    .insert({ follower_id: userId, followed_id: targetId })
+
+  /* Ya lo seguías —otra pestaña, doble clic—: el resultado es el que se
+     pedía, así que no es un error. */
+  if (error && error.code !== '23505') throw error
+}
+
+export async function unfollowUser(userId: string, targetId: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client
+    .from('follows')
+    .delete()
+    .eq('follower_id', userId)
+    .eq('followed_id', targetId)
+  if (error) throw error
+}
+
+/** Bloquear corta el seguimiento en las dos direcciones: lo hace un trigger en la base. */
+export async function blockUser(userId: string, targetId: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client
+    .from('blocks')
+    .insert({ blocker_id: userId, blocked_id: targetId })
+  if (error && error.code !== '23505') throw error
+}
+
+export async function unblockUser(userId: string, targetId: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client
+    .from('blocks')
+    .delete()
+    .eq('blocker_id', userId)
+    .eq('blocked_id', targetId)
+  if (error) throw error
+}
+
+export interface FollowCounts {
+  followers: number
+  following: number
+}
+
+/** Públicas: cuántos, nunca quiénes. */
+export async function getFollowCounts(targetId: string): Promise<FollowCounts> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('follow_counts', { target: targetId })
+  if (error) throw error
+  const row = (data as { followers: number; following: number }[])[0]
+  return { followers: Number(row?.followers ?? 0), following: Number(row?.following ?? 0) }
+}
+
+export interface FollowedPerson extends PersonResult {
+  /** Última vez que tocó su garage. `null` si todavía no cargó nada. */
+  updatedAt: string | null
+}
+
+function avatarFrom(path: string | null): string | null {
+  if (!path) return null
+  return path.startsWith('http') ? path : photoUrl(path)
+}
+
+/** A quién sigo, con el que cambió su garage más recientemente primero. */
+export async function listFollowing(): Promise<FollowedPerson[]> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('my_following')
+  if (error) throw error
+
+  return (data as (PersonRow & { updated_at: string | null })[]).map((row) => ({
+    id: row.id,
+    name: row.name,
+    avatarUrl: avatarFrom(row.avatar_url),
+    city: row.city,
+    province: row.province,
+    garageCars: Number(row.garage_cars),
+    updatedAt: row.updated_at,
+  }))
+}
+
+export interface BlockedPerson {
+  id: string
+  name: string
+  avatarUrl: string | null
+}
+
+export async function listBlocked(): Promise<BlockedPerson[]> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('my_blocks')
+  if (error) throw error
+
+  return (data as { id: string; name: string; avatar_url: string | null }[]).map((row) => ({
+    id: row.id,
+    name: row.name,
+    avatarUrl: avatarFrom(row.avatar_url),
+  }))
+}
+
 export async function listSavedSearches(userId: string): Promise<SavedSearchRow[]> {
   const client = requireSupabase()
   const { data, error } = await client
