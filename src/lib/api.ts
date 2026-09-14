@@ -99,6 +99,8 @@ interface ProfileRow {
   verified: boolean
   /** Público desde la 014. El WhatsApp y el mail de contacto no están, igual que antes. */
   instagram: string | null
+  /** El fondo de la cabecera del garage (015). */
+  garage_theme: string
 }
 
 /* `profiles` a secas es ambiguo: PostgREST ve dos relaciones entre listings y
@@ -163,7 +165,7 @@ function toVehicle(row: ListingRow): Vehicle {
    permiso es por columna: `select('*')` falla, y esta bien que falle — es lo
    que avisa que alguien agrego una columna sin decidir si es publica. */
 const PROFILE_COLUMNS =
-  'id, name, avatar_url, seller_type, city, province, verified, created_at, instagram'
+  'id, name, avatar_url, seller_type, city, province, verified, created_at, instagram, garage_theme'
 
 function toSeller(row: ProfileRow, listingCount: number): Seller {
   return {
@@ -304,6 +306,32 @@ export async function getSeller(id: string): Promise<Seller> {
   if (!profile.data) throw new NotFoundError('ese vendedor')
 
   return toSeller(profile.data as ProfileRow, count.count ?? 0)
+}
+
+/**
+ * Los avisos activos de una persona, para su garage.
+ *
+ * Sólo activos: un aviso pausado o vendido no se ve en el sitio, así que
+ * tampoco en su perfil. Los suyos, en todos los estados, están en
+ * `listMyListings`, que es para el panel del dueño.
+ */
+export async function listSellerVehicles(sellerId: string): Promise<Vehicle[]> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('listings')
+    .select(LISTING_COLUMNS)
+    .eq('seller_id', sellerId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data as ListingRow[]).map(toVehicle)
+}
+
+export async function setGarageTheme(userId: string, theme: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('profiles').update({ garage_theme: theme }).eq('id', userId)
+  if (error) throw error
 }
 
 /** Misma carrocería, precio parecido, y nunca el mismo auto. */
@@ -994,6 +1022,8 @@ export interface ProfileSummary {
   verified: boolean
   /** Usuario de Instagram, sin arroba. Es el único dato de contacto público. */
   instagram: string | null
+  /** Id del fondo de la cabecera del garage. Ver `lib/garage-theme`. */
+  garageTheme: string
   /** Publicaciones activas. */
   activeListings: number
   /** Fotos de la publicación que más tiene. Alimenta el logro correspondiente. */
@@ -1032,6 +1062,7 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
     province: profileRow.province,
     verified: profileRow.verified,
     instagram: profileRow.instagram ?? null,
+    garageTheme: profileRow.garage_theme ?? 'ink',
     activeListings: rows.length,
     bestPhotoCount: rows.reduce((max, row) => Math.max(max, row.listing_images?.length ?? 0), 0),
   }

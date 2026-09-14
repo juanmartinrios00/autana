@@ -1,0 +1,49 @@
+/* El selector de color, sobre la propia cabecera oscura del garage. */
+
+.gtheme {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.gtheme__label {
+  font-size: var(--fs-xs);
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.gtheme__swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* Cada muestra lleva un borde claro porque los colores son todos oscuros y,
+   sin él, sobre la cabecera oscura no se distingue dónde termina una. */
+.gtheme__swatch {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+}
+
+.gtheme__swatch--on {
+  box-shadow:
+    0 0 0 2px var(--garage-bg, var(--ink)),
+    0 0 0 4px var(--accent);
+}
+
+.gtheme__swatch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.gtheme__error {
+  font-size: var(--fs-sm);
+  color: var(--danger);
+}

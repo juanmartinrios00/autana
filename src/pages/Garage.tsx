@@ -1,35 +1,39 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useState, type CSSProperties } from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { FollowControls } from '../components/garage/FollowControls'
 import { GarageSlotCard } from '../components/garage/GarageSlotCard'
+import { GarageThemePicker } from '../components/garage/GarageThemePicker'
 import { ProfileContact } from '../components/garage/ProfileContact'
+import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
+import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
-import { getProfile, type ProfileSummary } from '../lib/api'
+import { getProfile, listSellerVehicles, type ProfileSummary } from '../lib/api'
 import { listGarage, removeGarageEntry, saveGarageEntry, SLOTS, type GarageInput } from '../lib/garage'
-import type { GarageEntry } from '../types'
+import { garageThemeColor } from '../lib/garage-theme'
+import type { GarageEntry, Vehicle } from '../types'
 import './Garage.css'
 
 /**
- * El garage, en pantalla propia.
+ * El garage, en pantalla propia. Es el perfil público de cada persona.
  *
  * Antes `/g/:id` renderizaba el perfil entero. El título del documento ya
  * decía "El garage de X" y la copy ya prometía que se comparte por link, así
  * que la pantalla estaba implícita; esto la hace explícita.
  *
- * Por qué separarla del perfil: son dos cosas con dos públicos. El perfil es
- * el panel de alguien que vende — sus publicaciones, sus logros, su foto. El
- * garage es lo que esa persona manda a un grupo de WhatsApp. Si el link
- * abriera el panel, lo primero que se ve al compartirlo son botones que el que
- * abre no puede tocar.
+ * Por qué separarla del panel propio (`/profile`): son dos cosas con dos
+ * públicos. El panel es donde uno administra lo suyo. El garage es lo que esa
+ * persona manda a un grupo de WhatsApp, y lo que ve quien llega desde un aviso:
+ * quién es, qué autos la marcaron, y qué tiene a la venta.
  */
 export function Garage() {
   const { id } = useParams()
   const { session } = useAuth()
+  const location = useLocation()
 
   const userId = id ?? session?.user.id ?? ''
   const editable = Boolean(session && session.user.id === userId)
@@ -40,25 +44,30 @@ export function Garage() {
     userId: string
     profile: ProfileSummary | null
     garage: GarageEntry[]
+    listings: Vehicle[]
     failed: boolean
-  }>({ userId: '', profile: null, garage: [], failed: false })
+  }>({ userId: '', profile: null, garage: [], listings: [], failed: false })
 
   const [reloads, setReloads] = useState(0)
   const [copied, setCopied] = useState(false)
+  /* El tema elegido recién, antes de que vuelva a cargar el perfil. */
+  const [theme, setTheme] = useState<{ userId: string; id: string } | null>(null)
 
   useEffect(() => {
     if (!userId) return
     let current = true
 
     /* `allSettled` y no `all`: si falla el perfil pero llega el garage, se
-       muestran los autos igual. Es lo que la gente vino a ver. */
-    void Promise.allSettled([getProfile(userId), listGarage(userId)]).then(
-      ([profileResult, garageResult]) => {
+       muestran los autos igual. Es lo que la gente vino a ver. Y si fallan los
+       avisos, el garage no se esconde por eso. */
+    void Promise.allSettled([getProfile(userId), listGarage(userId), listSellerVehicles(userId)]).then(
+      ([profileResult, garageResult, listingsResult]) => {
         if (!current) return
         setLoaded({
           userId,
           profile: profileResult.status === 'fulfilled' ? profileResult.value : null,
           garage: garageResult.status === 'fulfilled' ? garageResult.value : [],
+          listings: listingsResult.status === 'fulfilled' ? listingsResult.value : [],
           failed: profileResult.status === 'rejected',
         })
       },
@@ -72,7 +81,17 @@ export function Garage() {
   const fresh = loaded.userId === userId
   const profile = fresh ? loaded.profile : null
   const garage = fresh ? loaded.garage : []
+  const listings = fresh ? loaded.listings : []
   const filled = garage.length
+
+  /* "Ver publicaciones" desde la ficha de un aviso trae `#avisos`. React Router
+     no baja solo a un ancla, y además la sección no existe hasta que llegan
+     los avisos: se baja cuando están. */
+  const hasListings = listings.length > 0
+  useEffect(() => {
+    if (location.hash !== '#avisos' || !hasListings) return
+    document.getElementById('avisos')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [location.hash, hasListings])
 
   useDocumentMeta({
     title: profile ? `El garage de ${profile.name} | Autana` : 'Garage | Autana',
@@ -129,11 +148,41 @@ export function Garage() {
     )
   }
 
+  const themeId = theme?.userId === userId ? theme.id : profile.garageTheme
+  const place = [profile.city, profile.province].filter(Boolean)
+  const placeLabel = place[0] === place[1] ? place[0] : place.join(', ')
+
   return (
     <>
-      <section className="garagepage__head">
+      <section
+        className="garagepage__head"
+        style={{ '--garage-bg': garageThemeColor(themeId) } as CSSProperties}
+      >
         <div className="page garagepage__head-inner">
-          <span className="over over--invert">El garage</span>
+          {/* Quién es, antes que nada. Quien llega desde un aviso o desde el
+              buscador tiene que reconocer a la persona de un vistazo. */}
+          <div className="garagepage__who">
+            {profile.avatarUrl ? (
+              <img src={profile.avatarUrl} alt="" className="garagepage__avatar" />
+            ) : (
+              <span className="garagepage__avatar garagepage__avatar--empty" aria-hidden="true">
+                {initials(profile.name)}
+              </span>
+            )}
+            <div className="garagepage__who-text">
+              <span className="garagepage__name">
+                {profile.name}
+                {profile.verified && (
+                  <Badge tone="success" className="garagepage__verified">
+                    Verificada
+                  </Badge>
+                )}
+              </span>
+              {placeLabel && <span className="garagepage__place">{placeLabel}</span>}
+            </div>
+          </div>
+
+          <span className="over over--invert garagepage__over">El garage</span>
           <h1 className="garagepage__title">
             {editable ? 'Los autos que te marcaron' : `Los autos que marcaron a ${profile.name}`}
           </h1>
@@ -152,13 +201,21 @@ export function Garage() {
             </Button>
             {editable && (
               <Link to="/profile" className="garagepage__back">
-                Volver a mi perfil
+                {profile.avatarUrl ? 'Volver a mi perfil' : 'Subí tu foto desde tu perfil'}
               </Link>
             )}
           </div>
 
           <FollowControls targetId={userId} targetName={profile.name} />
           <ProfileContact targetId={userId} instagram={profile.instagram} />
+
+          {editable && (
+            <GarageThemePicker
+              userId={userId}
+              value={themeId}
+              onChange={(next) => setTheme({ userId, id: next })}
+            />
+          )}
         </div>
       </section>
 
@@ -176,12 +233,35 @@ export function Garage() {
           ))}
         </div>
 
+        {/* Los autos que vende, separados de los que la marcaron. Van después y
+            no antes: el garage es lo que distingue esta pantalla de un listado,
+            y quien vino a ver avisos tiene el ancla desde la ficha. */}
+        {hasListings && (
+          <section className="garagepage__listings" id="avisos" aria-labelledby="avisos-title">
+            <span className="over">A la venta</span>
+            <h2 className="garagepage__listings-title" id="avisos-title">
+              {editable
+                ? 'Tus avisos publicados'
+                : `${listings.length === 1 ? 'El auto' : 'Los autos'} que publica ${profile.name}`}
+            </h2>
+            <VehicleGrid vehicles={listings} />
+          </section>
+        )}
+
         {!editable && (
           <p className="garagepage__cta">
-            <Link to="/profile">Armá el tuyo</Link> y compartilo.
+            <Link to="/garage/mio">Armá el tuyo</Link> y compartilo.
           </p>
         )}
       </div>
     </>
   )
+}
+
+function initials(name: string): string {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? '')
+    .join('')
 }

@@ -1,10 +1,79 @@
 /* La pantalla propia del garage. La grilla de slots (`.garage`, `.gslot`) vive
    en Profile.css, que es donde nació y donde se sigue usando. */
 
+/* El fondo lo elige cada uno de una paleta cerrada (`lib/garage-theme`). La
+   variable llega por `style` desde la pantalla; sin ella, el negro de siempre. */
 .garagepage__head {
   padding-block: var(--sp-8);
-  background: var(--ink);
+  background: var(--garage-bg, var(--ink));
   color: var(--ink-inverse);
+  transition: background var(--dur-slow) var(--ease);
+}
+
+/* Quién es: foto, nombre y de dónde. */
+.garagepage__who {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+
+.garagepage__avatar {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  border-radius: var(--r-pill);
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.garagepage__avatar--empty {
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.garagepage__who-text {
+  display: grid;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.garagepage__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.garagepage__place {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.garagepage__listings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+  /* Que el ancla no quede tapada por la navbar fija al bajar desde un aviso. */
+  scroll-margin-top: calc(var(--nav-h) + var(--sp-4));
+}
+
+.garagepage__listings-title {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-h3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .garagepage__head {
+    transition: none;
+  }
 }
 
 .garagepage__title {
