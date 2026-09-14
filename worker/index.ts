@@ -204,6 +204,19 @@ export function buildGarageDescription(name: string, entries: GarageEntryRow[]):
   return shown.length === cars.length ? `${text}.` : `${text}…`
 }
 
+/**
+ * La imagen del preview de un garage: la primera foto que haya, o si no hay
+ * ninguna, la lámina fija con los dibujos (`public/og-garage.png`, que genera
+ * `npm run og:garage`).
+ *
+ * Sin foto, antes el preview iba sin imagen. Para la mayoría ese es el caso
+ * —nadie tiene a mano la foto del auto que vendió en 2011—, así que era el
+ * preview que más se veía.
+ */
+export function garagePreviewImage(entries: GarageEntryRow[], origin: string): string {
+  return garageImage(entries) ?? `${origin}/og-garage.png`
+}
+
 /** La primera foto que haya, en el orden de las consignas. */
 export function garageImage(entries: GarageEntryRow[]): string | null {
   const withPhoto = entries.find((entry) => entry.photo_path)
@@ -508,11 +521,10 @@ async function renderGarage(request: Request, env: Env, id: string): Promise<Res
   return renderPreview(assetResponse, {
     title: `El garage de ${name} | Autana`,
     description: buildGarageDescription(name, entries),
-    /* La foto que subió el dueño. Si no hay ninguna, el garage se ve igual en
-       el sitio —las escenas dibujadas hacen de retrato— pero el preview se
-       queda sin imagen: un SVG no sirve como `og:image`, WhatsApp no lo
-       renderiza. Generar una lámina es otro trabajo. */
-    image: garageImage(entries),
+    /* La foto que subió el dueño, o la lámina con los dibujos. Tiene que ser
+       un PNG y no las escenas en SVG: WhatsApp no renderiza SVG como imagen
+       de preview. */
+    image: garagePreviewImage(entries, url.origin),
     canonical: `${url.origin}/g/${id}`,
     /* Quien se sacó del buscador se saca también de Google. Es lo que hace que
        el interruptor de Ajustes signifique algo afuera del sitio: sin esto

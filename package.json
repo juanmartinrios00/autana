@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "deploy": "npm run build && wrangler deploy",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "og:garage": "vite build --ssr scripts/og-garage.tsx --outDir node_modules/.cache/og-garage --emptyOutDir --logLevel warn && node node_modules/.cache/og-garage/og-garage.js"
   },
   "dependencies": {
     "@supabase/auth-js": "2.112.4",

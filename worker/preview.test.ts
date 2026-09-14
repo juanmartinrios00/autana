@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildGarageDescription, garageImage, orderedEntries } from './index'
+import { buildGarageDescription, garageImage, garagePreviewImage, orderedEntries } from './index'
 
 /**
  * Los tests del preview del garage.
@@ -137,5 +137,20 @@ describe('garageImage', () => {
   it('da null si nadie subió foto: el preview va sin imagen', () => {
     expect(garageImage([car('first', 'Renault', '12', 1978)])).toBeNull()
     expect(garageImage([])).toBeNull()
+  })
+})
+
+describe('garagePreviewImage', () => {
+  it('usa la foto si hay alguna', () => {
+    expect(
+      garagePreviewImage([car('first', 'Renault', '12', 1978, 'abc/first.webp')], 'https://autana.app'),
+    ).toContain('/garage-photos/abc/first.webp')
+  })
+
+  it('sin fotos usa la lámina fija, y no deja el preview sin imagen', () => {
+    expect(garagePreviewImage([car('first', 'Renault', '12', 1978)], 'https://autana.app')).toBe(
+      'https://autana.app/og-garage.png',
+    )
+    expect(garagePreviewImage([], 'https://autana.app')).toBe('https://autana.app/og-garage.png')
   })
 })
