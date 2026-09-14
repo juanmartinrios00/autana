@@ -1,6 +1,6 @@
 import { useRef, useState, type KeyboardEvent } from 'react'
-import dealerImage from '../../assets/home/audience-dealers.jpg'
-import individualImage from '../../assets/home/audience-individual.jpg'
+import dealerImage from '../../assets/home/audience-dealers.jpg?w=1600&h=1600&fit=inside&format=avif;webp;jpg&as=picture'
+import individualImage from '../../assets/home/audience-individual.jpg?w=1600&h=1600&fit=inside&format=avif;webp;jpg&as=picture'
 import './AudienceSection.css'
 
 const audiences = [
@@ -92,7 +92,26 @@ export function AudienceSection() {
           role="tabpanel"
           aria-labelledby={`audience-tab-${current.id}`}
         >
-          <img key={current.id} src={current.image} alt={current.alt} />
+          {/* AVIF primero, WebP después y el JPG de última: el navegador se
+              queda con el primero que entiende. El original de cámara pesaba
+              dos megas para pintarse a 400px de alto; las medidas van en el
+              `img` para que el hueco esté reservado antes de que cargue.
+
+              El `key` fuerza un elemento nuevo al cambiar de solapa, que es lo
+              que dispara de nuevo la animación de entrada. */}
+          <picture key={current.id}>
+            {Object.entries(current.image.sources).map(([format, srcset]) => (
+              <source key={format} type={`image/${format}`} srcSet={srcset} />
+            ))}
+            <img
+              src={current.image.img.src}
+              width={current.image.img.w}
+              height={current.image.img.h}
+              alt={current.alt}
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
         </div>
       </div>
     </section>
