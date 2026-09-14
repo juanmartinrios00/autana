@@ -20,6 +20,7 @@ import {
   uploadListingPhotos,
 } from '../lib/api'
 import { describeError } from '../lib/errors'
+import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
   bodyLabels,
   conditionLabels,
@@ -123,6 +124,13 @@ export function Sell() {
      una sesión nueva, y con el objeto en las dependencias el efecto volvería a
      correr y `replace` pisaría los cambios sin guardar de quien está editando. */
   const userId = session?.user.id ?? ''
+
+  useDocumentMeta({
+    title: editing ? 'Editar aviso | Autana' : 'Publicar tu auto | Autana',
+    description: editing
+      ? undefined
+      : 'Publicá tu auto en Autana: cargá las fotos, el precio y los datos, y te contactan directo.',
+  })
 
   useEffect(() => {
     if (!editing || !slug || !userId) return

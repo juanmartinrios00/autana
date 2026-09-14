@@ -11,6 +11,7 @@ import {
   sendPasswordReset,
 } from '../lib/auth'
 import { describeError } from '../lib/errors'
+import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import type { SellerType } from '../types'
 import './Login.css'
 
@@ -59,6 +60,15 @@ export function Login() {
   const [resent, setResent] = useState(false)
 
   const from = (location.state as { from?: string } | null)?.from ?? '/'
+
+  /* Va antes del `return` de abajo: un hook no puede quedar atrás de una salida
+     temprana. Sigue al modo porque las dos solapas son la misma ruta, y con un
+     título fijo el historial queda lleno de entradas idénticas. */
+  useDocumentMeta({
+    title: mode === 'signup' ? 'Crear cuenta | Autana' : 'Ingresar | Autana',
+    description:
+      'Entrá a Autana para publicar tu auto, guardar favoritos y seguir tus búsquedas.',
+  })
 
   /* Si ya hay sesión (por ejemplo al volver del magic link), no hay nada que
      pedir: va directo a donde quería ir. */
