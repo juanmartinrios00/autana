@@ -773,6 +773,124 @@ export async function listReportedListings(): Promise<ReportedListing[]> {
 }
 
 /* ---------------------------------------------------------------------------
+   Mensajes de contacto
+--------------------------------------------------------------------------- */
+
+export type ContactSubject = 'account' | 'listing' | 'dealers' | 'security' | 'press' | 'other'
+
+export const contactSubjects: Record<ContactSubject, string> = {
+  account: 'Ayuda con mi cuenta',
+  listing: 'Consulta sobre una publicación',
+  dealers: 'Concesionarias y planes',
+  security: 'Seguridad o reporte',
+  press: 'Prensa y alianzas',
+  other: 'Otra consulta',
+}
+
+export interface ContactDraft {
+  name: string
+  email: string
+  subject: ContactSubject
+  message: string
+}
+
+/**
+ * Manda un mensaje de contacto.
+ *
+ * No exige cuenta: "no puedo entrar" es de las razones más comunes para
+ * escribir, y pedir sesión dejaría afuera justo ese caso. Si hay sesión, el
+ * mensaje queda atado a ella — la política de la 019 no deja mandarlo a nombre
+ * de otra persona.
+ */
+export async function sendContactMessage(draft: ContactDraft, userId: string | null): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('contact_messages').insert({
+    user_id: userId,
+    name: draft.name.trim(),
+    email: draft.email.trim(),
+    subject: draft.subject,
+    message: draft.message.trim(),
+  })
+
+  if (!error) return
+  /* 54000 lo levanta el freno por correo de la 019: no es un fallo, es un
+     "esperá un rato", y el texto que trae ya está escrito para leerse. */
+  if (error.code === '54000') throw new Error(error.message)
+  /* 23514 es un check de la tabla. El formulario ya valida lo mismo, así que
+     llegar acá quiere decir que se posteó por afuera — pero el texto crudo de
+     Postgres nombra constraints y no le sirve a nadie. */
+  if (error.code === '23514') {
+    throw new Error('Revisá el nombre, el correo y que el mensaje tenga al menos 20 caracteres.')
+  }
+  throw error
+}
+
+export interface ContactMessage {
+  id: string
+  userId: string | null
+  name: string
+  email: string
+  subject: ContactSubject
+  message: string
+  handled: boolean
+  createdAt: string
+}
+
+/**
+ * Los mensajes de contacto, sin responder primero.
+ *
+ * Sólo devuelve algo para quien modera: la política de `contact_messages` no
+ * deja leer a nadie más, así que a cualquier otro le llega una lista vacía en
+ * vez de un error.
+ */
+export async function listContactMessages(): Promise<ContactMessage[]> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('contact_messages')
+    .select('id, user_id, name, email, subject, message, handled, created_at')
+    .order('handled', { ascending: true })
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+
+  return (
+    data as {
+      id: string
+      user_id: string | null
+      name: string
+      email: string
+      subject: ContactSubject
+      message: string
+      handled: boolean
+      created_at: string
+    }[]
+  ).map((row) => ({
+    id: row.id,
+    userId: row.user_id,
+    name: row.name,
+    email: row.email,
+    subject: row.subject,
+    message: row.message,
+    handled: row.handled,
+    createdAt: row.created_at,
+  }))
+}
+
+/** Marcar un mensaje como respondido, o volver atrás. Sólo quien modera. */
+export async function setContactHandled(id: string, handled: boolean): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('contact_messages').update({ handled }).eq('id', id)
+  if (error) throw error
+}
+
+/** Borrar un mensaje. Sólo quien modera. */
+export async function deleteContactMessage(id: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('contact_messages').delete().eq('id', id)
+  if (error) throw error
+}
+
+/* ---------------------------------------------------------------------------
    Favoritos
 --------------------------------------------------------------------------- */
 

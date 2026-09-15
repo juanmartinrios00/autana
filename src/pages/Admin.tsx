@@ -7,14 +7,19 @@ import { Skeleton } from '../components/ui/Skeleton'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
+  contactSubjects,
+  deleteContactMessage,
   dismissProfileReports,
   isAdmin,
+  listContactMessages,
   listReportedListings,
   listReportedProfiles,
   profileReportReasons,
   reportReasons,
+  setContactHandled,
   setListingStatus,
   setProfileContentHidden,
+  type ContactMessage,
   type ReportedListing,
   type ReportedProfile,
 } from '../lib/api'
@@ -38,6 +43,7 @@ export function Admin() {
   const [allowed, setAllowed] = useState<boolean | null>(null)
   const [items, setItems] = useState<ReportedListing[]>([])
   const [profiles, setProfiles] = useState<ReportedProfile[]>([])
+  const [messages, setMessages] = useState<ContactMessage[]>([])
   const [loadedFor, setLoadedFor] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [failure, setFailure] = useState<string | null>(null)
@@ -54,10 +60,15 @@ export function Admin() {
         if (!current) return
         setAllowed(ok)
         if (ok) {
-          const [listings, people] = await Promise.all([listReportedListings(), listReportedProfiles()])
+          const [listings, people, contact] = await Promise.all([
+            listReportedListings(),
+            listReportedProfiles(),
+            listContactMessages(),
+          ])
           if (!current) return
           setItems(listings)
           setProfiles(people)
+          setMessages(contact)
         }
       })
       .catch((cause) => {
@@ -90,16 +101,18 @@ export function Admin() {
     }
   }
 
-  /* Lo mismo para perfiles: ocultar o volver a mostrar el contenido, o
-     descartar los reportes después de mirarlo y ver que no había nada. */
-  async function actOnProfile(id: string, action: () => Promise<void>) {
+  /* Lo mismo para todo lo demás que se modera: ocultar el contenido de un
+     perfil, descartar sus reportes, marcar un mensaje como respondido. Cambia
+     qué se hace, no qué pasa alrededor — bloquear la fila mientras tanto,
+     recargar si salió bien, y mostrar el motivo si no. */
+  async function actOn(id: string, what: string, action: () => Promise<void>) {
     setBusy(id)
     setFailure(null)
     try {
       await action()
       setReloads((count) => count + 1)
     } catch (cause) {
-      console.error('moderar perfil', cause)
+      console.error(what, cause)
       setFailure(describeError(cause, 'No pudimos aplicar el cambio.'))
     } finally {
       setBusy(null)
@@ -280,7 +293,7 @@ export function Admin() {
                   <Button
                     size="sm"
                     disabled={busy === profile.id}
-                    onClick={() => void actOnProfile(profile.id, () => setProfileContentHidden(profile.id, false))}
+                    onClick={() => void actOn(profile.id, 'mostrar contenido', () => setProfileContentHidden(profile.id, false))}
                   >
                     Volver a mostrar
                   </Button>
@@ -289,7 +302,7 @@ export function Admin() {
                     variant="danger"
                     size="sm"
                     disabled={busy === profile.id}
-                    onClick={() => void actOnProfile(profile.id, () => setProfileContentHidden(profile.id, true))}
+                    onClick={() => void actOn(profile.id, 'ocultar contenido', () => setProfileContentHidden(profile.id, true))}
                   >
                     Ocultar contenido
                   </Button>
@@ -301,7 +314,7 @@ export function Admin() {
                   size="sm"
                   variant="ghost"
                   disabled={busy === profile.id}
-                  onClick={() => void actOnProfile(profile.id, () => dismissProfileReports(profile.id))}
+                  onClick={() => void actOn(profile.id, 'descartar reportes', () => dismissProfileReports(profile.id))}
                 >
                   Descartar reportes
                 </Button>
@@ -310,6 +323,85 @@ export function Admin() {
                     Ver el garage
                   </Button>
                 </Link>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <header className="admin__head admin__head--second">
+        <h2 className="admin__title">Mensajes de contacto</h2>
+        <p className="admin__lead">
+          Lo que llega del formulario de contacto, sin responder primero. Se contesta por correo;
+          acá sólo se marca lo que ya está hecho.
+        </p>
+      </header>
+
+      {messages.length === 0 ? (
+        <EmptyState
+          icon="check"
+          title="No hay mensajes"
+          description="Cuando alguien escriba desde la página de contacto, va a aparecer acá."
+        />
+      ) : (
+        <ul className="admin__list">
+          {messages.map((message) => (
+            <li
+              className={`admin__item${message.handled ? ' admin__item--done' : ''}`}
+              key={message.id}
+            >
+              <div className="admin__item-head">
+                <div className="admin__item-titles">
+                  <span className="admin__item-title">{message.name}</span>
+                  <a href={`mailto:${message.email}`} className="admin__item-meta mono">
+                    {message.email}
+                  </a>
+                </div>
+
+                <div className="admin__item-tags">
+                  <Badge tone={message.handled ? 'neutral' : 'warning'}>
+                    {contactSubjects[message.subject]}
+                  </Badge>
+                  {/* Con cuenta el mensaje viene atado a ella (019), y saberlo
+                      cambia la respuesta: se puede mirar qué publicó antes. */}
+                  {message.userId && (
+                    <Link to={`/g/${message.userId}`}>
+                      <Badge tone="neutral">Tiene cuenta</Badge>
+                    </Link>
+                  )}
+                  {message.handled && <Badge tone="neutral">Respondido</Badge>}
+                </div>
+              </div>
+
+              <p className="admin__message">{message.message}</p>
+
+              <div className="admin__actions">
+                <span className="admin__reason-when">{relativeDate(message.createdAt)}</span>
+                <a href={`mailto:${message.email}?subject=${encodeURIComponent(`[Autana] ${contactSubjects[message.subject]}`)}`}>
+                  <Button size="sm" variant="ghost">
+                    Responder
+                  </Button>
+                </a>
+                <Button
+                  size="sm"
+                  disabled={busy === message.id}
+                  onClick={() =>
+                    void actOn(message.id, 'marcar mensaje', () =>
+                      setContactHandled(message.id, !message.handled),
+                    )
+                  }
+                >
+                  {message.handled ? 'Volver a pendiente' : 'Marcar respondido'}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  disabled={busy === message.id}
+                  onClick={() =>
+                    void actOn(message.id, 'borrar mensaje', () => deleteContactMessage(message.id))
+                  }
+                >
+                  Borrar
+                </Button>
               </div>
             </li>
           ))}

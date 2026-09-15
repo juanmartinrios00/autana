@@ -144,3 +144,17 @@
   object-fit: cover;
   background: var(--surface-2);
 }
+
+/* Un mensaje ya respondido sigue en la lista, pero apagado: se lee sin pedir
+   nada, y la atención queda en los que faltan. */
+.admin__item--done {
+  opacity: 0.6;
+}
+
+.admin__message {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}

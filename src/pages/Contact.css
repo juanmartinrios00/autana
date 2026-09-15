@@ -109,6 +109,25 @@
   color: var(--ink-3);
 }
 
+.contact__failure {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 0.88rem;
+}
+
+/* El campo señuelo contra bots. Fuera de la pantalla en vez de
+   `display: none`: algunos bots saltean lo que está oculto así, y este tiene
+   que parecer un campo más para que lo completen. */
+.contact__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 @media (max-width: 799px) {
   .contact__layout,
   .contact__row {
