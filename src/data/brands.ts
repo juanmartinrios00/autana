@@ -28,4 +28,5 @@ export const brands: Brand[] = [
   { name: 'BMW', slug: 'bmw' },
   { name: 'Mercedes-Benz', slug: 'mercedes-benz' },
   { name: 'Citroën', slug: 'citroen' },
+  { name: 'Audi', slug: 'audi' },
 ]
