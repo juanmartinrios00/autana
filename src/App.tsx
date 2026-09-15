@@ -16,6 +16,8 @@ import { NotFound } from './pages/NotFound'
    El `.then` es porque las paginas son exports nombrados y `lazy` espera un
    default. */
 const Admin = lazy(() => import('./pages/Admin').then((m) => ({ default: m.Admin })))
+const Blog = lazy(() => import('./pages/Blog').then((m) => ({ default: m.Blog })))
+const BlogPost = lazy(() => import('./pages/BlogPost').then((m) => ({ default: m.BlogPost })))
 const Cars = lazy(() => import('./pages/Cars').then((m) => ({ default: m.Cars })))
 const Compare = lazy(() => import('./pages/Compare').then((m) => ({ default: m.Compare })))
 const Contact = lazy(() => import('./pages/Contact').then((m) => ({ default: m.Contact })))
@@ -90,6 +92,8 @@ export default function App() {
                     cuenta. */}
                 <Route path="help" element={<Help />} />
                 <Route path="contact" element={<Contact />} />
+                <Route path="blog" element={<Blog />} />
+                <Route path="blog/:slug" element={<BlogPost />} />
                 <Route path="terms" element={<Terms />} />
                 <Route path="privacy" element={<Privacy />} />
 

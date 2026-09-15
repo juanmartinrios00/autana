@@ -77,57 +77,94 @@
   list-style: none;
 }
 
+/* La caja del paso.
+
+   El número arriba, el título abajo de todo el aire, una línea al ancho de la
+   caja y la explicación al pie. Es una columna, no una grilla de dos: el ojo
+   baja una sola vez y las tres cajas quedan alineadas entre sí porque el
+   título se empuja al fondo con `margin-top: auto`.
+
+   Sin `min-height` las tres cajas miden lo que mida su texto y la secuencia se
+   desarma. Con él, la línea de las tres queda a la misma altura.            */
 .hstep {
-  display: grid;
-  grid-template-columns: 34px 1fr;
-  grid-template-rows: auto minmax(34px, auto) auto;
-  column-gap: var(--sp-4);
-  row-gap: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  min-height: 340px;
   padding: var(--sp-5);
-  background: var(--canvas);
-  border: 1px solid var(--line);
+  background: var(--surface-2);
 }
 
+/* El número, grande y sin adorno. Antes era una ficha amarilla de 34px; acá el
+   amarillo no aporta —no hay nada que elegir en un paso— y el tamaño solo
+   alcanza para ordenar. */
+.hstep__n {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+/* El dibujo vive en el aire entre el número y el título, en voz baja: llena un
+   espacio que si no queda muerto, sin pelearle la atención al texto. */
 .hstep__art {
-  grid-column: span 2;
+  flex: 1;
   display: grid;
   place-items: center;
-  padding: var(--sp-4);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  color: var(--ink-2);
+  padding-block: var(--sp-5);
+  color: var(--ink-4);
+  opacity: 0.55;
 }
 
 .hstep__scene {
   width: 100%;
-  max-width: 220px;
+  max-width: 150px;
   height: auto;
 }
 
-/* La ficha del número, igual que la que ya usaban los pasos de antes: ancla el
-   paso y hace que las tres cajas se lean como una secuencia. */
-.hstep__n {
-  grid-row: span 2;
-  align-self: start;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--ink);
-  background: var(--accent);
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--ink-2);
+.hstep__title {
+  margin-top: auto;
+  font-size: 1.24rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 
-.hstep__title {
-  align-self: center;
-  font-size: 1.02rem;
+/* La línea, con el marcador encima. `position: relative` acá y absolute en el
+   marcador para que el círculo quede sobre el trazo y no lo empuje. */
+.hstep__rule {
+  position: relative;
+  margin-block: var(--sp-5);
+  border-top: 1px solid var(--line-strong);
+}
+
+.hstep__marker {
+  position: absolute;
+  top: 50%;
+  right: 6%;
+  width: 22px;
+  height: 22px;
+  transform: translateY(-50%);
+  border: 1px solid var(--ink-3);
+  border-radius: 50%;
+  background: var(--surface-2);
+}
+
+/* Vacío, medio y entero. El relleno del medio es un degradado duro y no un
+   pseudo-elemento: son dos líneas en vez de seis. */
+.hstep__marker--half {
+  background: linear-gradient(90deg, var(--ink-3) 50%, var(--surface-2) 50%);
+}
+
+.hstep__marker--full {
+  background: var(--ink-3);
 }
 
 .hstep__text {
-  font-size: 0.94rem;
-  color: var(--ink-3);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-2);
 }
 
 @media (max-width: 899px) {

@@ -9,6 +9,7 @@ import { DealerSlider } from '../components/home/DealerSlider'
 import { Faq } from '../components/home/Faq'
 import { GarageSection } from '../components/home/GarageSection'
 import { HowItWorks } from '../components/home/HowItWorks'
+import { Pillars } from '../components/home/Pillars'
 import { PopularModels } from '../components/home/PopularModels'
 import { ProvinceMap } from '../components/home/ProvinceMap'
 import { MarketplaceProof } from '../components/home/MarketplaceProof'
@@ -227,6 +228,17 @@ export function Home() {
         </div>
 
         <ProvinceMap counts={provinceCounts} />
+      </div>
+
+      {/* Los tres motivos van acá y no arriba: quien entra a un clasificado
+          quiere ver autos, no leer por qué somos distintos. Primero los autos,
+          después el argumento, y recién después el resto de las secciones.
+
+          Fuera de `.page` como la banda de números: los paneles llegan a los
+          dos bordes. */}
+      <Pillars />
+
+      <div className="page home__sections">
         <AudienceSection />
         <HowItWorks />
         <GarageSection />

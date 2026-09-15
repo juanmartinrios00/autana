@@ -50,12 +50,60 @@
   background: var(--accent-hover);
 }
 
+/* El boton oscuro, en el registro de una placa tecnica: rectangulo entero,
+   texto en caja normal y la flecha de codo al final.
+
+   No lleva la esquina cortada del amarillo a proposito. El corte es la firma
+   de la accion principal; si lo llevan los dos, deja de señalar cual es.
+   Tampoco va en versalitas: el amarillo grita porque tiene que ganar la
+   pantalla, y este acompaña.                                              */
+
 .btn--dark {
+  justify-content: space-between;
+  gap: var(--sp-6);
+  height: 52px;
+  padding-inline: 22px;
+  clip-path: none;
   background: var(--ink);
   color: var(--ink-inverse);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: none;
 }
 .btn--dark:hover:not(:disabled) {
   background: #26262a;
+}
+
+.btn--dark.btn--sm {
+  height: 42px;
+  padding-inline: 16px;
+  gap: var(--sp-4);
+  font-size: 0.88rem;
+}
+
+.btn--dark.btn--lg {
+  height: 58px;
+  padding-inline: 26px;
+  font-size: 1rem;
+}
+
+/* La flecha no se desplaza en el hover: el movimiento la vuelve un juguete y
+   este boton acompaña una decision. Sube la opacidad y nada mas. */
+.btn__arrow {
+  flex: none;
+  opacity: 0.72;
+  transition: opacity var(--dur-med) var(--ease);
+}
+
+.btn:hover:not(:disabled) .btn__arrow {
+  opacity: 1;
+}
+
+/* Con flecha, el texto queda a la izquierda y la flecha contra el borde: es
+   donde se la busca cuando el boton es ancho. */
+.btn--arrow {
+  justify-content: space-between;
 }
 
 .btn--outline {

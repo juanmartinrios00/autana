@@ -1,0 +1,211 @@
+/* ---------------------------------------------------------------------------
+   Un artículo.
+
+   El ancho de lectura es lo único que importa acá. Una línea de más de 75
+   caracteres obliga al ojo a buscar dónde empieza la siguiente, y en un texto
+   de ocho minutos eso se siente. Todo el cuerpo va a 68ch.
+--------------------------------------------------------------------------- */
+
+.post {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  padding-block: var(--sp-6) var(--sp-9);
+}
+
+.post__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  max-width: 68ch;
+}
+
+.post__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.post__back:hover {
+  color: var(--ink);
+}
+
+.post__title {
+  font-size: var(--fs-h1);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.post__summary {
+  font-size: 1.14rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.post__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line);
+  width: 100%;
+  font-size: 0.78rem;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+.post__cover img {
+  display: block;
+  width: 100%;
+  max-height: 460px;
+  object-fit: cover;
+  background: var(--surface-2);
+}
+
+.post__body {
+  max-width: 68ch;
+}
+
+/* --- El cuerpo del texto ------------------------------------------------- */
+
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  font-size: 1.04rem;
+  line-height: 1.68;
+  color: var(--ink-2);
+}
+
+.prose__lead {
+  font-size: 1.18rem;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.prose h2 {
+  margin-top: var(--sp-5);
+  font-size: 1.6rem;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.prose h3 {
+  margin-top: var(--sp-3);
+  font-size: 1.2rem;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.prose ul,
+.prose ol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: 0;
+  padding-left: 1.3em;
+}
+
+.prose li {
+  padding-left: 0.2em;
+}
+
+.prose li::marker {
+  color: var(--ink-4);
+}
+
+.prose ol li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.prose a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-strong);
+  transition: text-decoration-color var(--dur-med) var(--ease);
+}
+
+.prose a:hover {
+  text-decoration-color: var(--ink);
+}
+
+/* El aviso al costado. Amarillo sólo en la barra de la izquierda: un bloque
+   entero amarillo se lee como publicidad y esto es advertencia. */
+.prose__note {
+  padding: var(--sp-4) var(--sp-5);
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  font-size: 0.98rem;
+  color: var(--ink-2);
+}
+
+/* --- El cierre ----------------------------------------------------------- */
+
+.post__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  max-width: 68ch;
+  margin-top: var(--sp-4);
+  padding: var(--sp-6);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.post__cta-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.post__cta h2 {
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+}
+
+.post__cta p {
+  font-size: 0.96rem;
+  color: var(--ink-3);
+}
+
+.post__more {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--line);
+}
+
+.post__more-title {
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+}
+
+.post__more-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--sp-5);
+}
+
+@media (max-width: 699px) {
+  .post__cta {
+    align-items: stretch;
+  }
+}

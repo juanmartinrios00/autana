@@ -1,6 +1,7 @@
 /// <reference types="@cloudflare/workers-types" />
 
 import { BRAND, pageTitle } from '../src/config/brand'
+import { findPost, postsByDate } from '../src/content/blog/posts'
 import { SUPABASE_PUBLIC } from '../src/config/supabase-public'
 
 /**
@@ -32,6 +33,7 @@ interface Env {
  * con letras, números y guiones.
  */
 const LISTING_URL = /^\/cars\/([A-Za-z0-9-]{1,120})\/?$/
+const BLOG_URL = /^\/blog\/([a-z0-9-]{1,120})\/?$/
 
 /**
  * El garage se direcciona por el uuid del usuario, así que se exige la forma
@@ -390,7 +392,14 @@ async function sitemap(origin: string): Promise<Response> {
     { loc: `${origin}/` },
     { loc: `${origin}/cars` },
     { loc: `${origin}/garage` },
+    { loc: `${origin}/blog` },
   ]
+
+  /* Las notas no salen de la base: viven en el bundle, asi que entran siempre
+     —aunque Supabase no conteste— y con su fecha de publicacion. */
+  for (const post of postsByDate()) {
+    entries.push({ loc: `${origin}/blog/${post.slug}`, lastmod: post.date })
+  }
 
   for (const row of listings) {
     entries.push({
@@ -540,6 +549,33 @@ async function renderGarage(request: Request, env: Env, id: string): Promise<Res
   })
 }
 
+/**
+ * El preview de una nota del blog.
+ *
+ * Es el único de los tres que no toca la base: los artículos viven en el
+ * bundle, así que el título y el resumen ya están acá y no hay latencia ni un
+ * fallo posible del lado de Supabase.
+ *
+ * Sin imagen, a propósito. La portada de cada nota es un archivo con hash en
+ * el nombre que sale del build, y desde el Worker no hay forma de saber cómo
+ * quedó llamado sin leer el manifiesto. Una tarjeta chica bien puesta es mejor
+ * que una grande apuntando a una imagen que no existe; cuando las portadas
+ * estén, se resuelve con el manifiesto de Vite.
+ */
+function renderPost(assetResponse: Response, request: Request, slug: string): Response {
+  const post = findPost(slug)
+  if (!post) return assetResponse
+
+  const url = new URL(request.url)
+
+  return renderPreview(assetResponse, {
+    title: pageTitle(post.title),
+    description: post.summary,
+    image: null,
+    canonical: `${url.origin}/blog/${post.slug}`,
+  })
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
@@ -559,6 +595,17 @@ export default {
       } catch (cause) {
         console.error('preview del aviso', cause)
         /* La página vale más que el preview. */
+        return env.ASSETS.fetch(request)
+      }
+    }
+
+    const post = url.pathname.match(BLOG_URL)
+    if (post) {
+      try {
+        const assetResponse = await htmlFor(request, env)
+        return assetResponse ? renderPost(assetResponse, request, post[1]!) : env.ASSETS.fetch(request)
+      } catch (cause) {
+        console.error('preview de la nota', cause)
         return env.ASSETS.fetch(request)
       }
     }

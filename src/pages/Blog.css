@@ -1,0 +1,195 @@
+/* ---------------------------------------------------------------------------
+   El blog: portada y tarjetas.
+
+   Las tarjetas (`pcard`) viven acá y no en el CSS del artículo porque las usan
+   las dos pantallas — el listado y el "seguí leyendo" del pie de cada nota.
+--------------------------------------------------------------------------- */
+
+.blog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-7);
+  padding-block: var(--sp-7) var(--sp-9);
+}
+
+.blog__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.blog__title {
+  max-width: 16ch;
+  font-size: var(--fs-h1);
+  letter-spacing: -0.035em;
+}
+
+.blog__lead {
+  max-width: 56ch;
+  font-size: 1.08rem;
+  color: var(--ink-2);
+}
+
+.blog__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.blog__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--sp-5);
+}
+
+/* --- La tarjeta ---------------------------------------------------------- */
+
+.pcard {
+  display: flex;
+  flex-direction: column;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  color: inherit;
+  transition:
+    border-color var(--dur-med) var(--ease),
+    background var(--dur-med) var(--ease);
+}
+
+.pcard:hover {
+  border-color: var(--ink);
+  background: var(--surface);
+}
+
+/* `overflow: hidden` acá y no en la tarjeta: la foto tiene que quedar
+   recortada, pero recortar la tarjeta entera se come el foco del teclado. */
+.pcard__media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: var(--surface-2);
+}
+
+.pcard__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow, 420ms) var(--ease);
+}
+
+.pcard:hover .pcard__img {
+  transform: scale(1.03);
+}
+
+/* La lámina de cuando todavía no hay foto. */
+.pcard__fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-2);
+  color: var(--line-strong);
+}
+
+.pcard__fallback svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pcard__fallback-tag {
+  position: relative;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--accent);
+  font-size: var(--fs-over);
+  font-weight: 700;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pcard__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+}
+
+.pcard__meta {
+  font-size: 0.74rem;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+.pcard__title {
+  font-size: 1.16rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.pcard__summary {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-3);
+}
+
+/* Empujado al fondo con `margin-top: auto` para que quede a la misma altura en
+   todas las tarjetas de una fila, midan lo que midan los resúmenes. */
+.pcard__more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: auto;
+  padding-top: var(--sp-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pcard:hover .pcard__more {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* --- La nota destacada --------------------------------------------------- */
+
+.pcard--lead {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.pcard--lead .pcard__media {
+  aspect-ratio: auto;
+  min-height: 320px;
+}
+
+.pcard--lead .pcard__body {
+  justify-content: center;
+  padding: clamp(var(--sp-5), 4vw, var(--sp-8));
+  gap: var(--sp-4);
+}
+
+.pcard--lead .pcard__title {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  letter-spacing: -0.03em;
+}
+
+.pcard--lead .pcard__summary {
+  font-size: 1.02rem;
+}
+
+@media (max-width: 899px) {
+  .pcard--lead {
+    grid-template-columns: 1fr;
+  }
+
+  .pcard--lead .pcard__media {
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+  }
+}

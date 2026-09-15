@@ -135,14 +135,32 @@ export function HowItWorks() {
         id={`how-panel-${current.id}`}
         aria-labelledby={`how-tab-${current.id}`}
       >
+        {/* La caja de cada paso se lee de arriba abajo: el número, el dibujo, el
+            título, una línea, y recién abajo la explicación. El aire entre el
+            número y el título no sobra — es lo que hace que las tres se lean
+            como una secuencia y no como tres tarjetas sueltas.
+
+            El marcador sobre la línea se llena a medida que avanzan los pasos:
+            vacío, medio, entero. Dice en qué punto del camino está cada caja
+            sin escribir "1 de 3". */}
         <ol className="how__steps">
           {current.steps.map((step, index) => (
             <li className="hstep" key={step.title}>
+              <span className="hstep__n">{index + 1}</span>
+
               <div className="hstep__art">
                 <step.Scene className="hstep__scene" />
               </div>
-              <span className="hstep__n mono">{String(index + 1).padStart(2, '0')}</span>
+
               <h3 className="hstep__title">{step.title}</h3>
+
+              <div className="hstep__rule">
+                <span
+                  className={`hstep__marker hstep__marker--${['empty', 'half', 'full'][index] ?? 'empty'}`}
+                  aria-hidden="true"
+                />
+              </div>
+
               <p className="hstep__text">{step.text}</p>
             </li>
           ))}

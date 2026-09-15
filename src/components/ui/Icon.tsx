@@ -13,6 +13,11 @@ const paths = {
      como una viñeta. */
   arrowRight: <><path d="M3 12h17" /><path d="M14 6.5 20 12l-6 5.5" /></>,
   arrowLeft: <><path d="M21 12H4" /><path d="M10 6.5 4 12l6 5.5" /></>,
+  /* La flecha de codo, para los botones oscuros. Baja y dobla a la derecha:
+     no empuja hacia adelante como una flecha recta, sugiere "lo que sigue".
+     Va con trazo más fino que el resto del set — en un botón lleno el 1.4
+     la engorda y se come la elegancia. */
+  arrowCorner: <><path d="M7 5v11h11" /><path d="M14.5 12.5 18 16l-3.5 3.5" /></>,
   chevronDown: <path d="m5.5 9 6.5 6 6.5-6" />,
   search: <><circle cx="10.5" cy="10.5" r="6.5" /><path d="M20.5 20.5 15.5 15.5" /></>,
   heart: <path d="M12 20.6 3.9 12.4a4.9 4.9 0 0 1 7-6.9l1.1 1.1 1.1-1.1a4.9 4.9 0 0 1 7 6.9z" />,

@@ -1,0 +1,158 @@
+/* ---------------------------------------------------------------------------
+   Los tres motivos, en paneles que se apilan.
+
+   La mecánica entera es `position: sticky` sobre cada panel. Mientras el
+   contenedor sigue scrolleando, el panel queda clavado arriba; el siguiente
+   llega desde abajo y lo tapa. Al final los tres quedan uno sobre otro.
+
+   Dos condiciones que hay que respetar para que funcione:
+
+     · el contenedor NO puede tener `overflow` distinto de `visible` — con
+       `hidden` o `auto` el sticky deja de pegarse y los paneles pasan de largo
+       sin que nada avise;
+     · cada panel necesita alto propio, si no no hay nada que apilar.
+--------------------------------------------------------------------------- */
+
+.pillars {
+  display: flex;
+  flex-direction: column;
+}
+
+.pillar {
+  position: sticky;
+  top: 0;
+  min-height: 100svh;
+  display: flex;
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+/* El borde de arriba es lo que hace visible que un panel tapó al anterior. Sin
+   él, dos fondos oscuros iguales se funden y el apilado no se percibe. */
+.pillar + .pillar {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.pillar__inner {
+  display: flex;
+  flex-direction: column;
+  width: min(1200px, 100%);
+  margin-inline: auto;
+  padding: clamp(var(--sp-6), 5vw, var(--sp-9));
+}
+
+.pillar__top {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  align-items: start;
+  gap: var(--sp-6);
+}
+
+.pillar__title {
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--ink-inverse);
+}
+
+.pillar__art {
+  justify-self: end;
+  width: 100%;
+  max-width: 420px;
+}
+
+.pillar__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: rgba(255, 255, 255, 0.34);
+}
+
+/* La grilla va más apagada que el dibujo: es el papel, no lo dibujado. */
+.pillar__grid {
+  stroke: rgba(255, 255, 255, 0.09);
+}
+
+.pillar__accent {
+  stroke: var(--accent);
+}
+
+.pillar__eyebrow {
+  padding-block: var(--sp-5) var(--sp-4);
+  font-size: var(--fs-over);
+  font-weight: 600;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.pillar__bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--sp-6);
+  padding-top: var(--sp-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.pillar__text {
+  max-width: 58ch;
+  font-size: clamp(1.02rem, 1.6vw, 1.3rem);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* El link subrayado y no un botón: el botón de la sección es el amarillo de la
+   portada, y tres botones más acá compiten con él. */
+.pillar__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--ink-inverse);
+  transition: border-color var(--dur-med) var(--ease);
+}
+
+.pillar__cta:hover {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (max-width: 899px) {
+  /* En el celular el apilado se apaga. Un panel de alto completo pegado arriba
+     en una pantalla chica deja el texto sin aire y obliga a scrollear dentro
+     de algo que ya scrollea. Se leen de corrido, uno abajo del otro. */
+  .pillar {
+    position: static;
+    min-height: 0;
+  }
+
+  .pillar__top,
+  .pillar__bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .pillar__art {
+    justify-self: start;
+    max-width: 280px;
+  }
+
+  .pillar__title {
+    max-width: none;
+  }
+}
+
+/* Quien pidió menos movimiento no tiene por qué ver paneles montándose. */
+@media (prefers-reduced-motion: reduce) {
+  .pillar {
+    position: static;
+    min-height: 0;
+  }
+}
