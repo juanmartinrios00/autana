@@ -106,6 +106,8 @@ interface GarageEntryRow {
 interface GarageRow {
   name: string
   discoverable: boolean
+  /** Fotos y notas ocultas por moderación (018). */
+  content_hidden?: boolean
   garage_entries: GarageEntryRow[] | null
 }
 
@@ -119,7 +121,7 @@ interface GarageRow {
  */
 async function fetchGarage(id: string): Promise<GarageRow | null> {
   const params = new URLSearchParams({
-    select: 'name,discoverable,garage_entries(slot,make,model,year,photo_path)',
+    select: 'name,discoverable,content_hidden,garage_entries(slot,make,model,year,photo_path)',
     id: `eq.${id}`,
     limit: '1',
   })
@@ -213,7 +215,10 @@ export function buildGarageDescription(name: string, entries: GarageEntryRow[]):
  * —nadie tiene a mano la foto del auto que vendió en 2011—, así que era el
  * preview que más se veía.
  */
-export function garagePreviewImage(entries: GarageEntryRow[], origin: string): string {
+export function garagePreviewImage(entries: GarageEntryRow[], origin: string, hidden = false): string {
+  /* Con el contenido oculto por moderación no va ninguna foto de la persona:
+     justo el preview de WhatsApp es por donde más lejos viaja una imagen. */
+  if (hidden) return `${origin}/og-garage.png`
   return garageImage(entries) ?? `${origin}/og-garage.png`
 }
 
@@ -524,13 +529,13 @@ async function renderGarage(request: Request, env: Env, id: string): Promise<Res
     /* La foto que subió el dueño, o la lámina con los dibujos. Tiene que ser
        un PNG y no las escenas en SVG: WhatsApp no renderiza SVG como imagen
        de preview. */
-    image: garagePreviewImage(entries, url.origin),
+    image: garagePreviewImage(entries, url.origin, Boolean(row.content_hidden)),
     canonical: `${url.origin}/g/${id}`,
     /* Quien se sacó del buscador se saca también de Google. Es lo que hace que
        el interruptor de Ajustes signifique algo afuera del sitio: sin esto
        seguiría apareciendo en una búsqueda por su nombre, que es exactamente
        lo que pidió que no pasara. */
-    noindex: !row.discoverable,
+    noindex: !row.discoverable || Boolean(row.content_hidden),
   })
 }
 

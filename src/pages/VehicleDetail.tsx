@@ -288,7 +288,7 @@ export function VehicleDetail() {
             {/* Al final y en voz baja: tiene que estar a mano para quien lo
                 necesita, sin competirle al botón de contactar. */}
             <div className="detail__report">
-              <ReportDialog listingId={vehicle.id} title={title} />
+              <ReportDialog kind="listing" targetId={vehicle.id} title={title} />
             </div>
           </div>
         </aside>

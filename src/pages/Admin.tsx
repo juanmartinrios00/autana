@@ -7,11 +7,16 @@ import { Skeleton } from '../components/ui/Skeleton'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
+  dismissProfileReports,
   isAdmin,
   listReportedListings,
+  listReportedProfiles,
+  profileReportReasons,
   reportReasons,
   setListingStatus,
+  setProfileContentHidden,
   type ReportedListing,
+  type ReportedProfile,
 } from '../lib/api'
 import { describeError } from '../lib/errors'
 import { formatPrice, relativeDate, statusLabels, vehicleTitle } from '../lib/format'
@@ -32,6 +37,7 @@ export function Admin() {
 
   const [allowed, setAllowed] = useState<boolean | null>(null)
   const [items, setItems] = useState<ReportedListing[]>([])
+  const [profiles, setProfiles] = useState<ReportedProfile[]>([])
   const [loadedFor, setLoadedFor] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
   const [failure, setFailure] = useState<string | null>(null)
@@ -47,7 +53,12 @@ export function Admin() {
       .then(async (ok) => {
         if (!current) return
         setAllowed(ok)
-        if (ok) setItems(await listReportedListings())
+        if (ok) {
+          const [listings, people] = await Promise.all([listReportedListings(), listReportedProfiles()])
+          if (!current) return
+          setItems(listings)
+          setProfiles(people)
+        }
       })
       .catch((cause) => {
         if (!current) return
@@ -73,6 +84,22 @@ export function Admin() {
       setReloads((count) => count + 1)
     } catch (cause) {
       console.error('moderar', cause)
+      setFailure(describeError(cause, 'No pudimos aplicar el cambio.'))
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  /* Lo mismo para perfiles: ocultar o volver a mostrar el contenido, o
+     descartar los reportes después de mirarlo y ver que no había nada. */
+  async function actOnProfile(id: string, action: () => Promise<void>) {
+    setBusy(id)
+    setFailure(null)
+    try {
+      await action()
+      setReloads((count) => count + 1)
+    } catch (cause) {
+      console.error('moderar perfil', cause)
       setFailure(describeError(cause, 'No pudimos aplicar el cambio.'))
     } finally {
       setBusy(null)
@@ -185,6 +212,102 @@ export function Admin() {
                 <Link to={`/cars/${vehicle.slug}`}>
                   <Button size="sm" variant="ghost">
                     Ver la ficha
+                  </Button>
+                </Link>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <header className="admin__head admin__head--second">
+        <h2 className="admin__title">Garages y perfiles</h2>
+        <p className="admin__lead">
+          Con tres personas distintas se ocultan solos la foto de perfil, las fotos y las notas
+          del garage. El nombre y los avisos siguen. Acá ves las fotos aunque estén ocultas.
+        </p>
+      </header>
+
+      {profiles.length === 0 ? (
+        <EmptyState
+          icon="check"
+          title="No hay garages reportados"
+          description="Cuando alguien reporte un garage o una foto de perfil, va a aparecer acá."
+        />
+      ) : (
+        <ul className="admin__list">
+          {profiles.map(({ profile, reports }) => (
+            <li className="admin__item" key={profile.id}>
+              <div className="admin__item-head">
+                <div className="admin__item-person">
+                  {profile.avatarUrl ? (
+                    <img src={profile.avatarUrl} alt="" className="admin__avatar" />
+                  ) : (
+                    <span className="admin__avatar" aria-hidden="true" />
+                  )}
+                  <div className="admin__item-titles">
+                    <Link to={`/g/${profile.id}`} className="admin__item-title">
+                      {profile.name || 'Sin nombre'}
+                    </Link>
+                    <span className="admin__item-meta mono">
+                      {[profile.city, profile.province].filter(Boolean).join(', ') || 'sin ubicación'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="admin__item-tags">
+                  <Badge tone="danger">
+                    {reports.length} {reports.length === 1 ? 'reporte' : 'reportes'}
+                  </Badge>
+                  {profile.contentHidden && <Badge tone="danger">Contenido oculto</Badge>}
+                </div>
+              </div>
+
+              <ul className="admin__reasons">
+                {reports.map((report) => (
+                  <li className="admin__reason" key={report.id}>
+                    <span className="admin__reason-label">{profileReportReasons[report.reason]}</span>
+                    {report.detail && (
+                      <span className="admin__reason-detail">“{report.detail}”</span>
+                    )}
+                    <span className="admin__reason-when">{relativeDate(report.createdAt)}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="admin__actions">
+                {profile.contentHidden ? (
+                  <Button
+                    size="sm"
+                    disabled={busy === profile.id}
+                    onClick={() => void actOnProfile(profile.id, () => setProfileContentHidden(profile.id, false))}
+                  >
+                    Volver a mostrar
+                  </Button>
+                ) : (
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    disabled={busy === profile.id}
+                    onClick={() => void actOnProfile(profile.id, () => setProfileContentHidden(profile.id, true))}
+                  >
+                    Ocultar contenido
+                  </Button>
+                )}
+                {/* Descartar borra los reportes: el perfil sale de esta lista. Si
+                    el contenido estaba oculto, no lo vuelve a mostrar solo; eso
+                    es el otro botón, a propósito separado. */}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={busy === profile.id}
+                  onClick={() => void actOnProfile(profile.id, () => dismissProfileReports(profile.id))}
+                >
+                  Descartar reportes
+                </Button>
+                <Link to={`/g/${profile.id}`}>
+                  <Button size="sm" variant="ghost">
+                    Ver el garage
                   </Button>
                 </Link>
               </div>

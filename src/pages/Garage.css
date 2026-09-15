@@ -56,6 +56,25 @@
   color: rgba(255, 255, 255, 0.56);
 }
 
+/* El aviso de contenido oculto. Borde amarillo y no rojo: no acusa a nadie,
+   informa que algo se está revisando. */
+.garagepage__hidden {
+  max-width: 60ch;
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border-left: 3px solid var(--accent);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.garagepage__report {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-6);
+}
+
 .garagepage__listings {
   display: flex;
   flex-direction: column;

@@ -101,6 +101,8 @@ interface ProfileRow {
   instagram: string | null
   /** El fondo de la cabecera del garage (015). */
   garage_theme: string
+  /** Foto y garage ocultos por moderación (018). */
+  content_hidden: boolean
 }
 
 /* `profiles` a secas es ambiguo: PostgREST ve dos relaciones entre listings y
@@ -165,7 +167,7 @@ function toVehicle(row: ListingRow): Vehicle {
    permiso es por columna: `select('*')` falla, y esta bien que falle — es lo
    que avisa que alguien agrego una columna sin decidir si es publica. */
 const PROFILE_COLUMNS =
-  'id, name, avatar_url, seller_type, city, province, verified, created_at, instagram, garage_theme'
+  'id, name, avatar_url, seller_type, city, province, verified, created_at, instagram, garage_theme, content_hidden'
 
 function toSeller(row: ProfileRow, listingCount: number): Seller {
   return {
@@ -611,6 +613,111 @@ export async function isAdmin(): Promise<boolean> {
   return data === true
 }
 
+/* ---------------------------------------------------------------------------
+   Reportes de garages y perfiles
+--------------------------------------------------------------------------- */
+
+export type ProfileReportReason = 'photo' | 'impersonation' | 'offensive' | 'spam' | 'other'
+
+export const profileReportReasons: Record<ProfileReportReason, string> = {
+  photo: 'Tiene una foto inapropiada',
+  impersonation: 'Se hace pasar por otra persona',
+  offensive: 'Contenido ofensivo',
+  spam: 'Es spam o publicidad',
+  other: 'Otra cosa',
+}
+
+export async function reportProfile(
+  profileId: string,
+  userId: string,
+  reason: ProfileReportReason,
+  detail: string,
+): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('profile_reports').insert({
+    profile_id: profileId,
+    reporter_id: userId,
+    reason,
+    detail: detail.trim(),
+  })
+
+  if (!error) return
+  if (error.code === '23505') throw new Error('Ya reportaste este garage. Gracias.')
+  throw error
+}
+
+export async function hasReportedProfile(profileId: string, userId: string): Promise<boolean> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('profile_reports')
+    .select('id')
+    .eq('profile_id', profileId)
+    .eq('reporter_id', userId)
+    .maybeSingle()
+
+  if (error) throw error
+  return Boolean(data)
+}
+
+export interface ReportedProfile {
+  profile: ProfileSummary
+  reports: { id: string; reason: ProfileReportReason; detail: string; createdAt: string }[]
+}
+
+/**
+ * Los perfiles reportados, con sus reportes. Igual que con los avisos: sólo
+ * devuelve algo para quien modera, porque la política esconde los ajenos.
+ */
+export async function listReportedProfiles(): Promise<ReportedProfile[]> {
+  const client = requireSupabase()
+  const { data, error } = await client
+    .from('profile_reports')
+    .select('id, reason, detail, created_at, profile_id')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  const rows = data as {
+    id: string
+    reason: ProfileReportReason
+    detail: string
+    created_at: string
+    profile_id: string
+  }[]
+  if (rows.length === 0) return []
+
+  const ids = [...new Set(rows.map((row) => row.profile_id))]
+  const profiles = await Promise.allSettled(ids.map((id) => getProfile(id)))
+  const byId = new Map<string, ProfileSummary>()
+  profiles.forEach((result) => {
+    if (result.status === 'fulfilled') byId.set(result.value.id, result.value)
+  })
+
+  const grouped = new Map<string, ReportedProfile>()
+  for (const row of rows) {
+    const profile = byId.get(row.profile_id)
+    if (!profile) continue
+    const entry = grouped.get(row.profile_id) ?? { profile, reports: [] }
+    entry.reports.push({ id: row.id, reason: row.reason, detail: row.detail, createdAt: row.created_at })
+    grouped.set(row.profile_id, entry)
+  }
+
+  return [...grouped.values()].sort((a, b) => b.reports.length - a.reports.length)
+}
+
+/** Ocultar o volver a mostrar el contenido de un perfil. Sólo quien modera. */
+export async function setProfileContentHidden(profileId: string, hidden: boolean): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.rpc('admin_set_content_hidden', { target: profileId, hidden })
+  if (error) throw error
+}
+
+/** Descartar los reportes de un perfil, después de revisarlo. Sólo quien modera. */
+export async function dismissProfileReports(profileId: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('profile_reports').delete().eq('profile_id', profileId)
+  if (error) throw error
+}
+
 export interface ReportedListing {
   vehicle: Vehicle
   reports: { id: string; reason: ReportReason; detail: string; createdAt: string }[]
@@ -1024,6 +1131,11 @@ export interface ProfileSummary {
   instagram: string | null
   /** Id del fondo de la cabecera del garage. Ver `lib/garage-theme`. */
   garageTheme: string
+  /**
+   * La foto de perfil, las fotos y las notas del garage están ocultas por
+   * moderación (018). La pantalla no las muestra; quien modera sí las ve.
+   */
+  contentHidden: boolean
   /** Publicaciones activas. */
   activeListings: number
   /** Fotos de la publicación que más tiene. Alimenta el logro correspondiente. */
@@ -1063,6 +1175,7 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
     verified: profileRow.verified,
     instagram: profileRow.instagram ?? null,
     garageTheme: profileRow.garage_theme ?? 'ink',
+    contentHidden: profileRow.content_hidden ?? false,
     activeListings: rows.length,
     bestPhotoCount: rows.reduce((max, row) => Math.max(max, row.listing_images?.length ?? 0), 0),
   }

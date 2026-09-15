@@ -122,3 +122,25 @@
   gap: var(--sp-2);
   flex-wrap: wrap;
 }
+
+/* --- Garages y perfiles --------------------------------------------------- */
+
+.admin__head--second {
+  margin-top: var(--sp-8);
+}
+
+.admin__item-person {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.admin__avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-pill);
+  object-fit: cover;
+  background: var(--surface-2);
+}

@@ -147,6 +147,12 @@ describe('garagePreviewImage', () => {
     ).toContain('/garage-photos/abc/first.webp')
   })
 
+  it('con el contenido oculto por moderación no usa la foto aunque la haya', () => {
+    expect(
+      garagePreviewImage([car('first', 'Renault', '12', 1978, 'abc/first.webp')], 'https://autana.app', true),
+    ).toBe('https://autana.app/og-garage.png')
+  })
+
   it('sin fotos usa la lámina fija, y no deja el preview sin imagen', () => {
     expect(garagePreviewImage([car('first', 'Renault', '12', 1978)], 'https://autana.app')).toBe(
       'https://autana.app/og-garage.png',

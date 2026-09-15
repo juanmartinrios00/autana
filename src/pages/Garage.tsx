@@ -9,6 +9,7 @@ import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
+import { ReportDialog } from '../components/vehicle/ReportDialog'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
@@ -149,6 +150,10 @@ export function Garage() {
   }
 
   const themeId = theme?.userId === userId ? theme.id : profile.garageTheme
+  /* Ocultas por moderación: la foto de perfil, las fotos y las notas del garage.
+     Se oculta también para el dueño, así ve lo mismo que el resto y entiende el
+     aviso de abajo. */
+  const hidden = profile.contentHidden
   const place = [profile.city, profile.province].filter(Boolean)
   const placeLabel = place[0] === place[1] ? place[0] : place.join(', ')
 
@@ -162,7 +167,7 @@ export function Garage() {
           {/* Quién es, antes que nada. Quien llega desde un aviso o desde el
               buscador tiene que reconocer a la persona de un vistazo. */}
           <div className="garagepage__who">
-            {profile.avatarUrl ? (
+            {profile.avatarUrl && !hidden ? (
               <img src={profile.avatarUrl} alt="" className="garagepage__avatar" />
             ) : (
               <span className="garagepage__avatar garagepage__avatar--empty" aria-hidden="true">
@@ -190,6 +195,14 @@ export function Garage() {
             No son los que vende. Son el primero, el de hoy, el que sueña y el que no
             tendría que haber vendido.
           </p>
+
+          {hidden && (
+            <p className="garagepage__hidden" role="status">
+              {editable
+                ? 'Tus fotos y notas están ocultas porque recibieron reportes. Las estamos revisando; mientras tanto el resto de tu garage se ve igual.'
+                : 'Algunas fotos y notas de este garage están ocultas mientras se revisan.'}
+            </p>
+          )}
 
           <div className="garagepage__actions">
             <span className="garagepage__count mono">
@@ -227,6 +240,7 @@ export function Garage() {
               slot={slot.id}
               entry={garage.find((entry) => entry.slot === slot.id)}
               editable={editable}
+              hideMedia={hidden}
               onSave={handleSave}
               onRemove={() => handleRemove(slot.id)}
             />
@@ -252,6 +266,14 @@ export function Garage() {
           <p className="garagepage__cta">
             <Link to="/garage/mio">Armá el tuyo</Link> y compartilo.
           </p>
+        )}
+
+        {/* Al final y en voz baja, igual que en la ficha de un aviso: tiene que
+            estar a mano para quien lo necesita, sin ser lo que se ve primero. */}
+        {!editable && (
+          <div className="garagepage__report">
+            <ReportDialog kind="profile" targetId={userId} title={profile.name} />
+          </div>
         )}
       </div>
     </>

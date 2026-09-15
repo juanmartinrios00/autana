@@ -1,15 +1,60 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import { Select } from '../ui/Select'
 import { useAuth } from '../../hooks/useAuth'
-import { hasReported, reportListing, reportReasons, type ReportReason } from '../../lib/api'
+import {
+  hasReported,
+  hasReportedProfile,
+  profileReportReasons,
+  reportListing,
+  reportProfile,
+  reportReasons,
+  type ProfileReportReason,
+  type ReportReason,
+} from '../../lib/api'
 import { describeError } from '../../lib/errors'
 import './ReportDialog.css'
 
 /**
- * Reportar una publicación.
+ * Qué se reporta, con lo que cambia de un caso al otro: los motivos, los
+ * textos y a qué tabla va. Todo lo demás —pedir cuenta, uno por persona, el
+ * diálogo— es igual para un aviso que para un garage.
+ */
+const KINDS = {
+  listing: {
+    trigger: 'Reportar esta publicación',
+    heading: 'Reportar publicación',
+    question: '¿Qué pasa con este aviso?',
+    done: 'Ya reportaste esta publicación.',
+    reasons: reportReasons as Record<string, string>,
+    check: hasReported,
+    send: (id: string, userId: string, reason: string, detail: string) =>
+      reportListing(id, userId, reason as ReportReason, detail),
+  },
+  profile: {
+    trigger: 'Reportar este garage',
+    heading: 'Reportar garage',
+    question: '¿Qué pasa con este garage?',
+    done: 'Ya reportaste este garage.',
+    reasons: profileReportReasons as Record<string, string>,
+    check: hasReportedProfile,
+    send: (id: string, userId: string, reason: string, detail: string) =>
+      reportProfile(id, userId, reason as ProfileReportReason, detail),
+  },
+} as const
+
+interface ReportDialogProps {
+  kind: keyof typeof KINDS
+  /** El id del aviso o del perfil. */
+  targetId: string
+  /** Lo que se muestra debajo del título: el auto, o el nombre de la persona. */
+  title: string
+}
+
+/**
+ * Reportar un aviso o un garage.
  *
  * Va en un `<dialog>` nativo: trae el foco atrapado, el cierre con Escape y el
  * fondo bloqueante sin una línea de JavaScript ni una dependencia.
@@ -17,12 +62,14 @@ import './ReportDialog.css'
  * Exige cuenta, y lo dice antes de pedir nada en vez de dejar que alguien
  * escriba el motivo y recién ahí mandarlo a login.
  */
-export function ReportDialog({ listingId, title }: { listingId: string; title: string }) {
+export function ReportDialog({ kind, targetId, title }: ReportDialogProps) {
+  const config = KINDS[kind]
   const { session } = useAuth()
   const location = useLocation()
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const titleId = useId()
 
-  const [reason, setReason] = useState<ReportReason | ''>('')
+  const [reason, setReason] = useState('')
   const [detail, setDetail] = useState('')
   const [sending, setSending] = useState(false)
   const [done, setDone] = useState(false)
@@ -36,20 +83,21 @@ export function ReportDialog({ listingId, title }: { listingId: string; title: s
     if (!userId) return
     let current = true
 
-    void hasReported(listingId, userId)
+    void config
+      .check(targetId, userId)
       .then((already) => {
         if (current && already) setDone(true)
       })
       .catch((cause) => {
         /* Que falle esta consulta no puede impedir reportar: en el peor caso
            el índice único de la base rechaza el duplicado. */
-        console.error('hasReported', cause)
+        console.error('reporte: ya reportado', cause)
       })
 
     return () => {
       current = false
     }
-  }, [listingId, userId])
+  }, [config, targetId, userId])
 
   function open() {
     setFailure(null)
@@ -62,11 +110,11 @@ export function ReportDialog({ listingId, title }: { listingId: string; title: s
     setSending(true)
     setFailure(null)
     try {
-      await reportListing(listingId, userId, reason, detail)
+      await config.send(targetId, userId, reason, detail)
       setDone(true)
       dialogRef.current?.close()
     } catch (cause) {
-      console.error('reportListing', cause)
+      console.error('reporte', cause)
       setFailure(describeError(cause, 'No pudimos enviar el reporte.'))
     } finally {
       setSending(false)
@@ -77,7 +125,7 @@ export function ReportDialog({ listingId, title }: { listingId: string; title: s
     return (
       <p className="report__done">
         <Icon name="check" size={15} />
-        Ya reportaste esta publicación.
+        {config.done}
       </p>
     )
   }
@@ -85,14 +133,14 @@ export function ReportDialog({ listingId, title }: { listingId: string; title: s
   return (
     <>
       <button type="button" className="report__trigger" onClick={open}>
-        Reportar esta publicación
+        {config.trigger}
       </button>
 
-      <dialog ref={dialogRef} className="report" aria-labelledby="report-title">
+      <dialog ref={dialogRef} className="report" aria-labelledby={titleId}>
         <div className="report__inner">
           <header className="report__head">
-            <h2 id="report-title" className="report__title">
-              Reportar publicación
+            <h2 id={titleId} className="report__title">
+              {config.heading}
             </h2>
             <button
               type="button"
@@ -112,8 +160,8 @@ export function ReportDialog({ listingId, title }: { listingId: string; title: s
                 Para reportar hace falta tener cuenta. Es lo que evita que alguien tire cientos
                 de reportes falsos con un script.
               </p>
-              {/* Con `from`, el login devuelve al aviso: sin eso terminaba en la
-                  portada y había que volver a buscar qué se quería reportar. */}
+              {/* Con `from`, el login devuelve acá: sin eso terminaba en la portada
+                  y había que volver a buscar qué se quería reportar. */}
               <Link
                 to="/login"
                 state={{ from: location.pathname + location.search }}
@@ -127,14 +175,11 @@ export function ReportDialog({ listingId, title }: { listingId: string; title: s
           ) : (
             <>
               <Select
-                label="¿Qué pasa con este aviso?"
+                label={config.question}
                 placeholder="Elegí un motivo"
-                options={(Object.keys(reportReasons) as ReportReason[]).map((value) => ({
-                  value,
-                  label: reportReasons[value],
-                }))}
+                options={Object.entries(config.reasons).map(([value, label]) => ({ value, label }))}
                 value={reason}
-                onChange={(event) => setReason(event.target.value as ReportReason)}
+                onChange={(event) => setReason(event.target.value)}
               />
 
               <label className="report__field">

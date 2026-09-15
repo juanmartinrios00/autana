@@ -12,11 +12,24 @@ interface GarageSlotCardProps {
   entry: GarageEntry | undefined
   /** `false` en el garage público de otra persona. */
   editable: boolean
+  /**
+   * Foto y nota ocultas por moderación (018). Se ve la escena dibujada en lugar
+   * de la foto, y la nota no se muestra. Los datos del auto siguen: marca,
+   * modelo y año no son lo que se reporta.
+   */
+  hideMedia?: boolean
   onSave: (input: GarageInput, photo?: File) => Promise<void>
   onRemove: () => Promise<void>
 }
 
-export function GarageSlotCard({ slot, entry, editable, onSave, onRemove }: GarageSlotCardProps) {
+export function GarageSlotCard({
+  slot,
+  entry,
+  editable,
+  hideMedia = false,
+  onSave,
+  onRemove,
+}: GarageSlotCardProps) {
   const meta = SLOTS.find((item) => item.id === slot)!
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -166,7 +179,7 @@ export function GarageSlotCard({ slot, entry, editable, onSave, onRemove }: Gara
   return (
     <article className="gslot">
       <div className="gslot__media">
-        {entry.photoUrl ? (
+        {entry.photoUrl && !hideMedia ? (
           <img src={entry.photoUrl} alt="" className="gslot__img" loading="lazy" />
         ) : (
           /* Sin foto la escena hace de retrato. No es un placeholder gris
@@ -182,7 +195,7 @@ export function GarageSlotCard({ slot, entry, editable, onSave, onRemove }: Gara
           {entry.make} {entry.model}
         </h3>
         {entry.year && <span className="gslot__year mono">{entry.year}</span>}
-        {entry.note && <p className="gslot__note">{entry.note}</p>}
+        {entry.note && !hideMedia && <p className="gslot__note">{entry.note}</p>}
 
         {editable && (
           <div className="gslot__actions gslot__actions--quiet">
