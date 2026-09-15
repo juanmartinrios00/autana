@@ -11,6 +11,7 @@ import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
 import { ReportDialog } from '../components/vehicle/ReportDialog'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
+import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getProfile, listSellerVehicles, type ProfileSummary } from '../lib/api'
@@ -95,7 +96,7 @@ export function Garage() {
   }, [location.hash, hasListings])
 
   useDocumentMeta({
-    title: profile ? `El garage de ${profile.name} | Autana` : 'Garage | Autana',
+    title: profile ? pageTitle(`El garage de ${profile.name}`) : pageTitle('Garage'),
     description: profile
       ? `Los autos que marcaron a ${profile.name}: el primero, el de hoy, el soñado y el que más extraña.`
       : undefined,

@@ -1,6 +1,7 @@
 import { Link, Navigate } from 'react-router-dom'
 import { GarageShowcase } from '../components/garage/GarageShowcase'
 import { Button } from '../components/ui/Button'
+import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import './GarageLanding.css'
@@ -19,7 +20,7 @@ export function GarageLanding() {
   const { session } = useAuth()
 
   useDocumentMeta({
-    title: 'El garage virtual | Autana',
+    title: pageTitle('El garage virtual'),
     description:
       'Los autos que te marcaron: el primero, el de hoy, el que soñás y el que extrañás. Armá tu garage y compartilo por WhatsApp.',
   })

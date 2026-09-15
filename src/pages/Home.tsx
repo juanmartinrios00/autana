@@ -18,6 +18,7 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Icon } from '../components/ui/Icon'
 import { Select } from '../components/ui/Select'
+import { BRAND } from '../config/brand'
 import { brands } from '../data/brands'
 import { priceCaps, provinces } from '../data/makes'
 import { modelsForMake } from '../data/models'
@@ -46,7 +47,7 @@ export function Home() {
   const navigate = useNavigate()
 
   useDocumentMeta({
-    title: 'Autana — Comprá y vendé autos',
+    title: `${BRAND} — Comprá y vendé autos`,
     description:
       'Marketplace de vehículos. Autos de particulares y concesionarias, con filtros que sirven y contacto directo con el vendedor.',
   })

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { BRAND } from '../../config/brand'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import { useAuth } from '../../hooks/useAuth'
@@ -205,7 +206,7 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
 
           <p className="interest__safety">
             <Icon name="check" size={15} />
-            Nunca transfieras dinero antes de ver el vehículo. Autana no interviene en el pago.
+            Nunca transfieras dinero antes de ver el vehículo. {BRAND} no interviene en el pago.
           </p>
         </div>
       </dialog>

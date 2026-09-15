@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { BRAND, pageTitle } from '../config/brand'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import './Help.css'
 
@@ -157,7 +158,7 @@ const TOPICS: Topic[] = [
     title: 'Antes de cerrar una operación',
     items: [
       {
-        q: '¿Autana revisa los autos?',
+        q: `¿${BRAND} revisa los autos?`,
         a: (
           <p>
             No. No vemos los vehículos, no controlamos la documentación y no participamos
@@ -339,9 +340,9 @@ const TOPICS: Topic[] = [
 
 export function Help() {
   useDocumentMeta({
-    title: 'Ayuda | Autana',
+    title: pageTitle('Ayuda'),
     description:
-      'Cómo buscar, publicar y contactar en Autana, qué mirar antes de cerrar una operación y cómo funciona tu cuenta.',
+      `Cómo buscar, publicar y contactar en ${BRAND}, qué mirar antes de cerrar una operación y cómo funciona tu cuenta.`,
   })
 
   return (

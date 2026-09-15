@@ -4,6 +4,7 @@ import { AchievementList } from '../components/levels/AchievementList'
 import { LevelScene } from '../components/levels/scenes'
 import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
+import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getLevelInput } from '../lib/api'
@@ -62,9 +63,9 @@ export function Levels() {
   const signedIn = Boolean(session)
 
   useDocumentMeta({
-    title: 'Los niveles | Autana',
+    title: pageTitle('Los niveles'),
     description:
-      'Cómo funcionan los niveles de Autana: seis logros, cuatro escalones, y todos salen de cosas que ya hiciste.',
+      `Cómo funcionan los niveles de ${BRAND}: seis logros, cuatro escalones, y todos salen de cosas que ya hiciste.`,
   })
 
   return (

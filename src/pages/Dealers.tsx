@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
+import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getStats, type MarketplaceStats } from '../lib/api'
@@ -64,9 +65,9 @@ export function Dealers() {
   }, [])
 
   useDocumentMeta({
-    title: 'Para concesionarias | Autana',
+    title: pageTitle('Para concesionarias'),
     description:
-      'Publicá el stock de tu agencia en Autana: 25 publicaciones activas, filtro propio, lugar en la portada y 0% de comisión.',
+      `Publicá el stock de tu agencia en ${BRAND}: 25 publicaciones activas, filtro propio, lugar en la portada y 0% de comisión.`,
   })
 
   return (

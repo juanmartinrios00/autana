@@ -6,6 +6,7 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
 import { Select } from '../components/ui/Select'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
+import { pageTitle } from '../config/brand'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { SaveSearch } from '../components/search/SaveSearch'
 import { countActive, useVehicleFilters } from '../hooks/useVehicleFilters'
@@ -97,8 +98,8 @@ export function Cars() {
      tiene que dejar distinguir cuál es cuál. */
   useDocumentMeta({
     title: [filters.q, filters.make, filters.model].filter(Boolean).join(' ')
-      ? `${[filters.q, filters.make, filters.model].filter(Boolean).join(' ')} | Autana`
-      : 'Autos usados y 0 km | Autana',
+      ? pageTitle(`${[filters.q, filters.make, filters.model].filter(Boolean).join(' ')}`)
+      : pageTitle('Autos usados y 0 km'),
     description:
       'Buscá entre los vehículos publicados por particulares y concesionarias. Filtrá por marca, precio, kilometraje y ubicación.',
   })

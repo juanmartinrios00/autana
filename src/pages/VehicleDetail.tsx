@@ -12,6 +12,7 @@ import { VehicleGallery } from '../components/vehicle/VehicleGallery'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { VehicleSpecs } from '../components/vehicle/VehicleSpecs'
 import { ReportDialog } from '../components/vehicle/ReportDialog'
+import { BRAND, pageTitle } from '../config/brand'
 import { useCompare } from '../hooks/useCompare'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { useFavorites } from '../hooks/useFavorites'
@@ -94,8 +95,8 @@ export function VehicleDetail() {
   const vehicle = fresh ? loaded.vehicle : null
 
   const metaTitle = vehicle
-    ? `${vehicleTitle(vehicle)} ${vehicle.year} · ${formatPrice(vehicle.price, vehicle.currency)} | Autana`
-    : 'Autana'
+    ? pageTitle(`${vehicleTitle(vehicle)} ${vehicle.year} · ${formatPrice(vehicle.price, vehicle.currency)}`)
+    : BRAND
 
   useDocumentMeta({
     title: metaTitle,
@@ -282,7 +283,7 @@ export function VehicleDetail() {
 
             <p className="detail__safety">
               <Icon name="check" size={16} />
-              Nunca transfieras dinero antes de ver el vehículo. Autana no interviene en el pago.
+              Nunca transfieras dinero antes de ver el vehículo. {BRAND} no interviene en el pago.
             </p>
 
             {/* Al final y en voz baja: tiene que estar a mano para quien lo

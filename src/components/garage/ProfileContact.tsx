@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { BRAND } from '../../config/brand'
 import { useAuth } from '../../hooks/useAuth'
 import { ContactLimitError, getProfileContact } from '../../lib/api'
 import { instagramUrl } from '../../lib/contact'
@@ -57,7 +58,7 @@ export function ProfileContact({ targetId, instagram }: ProfileContactProps) {
 
   const whatsapp =
     state.kind === 'shown' && state.whatsapp
-      ? whatsappLink(state.whatsapp, 'Hola, te escribo desde tu garage en Autana.')
+      ? whatsappLink(state.whatsapp, `Hola, te escribo desde tu garage en ${BRAND}.`)
       : null
 
   return (

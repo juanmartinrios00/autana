@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import './HomeSections.css'
+import { BRAND } from '../../config/brand'
 
 const questions = [
   {
@@ -11,11 +12,11 @@ const questions = [
     a: 'Por WhatsApp, al número que dejás al publicar. El comprador abre el chat con un mensaje que ya menciona tu auto, así sabés de cuál te está hablando. Tu mail nunca se muestra.',
   },
   {
-    q: '¿Autana verifica los vehículos?',
+    q: `¿${BRAND} verifica los vehículos?`,
     a: 'No. Cada publicación es responsabilidad de quien la sube y no revisamos los autos ni la documentación. Antes de cerrar una operación, pedí el informe de dominio y hacé una verificación policial.',
   },
   {
-    q: '¿Puedo pagar o cobrar a través de Autana?',
+    q: `¿Puedo pagar o cobrar a través de ${BRAND}?`,
     a: 'No, y es a propósito: no intervenimos en el pago. Nunca transfieras dinero antes de ver el vehículo en persona.',
   },
   {

@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
+import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { useFavorites } from '../hooks/useFavorites'
@@ -38,8 +39,8 @@ export function Favorites() {
   const [loadedKey, setLoadedKey] = useState<string | null>(null)
 
   useDocumentMeta({
-    title: 'Favoritos | Autana',
-    description: 'Los autos que guardaste en Autana.',
+    title: pageTitle('Favoritos'),
+    description: `Los autos que guardaste en ${BRAND}.`,
   })
 
   /* Los ids serializados. El efecto depende de esta cadena y no del array

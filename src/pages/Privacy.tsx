@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { LegalPage, LegalSection } from '../components/legal/LegalPage'
+import { BRAND, pageTitle } from '../config/brand'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 
 /**
@@ -18,9 +19,9 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta'
  */
 export function Privacy() {
   useDocumentMeta({
-    title: 'Política de privacidad | Autana',
+    title: pageTitle('Política de privacidad'),
     description:
-      'Qué datos guarda Autana, cuáles son públicos, qué hacemos con las fotos y quiénes son los terceros que intervienen.',
+      `Qué datos guarda ${BRAND}, cuáles son públicos, qué hacemos con las fotos y quiénes son los terceros que intervienen.`,
   })
 
   return (
@@ -149,7 +150,7 @@ export function Privacy() {
           </li>
         </ul>
         <p>
-          Cuando tocás el botón de contacto de un aviso, salís de Autana y entrás a
+          Cuando tocás el botón de contacto de un aviso, salís de {BRAND} y entrás a
           WhatsApp. Lo que pase de ahí en adelante se rige por las condiciones de WhatsApp,
           no por las nuestras.
         </p>

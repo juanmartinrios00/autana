@@ -7,6 +7,7 @@ import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
+import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getOwnWhatsapp, getProfile, uploadProfileAvatar, type ProfileSummary } from '../lib/api'
@@ -96,7 +97,7 @@ export function Profile() {
   })
 
   useDocumentMeta({
-    title: showing ? `El garage de ${showing.name} | Autana` : 'Perfil | Autana',
+    title: showing ? pageTitle(`El garage de ${showing.name}`) : pageTitle('Perfil'),
     description: showing
       ? `Los autos que marcaron a ${showing.name}: el primero, el actual y el soñado.`
       : undefined,

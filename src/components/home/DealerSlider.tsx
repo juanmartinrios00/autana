@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { BRAND } from '../../config/brand'
 import { Slider } from '../ui/Slider'
 import { Badge } from '../ui/Badge'
 import { locationLabel } from '../../lib/format'
@@ -22,7 +23,7 @@ export function DealerSlider({ dealers }: { dealers: Seller[] }) {
   if (dealers.length === 0) return null
 
   return (
-    <Slider eyebrow="Vendedores" title="Concesionarias en Autana" itemWidth="260px">
+    <Slider eyebrow="Vendedores" title={`Concesionarias en ${BRAND}`} itemWidth="260px">
       {dealers.map((dealer) => (
         <Link key={dealer.id} to={`/cars?sellerType=dealer`} className="dealer">
           <span className="dealer__avatar" aria-hidden="true">

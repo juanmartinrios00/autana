@@ -8,6 +8,7 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
 import { Skeleton } from '../components/ui/Skeleton'
+import { BRAND, pageTitle } from '../config/brand'
 import { provinces } from '../data/makes'
 import { useAuth } from '../hooks/useAuth'
 import { draftFromVehicle, useListingDraft, type ListingDraft } from '../hooks/useListingDraft'
@@ -126,10 +127,10 @@ export function Sell() {
   const userId = session?.user.id ?? ''
 
   useDocumentMeta({
-    title: editing ? 'Editar aviso | Autana' : 'Publicar tu auto | Autana',
+    title: editing ? pageTitle('Editar aviso') : pageTitle('Publicar tu auto'),
     description: editing
       ? undefined
-      : 'Publicá tu auto en Autana: cargá las fotos, el precio y los datos, y te contactan directo.',
+      : `Publicá tu auto en ${BRAND}: cargá las fotos, el precio y los datos, y te contactan directo.`,
   })
 
   useEffect(() => {

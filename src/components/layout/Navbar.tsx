@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import { BRAND } from '../../config/brand'
 import { useAuth } from '../../hooks/useAuth'
 import { useUnseenNovedades } from '../../hooks/useUnseenNovedades'
 import { AccountMenu } from './AccountMenu'
@@ -60,7 +61,7 @@ export function Navbar({ atTop }: NavbarProps) {
           <span className="navbar__mark" aria-hidden="true">
             <Icon name="car" size={17} />
           </span>
-          <span className="navbar__wordmark">Autana</span>
+          <span className="navbar__wordmark">{BRAND}</span>
         </Link>
 
         <NavSearch />

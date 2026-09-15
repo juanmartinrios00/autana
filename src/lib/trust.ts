@@ -16,6 +16,8 @@
  * más útiles que un puntaje que tiene que creer.
  */
 
+import { BRAND } from '../config/brand'
+
 export interface TrustInput {
   verified: boolean
   /** ISO. Cuándo se creó la cuenta. */
@@ -61,7 +63,7 @@ export function computeTrust({ verified, memberSince }: TrustInput, now = new Da
   return {
     verified,
     monthsOn,
-    since: `en Autana desde ${month} de ${year}`,
+    since: `en ${BRAND} desde ${month} de ${year}`,
     sinceShort: isNew ? 'Cuenta nueva' : `Desde ${month.slice(0, 3)} ${year}`,
     isNew,
   }

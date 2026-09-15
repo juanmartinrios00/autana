@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
+import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { contactSubjects, sendContactMessage, type ContactSubject } from '../lib/api'
@@ -33,8 +34,8 @@ export function Contact() {
   const [failure, setFailure] = useState<string | null>(null)
 
   useDocumentMeta({
-    title: 'Contacto | Autana',
-    description: 'Contactá al equipo de Autana por consultas, soporte o propuestas comerciales.',
+    title: pageTitle('Contacto'),
+    description: `Contactá al equipo de ${BRAND} por consultas, soporte o propuestas comerciales.`,
   })
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

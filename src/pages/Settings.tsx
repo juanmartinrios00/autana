@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
 import { Skeleton } from '../components/ui/Skeleton'
+import { pageTitle } from '../config/brand'
 import { provinces } from '../data/makes'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
@@ -44,7 +45,7 @@ export function Settings() {
   const userId = session?.user.id ?? ''
   const email = session?.user.email ?? ''
 
-  useDocumentMeta({ title: 'Ajustes | Autana' })
+  useDocumentMeta({ title: pageTitle('Ajustes') })
 
   const [ready, setReady] = useState(false)
   const [name, setName] = useState('')

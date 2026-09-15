@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
+import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { NOVEDADES_SEEN_EVENT } from '../hooks/useUnseenNovedades'
@@ -22,7 +23,7 @@ export function Novedades() {
   const { session } = useAuth()
   const userId = session?.user.id ?? ''
 
-  useDocumentMeta({ title: 'Novedades | Autana' })
+  useDocumentMeta({ title: pageTitle('Novedades') })
 
   const [loaded, setLoaded] = useState<{ for: string; items: Novedad[]; failed: boolean }>({
     for: '',

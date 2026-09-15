@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { BRAND } from '../../config/brand'
 import { Icon } from '../ui/Icon'
 
 /* El pie es donde viven las pantallas que se leen una vez: explicaciones,
@@ -21,7 +22,7 @@ const linkGroups = [
   {
     label: 'Comunidad',
     links: [
-      { to: '/garage', label: 'Garage Autana' },
+      { to: '/garage', label: `Garage ${BRAND}` },
       { to: '/gente', label: 'Buscar personas' },
       { to: '/dealers', label: 'Concesionarias' },
       { to: '/levels', label: 'Niveles y logros' },
@@ -43,11 +44,11 @@ export function Footer() {
     <footer className="footer">
       <div className="page footer__inner">
         <div className="footer__main">
-          <Link to="/" className="footer__brand" aria-label="Autana, inicio">
+          <Link to="/" className="footer__brand" aria-label={`${BRAND}, inicio`}>
             <span className="footer__mark" aria-hidden="true">
               <Icon name="car" size={18} />
             </span>
-            <span>Autana</span>
+            <span>{BRAND}</span>
           </Link>
           <p className="footer__claim">Comprar y vender un auto debería ser simple.</p>
           <p className="footer__description">
@@ -72,7 +73,7 @@ export function Footer() {
         </nav>
 
         <div className="footer__bottom">
-          <span className="footer__note">© 2026 Autana</span>
+          <span className="footer__note">© 2026 {BRAND}</span>
           <span className="footer__note">Hecho para comprar y vender vehículos en Argentina.</span>
         </div>
       </div>

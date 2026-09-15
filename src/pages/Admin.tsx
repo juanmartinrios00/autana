@@ -4,6 +4,7 @@ import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Skeleton } from '../components/ui/Skeleton'
+import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
@@ -49,7 +50,7 @@ export function Admin() {
   const [failure, setFailure] = useState<string | null>(null)
   const [reloads, setReloads] = useState(0)
 
-  useDocumentMeta({ title: 'Moderación | Autana' })
+  useDocumentMeta({ title: pageTitle('Moderación') })
 
   useEffect(() => {
     if (!userId) return
@@ -376,7 +377,7 @@ export function Admin() {
 
               <div className="admin__actions">
                 <span className="admin__reason-when">{relativeDate(message.createdAt)}</span>
-                <a href={`mailto:${message.email}?subject=${encodeURIComponent(`[Autana] ${contactSubjects[message.subject]}`)}`}>
+                <a href={`mailto:${message.email}?subject=${encodeURIComponent(`[${BRAND}] ${contactSubjects[message.subject]}`)}`}>
                   <Button size="sm" variant="ghost">
                     Responder
                   </Button>

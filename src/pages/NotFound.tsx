@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
+import { pageTitle } from '../config/brand'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import './NotFound.css'
 
@@ -19,7 +20,7 @@ import './NotFound.css'
  * pelado.
  */
 export function NotFound() {
-  useDocumentMeta({ title: 'Página no encontrada | Autana' })
+  useDocumentMeta({ title: pageTitle('Página no encontrada') })
 
   return (
     <div className="page section notfound">

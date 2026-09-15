@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { PersonRow, PersonRowsSkeleton } from '../components/people/PersonRow'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
+import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getFollowCounts, listFollowing, type FollowedPerson } from '../lib/api'
@@ -23,7 +24,7 @@ export function Following() {
   const { session } = useAuth()
   const userId = session?.user.id ?? ''
 
-  useDocumentMeta({ title: 'A quién seguís | Autana' })
+  useDocumentMeta({ title: pageTitle('A quién seguís') })
 
   const [loaded, setLoaded] = useState<{
     for: string

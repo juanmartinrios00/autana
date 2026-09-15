@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { EmptyState } from '../components/ui/EmptyState'
 import { PersonRow, PersonRowsSkeleton } from '../components/people/PersonRow'
 import { Icon } from '../components/ui/Icon'
+import { BRAND, pageTitle } from '../config/brand'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { MIN_PERSON_TERM, searchPeople, type PersonResult } from '../lib/api'
 import './People.css'
@@ -23,9 +24,9 @@ export function People() {
   const term = params.get('q') ?? ''
 
   useDocumentMeta({
-    title: term ? `${term} | Buscar personas | Autana` : 'Buscar personas | Autana',
+    title: term ? pageTitle(`${term} | Buscar personas`) : pageTitle('Buscar personas'),
     description:
-      'Encontrá a alguien en Autana y mirá su garage: el primer auto, el de hoy y el que sueña.',
+      `Encontrá a alguien en ${BRAND} y mirá su garage: el primer auto, el de hoy y el que sueña.`,
   })
 
   /* El input responde al instante y la URL va atrás: escribir no puede esperar

@@ -1,5 +1,6 @@
 /// <reference types="@cloudflare/workers-types" />
 
+import { BRAND, pageTitle } from '../src/config/brand'
 import { SUPABASE_PUBLIC } from '../src/config/supabase-public'
 
 /**
@@ -152,7 +153,7 @@ function money(price: number, currency: string): string {
 
 function buildTitle(row: ListingRow): string {
   const name = [row.make, row.model, row.trim].filter(Boolean).join(' ')
-  return `${name} ${row.year} — ${money(row.price, row.currency)} | Autana`
+  return pageTitle(`${name} ${row.year} — ${money(row.price, row.currency)}`)
 }
 
 function buildDescription(row: ListingRow): string {
@@ -445,7 +446,7 @@ function renderPreview(assetResponse: Response, preview: Preview): Response {
 
   const extra = [
     `<meta property="og:url" content="${attr(canonical)}">`,
-    `<meta property="og:site_name" content="Autana">`,
+    `<meta property="og:site_name" content="${attr(BRAND)}">`,
     `<meta property="og:locale" content="es_AR">`,
     `<link rel="canonical" href="${attr(canonical)}">`,
     image ? `<meta property="og:image" content="${attr(image)}">` : '',
@@ -524,7 +525,7 @@ async function renderGarage(request: Request, env: Env, id: string): Promise<Res
   const url = new URL(request.url)
 
   return renderPreview(assetResponse, {
-    title: `El garage de ${name} | Autana`,
+    title: pageTitle(`El garage de ${name}`),
     description: buildGarageDescription(name, entries),
     /* La foto que subió el dueño, o la lámina con los dibujos. Tiene que ser
        un PNG y no las escenas en SVG: WhatsApp no renderiza SVG como imagen

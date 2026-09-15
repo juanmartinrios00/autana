@@ -8,6 +8,8 @@
  * sería pedirle que haga a mano lo que se puede hacer solo.
  */
 
+import { BRAND } from '../config/brand'
+
 /** Lo que Instagram acepta en un nombre de usuario. */
 const INSTAGRAM_HANDLE = /^[A-Za-z0-9._]{1,30}$/
 
@@ -48,7 +50,7 @@ export function isContactEmail(value: string): boolean {
 
 /** `mailto:` con el asunto ya puesto, igual que el mensaje de WhatsApp. */
 export function contactMailto(email: string, title: string): string {
-  const subject = `Consulta por el ${title} en Autana`
+  const subject = `Consulta por el ${title} en ${BRAND}`
   return `mailto:${email}?subject=${encodeURIComponent(subject)}`
 }
 

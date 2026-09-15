@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { BRAND } from '../config/brand'
 import { contactMailto, instagramUrl, interestLabel, isContactEmail, normalizeInstagram } from './contact'
 
 describe('normalizeInstagram', () => {
@@ -72,7 +73,7 @@ describe('isContactEmail', () => {
 describe('contactMailto', () => {
   it('lleva el asunto con el auto, codificado', () => {
     expect(contactMailto('juan@gmail.com', 'Toyota Hilux')).toBe(
-      'mailto:juan@gmail.com?subject=Consulta%20por%20el%20Toyota%20Hilux%20en%20Autana',
+      `mailto:juan@gmail.com?subject=Consulta%20por%20el%20Toyota%20Hilux%20en%20${encodeURIComponent(BRAND)}`,
     )
   })
 })

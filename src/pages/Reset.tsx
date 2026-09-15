@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
+import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { MIN_PASSWORD, setRecoveredPassword } from '../lib/auth'
@@ -29,7 +30,7 @@ export function Reset() {
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
 
-  useDocumentMeta({ title: 'Nueva contraseña | Autana' })
+  useDocumentMeta({ title: pageTitle('Nueva contraseña') })
 
   async function submit(event: FormEvent) {
     event.preventDefault()

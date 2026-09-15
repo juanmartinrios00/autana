@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { LegalPage, LegalSection } from '../components/legal/LegalPage'
+import { BRAND, pageTitle } from '../config/brand'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 
 /**
@@ -16,9 +17,9 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta'
  */
 export function Terms() {
   useDocumentMeta({
-    title: 'Términos y condiciones | Autana',
+    title: pageTitle('Términos y condiciones'),
     description:
-      'Las reglas de Autana: qué se puede publicar, cuáles son los límites, cómo funciona la moderación y hasta dónde llega nuestra responsabilidad.',
+      `Las reglas de ${BRAND}: qué se puede publicar, cuáles son los límites, cómo funciona la moderación y hasta dónde llega nuestra responsabilidad.`,
   })
 
   return (
@@ -29,7 +30,7 @@ export function Terms() {
       intro={
         <>
           <p>
-            <strong>En corto:</strong> Autana es un tablón de clasificados. Publicar es
+            <strong>En corto:</strong> {BRAND} es un tablón de clasificados. Publicar es
             gratis y no cobramos comisión. La operación es entre vos y la otra persona:
             nosotros no vemos el auto, no tocamos la plata y no garantizamos nada de lo que
             se publica.
@@ -41,7 +42,7 @@ export function Terms() {
         </>
       }
     >
-      <LegalSection n={1} title="Qué es Autana">
+      <LegalSection n={1} title={`Qué es ${BRAND}`}>
         <p>
           Un lugar donde alguien publica un vehículo y otro alguien lo encuentra y le
           escribe. Nada más que eso. No somos concesionaria, ni intermediarios, ni parte de

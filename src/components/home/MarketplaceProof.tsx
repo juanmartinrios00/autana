@@ -1,3 +1,4 @@
+import { BRAND } from '../../config/brand'
 import { formatCount } from '../../lib/format'
 import type { MarketplaceStats } from '../../lib/api'
 import './MarketplaceProof.css'
@@ -7,7 +8,7 @@ interface MarketplaceProofProps {
 }
 
 const label = (value: number, singular: string, plural: string) =>
-  `${value === 1 ? singular : plural} en Autana`
+  `${value === 1 ? singular : plural} en ${BRAND}`
 
 /**
  * La banda de números, a todo el ancho.

@@ -7,6 +7,8 @@
  * conversación adentro.
  */
 
+import { BRAND } from '../config/brand'
+
 /** Normaliza a formato internacional: solo dígitos, con 54 adelante. */
 export function toE164(raw: string, countryCode = '54'): string | null {
   const digits = raw.replace(/\D/g, '')
@@ -23,5 +25,5 @@ export function whatsappLink(phone: string, message: string): string | null {
 }
 
 export function listingMessage(title: string, url: string): string {
-  return `Hola, te escribo por el ${title} que publicaste en Autana. ¿Sigue disponible?\n\n${url}`
+  return `Hola, te escribo por el ${title} que publicaste en ${BRAND}. ¿Sigue disponible?\n\n${url}`
 }

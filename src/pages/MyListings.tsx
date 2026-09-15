@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
+import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { deleteListing, listMyListings, setListingStatus } from '../lib/api'
@@ -31,8 +32,8 @@ export function MyListings() {
   const [reloads, setReloads] = useState(0)
 
   useDocumentMeta({
-    title: 'Mis publicaciones | Autana',
-    description: 'Los autos que publicaste en Autana.',
+    title: pageTitle('Mis publicaciones'),
+    description: `Los autos que publicaste en ${BRAND}.`,
   })
 
   useEffect(() => {

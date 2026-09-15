@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
 import { Input } from '../components/ui/Input'
+import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import {
   MIN_PASSWORD,
@@ -65,9 +66,9 @@ export function Login() {
      temprana. Sigue al modo porque las dos solapas son la misma ruta, y con un
      título fijo el historial queda lleno de entradas idénticas. */
   useDocumentMeta({
-    title: mode === 'signup' ? 'Crear cuenta | Autana' : 'Ingresar | Autana',
+    title: mode === 'signup' ? pageTitle('Crear cuenta') : pageTitle('Ingresar'),
     description:
-      'Entrá a Autana para publicar tu auto, guardar favoritos y seguir tus búsquedas.',
+      `Entrá a ${BRAND} para publicar tu auto, guardar favoritos y seguir tus búsquedas.`,
   })
 
   /* Si ya hay sesión (por ejemplo al volver del magic link), no hay nada que
@@ -243,7 +244,7 @@ export function Login() {
   return (
     <div className="page login">
       <div className="card card--pad login__card">
-        <span className="over">Autana</span>
+        <span className="over">{BRAND}</span>
         <h1 className="login__title">
           {mode === 'signin' ? 'Ingresá a tu cuenta' : 'Creá tu cuenta'}
         </h1>

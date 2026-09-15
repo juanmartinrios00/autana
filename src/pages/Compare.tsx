@@ -6,6 +6,7 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
 import { VehicleMedia } from '../components/vehicle/VehicleMedia'
+import { pageTitle } from '../config/brand'
 import { useCompare } from '../hooks/useCompare'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getVehiclesBySlugs } from '../lib/api'
@@ -103,7 +104,7 @@ export function Compare() {
   const [loadedFor, setLoadedFor] = useState<string | null>(null)
 
   useDocumentMeta({
-    title: 'Comparar autos | Autana',
+    title: pageTitle('Comparar autos'),
     description: 'Compará hasta tres autos lado a lado: precio, kilometraje, motor y equipamiento.',
   })
 
