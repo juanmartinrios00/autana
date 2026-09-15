@@ -11,7 +11,7 @@
   /* Las esquinas de abajo redondeadas despegan el hero del resto de la
      página: se lee como una placa apoyada sobre el papel blanco, no como
      una banda que corta la pantalla en dos. */
-  border-radius: 0 0 var(--r-2xl) var(--r-2xl);
+  border-radius: 0;
   overflow: hidden;
   /* El color de fondo es el del asfalto de la foto: si la imagen tarda en
      llegar, el hero no parpadea de gris a negro. */
@@ -48,13 +48,13 @@
   flex-direction: column;
   align-items: flex-start;
   /* La navbar flota encima, así que el hero se come su alto. */
-  min-height: min(760px, 92vh);
+  min-height: min(780px, 94vh);
   justify-content: center;
-  padding-block: calc(var(--nav-h) + var(--sp-8)) var(--sp-9);
+  padding-block: calc(var(--nav-h) + var(--sp-9)) var(--sp-10);
 }
 
 .hero__title {
-  max-width: 16ch;
+  max-width: 13ch;
   margin-top: var(--sp-5);
   font-size: var(--fs-display);
   font-weight: 600;
@@ -64,7 +64,7 @@
 }
 
 .hero__sub {
-  max-width: 48ch;
+  max-width: 44ch;
   margin-top: var(--sp-5);
   font-size: 1.19rem;
   line-height: 1.5;
@@ -79,11 +79,12 @@
    por eso es la única pieza blanca sobre el negro y la que más levanta. */
 .search-module {
   width: 100%;
-  margin-top: var(--sp-7);
-  padding: var(--sp-5);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  border-radius: var(--r-lg);
-  background: transparent;
+  margin-top: var(--sp-8);
+  padding: var(--sp-6);
+  border: 0;
+  border-radius: 0;
+  background: var(--canvas);
+  color: var(--ink);
   text-align: left;
   box-shadow: none;
 }
@@ -104,34 +105,34 @@
   height: 56px;
   /* Dentro del módulo los campos se apoyan en un plano tintado: se leen como
      huecos de un mismo bloque, no como cinco cajas sueltas. */
-  border-color: rgba(255, 255, 255, 0.42);
-  background: transparent;
+  border-color: var(--line-strong);
+  background: var(--canvas);
   box-shadow: none;
 }
 
 .search-module .field__control:hover:not(:disabled) {
-  border-color: var(--ink-inverse);
+  border-color: var(--ink);
   box-shadow: none;
 }
 
 .search-module .field__control:focus-visible {
-  border-color: var(--ink-inverse);
-  background: transparent;
-  box-shadow: 0 0 0 3px rgba(255, 209, 0, 0.34);
+  border-color: var(--ink);
+  background: var(--canvas);
+  box-shadow: 0 0 0 3px var(--accent-tint);
 }
 
 .search-module .field__label,
 .search-module .field__control {
-  color: var(--ink-inverse);
+  color: var(--ink);
 }
 
 .search-module .field__control:disabled {
-  color: rgba(255, 255, 255, 0.52);
-  background-color: transparent;
+  color: var(--ink-4);
+  background-color: var(--surface);
 }
 
 .search-module .field__control--select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236e7175' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   /* El `background: transparent` de arriba devuelve repeat y posición a sus
      valores por defecto; sin esto la flecha se repite en todo el campo. */
   background-repeat: no-repeat;
@@ -150,7 +151,7 @@
   flex-wrap: wrap;
   margin-top: var(--sp-5);
   padding-top: var(--sp-5);
-  border-top: 1px solid rgba(255, 255, 255, 0.32);
+  border-top: 1px solid var(--line);
   box-shadow: none;
 }
 
@@ -158,19 +159,19 @@
   margin-right: var(--sp-1);
   font-size: 0.84rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-3);
 }
 
 .search-module .chip-button .badge {
-  border: 1px solid rgba(255, 255, 255, 0.36);
-  background: transparent;
-  color: var(--ink-inverse);
+  border: 1px solid var(--line-strong);
+  background: var(--canvas);
+  color: var(--ink-2);
   box-shadow: none;
 }
 
 .search-module .chip-button:hover .badge {
   border-color: var(--accent);
-  background: rgba(255, 209, 0, 0.12);
+  background: var(--accent-tint);
 }
 
 /* --- Banda de venta ----------------------------------------------------- */
@@ -225,8 +226,24 @@
 .home__sections {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-9);
+  gap: var(--sp-10);
   padding-block: var(--sp-9) var(--sp-10);
+}
+
+.home__cluster {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-9);
+}
+
+.home__cluster--discovery {
+  margin-inline: calc(var(--page-pad) * -1);
+  padding: clamp(var(--sp-7), 7vw, var(--sp-10)) var(--page-pad);
+  background: var(--surface);
+}
+
+.home__cluster--listings {
+  gap: var(--sp-10);
 }
 
 .home__faq {
@@ -239,7 +256,7 @@
 
 @media (max-width: 899px) {
   .hero {
-    border-radius: 0 0 var(--r-xl) var(--r-xl);
+    border-radius: 0;
   }
 
   /* En angosto el texto ocupa todo el ancho y cae sobre la parte más clara
@@ -255,7 +272,8 @@
   }
 
   .hero__inner {
-    padding-block: calc(var(--nav-h) + var(--sp-7)) var(--sp-7);
+    min-height: auto;
+    padding-block: calc(var(--nav-h) + var(--sp-7)) var(--sp-8);
   }
 
   .hero__title {
@@ -263,7 +281,8 @@
   }
 
   .search-module {
-    padding: var(--sp-4);
+    margin-top: var(--sp-7);
+    padding: var(--sp-5);
   }
 
   .search-module__grid {
@@ -282,6 +301,11 @@
   .home__sections {
     gap: var(--sp-9);
     padding-block: var(--sp-8);
+  }
+
+  .home__cluster,
+  .home__cluster--listings {
+    gap: var(--sp-8);
   }
 
   .home__faq {

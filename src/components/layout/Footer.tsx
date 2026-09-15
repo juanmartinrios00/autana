@@ -8,13 +8,34 @@ import { Icon } from '../ui/Icon'
 
    Cuando sean más, se parten en grupos por tópico. Con seis todavía no hace
    falta: agrupar en dos columnas de tres es más ruido que ayuda. */
-const links = [
-  { to: '/gente', label: 'Buscar personas' },
-  { to: '/dealers', label: 'Para concesionarias' },
-  { to: '/levels', label: 'Los niveles' },
-  { to: '/help', label: 'Ayuda' },
-  { to: '/terms', label: 'Términos' },
-  { to: '/privacy', label: 'Privacidad' },
+const linkGroups = [
+  {
+    label: 'Marketplace',
+    links: [
+      { to: '/cars', label: 'Comprar un auto' },
+      { to: '/sell', label: 'Publicar un vehículo' },
+      { to: '/favorites', label: 'Favoritos' },
+      { to: '/compare', label: 'Comparar vehículos' },
+    ],
+  },
+  {
+    label: 'Comunidad',
+    links: [
+      { to: '/garage', label: 'Garage Autana' },
+      { to: '/gente', label: 'Buscar personas' },
+      { to: '/dealers', label: 'Concesionarias' },
+      { to: '/levels', label: 'Niveles y logros' },
+    ],
+  },
+  {
+    label: 'Soporte',
+    links: [
+      { to: '/help', label: 'Centro de ayuda' },
+      { to: '/contact', label: 'Contacto' },
+      { to: '/terms', label: 'Términos' },
+      { to: '/privacy', label: 'Privacidad' },
+    ],
+  },
 ]
 
 export function Footer() {
@@ -29,22 +50,30 @@ export function Footer() {
             <span>Autana</span>
           </Link>
           <p className="footer__claim">Comprar y vender un auto debería ser simple.</p>
+          <p className="footer__description">
+            Un marketplace argentino para encontrar, comparar y publicar vehículos sin
+            intermediarios ni comisiones.
+          </p>
         </div>
 
-        <div className="footer__nav-block">
-          <span className="footer__nav-label">Explorá Autana</span>
-          <nav className="footer__links" aria-label="Enlaces del pie">
-            {links.map((link) => (
-              <Link key={link.to} to={link.to} className="footer__link">
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+        <nav className="footer__nav" aria-label="Enlaces del pie">
+          {linkGroups.map((group) => (
+            <div className="footer__nav-block" key={group.label}>
+              <span className="footer__nav-label">{group.label}</span>
+              <div className="footer__links">
+                {group.links.map((link) => (
+                  <Link key={link.to} to={link.to} className="footer__link">
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </nav>
 
         <div className="footer__bottom">
           <span className="footer__note">© 2026 Autana</span>
-          <span className="footer__note">Marketplace de vehículos · Argentina</span>
+          <span className="footer__note">Hecho para comprar y vender vehículos en Argentina.</span>
         </div>
       </div>
     </footer>

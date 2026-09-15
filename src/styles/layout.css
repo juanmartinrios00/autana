@@ -15,8 +15,47 @@
 }
 
 .navbar--scrolled {
-  background: rgba(231, 233, 229, 0.94);
+  background: rgba(10, 16, 12, 0.96);
+  color: var(--ink-inverse);
   backdrop-filter: saturate(1.15) blur(18px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.navbar--scrolled .navbar__mark {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.navbar--scrolled .navbar__link,
+.navbar--scrolled .navbar__bell {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.navbar--scrolled .navbar__link:hover,
+.navbar--scrolled .navbar__links .navbar__link.is-active,
+.navbar--scrolled .navbar__bell:hover {
+  color: var(--ink-inverse);
+}
+
+.navbar--scrolled .navsearch {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.navbar--scrolled .navsearch:focus-within {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(255, 209, 0, 0.2);
+}
+
+.navbar--scrolled .navsearch__input,
+.navbar--scrolled .navsearch__submit,
+.navbar--scrolled .navsearch__clear {
+  color: var(--ink-inverse);
+}
+
+.navbar--scrolled .navsearch__input::placeholder {
+  color: rgba(255, 255, 255, 0.56);
 }
 
 /* Sobre el hero oscuro la navbar flota: sin fondo, sin línea, en blanco. */
@@ -31,7 +70,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--sp-5);
+  gap: var(--sp-4);
   height: var(--nav-h);
 }
 
@@ -470,9 +509,9 @@ button.navbar__link {
 
 .footer__inner {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
-  gap: var(--sp-8);
-  padding-block: var(--sp-9) var(--sp-6);
+  grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.6fr);
+  gap: clamp(var(--sp-8), 8vw, var(--sp-10));
+  padding-block: var(--sp-10) var(--sp-6);
 }
 
 .footer__main {
@@ -502,7 +541,7 @@ button.navbar__link {
 }
 
 .footer__claim {
-  max-width: 15ch;
+  max-width: 17ch;
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 2.5vw, 2.75rem);
   font-weight: 500;
@@ -510,11 +549,22 @@ button.navbar__link {
   letter-spacing: var(--ls-heading);
 }
 
+.footer__description {
+  max-width: 42ch;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.footer__nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-6);
+}
+
 .footer__nav-block {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--sp-5);
+  gap: var(--sp-4);
 }
 
 .footer__nav-label {
@@ -537,7 +587,7 @@ button.navbar__link {
 
 .footer__link {
   width: fit-content;
-  font-size: 1rem;
+  font-size: 0.94rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.78);
   transition: color var(--dur-fast) var(--ease);
@@ -570,6 +620,16 @@ button.navbar__link {
     flex-direction: column;
     align-items: flex-start;
     margin-top: 0;
+  }
+
+  .footer__nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 479px) {
+  .footer__nav {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -18,6 +18,7 @@ import { NotFound } from './pages/NotFound'
 const Admin = lazy(() => import('./pages/Admin').then((m) => ({ default: m.Admin })))
 const Cars = lazy(() => import('./pages/Cars').then((m) => ({ default: m.Cars })))
 const Compare = lazy(() => import('./pages/Compare').then((m) => ({ default: m.Compare })))
+const Contact = lazy(() => import('./pages/Contact').then((m) => ({ default: m.Contact })))
 const Dealers = lazy(() => import('./pages/Dealers').then((m) => ({ default: m.Dealers })))
 const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default: m.Favorites })))
 const Garage = lazy(() => import('./pages/Garage').then((m) => ({ default: m.Garage })))
@@ -88,6 +89,7 @@ export default function App() {
                     pantalla: el login pide aceptarlos antes de que exista la
                     cuenta. */}
                 <Route path="help" element={<Help />} />
+                <Route path="contact" element={<Contact />} />
                 <Route path="terms" element={<Terms />} />
                 <Route path="privacy" element={<Privacy />} />
 

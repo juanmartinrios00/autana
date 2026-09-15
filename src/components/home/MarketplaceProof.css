@@ -11,19 +11,6 @@
   color: var(--ink);
 }
 
-.proof__head {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--sp-3);
-  padding-block: clamp(var(--sp-6), 4vw, var(--sp-8)) var(--sp-6);
-}
-
-.proof__title {
-  max-width: 20ch;
-  font-size: var(--fs-h2);
-}
-
 /* Las celdas se separan con una línea, no con espacio: es lo que hace que se
    lean como una tira continua y no como cuatro tarjetas sueltas. */
 .proof__band {
@@ -36,7 +23,7 @@
   flex-direction: column;
   justify-content: space-between;
   gap: var(--sp-7);
-  min-height: 220px;
+  min-height: 190px;
   padding: var(--sp-6) clamp(var(--sp-4), 2.5vw, var(--sp-6));
   /* Sobre amarillo, `--line` no se ve. El divisor es la misma tinta del texto
      bajada de opacidad, así que acompaña al fondo en vez de pelearse. */
@@ -55,6 +42,7 @@
   font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.03em;
+  color: var(--ink);
 }
 
 .proof__label {

@@ -208,32 +208,28 @@ export function Home() {
       {stats && stats.listings > 0 && <MarketplaceProof stats={stats} />}
 
       <div className="page home__sections">
-        <BrandSlider />
+        <div className="home__cluster home__cluster--discovery">
+          <BrandSlider />
+          <CategorySlider counts={bodyCounts} />
+          <PopularModels />
+        </div>
 
-        <VehicleSlider
-          eyebrow="Lo último"
-          title="Recién publicados"
-          vehicles={recent}
-          loading={loadingRecent}
-          action={{ label: 'Ver todos', to: '/cars' }}
-        />
-
-        <CategorySlider counts={bodyCounts} />
-
-        <PopularModels />
+        <div className="home__cluster home__cluster--listings">
+          <VehicleSlider
+            eyebrow="Lo último"
+            title="Recién publicados"
+            vehicles={recent}
+            loading={loadingRecent}
+            action={{ label: 'Ver todos', to: '/cars' }}
+          />
+          <VehicleSlider eyebrow="Los que más miran" title="Más vistos" vehicles={mostSeen} />
+        </div>
 
         <ProvinceMap counts={provinceCounts} />
-
         <AudienceSection />
-
         <HowItWorks />
-
         <GarageSection />
-
-        <VehicleSlider eyebrow="Los que más miran" title="Más vistos" vehicles={mostSeen} />
-
         <BudgetSlider />
-
         <DealerSlider dealers={dealers} />
       </div>
 

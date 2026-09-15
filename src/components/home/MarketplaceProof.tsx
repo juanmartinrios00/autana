@@ -41,14 +41,7 @@ export function MarketplaceProof({ stats }: MarketplaceProofProps) {
   ]
 
   return (
-    <section className="proof" aria-labelledby="proof-title">
-      <div className="page proof__head">
-        <span className="over">Datos del marketplace</span>
-        <h2 className="proof__title" id="proof-title">
-          Lo importante, sin letra chica.
-        </h2>
-      </div>
-
+    <section className="proof" aria-label="Datos del marketplace">
       <div className="proof__band">
         {items.map((item) => (
           <article className="proof__cell" key={item.description}>
