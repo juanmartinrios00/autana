@@ -13,12 +13,14 @@
      una banda que corta la pantalla en dos. */
   border-radius: 0;
   overflow: hidden;
-  /* El color de fondo es el del asfalto de la foto: si la imagen tarda en
+  /* El color de fondo es el del piso de la cochera: si la imagen tarda en
      llegar, el hero no parpadea de gris a negro. */
-  background: #0d0f10 url('../assets/hero/bmw-atardecer.jpg') no-repeat;
-  /* El sol cae a la derecha del centro y el auto a la izquierda; anclando
-     un poco abajo del medio se conservan los dos cuando el recorte es apaisado. */
-  background-position: 50% 58%;
+  background: #0c0e0d url('../assets/hero/mercedes-cochera.jpg') no-repeat;
+  /* El auto queda apenas a la izquierda del centro y ocupa la mitad de abajo.
+     Anclar en 48% / 62% lo conserva entero cuando el recorte se angosta, que
+     es lo que pasa en el celular: ahí `cover` recorta por los costados y con
+     el ancla en el medio exacto se come el frente. */
+  background-position: 48% 62%;
   background-size: cover;
   color: var(--ink);
 }
@@ -27,17 +29,21 @@
   display: none;
 }
 
-/* Velo para que el texto blanco se lea sobre el cielo, que en esta foto es
-   casi crema. Oscurece más a la izquierda, donde va el título, y deja
-   respirar el atardecer a la derecha. */
+/* Velo para que el texto blanco se lea sobre la foto.
+
+   La foto es de noche y ya viene oscura, pero justo abajo a la izquierda ‑—
+   donde caen el título y el buscador— el piso de la cochera es hormigón claro
+   y se come el blanco. El velo carga sobre esa mitad y deja respirar la
+   derecha, que es donde están el auto iluminado y las ópticas prendidas: lo
+   único con luz de toda la imagen, y lo que no hay que apagar. */
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(90deg, rgba(8, 9, 10, 0.72) 0%, rgba(8, 9, 10, 0.4) 45%, rgba(8, 9, 10, 0.08) 80%),
-    linear-gradient(180deg, rgba(8, 9, 10, 0.5) 0%, rgba(8, 9, 10, 0) 35%, rgba(8, 9, 10, 0.35) 100%);
+    linear-gradient(90deg, rgba(8, 9, 10, 0.78) 0%, rgba(8, 9, 10, 0.46) 48%, rgba(8, 9, 10, 0.1) 82%),
+    linear-gradient(180deg, rgba(8, 9, 10, 0.46) 0%, rgba(8, 9, 10, 0) 38%, rgba(8, 9, 10, 0.42) 100%);
   pointer-events: none;
 }
 
