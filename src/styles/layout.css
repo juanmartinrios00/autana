@@ -14,48 +14,65 @@
     color var(--dur-slow) var(--ease);
 }
 
-.navbar--scrolled {
-  background: rgba(10, 16, 12, 0.96);
-  color: var(--ink-inverse);
-  backdrop-filter: saturate(1.15) blur(18px);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
-}
+/* Al scrollear la navbar se vuelve amarilla.
 
-.navbar--scrolled .navbar__mark {
+   Antes era una placa casi negra. Funcionaba, pero llegaba como una persiana:
+   lo unico oscuro de una portada clara, y encima justo arriba. En amarillo es
+   la misma marca de la banda de numeros y del boton principal — el sitio sigue
+   siendo el mismo mientras baja.
+
+   Sin `backdrop-filter`: el desenfoque existia para que se adivinara el
+   contenido abajo de una placa translucida. El amarillo es opaco, asi que
+   desenfocar no hace nada y cuesta una capa de composicion en cada scroll.
+
+   Todo lo de adentro pasa a tinta oscura. Sobre `--accent` el blanco no llega
+   ni de cerca al contraste minimo, y era el color de la version anterior.    */
+
+.navbar--scrolled {
   background: var(--accent);
   color: var(--ink);
+  box-shadow: 0 1px 0 rgb(10 16 12 / 0.16);
+}
+
+/* La ficha de la marca se invierte: sobre amarillo, un cuadrado amarillo no
+   es un cuadrado. */
+.navbar--scrolled .navbar__mark {
+  background: var(--ink);
+  color: var(--accent);
 }
 
 .navbar--scrolled .navbar__link,
 .navbar--scrolled .navbar__bell {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgb(10 16 12 / 0.74);
 }
 
 .navbar--scrolled .navbar__link:hover,
 .navbar--scrolled .navbar__links .navbar__link.is-active,
 .navbar--scrolled .navbar__bell:hover {
-  color: var(--ink-inverse);
+  color: var(--ink);
 }
 
+/* El campo se hunde en vez de aclararse: sobre un fondo tan luminoso, un velo
+   blanco desaparece y el buscador se pierde. */
 .navbar--scrolled .navsearch {
-  border-color: rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: rgb(10 16 12 / 0.22);
+  background: rgb(10 16 12 / 0.07);
 }
 
 .navbar--scrolled .navsearch:focus-within {
-  border-color: var(--accent);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 3px rgba(255, 209, 0, 0.2);
+  border-color: var(--ink);
+  background: var(--canvas);
+  box-shadow: 0 0 0 3px rgb(10 16 12 / 0.14);
 }
 
 .navbar--scrolled .navsearch__input,
 .navbar--scrolled .navsearch__submit,
 .navbar--scrolled .navsearch__clear {
-  color: var(--ink-inverse);
+  color: var(--ink);
 }
 
 .navbar--scrolled .navsearch__input::placeholder {
-  color: rgba(255, 255, 255, 0.56);
+  color: rgb(10 16 12 / 0.56);
 }
 
 /* Sobre el hero oscuro la navbar flota: sin fondo, sin línea, en blanco. */
@@ -262,6 +279,19 @@ button.navbar__link {
 
 .navbar__cta:hover {
   background: var(--accent-hover);
+}
+
+/* Sobre la barra amarilla la CTA se da vuelta. Un boton amarillo sobre un
+   fondo amarillo no es un boton discreto: no existe. En tinta sigue siendo lo
+   mas fuerte de la barra, que es lo que tiene que ser. */
+.navbar--scrolled .navbar__cta {
+  background: var(--ink);
+  color: var(--accent);
+}
+
+.navbar--scrolled .navbar__cta:hover {
+  background: #26262a;
+  color: var(--accent);
 }
 
 .navbar--over .navbar__cta {

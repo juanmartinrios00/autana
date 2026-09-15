@@ -100,7 +100,7 @@ export function BlogPost() {
       <div className="page post__cta">
         <div className="post__cta-copy">
           <h2>¿Estás por vender el tuyo?</h2>
-          <p>Publicar es gratis y el contacto va directo a tu WhatsApp. Sin comisión.</p>
+          <p>Cargalo en cuatro pasos y las consultas te llegan directo al WhatsApp.</p>
         </div>
         <Link to="/sell">
           <Button variant="dark" arrow>

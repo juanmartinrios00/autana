@@ -208,17 +208,30 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
       })
 
       /* El PNG se usa para reconocer cada región, pero la capa visible se
-         normaliza al lenguaje de Autana: masa negra y límites blancos. */
+         normaliza al lenguaje de Autana: masa gris y límites blancos.
+
+         La masa era casi negra. Sobre una portada clara, un mapa negro es la
+         mancha más pesada de la pantalla y se lleva la atención por tamaño y
+         no por importancia. En gris sigue leyéndose la silueta del país, los
+         límites blancos siguen cortando cada provincia, y el amarillo del
+         hover pasa a ser lo único fuerte del bloque — que es de lo que se
+         trata: lo que está encendido es lo que se está mirando.
+
+         No es un gris cualquiera: es `--ink-4`, el mismo de la paleta, con su
+         punta de verde. Un gris neutro al lado del resto se ve azulado. */
+      const MASS: [number, number, number] = [105, 113, 108]
       const styledPixels = new Uint8ClampedArray(source.data)
       for (let pixel = 0; pixel < labels.length; pixel += 1) {
         const offset = pixel * 4
         if (styledPixels[offset + 3] <= 40) continue
         const light =
           (source.data[offset] + source.data[offset + 1] + source.data[offset + 2]) / 3
-        const tone = light > 126 ? 12 : 255
-        styledPixels[offset] = tone
-        styledPixels[offset + 1] = tone
-        styledPixels[offset + 2] = tone
+        /* Claro en el original es interior de provincia; oscuro es el trazo del
+           límite, que va en blanco para separarlas. */
+        const [r, g, b] = light > 126 ? MASS : [255, 255, 255]
+        styledPixels[offset] = r
+        styledPixels[offset + 1] = g
+        styledPixels[offset + 2] = b
       }
       /* Dos copias: `clean` es de donde sale el color original de cada píxel y
          no se toca nunca; `frame` es la que se modifica y se sube al canvas.

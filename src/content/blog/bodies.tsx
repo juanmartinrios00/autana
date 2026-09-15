@@ -126,7 +126,7 @@ const transferir = (
     </p>
 
     <p>
-      Si estás por publicar, en {BRAND} <Link to="/sell">cargar el aviso es gratis</Link> y el
+      Si estás por publicar, en {BRAND} <Link to="/sell">cargás el aviso vos mismo</Link> y el
       contacto va directo a tu WhatsApp: no hay un intermediario que se meta en la
       negociación ni en el trámite.
     </p>
@@ -339,10 +339,10 @@ const precio = (
     </p>
 
     <p>
-      En {BRAND} <Link to="/sell">publicar es gratis</Link> y no cobramos comisión, así que el
-      precio que ponés es el que te llevás. Podés{' '}
-      <Link to="/cars">mirar lo que se está pidiendo</Link> por autos como el tuyo antes de
-      decidir.
+      En {BRAND} el precio lo ponés vos y lo negociás directo con el que pregunta: no hay un
+      asesor en el medio empujando para cerrar. Antes de decidir, podés{' '}
+      <Link to="/cars">mirar lo que se está pidiendo</Link> por autos como el tuyo, y{' '}
+      <Link to="/sell">cargar el aviso</Link> cuando lo tengas.
     </p>
   </>
 )

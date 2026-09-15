@@ -230,6 +230,17 @@
   padding-block: var(--sp-9) var(--sp-10);
 }
 
+/* La banda amarilla y el bloque gris que sigue se tocan: el aire de arriba
+   dejaba una franja del color del papel entre dos planos llenos, y eso corta
+   la portada en dos en vez de encadenarla.
+
+   Va con el selector de hermano adyacente y no como clase aparte porque la
+   banda sólo se monta cuando hay avisos publicados. Si no hay, no hay banda
+   contra la que pegarse y el aire vuelve solo. */
+.proof + .home__sections {
+  padding-block-start: 0;
+}
+
 .home__cluster {
   display: flex;
   flex-direction: column;

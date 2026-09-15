@@ -22,9 +22,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: var(--sp-7);
-  min-height: 190px;
-  padding: var(--sp-6) clamp(var(--sp-4), 2.5vw, var(--sp-6));
+  gap: var(--sp-8);
+  /* Alta a propósito. El número arriba y la leyenda abajo de todo sólo se leen
+     como un dato si hay aire entre los dos; apretados quedan como un epígrafe. */
+  min-height: 270px;
+  padding: var(--sp-7) clamp(var(--sp-4), 2.5vw, var(--sp-6));
   /* Sobre amarillo, `--line` no se ve. El divisor es la misma tinta del texto
      bajada de opacidad, así que acompaña al fondo en vez de pelearse. */
   border-top: 1px solid rgb(10 16 12 / 0.18);
@@ -57,8 +59,8 @@
   }
 
   .proof__cell {
-    min-height: 170px;
-    gap: var(--sp-5);
+    min-height: 230px;
+    gap: var(--sp-6);
   }
 }
 
@@ -67,7 +69,10 @@
     grid-template-columns: 1fr;
   }
 
+  /* Con una sola columna, cuatro celdas de 270px son cuatro pantallas de
+     scroll para leer cuatro números. Se achican, pero no se aplastan. */
   .proof__cell {
-    min-height: 0;
+    min-height: 150px;
+    gap: var(--sp-5);
   }
 }

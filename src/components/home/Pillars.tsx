@@ -14,9 +14,19 @@ import './Pillars.css'
  * midiendo la página y sin `IntersectionObserver`. Un scroll que depende de JS
  * se traba en un celular barato justo en la parte que tiene que impresionar.
  *
- * Los tres dicen lo mismo que el resto del sitio, pero de corrido: es gratis,
- * hablás con la persona, y los datos son los que son. No hay promesa nueva
- * acá; hay una sola lectura de las que ya estaban sueltas.
+ * Los tres hablan de cómo funciona el producto —es simple, hablás con la
+ * persona, los datos son los que son— y ninguno habla de precio.
+ *
+ * Eso es a propósito. El precio todavía no está decidido para siempre: hoy
+ * publicar no cuesta nada, pero es probable que en algún momento haya planes,
+ * sobre todo para agencias. Una sección que se apoya en "es gratis" hay que
+ * reescribirla el día que eso cambie, y mientras tanto queda como una promesa
+ * que alguien puede citar. Lo que dicen estos tres va a seguir siendo verdad
+ * con cualquier lista de precios.
+ *
+ * Lo que sí cuesta hoy, y cuánto, vive en la pantalla de concesionarias y en
+ * las preguntas frecuentes, que son dos lugares y se actualizan sin tocar la
+ * portada.
  */
 
 interface Pillar {
@@ -54,18 +64,16 @@ function Grid() {
   )
 }
 
-/* Cero pesos: una etiqueta de precio con el importe tachado. */
-function FreeDrawing() {
+/* Cuatro pasos: cuatro casillas en fila y el avance marcado sobre la primera. */
+function SimpleDrawing() {
   return (
     <svg {...svg} className="pillar__svg">
       <Grid />
-      <path d="M96 62h108l24 24v72H96z" />
-      <circle cx="116" cy="82" r="6" />
-      <path d="M120 110h64M120 128h40" />
-      <path d="M204 62v24h24" />
+      <path d="M62 92h42v42H62zM116 92h42v42h-42zM170 92h42v42h-42zM224 92h42v42h-42z" />
+      <path d="M104 113h12M158 113h12M212 113h12" />
       <g className="pillar__accent">
-        <path d="M150 96h56M150 142h56" />
-        <path d="M140 150 216 88" />
+        <path d="M74 113l8 8 16-18" />
+        <path d="M62 148h42" />
       </g>
     </svg>
   )
@@ -108,12 +116,12 @@ function ClearDrawing() {
 
 const pillars: Pillar[] = [
   {
-    id: 'gratis',
-    eyebrow: 'Gratis',
-    title: 'Publicar no sale nada.',
-    text: `Ni por publicar, ni una comisión cuando vendés. Tampoco vendemos el lugar de arriba: nadie te pasa por delante porque pagó. En ${BRAND} el orden lo decide la búsqueda de quien mira, no nuestra facturación.`,
+    id: 'simple',
+    eyebrow: 'Simple',
+    title: 'Publicar son cuatro pasos.',
+    text: 'Datos del vehículo, fotos, precio y contacto. El borrador se guarda solo mientras lo completás, así que podés empezar desde el celular y terminarlo más tarde. Sin llamadas, sin que nadie te tenga que habilitar y sin esperar a que un asesor te confirme el aviso.',
     cta: { label: 'Publicar mi vehículo', to: '/sell' },
-    Drawing: FreeDrawing,
+    Drawing: SimpleDrawing,
   },
   {
     id: 'directo',
