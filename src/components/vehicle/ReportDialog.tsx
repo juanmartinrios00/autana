@@ -72,7 +72,13 @@ export function ReportDialog({ kind, targetId, title }: ReportDialogProps) {
   const [reason, setReason] = useState('')
   const [detail, setDetail] = useState('')
   const [sending, setSending] = useState(false)
-  const [done, setDone] = useState(false)
+  /* Qué se reportó, y no un booleano.
+
+     El componente no se desmonta al pasar de un aviso a otro: cambia el
+     `targetId` y nada más. Con un booleano, reportar uno dejaba el cartel de
+     "Ya lo reportaste" puesto para todos los que se miraran después, y el
+     botón de reportar no volvía a aparecer en toda la visita. */
+  const [done, setDone] = useState<string | null>(null)
   const [failure, setFailure] = useState<string | null>(null)
 
   const userId = session?.user.id ?? ''
@@ -86,7 +92,7 @@ export function ReportDialog({ kind, targetId, title }: ReportDialogProps) {
     void config
       .check(targetId, userId)
       .then((already) => {
-        if (current && already) setDone(true)
+        if (current && already) setDone(targetId)
       })
       .catch((cause) => {
         /* Que falle esta consulta no puede impedir reportar: en el peor caso
@@ -101,6 +107,11 @@ export function ReportDialog({ kind, targetId, title }: ReportDialogProps) {
 
   function open() {
     setFailure(null)
+    /* Por lo mismo: el motivo y el detalle son de este reporte y no del
+       anterior. Sin esto, abrir el formulario en un aviso mostraba el texto
+       que alguien había escrito para otro. */
+    setReason('')
+    setDetail('')
     dialogRef.current?.showModal()
   }
 
@@ -111,7 +122,7 @@ export function ReportDialog({ kind, targetId, title }: ReportDialogProps) {
     setFailure(null)
     try {
       await config.send(targetId, userId, reason, detail)
-      setDone(true)
+      setDone(targetId)
       dialogRef.current?.close()
     } catch (cause) {
       console.error('reporte', cause)
@@ -121,7 +132,7 @@ export function ReportDialog({ kind, targetId, title }: ReportDialogProps) {
     }
   }
 
-  if (done) {
+  if (done === targetId) {
     return (
       <p className="report__done">
         <Icon name="check" size={15} />
