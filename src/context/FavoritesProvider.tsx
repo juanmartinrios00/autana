@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from '../hooks/useAuth'
-import { addFavorite, listFavoriteIds, mergeFavorites, removeFavorite } from '../lib/api'
+import {
+  addFavorite,
+  clearFavorites,
+  listFavoriteIds,
+  mergeFavorites,
+  removeFavorite,
+} from '../lib/api'
 import { FavoritesContext, type FavoritesValue } from './favorites-context'
 
 const STORAGE_KEY = 'autana:favorites'
@@ -145,10 +151,16 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const clear = useCallback(() => {
     const previous = ids
     setIds([])
+    setFailure(null)
 
     if (!userId) return
 
-    void Promise.all(previous.map((id) => removeFavorite(userId, id))).catch((cause) => {
+    /* Un solo borrado y no uno por favorito. Con una consulta por auto, que es
+       como estaba, vaciar cincuenta son cincuenta pedidos en paralelo y basta
+       con que uno falle para que el `setIds(previous)` de abajo devuelva a la
+       pantalla los cincuenta ---incluidos los cuarenta y nueve que sí se
+       borraron. Deshacer solo puede ser honesto si la escritura era una sola. */
+    void clearFavorites(userId).catch((cause) => {
       console.error('vaciar favoritos', cause)
       setIds(previous)
       setFailure('No pudimos vaciar la lista.')

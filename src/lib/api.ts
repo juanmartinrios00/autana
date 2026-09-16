@@ -937,6 +937,25 @@ export async function removeFavorite(userId: string, listingId: string): Promise
 }
 
 /**
+ * Vacia la lista entera de una cuenta.
+ *
+ * Una sola consulta y no una por favorito. Con N consultas, que es como estaba,
+ * vaciar una lista de cincuenta autos son cincuenta pedidos en paralelo, y
+ * alcanza con que uno falle para que la pantalla quede mintiendo: la vista
+ * volvia a mostrar los cincuenta cuando cuarenta y nueve ya no existian. Asi
+ * se borra todo o no se borra nada, que es lo unico que se puede deshacer bien.
+ *
+ * El `eq('user_id')` es del lado del cliente, pero el que manda es el RLS: una
+ * fila ajena no entra en el filtro ni aunque se pida.
+ */
+export async function clearFavorites(userId: string): Promise<void> {
+  const client = requireSupabase()
+  const { error } = await client.from('favorites').delete().eq('user_id', userId)
+
+  if (error) throw error
+}
+
+/**
  * Sube a la cuenta los favoritos que estaban guardados en el navegador.
  *
  * Se llama al iniciar sesión. Es un merge, no un reemplazo: alguien que venía
