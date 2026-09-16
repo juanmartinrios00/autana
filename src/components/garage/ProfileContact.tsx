@@ -12,6 +12,13 @@ interface ProfileContactProps {
   instagram: string | null
 }
 
+type ContactState =
+  | { kind: 'idle' }
+  | { kind: 'busy' }
+  | { kind: 'shown'; whatsapp: string | null; contactEmail: string | null }
+  | { kind: 'empty' }
+  | { kind: 'failed'; message: string }
+
 /**
  * Los datos de contacto en el garage de alguien.
  *
@@ -29,21 +36,38 @@ export function ProfileContact({ targetId, instagram }: ProfileContactProps) {
   const userId = session?.user.id ?? ''
   const own = userId === targetId
 
-  const [state, setState] = useState<
-    | { kind: 'idle' }
-    | { kind: 'busy' }
-    | { kind: 'shown'; whatsapp: string | null; contactEmail: string | null }
-    | { kind: 'empty' }
-    | { kind: 'failed'; message: string }
-  >({ kind: 'idle' })
+  /**
+   * El contacto revelado, junto al garage del que es.
+   *
+   * La página del garage no se desmonta al pasar de una persona a otra:
+   * `/g/:id` cambia y `Garage` sigue montado, así que este componente recibe
+   * un `targetId` nuevo y nada más. Guardando sólo el estado, el WhatsApp que
+   * alguien acababa de revelar quedaba en pantalla abajo del garage de la
+   * persona siguiente, con su nombre arriba. Es el mismo dato sensible que la
+   * migración 008 sacó de la vista pública, mostrado bajo la identidad
+   * equivocada.
+   */
+  const [revealed, setRevealed] = useState<{ for: string; state: ContactState }>({
+    for: '',
+    state: { kind: 'idle' },
+  })
+
+  /* Del garage que se está mirando. Si es otro, se arranca de cero: el botón
+     vuelve a aparecer y hay que pedirlo de nuevo, que es lo correcto ---cada
+     pedido cuenta contra el límite de la migración 014. */
+  const state: ContactState = revealed.for === targetId ? revealed.state : { kind: 'idle' }
+
+  function put(next: ContactState) {
+    setRevealed({ for: targetId, state: next })
+  }
 
   async function reveal() {
-    setState({ kind: 'busy' })
+    put({ kind: 'busy' })
     try {
       const found = await getProfileContact(targetId)
-      setState(found ? { kind: 'shown', ...found } : { kind: 'empty' })
+      put(found ? { kind: 'shown', ...found } : { kind: 'empty' })
     } catch (cause) {
-      setState({
+      put({
         kind: 'failed',
         message:
           cause instanceof ContactLimitError
