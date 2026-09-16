@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { PhotoUploader, type Photo } from '../components/sell/PhotoUploader'
 import { Badge } from '../components/ui/Badge'
@@ -113,6 +113,28 @@ export function Sell() {
 
   const [step, setStep] = useState(0)
   const [photos, setPhotos] = useState<Photo[]>([])
+
+  /* Cada foto comprimida deja una `blob:` viva hasta que alguien la revoca, y
+     una foto de celular comprimida pesa unos doscientos kilobytes: veinte son
+     cuatro megas que el navegador se guarda hasta recargar la página. El
+     `remove` de cada miniatura ya revoca la suya; lo que faltaba era el caso de
+     irse del formulario, que es el más común de todos ---se publica el aviso y
+     se navega a la ficha.
+
+     Se lee de una ref y no de `photos` para que el efecto no corra en cada
+     cambio de la lista: si dependiera de `photos`, la limpieza se dispararía al
+     sumar una foto y revocaría las que todavía se están mostrando. */
+  const photosRef = useRef(photos)
+  useEffect(() => {
+    photosRef.current = photos
+  }, [photos])
+
+  useEffect(
+    () => () => {
+      for (const photo of photosRef.current) URL.revokeObjectURL(photo.previewUrl)
+    },
+    [],
+  )
   const [errors, setErrors] = useState<Partial<Record<keyof ListingDraft, string>>>({})
   const [publishing, setPublishing] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
