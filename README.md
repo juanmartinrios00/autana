@@ -81,6 +81,42 @@ de diseño. Lo que hay que respetar:
   un cambio de sombra.
 - Movimiento: 150–300 ms, `ease-out`, `transform` y `opacity`.
 
+## La regla que más se rompe
+
+**Todo estado que pertenece a algo guarda a qué pertenece.**
+
+Casi ninguna pantalla se desmonta al cambiar de objeto. Ir de `/cars/a` a
+`/cars/b` deja `VehicleDetail` montado y sólo cambia el `vehicle`; lo mismo
+`/g/id1` → `/g/id2` con el garage, y lo mismo una card de la grilla cuyo aviso
+sigue estando después de cambiar un filtro. React reusa la instancia: el estado
+local sobrevive y el `useState(algoDeProps)` no vuelve a correr.
+
+Un estado que no dice de quién es, entonces, se arrastra:
+
+```ts
+const [contact, setContact] = useState<SellerContact | null>(null)   // ❌
+const [contact, setContact] = useState<{ id: string; data: Contact } | null>(null)
+const shown = contact?.id === vehicle.id ? contact.data : null       // ✅
+```
+
+No es teórico. Con la primera versión, tocar "Me interesa" en el segundo auto
+abría el WhatsApp del vendedor del primero y no anotaba el interés en ninguno.
+
+El síntoma es siempre el mismo y es el peor que hay: **no falla, muestra otra
+cosa.** Un dato equivocado con cara de bueno no lo reporta nadie, porque nadie
+sabe que está mirando algo que no le corresponde.
+
+Vale para los datos que se piden, para los booleanos de "ya lo hiciste", y para
+los contadores que suben con un clic. `FollowControls` es el ejemplo a copiar:
+mete también al usuario que mira dentro de la clave, así cerrar sesión en otra
+pestaña no deja el botón diciendo "Siguiendo".
+
+Lo mismo vale para las listas cargadas en paralelo: **`Promise.allSettled` y no
+`Promise.all`** cuando lo que se pide son cosas distintas. Con `all`, un
+tropiezo de red en una se lleva puestas las otras y cae en el `catch` general,
+que casi siempre concluye algo demasiado grande — el panel de moderación
+llegaba a decirle a quien modera que no tenía permiso.
+
 ## Tests
 
     npm test
