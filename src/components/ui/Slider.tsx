@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { Icon } from './Icon'
 import './Slider.css'
 
@@ -33,15 +34,21 @@ export function Slider({ title, action, eyebrow, children, itemWidth }: SliderPr
     setAtEnd(track.scrollLeft >= max - 1)
   }, [])
 
+  /* El observador se arma una sola vez. Con `children` en las dependencias
+     ---que es un array nuevo en cada render--- se desconectaba y se volvía a
+     conectar en cada repintado de la portada, que tiene cinco de estos. */
   useEffect(() => {
-    measure()
     const track = trackRef.current
     if (!track) return
 
     const observer = new ResizeObserver(measure)
     observer.observe(track)
     return () => observer.disconnect()
-  }, [measure, children])
+  }, [measure])
+
+  /* Medir sí depende del contenido: cuando llegan los autos de la base, el
+     riel pasa de vacío a desbordado y ahí aparecen las flechas. */
+  useEffect(measure, [measure, children])
 
   function scrollBy(direction: 1 | -1) {
     const track = trackRef.current
@@ -63,10 +70,16 @@ export function Slider({ title, action, eyebrow, children, itemWidth }: SliderPr
 
         <div className="slider__tools">
           {action && (
-            <a href={action.to} className="slider__action">
+            /* `Link` y no `<a href>`. Los dos destinos que existen son rutas
+               propias, así que un ancla común hacía que "Ver todos" recargara
+               la aplicación entera: bajar de nuevo todo el JavaScript, volver a
+               montar React y perder el scroll, para llegar a una pantalla que el
+               router resuelve sin pedir nada. Es el link más visible de la
+               portada. */
+            <Link to={action.to} className="slider__action">
               {action.label}
               <Icon name="arrowRight" size={15} />
-            </a>
+            </Link>
           )}
 
           {hasArrows && (
