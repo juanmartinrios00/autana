@@ -208,34 +208,35 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
       })
 
       /* El PNG se usa para reconocer cada región, pero la capa visible se
-         normaliza al lenguaje de Autana: masa gris clara y límites de tinta.
+         normaliza al lenguaje de Autana: masa de tinta y límites un punto más
+         claros que ella.
 
-         Pasó por dos versiones antes de esta. Primero masa casi negra, que
-         sobre una portada clara era la mancha más pesada de la pantalla y se
-         llevaba la atención por tamaño y no por importancia. Después masa gris
-         media con los límites en blanco, que arregló el peso pero dejó el
-         dibujo al revés de como se lee un mapa: el límite es la línea que
-         separa, y en blanco sobre gris se lee como un corte en el papel más
-         que como una frontera.
+         Lo que estaba en discusión no era el color de la masa sino el del
+         límite. En blanco sobre gris ---la versión anterior--- la línea pesaba
+         más que la provincia: se leía como un corte en el papel, no como una
+         frontera. El límite tiene que estar, pero por debajo de la masa, no por
+         encima; alcanza con que se note que hay dos planos.
 
-         Acá el trazo vuelve a ser el del original —tinta, el mismo peso con el
-         que está dibujado el PNG— y lo que se aclara es la masa. El país queda
-         liviano, cada provincia queda dibujada, y el amarillo del hover sigue
-         siendo lo único fuerte del bloque: lo que está encendido es lo que se
-         está mirando.
+         Por eso los dos son oscuros y la diferencia es corta: `--ink` para la
+         masa y `--ink-3` para el trazo, que es el gris de texto de la paleta.
+         A escala de pantalla la línea mide un píxel y queda antialiasada
+         contra la masa, así que una diferencia chica en el archivo se ve más
+         chica todavía al final: `--ink-3` es lo más cerca que se puede estar
+         sin que el país se convierta en una silueta sin provincias.
 
-         El gris es `--line-strong`, de la paleta, con su punta de verde. Un
-         gris neutro al lado del resto se ve azulado. */
-      const MASS: [number, number, number] = [197, 203, 195]
-      const EDGE: [number, number, number] = [10, 16, 12]
+         El país vuelve a ser la mancha oscura del bloque, y el amarillo del
+         hover se recorta contra ella: lo que está encendido es lo que se está
+         mirando. */
+      const MASS: [number, number, number] = [10, 16, 12]
+      const EDGE: [number, number, number] = [85, 93, 88]
       const styledPixels = new Uint8ClampedArray(source.data)
       for (let pixel = 0; pixel < labels.length; pixel += 1) {
         const offset = pixel * 4
         if (styledPixels[offset + 3] <= 40) continue
         const light =
           (source.data[offset] + source.data[offset + 1] + source.data[offset + 2]) / 3
-        /* Claro en el original es interior de provincia; oscuro es el trazo del
-           límite, que conserva la tinta para separarlas. */
+        /* Claro en el original es interior de provincia; oscuro es el trazo
+           del límite, que se aclara apenas para separarlas. */
         const [r, g, b] = light > 126 ? MASS : EDGE
         styledPixels[offset] = r
         styledPixels[offset + 1] = g

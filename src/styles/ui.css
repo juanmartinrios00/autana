@@ -42,6 +42,19 @@
   opacity: 0.78;
 }
 
+/* Adentro de la etiqueta puede haber un icono y despues el texto, y el `gap`
+   de `.btn` no llega hasta ahi: ese separa la etiqueta de la flecha, que son
+   los dos hijos del boton. Sin esta regla el SVG es una caja en linea apoyada
+   en la base del texto, asi que se monta sobre la mayuscula y queda pegado a
+   la primera letra. Se nota mas cuanto mas alto es el boton ---el del hero
+   mide 56 y ahi el icono flota--- pero le pasa a todos. */
+.btn__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
 .btn--yellow {
   background: var(--accent);
   color: var(--ink);
