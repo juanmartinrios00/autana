@@ -1,6 +1,11 @@
+import { SLOTS } from '../data/garage-slots'
 import { compressImage } from './images'
 import { requireSupabase, supabase } from './supabase'
 import type { GarageEntry, GarageSlot } from '../types'
+
+/* Se reexporta para que las pantallas sigan pidiendo el garage entero a un
+   solo modulo: el que dibuja los espacios tambien es el que los guarda. */
+export { SLOTS }
 
 /**
  * El garage: los autos que marcaron a alguien, no los que vende.
@@ -9,12 +14,6 @@ import type { GarageEntry, GarageSlot } from '../types'
  * publicaciones, asi que tambien se les borra la ubicacion GPS.
  */
 
-export const SLOTS: { id: GarageSlot; title: string; hint: string }[] = [
-  { id: 'first', title: 'Mi primer auto', hint: 'Con el que aprendiste a manejar.' },
-  { id: 'current', title: 'El que tengo hoy', hint: 'Tu auto actual.' },
-  { id: 'dream', title: 'El auto de mis sueños', hint: 'Ese que algún día.' },
-  { id: 'missed', title: 'El que más extraño', hint: 'El que no tendrías que haber vendido.' },
-]
 
 interface GarageRow {
   id: string

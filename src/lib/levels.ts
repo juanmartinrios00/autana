@@ -15,6 +15,8 @@
  * verificables y está en `trust.ts`; no mezclar las dos cosas otra vez.
  */
 
+import { SLOTS } from '../data/garage-slots'
+
 export type AchievementId =
   | 'profile_complete'
   | 'first_listing'
@@ -110,7 +112,11 @@ export function computeLevel({
       id: 'garage_complete',
       title: 'Garage completo',
       hint: 'Llená los cuatro espacios del garage.',
-      done: garageCars >= 4,
+      /* Del largo de la lista y no de un 4 escrito acá: si algún día hay un
+         quinto espacio, el logro tiene que seguir pidiendo todos. El texto de
+         arriba dice "cuatro" en letras, así que sumar uno obliga también a
+         reescribirlo; hay un test que lo recuerda. */
+      done: garageCars >= SLOTS.length,
     },
   ]
 
