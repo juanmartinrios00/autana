@@ -62,6 +62,30 @@ export function GarageSlotCard({
     })
   }
 
+  /**
+   * Cancelar cancela.
+   *
+   * Antes sólo cerraba el formulario. Los campos son estado local que arrancó
+   * del `entry` y nadie los devolvía, así que al volver a abrir el editor
+   * aparecían los cambios abandonados con cara de guardados: el modelo que se
+   * empezó a corregir, la nota a medio escribir. Y lo peor era la foto ---se
+   * elegía una, se cancelaba, y quedaba en el estado esperando el siguiente
+   * "Guardar" para subirse sola.
+   */
+  function cancel() {
+    setMake(entry?.make ?? '')
+    setModel(entry?.model ?? '')
+    setYear(entry?.year ? String(entry.year) : '')
+    setNote(entry?.note ?? '')
+    setError(null)
+    setPhoto(null)
+    setPreview((previous) => {
+      if (previous) URL.revokeObjectURL(previous)
+      return null
+    })
+    setEditing(false)
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -174,7 +198,7 @@ export function GarageSlotCard({
             <Button type="submit" variant="yellow" size="sm" disabled={busy}>
               {busy ? 'Guardando…' : 'Guardar'}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
+            <Button variant="ghost" size="sm" onClick={cancel}>
               Cancelar
             </Button>
           </div>
