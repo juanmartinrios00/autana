@@ -5,6 +5,7 @@ import { Icon } from '../ui/Icon'
 import { Input } from '../ui/Input'
 import { useAuth } from '../../hooks/useAuth'
 import { saveSearch } from '../../lib/api'
+import { LIMITS } from '../../lib/limits'
 import './SaveSearch.css'
 
 /**
@@ -34,7 +35,15 @@ export function SaveSearch({ suggested, activeCount }: SaveSearchProps) {
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [saved, setSaved] = useState(false)
+
+  /* Qué búsqueda se guardó, y no un booleano.
+
+     Con un booleano, guardar una vez dejaba el cartel de "Búsqueda guardada"
+     puesto para el resto de la visita: se cambiaban los filtros a otra cosa
+     completamente distinta y el botón no volvía nunca, así que sólo se podía
+     guardar una búsqueda por carga de página. Guardando cuál era, el cartel
+     dura mientras se esté mirando esa misma, que es cuando es cierto. */
+  const [saved, setSaved] = useState<string | null>(null)
 
   if (!session || activeCount === 0) return null
 
@@ -48,8 +57,8 @@ export function SaveSearch({ suggested, activeCount }: SaveSearchProps) {
     setBusy(true)
     setError('')
     try {
-      await saveSearch(session!.user.id, label, location.search.replace(/^\?/, ''))
-      setSaved(true)
+      await saveSearch(session!.user.id, label.slice(0, LIMITS.searchName), location.search.replace(/^\?/, ''))
+      setSaved(location.search)
       setOpen(false)
       setName('')
     } catch {
@@ -59,7 +68,7 @@ export function SaveSearch({ suggested, activeCount }: SaveSearchProps) {
     }
   }
 
-  if (saved) {
+  if (saved === location.search) {
     return (
       <span className="savesearch__done">
         <Icon name="check" size={15} />
@@ -84,6 +93,7 @@ export function SaveSearch({ suggested, activeCount }: SaveSearchProps) {
         hideLabel
         placeholder={suggested}
         value={name}
+        maxLength={LIMITS.searchName}
         error={error || undefined}
         onChange={(event) => setName(event.target.value)}
       />

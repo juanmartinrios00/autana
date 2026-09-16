@@ -25,6 +25,8 @@ export const LIMITS = {
   city: 60,
   /** El nombre que se muestra en el perfil y al lado de cada aviso. */
   name: 60,
+  /** El nombre de una busqueda guardada, que va en una fila de la lista. */
+  searchName: 60,
   /** Tiene pantalla propia: es el unico campo donde alguien cuenta algo. */
   description: 4000,
   /** La nota de cada auto del garage, que va abajo de la foto. */

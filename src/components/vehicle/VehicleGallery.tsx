@@ -15,13 +15,13 @@ export function VehicleGallery({ vehicle, children }: VehicleGalleryProps) {
   const count = vehicle.images.length
 
   /* La tira sigue a la foto que se está viendo.
-     
+
      Antes mostraba siempre las cinco primeras, así que en un aviso de ocho
      fotos ---que son los buenos, y el logro de "publicación completa" pide
      justamente ocho--- pasar la quinta con las flechas dejaba la tira entera
      sin ninguna marcada: la foto grande cambiaba y abajo no se movía nada, como
      si la navegación se hubiera desenganchado.
-     
+
      La ventana se corre recién cuando hace falta y se frena contra el final,
      para que no quede media tira vacía en la última foto. */
   const start = Math.min(Math.max(0, index - 2), Math.max(0, count - THUMBS))
