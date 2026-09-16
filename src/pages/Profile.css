@@ -199,13 +199,11 @@
   border-radius: var(--r-xl);
   background: var(--surface);
   transition:
-    transform var(--dur-med) var(--ease),
     box-shadow var(--dur-med) var(--ease),
     background var(--dur-med) var(--ease);
 }
 
 .profile__listings:hover {
-  transform: translateY(-3px);
   background: var(--canvas);
   box-shadow: var(--sh-hover);
 }

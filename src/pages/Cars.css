@@ -142,6 +142,15 @@
   border-color: var(--ink);
 }
 
+.pagination__gap {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 36px;
+  font-size: 0.84rem;
+  color: var(--ink-4);
+}
+
 .pagination__info {
   font-size: 0.84rem;
   color: var(--ink-3);

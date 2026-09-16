@@ -35,7 +35,7 @@ import { interestLabel } from '../lib/contact'
 import type { Seller, Vehicle } from '../types'
 import './VehicleDetail.css'
 
-type Status = 'loading' | 'ready' | 'notfound'
+type Status = 'loading' | 'ready' | 'notfound' | 'error'
 
 export function VehicleDetail() {
   const { slug = '' } = useParams()
@@ -47,52 +47,79 @@ export function VehicleDetail() {
   const [loaded, setLoaded] = useState<{
     slug: string
     vehicle: Vehicle | null
-    failed: boolean
-  }>({ slug: '', vehicle: null, failed: false })
+    failure: 'notfound' | 'error' | null
+  }>({ slug: '', vehicle: null, failure: null })
 
-  const [seller, setSeller] = useState<Seller | null>(null)
+  const [attempt, setAttempt] = useState(0)
+
+  /* El vendedor y los similares también se guardan con su slug. Sin eso, al
+     pasar de un auto a otro la ficha nueva ya está en pantalla mientras estos
+     dos siguen viajando, y durante ese rato se lee el vendedor del auto
+     anterior debajo del auto nuevo: no es un dato que falta, es uno equivocado
+     y con cara de bueno. `seller` en null adentro del objeto quiere decir que
+     se pidió y no vino. */
+  const [seller, setSeller] = useState<{ slug: string; seller: Seller | null } | null>(null)
   /* El contacto ya no se pide al abrir la ficha: lo trae "Me interesa", que
      pide cuenta y suma al contador (migración 014). Acá sólo queda el número
      de interesados, que sube si se toca en esta misma ficha. */
   const [interest, setInterest] = useState<{ slug: string; count: number } | null>(null)
-  const [similar, setSimilar] = useState<Vehicle[]>([])
+  const [similar, setSimilar] = useState<{ slug: string; items: Vehicle[] } | null>(null)
 
   useEffect(() => {
     let current = true
 
     getVehicleBySlug(slug)
-      .then(async (found) => {
+      .then((found) => {
         if (!current) return
-        setLoaded({ slug, vehicle: found, failed: false })
+        setLoaded({ slug, vehicle: found, failure: null })
 
         /* La visita se cuenta y se olvida: si falla, no pasa nada. Es una
            métrica, no el contenido de la página. */
         void registerView(slug)
 
-        const [itsSeller, alike] = await Promise.all([
-          getSeller(found.sellerId),
-          getSimilarVehicles(found),
-        ])
-        if (!current) return
-        setSeller(itsSeller)
-        setSimilar(alike)
+        /* Los dos van por su cuenta y cada uno se cae solo. Pedidos juntos y
+           esperados con un `await`, un tropiezo de red buscando el vendedor se
+           llevaba puesta la ficha entera, que ya estaba cargada y bien. */
+        void getSeller(found.sellerId)
+          .then((its) => {
+            if (current) setSeller({ slug, seller: its })
+          })
+          .catch((cause: unknown) => {
+            console.error('getSeller', cause)
+            if (current) setSeller({ slug, seller: null })
+          })
+
+        void getSimilarVehicles(found)
+          .then((alike) => {
+            if (current) setSimilar({ slug, items: alike })
+          })
+          .catch((cause: unknown) => {
+            console.error('getSimilarVehicles', cause)
+            if (current) setSimilar({ slug, items: [] })
+          })
       })
       .catch((cause: unknown) => {
         /* Un fallo de red no es lo mismo que un aviso inexistente: decirle al
-           usuario que no existe cuando en realidad se cayo la conexion lo manda
-           a buscar en otro lado por nada. */
-        if (!(cause instanceof NotFoundError)) console.error('getVehicleBySlug', cause)
-        if (current) setLoaded({ slug, vehicle: null, failed: true })
+           usuario que no existe cuando en realidad se cayó la conexión lo manda
+           a buscar en otro lado por nada. Uno se cierra con «no está»; el otro
+           tiene arreglo y se ofrece reintentar. */
+        const missing = cause instanceof NotFoundError
+        if (!missing) console.error('getVehicleBySlug', cause)
+        if (current) setLoaded({ slug, vehicle: null, failure: missing ? 'notfound' : 'error' })
       })
 
     return () => {
       current = false
     }
-  }, [slug])
+  }, [slug, attempt])
 
   const fresh = loaded.slug === slug
-  const status: Status = !fresh ? 'loading' : loaded.failed ? 'notfound' : 'ready'
+  const status: Status = !fresh ? 'loading' : (loaded.failure ?? 'ready')
   const vehicle = fresh ? loaded.vehicle : null
+
+  /* Del auto que está en pantalla, no del anterior. */
+  const itsSeller = seller?.slug === slug ? seller : null
+  const similarNow = similar?.slug === slug ? similar.items : []
 
   const metaTitle = vehicle
     ? pageTitle(`${vehicleTitle(vehicle)} ${vehicle.year} · ${formatPrice(vehicle.price, vehicle.currency)}`)
@@ -128,6 +155,24 @@ export function VehicleDetail() {
         }
       : undefined,
   })
+
+  if (status === 'error') {
+    return (
+      <div className="page section">
+        <EmptyState
+          tone="error"
+          icon="close"
+          title="No pudimos cargar la publicación"
+          description="Revisá tu conexión e intentá de nuevo."
+          action={
+            <Button variant="yellow" onClick={() => setAttempt((count) => count + 1)}>
+              Reintentar
+            </Button>
+          }
+        />
+      </div>
+    )
+  }
 
   if (status === 'notfound') {
     return (
@@ -207,14 +252,18 @@ export function VehicleDetail() {
             <p className="detail__description">{vehicle.description}</p>
           </section>
 
-          <section className="detail__section">
-            <h2 className="detail__heading">Vendedor</h2>
-            {seller ? (
-              <SellerCard seller={seller} trust={vehicle.sellerTrust} />
-            ) : (
-              <Skeleton height="116px" />
-            )}
-          </section>
+          {/* Si el vendedor no vino, el bloque no queda como título con un
+              hueco abajo: se va entero. */}
+          {(!itsSeller || itsSeller.seller) && (
+            <section className="detail__section">
+              <h2 className="detail__heading">Vendedor</h2>
+              {itsSeller?.seller ? (
+                <SellerCard seller={itsSeller.seller} trust={vehicle.sellerTrust} />
+              ) : (
+                <Skeleton height="116px" />
+              )}
+            </section>
+          )}
         </div>
 
         <aside className="detail__aside">
@@ -295,7 +344,7 @@ export function VehicleDetail() {
         </aside>
       </div>
 
-      {similar.length > 0 && (
+      {similarNow.length > 0 && (
         <section className="section detail__similar">
           <div className="page">
             <div className="section__panel">
@@ -306,7 +355,7 @@ export function VehicleDetail() {
                   <Icon name="arrowRight" size={15} />
                 </Link>
               </div>
-              <VehicleGrid vehicles={similar} />
+              <VehicleGrid vehicles={similarNow} />
             </div>
           </div>
         </section>

@@ -12,6 +12,7 @@ import { SaveSearch } from '../components/search/SaveSearch'
 import { countActive, useVehicleFilters } from '../hooks/useVehicleFilters'
 import { listMakes, listModels, listProvinces, listVehicles } from '../lib/api'
 import { formatCount } from '../lib/format'
+import { pageWindow } from '../lib/pagination'
 import type { Paginated, SortOption, Vehicle } from '../types'
 import './Cars.css'
 
@@ -30,9 +31,15 @@ type Status = 'loading' | 'ready' | 'error'
 export function Cars() {
   const { filters, sort, page, setParam, toggleInList, clearAll } = useVehicleFilters()
 
+  /* Reintentar no cambia la búsqueda, así que sin este contador no cambiaría
+     nada: la query string queda igual, `requestKey` también, y el botón no
+     hace nada. Va adentro de la identidad para que el reintento cuente como
+     una búsqueda nueva y la pantalla vuelva a decir «Buscando…». */
+  const [attempt, setAttempt] = useState(0)
+
   /* Identidad de la búsqueda actual. Comparar esto con la búsqueda que ya
      respondió es lo que dice si estamos cargando, sin un setState extra. */
-  const requestKey = JSON.stringify({ filters, sort, page })
+  const requestKey = JSON.stringify({ filters, sort, page, attempt })
 
   const [answer, setAnswer] = useState<{
     key: string
@@ -76,7 +83,7 @@ export function Cars() {
     return () => {
       current = false
     }
-  }, [requestKey, filters, sort, page])
+  }, [requestKey, filters, sort, page, attempt])
 
   const status: Status =
     answer.key !== requestKey ? 'loading' : answer.failed ? 'error' : 'ready'
@@ -214,7 +221,7 @@ export function Cars() {
             title="Algo salió mal"
             description="No pudimos cargar los resultados. Revisá tu conexión e intentá de nuevo."
             action={
-              <Button variant="outline" onClick={() => setParam('page', page)}>
+              <Button variant="outline" onClick={() => setAttempt((count) => count + 1)}>
                 Reintentar
               </Button>
             }
@@ -249,17 +256,24 @@ export function Cars() {
               {formatCount(total)}
             </span>
             <div className="pagination__pages">
-              {Array.from({ length: pageCount }, (_, index) => index + 1).map((number) => (
-                <button
-                  key={number}
-                  type="button"
-                  className={number === page ? 'pagination__page is-on' : 'pagination__page'}
-                  aria-current={number === page ? 'page' : undefined}
-                  onClick={() => setParam('page', number)}
-                >
-                  {number}
-                </button>
-              ))}
+              {pageWindow(page, pageCount).map((slot, index) =>
+                slot === 'gap' ? (
+                  <span key={`gap-${index}`} className="pagination__gap" aria-hidden="true">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={slot}
+                    type="button"
+                    className={slot === page ? 'pagination__page is-on' : 'pagination__page'}
+                    aria-current={slot === page ? 'page' : undefined}
+                    aria-label={`Página ${slot}`}
+                    onClick={() => setParam('page', slot)}
+                  >
+                    {slot}
+                  </button>
+                ),
+              )}
             </div>
           </nav>
         )}
