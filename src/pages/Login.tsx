@@ -12,6 +12,7 @@ import {
   sendPasswordReset,
 } from '../lib/auth'
 import { describeError } from '../lib/errors'
+import { LIMITS } from '../lib/limits'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import type { SellerType } from '../types'
 import './Login.css'
@@ -98,7 +99,9 @@ export function Login() {
     setBusy(true)
     try {
       if (mode === 'signin') await signIn(email, password)
-      else await signUp(email, password, name.trim(), kind)
+      /* El mismo tope que Ajustes: el nombre de la cuenta sale al lado de cada
+         aviso y en el garage, y este es el otro lugar donde se carga. */
+      else await signUp(email, password, name.trim().slice(0, LIMITS.name), kind)
       /* No hace falta navegar: en cuanto hay sesión, el `Navigate` de arriba
          se encarga de llevarlo a donde quería ir. */
     } catch (cause) {
@@ -123,7 +126,9 @@ export function Login() {
          no hay que pisarle el perfil. */
       await sendMagicLink(
         email,
-        mode === 'signup' ? { name: name.trim() || undefined, sellerType: kind } : undefined,
+        mode === 'signup'
+          ? { name: name.trim().slice(0, LIMITS.name) || undefined, sellerType: kind }
+          : undefined,
       )
       setLinkSent(true)
     } catch (cause) {
@@ -291,6 +296,7 @@ export function Login() {
                     : 'Cómo te van a ver los compradores'
                 }
                 value={name}
+                maxLength={LIMITS.name}
                 onChange={(event) => setName(event.target.value)}
               />
             </>
