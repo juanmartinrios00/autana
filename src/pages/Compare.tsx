@@ -7,6 +7,7 @@ import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
 import { VehicleMedia } from '../components/vehicle/VehicleMedia'
 import { pageTitle } from '../config/brand'
+import { MAX_COMPARE } from '../context/compare-context'
 import { useCompare } from '../hooks/useCompare'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getVehiclesBySlugs } from '../lib/api'
@@ -110,7 +111,12 @@ export function Compare() {
 
   useEffect(() => {
     let current = true
-    const slugs = ids ? ids.split(',').filter(Boolean) : []
+    /* El tope se aplica acá y no sólo en el changuito. La URL es la fuente de
+       verdad y es lo que se comparte: el selector nunca escribe más de tres,
+       pero un link con ocho ---pegado a mano, o armado a partir de otro---
+       dibujaba ocho columnas en una grilla pensada para tres, y pedía a la base
+       ocho autos que no se iban a poder mirar igual. */
+    const slugs = (ids ? ids.split(',').filter(Boolean) : []).slice(0, MAX_COMPARE)
 
     void getVehiclesBySlugs(slugs)
       .then((found) => {
