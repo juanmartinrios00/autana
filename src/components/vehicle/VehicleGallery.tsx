@@ -13,8 +13,22 @@ interface VehicleGalleryProps {
 export function VehicleGallery({ vehicle, children }: VehicleGalleryProps) {
   const [index, setIndex] = useState(0)
   const count = vehicle.images.length
-  const visible = vehicle.images.slice(0, THUMBS)
-  const rest = count - visible.length
+
+  /* La tira sigue a la foto que se está viendo.
+     
+     Antes mostraba siempre las cinco primeras, así que en un aviso de ocho
+     fotos ---que son los buenos, y el logro de "publicación completa" pide
+     justamente ocho--- pasar la quinta con las flechas dejaba la tira entera
+     sin ninguna marcada: la foto grande cambiaba y abajo no se movía nada, como
+     si la navegación se hubiera desenganchado.
+     
+     La ventana se corre recién cuando hace falta y se frena contra el final,
+     para que no quede media tira vacía en la última foto. */
+  const start = Math.min(Math.max(0, index - 2), Math.max(0, count - THUMBS))
+  const visible = vehicle.images.slice(start, start + THUMBS)
+  /* Las que quedan después de la ventana. Las de antes se alcanzan con la
+     flecha, que es de donde vino quien está mirando la sexta. */
+  const rest = count - (start + visible.length)
 
   const move = (delta: number) => setIndex((prev) => (prev + delta + count) % count)
 
@@ -51,20 +65,35 @@ export function VehicleGallery({ vehicle, children }: VehicleGalleryProps) {
 
       {count > 1 && (
         <div className="gallery__thumbs">
-          {visible.map((image, position) => (
-            <button
-              key={image.id}
-              type="button"
-              className={position === index ? 'gallery__thumb is-on' : 'gallery__thumb'}
-              aria-label={`Ver foto ${position + 1} de ${count}`}
-              aria-current={position === index}
-              onClick={() => setIndex(position)}
-            >
-              <VehicleMedia vehicle={vehicle} index={position} />
-            </button>
-          ))}
+          {visible.map((image, offset) => {
+            /* La posición real en el aviso, no la posición dentro de la
+               ventana: si no, al correrse la tira la miniatura marcada y el
+               número del contador dejan de coincidir. */
+            const position = start + offset
+            return (
+              <button
+                key={image.id}
+                type="button"
+                className={position === index ? 'gallery__thumb is-on' : 'gallery__thumb'}
+                aria-label={`Ver foto ${position + 1} de ${count}`}
+                aria-current={position === index}
+                onClick={() => setIndex(position)}
+              >
+                <VehicleMedia vehicle={vehicle} index={position} />
+              </button>
+            )
+          })}
           {rest > 0 && (
-            <button type="button" className="gallery__thumb gallery__thumb--more">
+            /* Tenía la forma de un botón, el cursor de un botón y el foco de un
+               botón, y no hacía nada: quien tocaba "+3" para ver las tres que
+               faltaban se quedaba mirando la misma foto. Ahora salta a la
+               primera de esas, que es lo que el cartel promete. */
+            <button
+              type="button"
+              className="gallery__thumb gallery__thumb--more"
+              aria-label={`Ver las otras ${rest} fotos`}
+              onClick={() => setIndex(start + THUMBS)}
+            >
               <span className="mono">+{rest}</span>
             </button>
           )}
