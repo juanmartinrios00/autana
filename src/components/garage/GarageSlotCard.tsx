@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import { Input } from '../ui/Input'
@@ -50,8 +50,16 @@ export function GarageSlotCard({
     if (!file) return
     setPhoto(file)
     /* Vista previa inmediata con el archivo original; la compresión pasa
-       recién al guardar, para no procesar algo que quizás se descarte. */
-    setPreview(URL.createObjectURL(file))
+       recién al guardar, para no procesar algo que quizás se descarte.
+
+       Eso mismo hace que acá la fuga pese más que en el formulario de publicar:
+       lo que queda vivo es el archivo tal como salió del teléfono, cuatro megas,
+       y no la versión comprimida de doscientos kilobytes. Probar tres fotos
+       antes de decidirse dejaba las tres en memoria hasta recargar la página. */
+    setPreview((previous) => {
+      if (previous) URL.revokeObjectURL(previous)
+      return URL.createObjectURL(file)
+    })
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -83,6 +91,22 @@ export function GarageSlotCard({
       setBusy(false)
     }
   }
+
+  /* La última que quedó, para poder tirarla al desmontar. Leerla de una ref y
+     no de `preview` es lo que deja que el efecto de limpieza corra sólo al
+     final: dependiendo de `preview`, revocaría la que se está mostrando cada
+     vez que se elige una nueva. */
+  const previewRef = useRef(preview)
+  useEffect(() => {
+    previewRef.current = preview
+  }, [preview])
+
+  useEffect(
+    () => () => {
+      if (previewRef.current) URL.revokeObjectURL(previewRef.current)
+    },
+    [],
+  )
 
   const shownPhoto = preview ?? entry?.photoUrl
 
