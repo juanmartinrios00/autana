@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 /* Con `?raw`, igual que el resto de los tests que leen el esquema. */
 import sql from '../../supabase/migrations/019_contact_messages.sql?raw'
-import { CONTACT_LIMITS, LIMITS } from './limits'
+import garageSql from '../../supabase/migrations/002_garage.sql?raw'
+import { CONTACT_LIMITS, GARAGE_YEARS, LIMITS } from './limits'
 
 /**
  * El formulario de contacto y la tabla que lo recibe declaran los mismos
@@ -58,5 +59,21 @@ describe('LIMITS', () => {
       .filter(([field]) => field !== 'description')
       .map(([, value]) => value)
     expect(LIMITS.description).toBeGreaterThan(Math.max(...otros) * 4)
+  })
+})
+
+
+describe('GARAGE_YEARS contra la migración 002', () => {
+  it('es el mismo rango que acepta la tabla', () => {
+    const match = garageSql.match(/year\s+int check \(year between (\d+) and (\d+)\)/)
+    expect(match, 'no se encontró el check del año').not.toBeNull()
+    expect(GARAGE_YEARS).toEqual({ min: Number(match![1]), max: Number(match![2]) })
+  })
+
+  /* El garage va más atrás que los avisos a propósito: ahí entra el auto del
+     abuelo, que no está en venta. Si algún día coinciden, es que alguien copió
+     uno sobre el otro sin querer. */
+  it('empieza antes que el rango de los avisos', () => {
+    expect(GARAGE_YEARS.min).toBeLessThan(1950)
   })
 })

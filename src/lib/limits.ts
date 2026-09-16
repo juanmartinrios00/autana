@@ -49,3 +49,17 @@ export const CONTACT_LIMITS = {
   email: { min: 6, max: 160 },
   message: { min: 20, max: 4000 },
 } as const
+
+
+/**
+ * El rango de años que acepta la tabla del garage (migracion 002).
+ *
+ * Va mas atras que el de los avisos ---que arranca en 1950--- porque en el
+ * garage entra el auto del abuelo, que no esta en venta.
+ *
+ * Sin esto en el formulario, un año fuera de rango no se rechaza con un cartel:
+ * la base tira el `check`, el `catch` de la tarjeta lo traduce a "No pudimos
+ * guardarlo, proba de nuevo", y probar de nuevo no arregla nada. El unico
+ * camino es borrar el año y no entender por que.
+ */
+export const GARAGE_YEARS = { min: 1900, max: 2100 } as const

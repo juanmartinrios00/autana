@@ -2,12 +2,17 @@ import { describe, expect, it } from 'vitest'
 /* Con `?raw`, igual que los otros tests que leen el esquema: la app se tipa sin
    los tipos de Node a propósito. */
 import schema from '../../supabase/schema.sql?raw'
+/* El estado vive en la 006 y no en el esquema: ahí se amplió el `check` para
+   sumar `blocked`, que es lo que pone la moderación. */
+import reportsSql from '../../supabase/migrations/006_reports.sql?raw'
 import {
   bodyLabels,
   bodyTypes,
   conditionLabels,
   conditions,
   drivetrainLabels,
+  sellerTypeLabels,
+  statusLabels,
   formatMileage,
   formatPrice,
   fuelLabels,
@@ -193,5 +198,30 @@ describe('las listas del dominio contra el esquema', () => {
         expect(label.length, key).toBeGreaterThan(0)
       }
     }
+  })
+})
+
+
+describe('las otras dos listas contra el esquema', () => {
+  const values = (text: string, pattern: string) => {
+    const match = text.match(new RegExp(pattern))
+    expect(match, `no se encontró: ${pattern}`).not.toBeNull()
+    return [...match![1]!.matchAll(/'([^']+)'/g)].map((m) => m[1]).sort()
+  }
+
+  /* `statusLabels` tiene cinco: los cuatro del esquema más `blocked`, que la
+     migración 006 agregó para la moderación. Si alguien lee sólo el esquema y
+     "corrige" las etiquetas sacando `blocked`, un aviso bloqueado queda con la
+     celda de estado vacía justo en el panel donde se lo mira. */
+  it('los estados de un aviso salen de la 006, no del esquema', () => {
+    expect(Object.keys(statusLabels).sort()).toEqual(
+      values(reportsSql, String.raw`status in \(([^)]+)\)`),
+    )
+  })
+
+  it('los tipos de vendedor', () => {
+    expect(Object.keys(sellerTypeLabels).sort()).toEqual(
+      values(schema, String.raw`seller_type\s+text[^\n]*check \(seller_type in \(([^)]+)\)\)`),
+    )
   })
 })

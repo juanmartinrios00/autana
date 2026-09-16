@@ -4,7 +4,7 @@ import { Icon } from '../ui/Icon'
 import { Input } from '../ui/Input'
 import { GarageScene } from './scenes'
 import { SLOTS, type GarageInput } from '../../lib/garage'
-import { LIMITS } from '../../lib/limits'
+import { GARAGE_YEARS, LIMITS } from '../../lib/limits'
 import type { GarageEntry, GarageSlot } from '../../types'
 import './GarageSlotCard.css'
 
@@ -94,6 +94,15 @@ export function GarageSlotCard({
       return
     }
 
+    /* El año lo acota también la base, y de ahí el error vuelve como un
+       `check` que la tarjeta traduce a "probá de nuevo" ---que es mentira:
+       probar de nuevo con el mismo año da lo mismo. Mejor decirlo acá. */
+    const parsedYear = year ? Number(year) : null
+    if (parsedYear !== null && (parsedYear < GARAGE_YEARS.min || parsedYear > GARAGE_YEARS.max)) {
+      setError(`El año tiene que estar entre ${GARAGE_YEARS.min} y ${GARAGE_YEARS.max}.`)
+      return
+    }
+
     setError(null)
     setBusy(true)
     try {
@@ -102,7 +111,7 @@ export function GarageSlotCard({
           slot,
           make: make.trim().slice(0, LIMITS.make),
           model: model.trim().slice(0, LIMITS.model),
-          year: year ? Number(year) : null,
+          year: parsedYear,
           note: note.trim().slice(0, LIMITS.garageNote),
         },
         photo ?? undefined,
@@ -162,6 +171,8 @@ export function GarageSlotCard({
             type="number"
             inputMode="numeric"
             placeholder="Ej. 2009"
+            min={GARAGE_YEARS.min}
+            max={GARAGE_YEARS.max}
             value={year}
             error={error ?? undefined}
             onChange={(event) => setYear(event.target.value)}
