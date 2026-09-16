@@ -405,12 +405,25 @@ async function sitemap(origin: string): Promise<Response> {
   ])
 
   /* Las fijas van siempre, aunque la base no conteste: mas vale un sitemap
-     con la home que un 500 que Google reintenta y termina penalizando. */
+     con la home que un 500 que Google reintenta y termina penalizando.
+
+     Son todas las publicas que tienen contenido propio y no estan en el
+     `Disallow` de robots. Faltaban cuatro, y dos de esas son justo las que le
+     sirven al negocio: `/help` es un FAQ escrito ---el tipo de pagina por la
+     que alguien llega buscando "como transferir un auto usado"--- y `/dealers`
+     es la pagina que le explica el producto a una agencia. Estar en el sitemap
+     no garantiza nada, pero no estar es no haberlas ofrecido. */
   const entries: { loc: string; lastmod?: string }[] = [
     { loc: `${origin}/` },
     { loc: `${origin}/cars` },
     { loc: `${origin}/garage` },
     { loc: `${origin}/blog` },
+    { loc: `${origin}/help` },
+    { loc: `${origin}/dealers` },
+    { loc: `${origin}/levels` },
+    { loc: `${origin}/contact` },
+    { loc: `${origin}/terms` },
+    { loc: `${origin}/privacy` },
   ]
 
   /* Las notas no salen de la base: viven en el bundle, asi que entran siempre
