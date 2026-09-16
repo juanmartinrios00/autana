@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { BRAND } from '../../config/brand'
 import { useAuth } from '../../hooks/useAuth'
@@ -35,7 +35,42 @@ export function Navbar({ atTop }: NavbarProps) {
   const { session, signOut } = useAuth()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const burgerRef = useRef<HTMLButtonElement>(null)
   const unseen = useUnseenNovedades()
+
+  /* Escape y click afuera, igual que el menú de la cuenta, que está a dos
+     centímetros de este y ya se comportaba así. Cerrar al navegar lo hace cada
+     link en su `onClick` y no necesita efecto; esto escucha al documento, que
+     es un sistema externo.
+
+     Sin esto, el menú de celular sólo se cerraba tocando de nuevo la
+     hamburguesa: tocar en cualquier otro lado de la pantalla no hacía nada, que
+     es lo primero que uno prueba. */
+  useEffect(() => {
+    if (!menuOpen) return
+
+    function handleKey(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return
+      setMenuOpen(false)
+      /* El foco vuelve a la hamburguesa: si se queda adentro de un menú que ya
+         no está, quien navega con teclado pierde el lugar. */
+      burgerRef.current?.focus()
+    }
+
+    function handleDown(event: MouseEvent) {
+      const target = event.target as Node
+      const panel = document.getElementById('mobile-navigation')
+      if (panel?.contains(target) || burgerRef.current?.contains(target)) return
+      setMenuOpen(false)
+    }
+
+    document.addEventListener('keydown', handleKey)
+    document.addEventListener('mousedown', handleDown)
+    return () => {
+      document.removeEventListener('keydown', handleKey)
+      document.removeEventListener('mousedown', handleDown)
+    }
+  }, [menuOpen])
 
   /* La home tiene un hero oscuro a sangre: ahí la navbar flota encima, sin
      fondo. En cuanto se scrollea, o en cualquier otra página, se vuelve
@@ -47,6 +82,7 @@ export function Navbar({ atTop }: NavbarProps) {
     <header className={navbarClass}>
       <div className="page navbar__inner">
         <button
+          ref={burgerRef}
           type="button"
           className="navbar__burger"
           aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
