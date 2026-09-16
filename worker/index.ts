@@ -32,14 +32,14 @@ interface Env {
  * usarlo. Lo que no entre en este patrón no es un slug nuestro: los generamos
  * con letras, números y guiones.
  */
-const LISTING_URL = /^\/cars\/([A-Za-z0-9-]{1,120})\/?$/
-const BLOG_URL = /^\/blog\/([a-z0-9-]{1,120})\/?$/
+export const LISTING_URL = /^\/cars\/([A-Za-z0-9-]{1,120})\/?$/
+export const BLOG_URL = /^\/blog\/([a-z0-9-]{1,120})\/?$/
 
 /**
  * El garage se direcciona por el uuid del usuario, así que se exige la forma
  * exacta de un uuid. Mismo motivo que el slug: se interpola en un filtro.
  */
-const GARAGE_URL =
+export const GARAGE_URL =
   /^\/g\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\/?$/
 
 interface ListingRow {
@@ -153,18 +153,25 @@ function money(price: number, currency: string): string {
   return `${currency} ${price.toLocaleString('es-AR')}`
 }
 
-function buildTitle(row: ListingRow): string {
+export function buildTitle(row: ListingRow): string {
   const name = [row.make, row.model, row.trim].filter(Boolean).join(' ')
   return pageTitle(`${name} ${row.year} — ${money(row.price, row.currency)}`)
 }
 
-function buildDescription(row: ListingRow): string {
+export function buildDescription(row: ListingRow): string {
   const head = `${row.year} · ${row.mileage.toLocaleString('es-AR')} km · ${row.city}, ${row.province}`
   const text = row.description.trim().replace(/\s+/g, ' ')
   /* Los scrapers cortan alrededor de los 160-200 caracteres. Se corta acá para
      elegir nosotros dónde, en vez de que quede una palabra por la mitad. */
   const room = 200 - head.length - 3
-  if (!text) return head
+
+  /* Sin lugar para un fragmento que se entienda, va el encabezado solo.
+     La ciudad es texto libre y la columna no tiene tope, así que un valor
+     largo deja `room` en negativo — y `slice(0, -40)` no corta los primeros
+     cuarenta caracteres, corta los últimos cuarenta y devuelve casi toda la
+     descripción, que es exactamente lo contrario de lo que este corte busca. */
+  if (!text || room < 20) return head
+
   return text.length > room ? `${head}. ${text.slice(0, room).trimEnd()}…` : `${head}. ${text}`
 }
 
@@ -240,7 +247,7 @@ function coverImage(row: ListingRow): string | null {
 }
 
 /** Escapa para meter texto dentro de un atributo HTML. */
-function attr(value: string): string {
+export function attr(value: string): string {
   return value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -326,7 +333,7 @@ function robots(origin: string): Response {
   })
 }
 
-function xmlEscape(value: string): string {
+export function xmlEscape(value: string): string {
   return value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
