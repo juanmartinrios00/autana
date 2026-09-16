@@ -37,7 +37,11 @@ export function Levels() {
   const { session } = useAuth()
   const userId = session?.user.id ?? ''
 
-  const [fetched, setFetched] = useState<LevelInput | null>(null)
+  /* Con la cuenta a la que pertenece, como el resto del código. Acá el caso es
+     angosto ---hay que cambiar de cuenta sin salir de esta pantalla--- pero el
+     resultado sería ver los logros de la cuenta anterior hasta que llegue la
+     consulta nueva, que es la clase de dato equivocado que nadie reporta. */
+  const [fetched, setFetched] = useState<{ for: string; value: LevelInput } | null>(null)
 
   useEffect(() => {
     if (!userId) return
@@ -48,7 +52,7 @@ export function Levels() {
     void getLevelInput(userId)
       .catch(() => EMPTY)
       .then((value) => {
-        if (current) setFetched(value)
+        if (current) setFetched({ for: userId, value })
       })
 
     return () => {
@@ -58,8 +62,8 @@ export function Levels() {
 
   /* Sin sesión no hay nada que pedir, así que el vacío se deriva en el render
      en vez de escribirse en el estado desde el efecto. */
-  const input = userId ? fetched : EMPTY
-  const state: LevelState = computeLevel(input ?? EMPTY)
+  const input = userId && fetched?.for === userId ? fetched.value : EMPTY
+  const state: LevelState = computeLevel(input)
   const signedIn = Boolean(session)
 
   useDocumentMeta({
