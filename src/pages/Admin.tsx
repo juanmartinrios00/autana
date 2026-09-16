@@ -61,15 +61,27 @@ export function Admin() {
         if (!current) return
         setAllowed(ok)
         if (ok) {
-          const [listings, people, contact] = await Promise.all([
+          /* `allSettled` y no `all`, igual que en el perfil y en el garage. Con
+             `all`, un tropiezo de red en cualquiera de las tres listas caia al
+             `catch` de abajo, que pone `allowed` en false: a quien modera se le
+             decia que no tiene permiso, que es la conclusion mas equivocada
+             posible y la que lo manda a buscar el problema donde no esta. Una
+             lista que no vino se muestra vacia; las otras dos siguen. */
+          const [listings, people, contact] = await Promise.allSettled([
             listReportedListings(),
             listReportedProfiles(),
             listContactMessages(),
           ])
           if (!current) return
-          setItems(listings)
-          setProfiles(people)
-          setMessages(contact)
+          setItems(listings.status === 'fulfilled' ? listings.value : [])
+          setProfiles(people.status === 'fulfilled' ? people.value : [])
+          setMessages(contact.status === 'fulfilled' ? contact.value : [])
+
+          const caida = [listings, people, contact].find((r) => r.status === 'rejected')
+          if (caida) {
+            console.error('moderación', caida.reason)
+            setFailure('No pudimos traer una de las listas. Recargá para volver a intentarlo.')
+          }
         }
       })
       .catch((cause) => {
