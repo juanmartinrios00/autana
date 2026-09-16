@@ -22,6 +22,7 @@ import {
 } from '../lib/api'
 import { changePassword, MIN_PASSWORD } from '../lib/auth'
 import { isContactEmail, normalizeInstagram } from '../lib/contact'
+import { toE164 } from '../lib/whatsapp'
 import type { Seller } from '../types'
 import './Settings.css'
 
@@ -172,7 +173,7 @@ export function Settings() {
     /* Mismo criterio que el formulario de publicar: si el número está mal, el
        comprador no llega, y es el único dato del perfil del que depende una
        venta. Vacío se permite — se carga al publicar. */
-    if (whatsapp.trim() && !/^\+?\d[\d\s-]{7,}$/.test(whatsapp.trim())) {
+    if (whatsapp.trim() && !toE164(whatsapp)) {
       setDataError('Poné un WhatsApp válido con característica.')
       return
     }

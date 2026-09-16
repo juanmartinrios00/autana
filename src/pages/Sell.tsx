@@ -21,6 +21,7 @@ import {
   uploadListingPhotos,
 } from '../lib/api'
 import { describeError } from '../lib/errors'
+import { toE164 } from '../lib/whatsapp'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
   bodyLabels,
@@ -64,7 +65,12 @@ function validate(step: number, draft: ListingDraft): Partial<Record<keyof Listi
     else if (price < 500 || price > 5_000_000) errors.price = 'Poné un precio en dólares realista.'
     if (!draft.province) errors.province = 'Elegí la provincia.'
     if (!draft.city.trim()) errors.city = 'Falta la ciudad o el barrio.'
-    if (!/^\+?\d[\d\s-]{7,}$/.test(draft.whatsapp)) errors.whatsapp = 'Poné un WhatsApp válido con característica.'
+    /* Se valida con la misma funcion que arma el link de WhatsApp, y no con
+       una forma parecida: si `toE164` no puede armar un numero contactable, el
+       aviso se publica con un boton de contacto que no lleva a ningun lado y
+       el vendedor no se entera nunca. La puerta tiene que rechazar exactamente
+       lo que la salida no sabe usar. */
+    if (!toE164(draft.whatsapp)) errors.whatsapp = 'Poné un WhatsApp válido con característica.'
   }
 
   return errors
