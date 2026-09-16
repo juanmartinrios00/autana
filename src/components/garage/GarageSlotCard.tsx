@@ -4,6 +4,7 @@ import { Icon } from '../ui/Icon'
 import { Input } from '../ui/Input'
 import { GarageScene } from './scenes'
 import { SLOTS, type GarageInput } from '../../lib/garage'
+import { LIMITS } from '../../lib/limits'
 import type { GarageEntry, GarageSlot } from '../../types'
 import './GarageSlotCard.css'
 
@@ -67,10 +68,10 @@ export function GarageSlotCard({
       await onSave(
         {
           slot,
-          make: make.trim(),
-          model: model.trim(),
+          make: make.trim().slice(0, LIMITS.make),
+          model: model.trim().slice(0, LIMITS.model),
           year: year ? Number(year) : null,
-          note: note.trim(),
+          note: note.trim().slice(0, LIMITS.garageNote),
         },
         photo ?? undefined,
       )
@@ -96,12 +97,14 @@ export function GarageSlotCard({
               label="Marca"
               placeholder="Ej. Renault"
               value={make}
+              maxLength={LIMITS.make}
               onChange={(event) => setMake(event.target.value)}
             />
             <Input
               label="Modelo"
               placeholder="Ej. Symbol"
               value={model}
+              maxLength={LIMITS.model}
               onChange={(event) => setModel(event.target.value)}
             />
           </div>
@@ -126,6 +129,7 @@ export function GarageSlotCard({
               rows={2}
               placeholder="Qué significó para vos"
               value={note}
+              maxLength={LIMITS.garageNote}
               onChange={(event) => setNote(event.target.value)}
             />
           </div>

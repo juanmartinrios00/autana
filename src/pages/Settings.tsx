@@ -22,6 +22,7 @@ import {
 } from '../lib/api'
 import { changePassword, MIN_PASSWORD } from '../lib/auth'
 import { isContactEmail, normalizeInstagram } from '../lib/contact'
+import { LIMITS } from '../lib/limits'
 import { toE164 } from '../lib/whatsapp'
 import type { Seller } from '../types'
 import './Settings.css'
@@ -195,9 +196,9 @@ export function Settings() {
     setDataSaved(false)
     try {
       await updateProfile(userId, {
-        name: name.trim(),
+        name: name.trim().slice(0, LIMITS.name),
         whatsapp: whatsapp.trim(),
-        city: city.trim(),
+        city: city.trim().slice(0, LIMITS.city),
         province,
         sellerType,
         instagram: handle,
@@ -292,7 +293,12 @@ export function Settings() {
           </p>
 
           <div className="settings__pair">
-            <Input label="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
+            <Input
+              label="Nombre"
+              value={name}
+              maxLength={LIMITS.name}
+              onChange={(e) => setName(e.target.value)}
+            />
             <Input
               label="WhatsApp"
               inputMode="tel"
@@ -327,6 +333,7 @@ export function Settings() {
               label="Ciudad"
               placeholder="Ej. Avellaneda"
               value={city}
+              maxLength={LIMITS.city}
               onChange={(e) => setCity(e.target.value)}
             />
             <Select

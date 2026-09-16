@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { provinces } from '../src/data/makes'
+import { LIMITS } from '../src/lib/limits'
 import { attr, BLOG_URL, buildDescription, buildTitle, GARAGE_URL, LISTING_URL, xmlEscape } from './index'
 
 /**
@@ -128,6 +130,27 @@ describe('buildDescription', () => {
     })
     expect(largo).not.toContain('Impecable')
     expect(largo.endsWith('…')).toBe(false)
+  })
+
+  /**
+   * El vinculo entre los topes de los formularios y el presupuesto de este
+   * corte. `LIMITS.city` existe justamente para que el encabezado no se coma
+   * el lugar del texto: si alguien afloja ese tope, el preview de los avisos
+   * de la provincia con el nombre mas largo empieza a salir sin descripcion, y
+   * eso no se ve desde el sitio.
+   */
+  it('con los topes puestos, siempre queda lugar para el texto del vendedor', () => {
+    const provinciaMasLarga = [...provinces].sort((a, b) => b.length - a.length)[0]!
+
+    const peorCaso = buildDescription({
+      ...row,
+      city: 'C'.repeat(LIMITS.city),
+      province: provinciaMasLarga,
+      mileage: 999_999,
+      description: 'Impecable, único dueño, service al día, cubiertas nuevas.',
+    })
+
+    expect(peorCaso).toContain('Impecable')
   })
 
   /* El borde: cuando queda justo el lugar minimo, el fragmento tiene que

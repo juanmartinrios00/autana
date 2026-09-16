@@ -21,6 +21,7 @@ import {
   uploadListingPhotos,
 } from '../lib/api'
 import { describeError } from '../lib/errors'
+import { LIMITS } from '../lib/limits'
 import { toE164 } from '../lib/whatsapp'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
@@ -221,10 +222,16 @@ export function Sell() {
     setFailure(null)
 
     try {
+      /* El `maxLength` de los campos frena lo que se escribe, pero no lo que ya
+         estaba: el borrador se guarda en el navegador y uno empezado antes de
+         que existieran los topes vuelve con el largo viejo. Se recorta al
+         armar el payload, que es el ultimo lugar por el que pasa todo. */
+      const cap = (value: string, max: number) => value.trim().slice(0, max)
+
       const input = {
-        make: draft.make.trim(),
-        model: draft.model.trim(),
-        trim: draft.trim.trim() || null,
+        make: cap(draft.make, LIMITS.make),
+        model: cap(draft.model, LIMITS.model),
+        trim: cap(draft.trim, LIMITS.trim) || null,
         year: Number(draft.year),
         price: Number(draft.price),
         negotiable: draft.negotiable,
@@ -237,9 +244,9 @@ export function Sell() {
         engine: draft.engine.trim() || null,
         doors: draft.doors ? Number(draft.doors) : null,
         color: draft.color.trim() || null,
-        city: draft.city.trim(),
+        city: cap(draft.city, LIMITS.city),
         province: draft.province,
-        description: draft.description.trim(),
+        description: cap(draft.description, LIMITS.description),
         whatsapp: draft.whatsapp.trim(),
       }
 
@@ -399,6 +406,7 @@ export function Sell() {
                   placeholder="Ej. Renault"
                   value={draft.make}
                   error={errors.make}
+                  maxLength={LIMITS.make}
                   onChange={(event) => update('make', event.target.value)}
                 />
                 <Input
@@ -406,6 +414,7 @@ export function Sell() {
                   placeholder="Ej. Symbol"
                   value={draft.model}
                   error={errors.model}
+                  maxLength={LIMITS.model}
                   onChange={(event) => update('model', event.target.value)}
                 />
               </div>
@@ -414,6 +423,7 @@ export function Sell() {
                   label="Versión (opcional)"
                   placeholder="Ej. Luxe 1.6"
                   value={draft.trim}
+                  maxLength={LIMITS.trim}
                   onChange={(event) => update('trim', event.target.value)}
                 />
                 <Input
@@ -595,6 +605,7 @@ export function Sell() {
                   placeholder="Ej. Palermo"
                   value={draft.city}
                   error={errors.city}
+                  maxLength={LIMITS.city}
                   onChange={(event) => update('city', event.target.value)}
                 />
               </div>
@@ -619,6 +630,7 @@ export function Sell() {
                   rows={5}
                   placeholder="Contá el estado real: services, si tuvo choques, qué habría que arreglar. La honestidad acá te ahorra visitas al pedo."
                   value={draft.description}
+                  maxLength={LIMITS.description}
                   onChange={(event) => update('description', event.target.value)}
                 />
               </div>
