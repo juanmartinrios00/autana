@@ -48,8 +48,22 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
   const userId = session?.user.id ?? ''
   const own = userId !== '' && userId === vehicle.sellerId
 
-  const [contact, setContact] = useState<SellerContact | null>(null)
-  const [already, setAlready] = useState(false)
+  /**
+   * El contacto que ya se trajo, junto al aviso del que es.
+   *
+   * En la ficha, este componente no se desmonta al pasar de un auto a otro:
+   * `VehicleDetail` sigue montado y sólo cambia el `vehicle`. Guardando el
+   * contacto solo, el atajo de más abajo ---"ya lo trajo, no hace falta volver
+   * a preguntar"--- daba por traído el del auto anterior: se tocaba "Me
+   * interesa" en el segundo auto, se abría el WhatsApp del vendedor del
+   * primero, y el interés en el segundo no quedaba anotado en ningún lado. El
+   * camino de "similares" al pie de la ficha lleva justo ahí.
+   */
+  const [fetched, setFetched] = useState<{ vehicleId: string; contact: SellerContact } | null>(null)
+  /** El aviso en el que ya se dejó anotado el interés, por lo mismo. */
+  const [already, setAlready] = useState<string | null>(null)
+
+  const contact = fetched?.vehicleId === vehicle.id ? fetched.contact : null
   const [busy, setBusy] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
 
@@ -60,7 +74,7 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
     let current = true
     hasInterest(userId, vehicle.id)
       .then((value) => {
-        if (current) setAlready(value)
+        if (current) setAlready(value ? vehicle.id : null)
       })
       .catch(() => {})
     return () => {
@@ -92,8 +106,8 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
         setFailure('Este aviso ya no está publicado.')
         return
       }
-      setContact(found)
-      setAlready(true)
+      setFetched({ vehicleId: vehicle.id, contact: found })
+      setAlready(vehicle.id)
       onCount?.(found.interestCount)
       dialogRef.current?.showModal()
     } catch (cause) {
@@ -115,7 +129,8 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
     : null
   const nothing = contact && !whatsapp && !contact.instagram && !contact.contactEmail
 
-  const label = busy ? 'Buscando…' : already ? 'Te interesa · ver contacto' : 'Me interesa'
+  const label =
+    busy ? 'Buscando…' : already === vehicle.id ? 'Te interesa · ver contacto' : 'Me interesa'
 
   return (
     <>
