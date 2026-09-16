@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-`npm run lint` (oxlint) · `npm run build` (typecheck + build).
+`npm run lint` (oxlint) · `npm run build` (typecheck + build) · `npm test`.
 
 ## Deploy
 
@@ -41,8 +41,10 @@ src/
     layout/    Navbar, Footer, Layout
   pages/       una carpeta por pantalla; el CSS propio vive al lado del .tsx
   types/       el modelo de dominio: Vehicle, Seller, Favorite, SavedSearch…
-  data/        catálogos estáticos: marcas, provincias, topes de precio
-  lib/         capa de acceso a datos
+  data/        catálogos estáticos: marcas, provincias, topes de precio,
+               los espacios del garage
+  lib/         acceso a datos (api.ts) y la lógica pura que no es de React:
+               formato, niveles, confianza, teléfonos, límites de campo
 supabase/      schema.sql y migraciones, para pegar en el SQL Editor
 ```
 
@@ -78,6 +80,43 @@ de diseño. Lo que hay que respetar:
   hairline a tinta plena, que sobre esquinas casi rectas se lee mucho antes que
   un cambio de sombra.
 - Movimiento: 150–300 ms, `ease-out`, `transform` y `opacity`.
+
+## Tests
+
+    npm test
+
+Vitest sobre Node, con una config aparte de la de la app (`vitest.config.ts`).
+No hay jsdom, ni React, ni Supabase: **lo que se prueba es lógica pura**, y
+cargarle a cada corrida el pipeline de la aplicación sería pedirle que levante
+algo que los tests no usan. Los archivos viven al lado de lo que prueban.
+
+El criterio para decidir qué se prueba no es la cobertura, es **qué falla
+callado**. Una pantalla rota se ve; estas cosas no:
+
+- El teléfono del vendedor. Si `toE164` lo arma mal, el comprador toca "Me
+  interesa", WhatsApp abre un chat con un número que no existe, y el vendedor
+  se queda esperando un mensaje que nunca llega. No hay error en ningún lado.
+- El preview que se comparte. No se ve desde el sitio: sale mal, se manda a un
+  grupo, y el que se entera es el que no abrió el link.
+- El escapado del worker. El título y la descripción salen de lo que escribió
+  el vendedor y terminan dentro de un atributo del HTML que se le sirve a
+  cualquiera.
+
+Hay un tipo de test que vale la pena entender antes de tocar nada, porque es el
+que va a fallar dentro de un año sin que nadie lo esté buscando: **los que atan
+dos definiciones de la misma lista.** El repo tiene varias listas escritas en
+dos lugares que tienen que coincidir y que nada obliga a coincidir.
+
+- `GARAGE_THEMES` y el `check` de la migración 015.
+- `SLOTS`, el tipo `GarageSlot` y el `check` de la migración 002.
+- `LEVELS` y la cantidad de logros: si se suma un logro y no se toca la
+  escalera, el último nivel se gana con seis de siete.
+- `LIMITS.city` y el presupuesto de 200 caracteres del preview: aflojar el tope
+  deja los avisos de la provincia con el nombre más largo sin descripción.
+
+Esos tests leen el SQL con `?raw` y lo comparan contra el TypeScript. Si uno
+falla, **no lo ajustes al valor nuevo**: fijate cuál de las dos definiciones
+quedó sola.
 
 ## Backend
 
