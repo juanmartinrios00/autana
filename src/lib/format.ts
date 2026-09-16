@@ -48,6 +48,24 @@ export const bodyLabels: Record<BodyType, string> = {
   van: 'Utilitario',
 }
 
+/* Las opciones de cada filtro salen de las etiquetas y no de una lista escrita
+   al lado.
+
+   `Record<FuelType, string>` obliga al compilador a tener todas: agregar un
+   combustible al tipo sin agregarle etiqueta no compila, y ahora eso alcanza
+   para que aparezca solo en el panel de filtros. Antes eran cuatro listas mas
+   en `FilterPanel`, sin nada que las obligara a estar completas: sumar un
+   combustible dejaba un filtro que no lo ofrecia nunca, y ese es el peor de los
+   errores mudos posibles en un buscador ---los avisos estan, la busqueda existe,
+   y no hay forma de llegar.
+
+   El orden de declaracion es el orden en que se pintan, que es para lo que
+   sirve que `Object.keys` lo conserve. */
+export const fuelTypes = Object.keys(fuelLabels) as FuelType[]
+export const transmissions = Object.keys(transmissionLabels) as Transmission[]
+export const bodyTypes = Object.keys(bodyLabels) as BodyType[]
+export const conditions = Object.keys(conditionLabels) as VehicleCondition[]
+
 export const sellerTypeLabels: Record<SellerType, string> = {
   dealer: 'Concesionaria',
   private: 'Particular',

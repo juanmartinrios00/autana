@@ -4,13 +4,16 @@ import { Input } from '../ui/Input'
 import { Select } from '../ui/Select'
 import {
   bodyLabels,
+  bodyTypes,
   conditionLabels,
+  conditions,
   fuelLabels,
+  fuelTypes,
   sellerTypeLabels,
   transmissionLabels,
+  transmissions,
 } from '../../lib/format'
 import type { useVehicleFilters } from '../../hooks/useVehicleFilters'
-import type { BodyType, FuelType, Transmission, VehicleCondition } from '../../types'
 import './FilterPanel.css'
 
 type FilterState = ReturnType<typeof useVehicleFilters>
@@ -60,11 +63,6 @@ function ChipGroup<T extends string>({
     </fieldset>
   )
 }
-
-const FUELS: FuelType[] = ['petrol', 'diesel', 'hybrid', 'electric', 'gnc']
-const BODIES: BodyType[] = ['sedan', 'suv', 'hatchback', 'pickup', 'coupe', 'van']
-const CONDITIONS: VehicleCondition[] = ['new', 'used', 'certified']
-const TRANSMISSIONS: Transmission[] = ['manual', 'automatic', 'cvt']
 
 export function FilterPanel({
   filters,
@@ -182,7 +180,7 @@ export function FilterPanel({
           >
             Todas
           </button>
-          {TRANSMISSIONS.map((option) => (
+          {transmissions.map((option) => (
             <button
               key={option}
               type="button"
@@ -200,7 +198,7 @@ export function FilterPanel({
 
       <ChipGroup
         legend="Combustible"
-        options={FUELS}
+        options={fuelTypes}
         labels={fuelLabels}
         selected={filters.fuelType}
         onToggle={(value) => toggleInList('fuelType', value)}
@@ -208,7 +206,7 @@ export function FilterPanel({
 
       <ChipGroup
         legend="Carrocería"
-        options={BODIES}
+        options={bodyTypes}
         labels={bodyLabels}
         selected={filters.bodyType}
         onToggle={(value) => toggleInList('bodyType', value)}
@@ -216,7 +214,7 @@ export function FilterPanel({
 
       <ChipGroup
         legend="Condición"
-        options={CONDITIONS}
+        options={conditions}
         labels={conditionLabels}
         selected={filters.condition}
         onToggle={(value) => toggleInList('condition', value)}

@@ -1,9 +1,21 @@
 import { describe, expect, it } from 'vitest'
+/* Con `?raw`, igual que los otros tests que leen el esquema: la app se tipa sin
+   los tipos de Node a propósito. */
+import schema from '../../supabase/schema.sql?raw'
 import {
+  bodyLabels,
+  bodyTypes,
+  conditionLabels,
+  conditions,
+  drivetrainLabels,
   formatMileage,
   formatPrice,
+  fuelLabels,
+  fuelTypes,
   locationLabel,
   relativeDate,
+  transmissionLabels,
+  transmissions,
   vehicleMeta,
   vehicleTitle,
 } from './format'
@@ -115,6 +127,71 @@ describe('relativeDate', () => {
       const texto = relativeDate(fecha.toISOString(), ahora)
       expect(texto, `hace ${atras} dias`).not.toMatch(/-/)
       expect(texto.length, `hace ${atras} dias`).toBeGreaterThan(0)
+    }
+  })
+})
+
+
+/**
+ * Cada lista del dominio está escrita tres veces: el tipo de TypeScript, el
+ * `Record` de etiquetas y el `check` de la columna en Postgres.
+ *
+ * Las dos primeras las ata el compilador ---un `Record<FuelType, string>` no
+ * compila si falta una--- y por eso las opciones del panel de filtros ahora
+ * salen de las etiquetas en vez de ser una cuarta lista escrita a mano. La
+ * tercera no la ata nadie, y es la que puede romper de verdad: si el `check`
+ * conoce un valor que las etiquetas no, la ficha muestra un campo vacío donde
+ * iba el combustible; si las etiquetas conocen uno que el `check` no, publicar
+ * ese auto falla con un error de Postgres que nadie va a entender.
+ */
+describe('las listas del dominio contra el esquema', () => {
+  const checkValues = (column: string) => {
+    /* `String.raw` y no un template común: adentro de uno común `\s` es `s`,
+       `\(` es `(` y `\n` es un salto de línea de verdad, así que la expresión
+       le llega al `RegExp` ya desarmada. */
+    const pattern = String.raw`${column}\s+text[^\n]*check \(${column} in \(([^)]+)\)\)`
+    const match = schema.match(new RegExp(pattern))
+    expect(match, `no se encontró el check de ${column}`).not.toBeNull()
+    return [...match![1]!.matchAll(/'([^']+)'/g)].map((m) => m[1]).sort()
+  }
+
+  it('los combustibles', () => {
+    expect([...fuelTypes].sort()).toEqual(checkValues('fuel_type'))
+  })
+
+  it('las transmisiones', () => {
+    expect([...transmissions].sort()).toEqual(checkValues('transmission'))
+  })
+
+  it('las carrocerías', () => {
+    expect([...bodyTypes].sort()).toEqual(checkValues('body_type'))
+  })
+
+  it('las condiciones', () => {
+    expect([...conditions].sort()).toEqual(checkValues('condition'))
+  })
+
+  /* La tracción no tiene lista derivada porque no es un filtro, pero la
+     etiqueta se muestra en las especificaciones igual. */
+  it('las tracciones', () => {
+    expect(Object.keys(drivetrainLabels).sort()).toEqual(checkValues('drivetrain'))
+  })
+
+  /* Las opciones que se pintan son exactamente las etiquetas: si alguien vuelve
+     a escribir una lista al lado, esto lo agarra. */
+  it('las opciones del filtro son las etiquetas, en el mismo orden', () => {
+    expect(fuelTypes).toEqual(Object.keys(fuelLabels))
+    expect(transmissions).toEqual(Object.keys(transmissionLabels))
+    expect(bodyTypes).toEqual(Object.keys(bodyLabels))
+    expect(conditions).toEqual(Object.keys(conditionLabels))
+  })
+
+  it('ninguna etiqueta queda vacía', () => {
+    const todas = [fuelLabels, transmissionLabels, bodyLabels, conditionLabels, drivetrainLabels]
+    for (const labels of todas) {
+      for (const [key, label] of Object.entries(labels)) {
+        expect(label.length, key).toBeGreaterThan(0)
+      }
     }
   })
 })
