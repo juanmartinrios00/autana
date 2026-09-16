@@ -4,6 +4,7 @@ import type {
   FuelType,
   ListingStatus,
   SellerType,
+  SortOption,
   Transmission,
   Vehicle,
   VehicleCondition,
@@ -70,6 +71,23 @@ export const sellerTypeLabels: Record<SellerType, string> = {
   dealer: 'Concesionaria',
   private: 'Particular',
 }
+
+export const sellerTypes = Object.keys(sellerTypeLabels) as SellerType[]
+
+/* El orden de los resultados. Estaba escrito dos veces: el desplegable de
+   `/cars` tenia su lista con las etiquetas y `search-query` tenia la suya con
+   los valores validos. Agregar un orden al desplegable sin agregarlo alla
+   hacia que elegirlo cayera en `relevance`: la pantalla decia "Precio: menor
+   primero" y los resultados venian ordenados por otra cosa. */
+export const sortLabels: Record<SortOption, string> = {
+  relevance: 'Relevancia',
+  'price-asc': 'Precio: menor primero',
+  'price-desc': 'Precio: mayor primero',
+  'year-desc': 'Año: más nuevo',
+  'mileage-asc': 'Kilometraje: menor',
+}
+
+export const sortValues = Object.keys(sortLabels) as SortOption[]
 
 export const statusLabels: Record<ListingStatus, string> = {
   draft: 'Borrador',

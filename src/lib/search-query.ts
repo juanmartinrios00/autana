@@ -1,12 +1,12 @@
-import type {
-  BodyType,
-  FuelType,
-  SellerType,
-  SortOption,
-  Transmission,
-  VehicleCondition,
-  VehicleFilters,
-} from '../types'
+import {
+  bodyTypes,
+  conditions,
+  fuelTypes,
+  sellerTypes,
+  sortValues,
+  transmissions,
+} from './format'
+import type { SortOption, VehicleFilters } from '../types'
 
 /**
  * La búsqueda, sin depender de React ni del cliente de Supabase.
@@ -21,12 +21,20 @@ import type {
  * ese error nadie se entera hasta que ya se mandó.
  */
 
-const SORTS: SortOption[] = ['relevance', 'price-asc', 'price-desc', 'year-desc', 'mileage-asc']
-const FUELS: FuelType[] = ['petrol', 'diesel', 'hybrid', 'electric', 'gnc']
-const BODIES: BodyType[] = ['sedan', 'suv', 'hatchback', 'pickup', 'coupe', 'van']
-const CONDITIONS: VehicleCondition[] = ['new', 'used', 'certified']
-const TRANSMISSIONS: Transmission[] = ['manual', 'automatic', 'cvt']
-const SELLER_TYPES: SellerType[] = ['dealer', 'private']
+/* Los valores validos salen de `format`, que es donde el compilador ya los
+   obliga a estar completos: un `Record<FuelType, string>` no compila si falta
+   uno. Antes estaban escritos aca de nuevo, y era la quinta copia de las mismas
+   cuatro listas.
+
+   Que este modulo no arrastre dependencias sigue valiendo ---por eso no importa
+   el tipo de `postgrest-js` y describe la consulta por su forma--- pero
+   `format` no importa nada en runtime: solo tipos, que se borran al compilar.
+   Traerlo no le agrega ni una linea al worker mas que las etiquetas mismas.
+
+   Lo que se gana es que un valor nuevo del dominio no se pueda quedar afuera de
+   la lectura de la URL. Si se quedaba, `?fuelType=lpg` se descartaba en
+   silencio: el filtro existia en la pantalla, la URL lo decia, y la busqueda
+   salia sin el. */
 
 export function num(params: URLSearchParams, key: string): number | undefined {
   const raw = params.get(key)
@@ -69,16 +77,16 @@ export function parseFilters(params: URLSearchParams): VehicleFilters {
     minPrice: num(params, 'minPrice'),
     maxPrice: num(params, 'maxPrice'),
     maxMileage: num(params, 'maxMileage'),
-    fuelType: list(params, 'fuelType', FUELS),
-    bodyType: list(params, 'bodyType', BODIES),
-    condition: list(params, 'condition', CONDITIONS),
-    transmission: one(params, 'transmission', TRANSMISSIONS),
-    sellerType: one(params, 'sellerType', SELLER_TYPES),
+    fuelType: list(params, 'fuelType', fuelTypes),
+    bodyType: list(params, 'bodyType', bodyTypes),
+    condition: list(params, 'condition', conditions),
+    transmission: one(params, 'transmission', transmissions),
+    sellerType: one(params, 'sellerType', sellerTypes),
   }
 }
 
 export function parseSort(params: URLSearchParams): SortOption {
-  return one(params, 'sort', SORTS) ?? 'relevance'
+  return one(params, 'sort', sortValues) ?? 'relevance'
 }
 
 /** Cuántos filtros hay puestos, para el contador de "3 activos". */

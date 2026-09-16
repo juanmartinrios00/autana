@@ -11,9 +11,9 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { SaveSearch } from '../components/search/SaveSearch'
 import { countActive, useVehicleFilters } from '../hooks/useVehicleFilters'
 import { listMakes, listModels, listProvinces, listVehicles } from '../lib/api'
-import { formatCount } from '../lib/format'
+import { formatCount, sortLabels, sortValues } from '../lib/format'
 import { pageWindow } from '../lib/pagination'
-import type { Paginated, SortOption, Vehicle } from '../types'
+import type { Paginated, Vehicle } from '../types'
 import './Cars.css'
 
 const PAGE_SIZE = 12
@@ -25,13 +25,11 @@ const PAGE_SIZE = 12
    otro tiene que acompañar. */
 const SHEET_BREAKPOINT = '(min-width: 900px)'
 
-const sortOptions: { value: SortOption; label: string }[] = [
-  { value: 'relevance', label: 'Relevancia' },
-  { value: 'price-asc', label: 'Precio: menor primero' },
-  { value: 'price-desc', label: 'Precio: mayor primero' },
-  { value: 'year-desc', label: 'Año: más nuevo' },
-  { value: 'mileage-asc', label: 'Kilometraje: menor' },
-]
+/* Las opciones del desplegable salen de las mismas etiquetas que usa
+   `search-query` para saber qué valores acepta la URL. Escritas por separado,
+   agregar un orden acá y no allá hacía que elegirlo cayera en `relevance`: el
+   desplegable decía una cosa y los resultados venían ordenados por otra. */
+const sortOptions = sortValues.map((value) => ({ value, label: sortLabels[value] }))
 
 type Status = 'loading' | 'ready' | 'error'
 
