@@ -32,3 +32,20 @@ export const LIMITS = {
   /** La nota de cada auto del garage, que va abajo de la foto. */
   garageNote: 280,
 } as const
+
+/**
+ * El formulario de contacto, que ademas tiene minimos.
+ *
+ * La migracion 019 los declara como `check` de la tabla: un nombre de una letra
+ * o un mensaje de diez caracteres no se rechazan con un cartel del formulario,
+ * se rechazan con un error de Postgres que dice `violates check constraint` y
+ * que nadie va a entender ---ni el que escribe ni el que lo lee despues.
+ *
+ * Los numeros son los de la migracion, y hay un test que los compara contra el
+ * SQL: el que los afloje en el formulario tiene que aflojarlos tambien alla.
+ */
+export const CONTACT_LIMITS = {
+  name: { min: 2, max: 80 },
+  email: { min: 6, max: 160 },
+  message: { min: 20, max: 4000 },
+} as const

@@ -9,6 +9,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { contactSubjects, sendContactMessage, type ContactSubject } from '../lib/api'
 import { describeError } from '../lib/errors'
+import { CONTACT_LIMITS } from '../lib/limits'
 import './Contact.css'
 
 const contactEmail = 'contacto@autana.com.ar'
@@ -131,8 +132,8 @@ export function Contact() {
                     name="name"
                     autoComplete="name"
                     defaultValue={user?.name ?? ''}
-                    minLength={2}
-                    maxLength={80}
+                    minLength={CONTACT_LIMITS.name.min}
+                    maxLength={CONTACT_LIMITS.name.max}
                     required
                   />
                   <Input
@@ -141,7 +142,8 @@ export function Contact() {
                     type="email"
                     autoComplete="email"
                     defaultValue={user?.email ?? ''}
-                    maxLength={160}
+                    minLength={CONTACT_LIMITS.email.min}
+                    maxLength={CONTACT_LIMITS.email.max}
                     required
                   />
                 </div>
@@ -164,8 +166,8 @@ export function Contact() {
                     id="contact-message"
                     name="message"
                     rows={7}
-                    minLength={20}
-                    maxLength={4000}
+                    minLength={CONTACT_LIMITS.message.min}
+                    maxLength={CONTACT_LIMITS.message.max}
                     placeholder="Incluí todos los detalles que nos ayuden a entender tu consulta."
                     required
                   />
