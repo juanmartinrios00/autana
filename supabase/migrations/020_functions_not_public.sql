@@ -1,0 +1,51 @@
+-- ============================================================================
+-- Las dos funciones que quedaron ejecutables por `public`
+--
+-- Pegalo en Supabase → SQL Editor → Run. Es idempotente.
+--
+-- Todas las funciones del esquema siguen el mismo patrón: `revoke all ... from
+-- public` y después el `grant execute` que corresponda, angosto. Es lo que hace
+-- que PostgREST exponga como endpoint RPC sólo lo que se decidió exponer, y a
+-- quién se decidió. Dos se crearon sin ese par.
+--
+-- ---------------------------------------------------------------------------
+-- `listing_allowance(uuid)`
+--
+-- La 008 sacó el permiso de leer `profiles` y lo devolvió columna por columna.
+-- `listing_limit` quedó afuera a propósito, igual que `role` y `verified`: es
+-- un acuerdo comercial con esa cuenta, no un dato del perfil público. La 017
+-- hizo lo mismo del lado de la escritura y lo dice en su encabezado.
+--
+-- Esta función la devuelve igual. Es `security definer` —tiene que serlo,
+-- porque justamente lee la columna cerrada— y sin el revoke queda expuesta: un
+-- `POST /rest/v1/rpc/listing_allowance` con cualquier uuid devuelve el tope de
+-- esa cuenta. Y los uuid no son secretos: son la URL del garage de cada
+-- persona, `/g/:id`, que está hecha para compartirse y está en el sitemap.
+--
+-- Lo que se filtra es angosto. Si devuelve 5 o 25 no se aprende nada, porque
+-- `seller_type` ya es público y se muestra en cada aviso. Lo que sí se aprende
+-- es cuando devuelve cualquier otro número: ahí hay un `listing_limit` puesto a
+-- mano, y se ve cuál. Es poco, pero es exactamente la columna que dos
+-- migraciones anteriores se tomaron el trabajo de cerrar.
+--
+-- No lleva `grant`: nadie de afuera la necesita. La aplicación no la llama en
+-- ninguna pantalla, y el trigger `enforce_listing_limit` que sí la usa también
+-- es `security definer`, así que durante su ejecución el usuario actual es el
+-- dueño de la función — y el dueño conserva el `execute` siempre.
+--
+-- ---------------------------------------------------------------------------
+-- `is_admin()`
+--
+-- Esta es más benigna: no recibe nada y sólo responde por `auth.uid()`, así que
+-- lo único que se puede averiguar con ella es sobre uno mismo. Pero estaba
+-- disponible para `anon`, y una sesión anónima no tiene ninguna pregunta que
+-- hacerle: siempre le va a contestar que no.
+--
+-- El panel de moderación la llama desde el navegador, así que `authenticated`
+-- la conserva. Mismo par que `my_whatsapp()` en la 008.
+-- ============================================================================
+
+revoke all on function public.listing_allowance(uuid) from public, anon, authenticated;
+
+revoke all on function public.is_admin() from public, anon;
+grant execute on function public.is_admin() to authenticated;

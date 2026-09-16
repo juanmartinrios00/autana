@@ -9,7 +9,10 @@ import { defineConfig } from 'vitest/config'
  */
 export default defineConfig({
   test: {
-    include: ['src/**/*.test.ts', 'worker/**/*.test.ts'],
+    /* `supabase/` tambien: ahi vive un test que no prueba TypeScript sino el
+       SQL, leyendolo como texto. Es logica pura igual ---no levanta ninguna
+       base--- y vive al lado de lo que revisa, como el resto. */
+    include: ['src/**/*.test.ts', 'worker/**/*.test.ts', 'supabase/**/*.test.ts'],
     environment: 'node',
   },
 })
