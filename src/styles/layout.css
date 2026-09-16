@@ -6,73 +6,81 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  /* Traslucida y con desenfoque: al scrollear, el contenido se adivina por
-     debajo en vez de cortarse contra una placa opaca. */
+  /* Arriba de todo es opaca y del color del papel: no hay nada debajo todavia
+     que valga la pena adivinar. El desenfoque lo pone `--scrolled`, que es
+     cuando el contenido empieza a pasar por abajo. */
   background: var(--canvas);
   transition:
     background var(--dur-slow) var(--ease),
     color var(--dur-slow) var(--ease);
 }
 
-/* Al scrollear la navbar se vuelve amarilla.
+/* Al scrollear la navbar se vuelve tinta.
 
-   Antes era una placa casi negra. Funcionaba, pero llegaba como una persiana:
-   lo unico oscuro de una portada clara, y encima justo arriba. En amarillo es
-   la misma marca de la banda de numeros y del boton principal — el sitio sigue
-   siendo el mismo mientras baja.
+   Estuvo un tiempo en amarillo, con el argumento de que era la misma marca de
+   la banda de numeros y del boton principal. El problema es que el amarillo en
+   este sistema quiere decir "esto es lo que hay que tocar", y una barra entera
+   pintada de accion no senala nada: compite con la CTA que tiene adentro y con
+   todo lo amarillo de la pagina que esta pasando por debajo. Como fondo de una
+   superficie de setenta y seis pixeles de alto y mil de ancho, ademas, es
+   mucho color.
 
-   Sin `backdrop-filter`: el desenfoque existia para que se adivinara el
-   contenido abajo de una placa translucida. El amarillo es opaco, asi que
-   desenfocar no hace nada y cuesta una capa de composicion en cada scroll.
+   En tinta vuelve a ser estructura: lo que separa la barra del contenido es el
+   contraste, no el color, y el amarillo queda libre para la CTA y la campana.
 
-   Todo lo de adentro pasa a tinta oscura. Sobre `--accent` el blanco no llega
-   ni de cerca al contraste minimo, y era el color de la version anterior.    */
+   Translucida y con desenfoque, que es para lo que estaba el `backdrop-filter`
+   en la clase base: debajo pasan la grilla de autos y las bandas de la landing,
+   y que se adivinen es lo que evita que la barra se lea como una persiana. */
 
 .navbar--scrolled {
-  background: var(--accent);
-  color: var(--ink);
-  box-shadow: 0 1px 0 rgb(10 16 12 / 0.16);
+  background: rgb(10 16 12 / 0.9);
+  backdrop-filter: blur(14px);
+  color: var(--ink-inverse);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.12);
 }
 
-/* La ficha de la marca se invierte: sobre amarillo, un cuadrado amarillo no
-   es un cuadrado. */
+/* La ficha de la marca se invierte: sobre tinta, un cuadrado de tinta no es un
+   cuadrado. */
 .navbar--scrolled .navbar__mark {
-  background: var(--ink);
-  color: var(--accent);
+  background: var(--ink-inverse);
+  color: var(--ink);
 }
 
 .navbar--scrolled .navbar__link,
 .navbar--scrolled .navbar__bell {
-  color: rgb(10 16 12 / 0.74);
+  color: rgb(255 255 255 / 0.76);
 }
 
 .navbar--scrolled .navbar__link:hover,
 .navbar--scrolled .navbar__links .navbar__link.is-active,
 .navbar--scrolled .navbar__bell:hover {
-  color: var(--ink);
+  color: var(--ink-inverse);
 }
 
-/* El campo se hunde en vez de aclararse: sobre un fondo tan luminoso, un velo
-   blanco desaparece y el buscador se pierde. */
+/* El campo se dibuja con linea y nada mas, igual que sobre el hero: un velo
+   claro encima de la tinta lo convertiria en una pastilla gris flotando. */
 .navbar--scrolled .navsearch {
-  border-color: rgb(10 16 12 / 0.22);
-  background: rgb(10 16 12 / 0.07);
+  border-color: rgb(255 255 255 / 0.32);
+  background: transparent;
 }
 
+/* El foco no lo pasa a blanco: si lo hiciera, el texto tendria que cambiar de
+   color en el mismo momento en que se empieza a escribir. Linea plena y el
+   halo amarillo, que es el mismo gesto del resto del sistema. */
 .navbar--scrolled .navsearch:focus-within {
-  border-color: var(--ink);
-  background: var(--canvas);
-  box-shadow: 0 0 0 3px rgb(10 16 12 / 0.14);
+  border-color: var(--ink-inverse);
+  background: transparent;
+  box-shadow: 0 0 0 3px rgb(255 209 0 / 0.34);
 }
 
 .navbar--scrolled .navsearch__input,
 .navbar--scrolled .navsearch__submit,
 .navbar--scrolled .navsearch__clear {
-  color: var(--ink);
+  color: var(--ink-inverse);
 }
 
 .navbar--scrolled .navsearch__input::placeholder {
-  color: rgb(10 16 12 / 0.56);
+  color: rgb(255 255 255 / 0.56);
 }
 
 /* Sobre el hero oscuro la navbar flota: sin fondo, sin línea, en blanco. */
@@ -281,17 +289,17 @@ button.navbar__link {
   background: var(--accent-hover);
 }
 
-/* Sobre la barra amarilla la CTA se da vuelta. Un boton amarillo sobre un
-   fondo amarillo no es un boton discreto: no existe. En tinta sigue siendo lo
-   mas fuerte de la barra, que es lo que tiene que ser. */
+/* Sobre la barra de tinta la CTA vuelve a ser amarilla, como en el resto del
+   sitio: es lo unico que pide que lo toquen y ahora tiene todo el fondo para
+   destacarse. */
 .navbar--scrolled .navbar__cta {
-  background: var(--ink);
-  color: var(--accent);
+  background: var(--accent);
+  color: var(--ink);
 }
 
 .navbar--scrolled .navbar__cta:hover {
-  background: #26262a;
-  color: var(--accent);
+  background: var(--accent-hover);
+  color: var(--ink);
 }
 
 .navbar--over .navbar__cta {
