@@ -7,7 +7,16 @@ export interface DocumentMeta {
   image?: string
   /** JSON-LD, para que Google entienda de qué se trata la página. */
   structuredData?: Record<string, unknown>
+  /** Saca la página del buscador. Para lo que devuelve 200 pero no existe. */
+  noindex?: boolean
 }
+
+/* La etiqueta de `robots` la puede haber puesto también el worker ---lo hace en
+   los garages de quien se sacó del buscador de personas--- y esa no se toca.
+   Este atributo marca la que pone la aplicación, para que al navegar se borre
+   la propia y nunca la del servidor: borrarla volvería a poner en el índice una
+   página que el worker había sacado, justo porque Google ejecuta JavaScript. */
+const OWN_ROBOTS = 'meta[name="robots"][data-from-app]'
 
 function upsertMeta(selector: string, attr: 'name' | 'property', key: string, value: string) {
   let tag = document.head.querySelector<HTMLMetaElement>(selector)
@@ -55,7 +64,13 @@ function defaults() {
  * Los dos caminos tienen que decir lo mismo: si esto y el worker arman textos
  * distintos, el link compartido muestra una cosa y la pestaña otra.
  */
-export function useDocumentMeta({ title, description, image, structuredData }: DocumentMeta) {
+export function useDocumentMeta({
+  title,
+  description,
+  image,
+  structuredData,
+  noindex,
+}: DocumentMeta) {
   useEffect(() => {
     document.title = title
     upsertMeta('meta[property="og:title"]', 'property', 'og:title', title)
@@ -68,10 +83,23 @@ export function useDocumentMeta({ title, description, image, structuredData }: D
     /* El HTML estático no trae `og:image`, así que la vuelta atrás es sacar la
        etiqueta y no dejarla vacía: un `content=""` es peor que no tenerla, y es
        lo que quedaría en cualquier pantalla que no defina imagen propia. */
+    if (noindex) {
+      let tag = document.head.querySelector<HTMLMetaElement>(OWN_ROBOTS)
+      if (!tag) {
+        tag = document.createElement('meta')
+        tag.setAttribute('name', 'robots')
+        tag.setAttribute('data-from-app', '')
+        document.head.appendChild(tag)
+      }
+      tag.setAttribute('content', 'noindex')
+    } else {
+      document.head.querySelector(OWN_ROBOTS)?.remove()
+    }
+
     const picture = image ?? base.image
     if (picture) upsertMeta('meta[property="og:image"]', 'property', 'og:image', picture)
     else document.head.querySelector('meta[property="og:image"]')?.remove()
-  }, [title, description, image])
+  }, [title, description, image, noindex])
 
   /* El dato se compara ya serializado. `structuredData` se arma como objeto
      literal en la llamada, así que es una referencia nueva en cada render: con

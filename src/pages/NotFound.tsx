@@ -20,7 +20,12 @@ import './NotFound.css'
  * pelado.
  */
 export function NotFound() {
-  useDocumentMeta({ title: pageTitle('Página no encontrada') })
+  /* `noindex` porque esta pantalla responde 200. El worker sirve el index.html
+     en cualquier ruta desconocida ---sin eso, entrar directo a la ficha de un
+     aviso daría 404, porque ese archivo no existe y la ruta la resuelve el
+     router--- así que una URL inventada devuelve una página normal con estado
+     200. Sin la etiqueta, Google puede indexar direcciones que no existen. */
+  useDocumentMeta({ title: pageTitle('Página no encontrada'), noindex: true })
 
   return (
     <div className="page section notfound">
