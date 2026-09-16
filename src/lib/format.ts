@@ -97,12 +97,35 @@ export function locationLabel(location: { city: string; province: string }): str
     : `${location.city}, ${location.province}`
 }
 
+/** La medianoche local del día en que cae una fecha. */
+function startOfDay(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+}
+
 /** `hace 3 días`, para la antigüedad de una publicación. */
 export function relativeDate(iso: string, now = new Date()): string {
-  const days = Math.floor((now.getTime() - new Date(iso).getTime()) / 86_400_000)
+  /* Días de calendario, no horas divididas por veinticuatro. Un aviso
+     publicado ayer a las once de la noche y mirado hoy a las ocho de la mañana
+     lleva nueve horas encima: contando por horas da cero y la ficha dice
+     "publicado hoy", que no es cierto y en Novedades es peor todavía, porque
+     ahí lo que se lee es una línea de tiempo.
+
+     Restar dos medianoches locales y redondear, en vez de dividir la
+     diferencia cruda: los días de cambio de horario miden veintitrés o
+     veinticinco horas, y con `floor` sobre la diferencia en bruto uno de los
+     dos se pierde. */
+  const days = Math.round((startOfDay(now) - startOfDay(new Date(iso))) / 86_400_000)
   if (days <= 0) return 'hoy'
   if (days === 1) return 'ayer'
   if (days < 31) return `hace ${days} días`
+
+  /* Pasado el año se cuenta en años. "Hace 17 meses" obliga a dividir mentalmente
+     para entender que es un aviso viejo. */
+  if (days >= 365) {
+    const years = Math.floor(days / 365)
+    return years === 1 ? 'hace un año' : `hace ${years} años`
+  }
+
   const months = Math.floor(days / 30)
   return months === 1 ? 'hace un mes' : `hace ${months} meses`
 }

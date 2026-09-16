@@ -86,6 +86,12 @@ export async function compressImage(
 
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+
+  /* Se decide con el numero ya redondeado y no con el crudo. Comparando el
+     crudo, una foto de 1.048.000 bytes cae del lado de los KB y se redondea a
+     "1024 KB", que es una unidad que no existe en ningun lado: la persona
+     esperaba ver 1 MB. */
+  const kb = Math.round(bytes / 1024)
+  if (kb < 1024) return `${kb} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
