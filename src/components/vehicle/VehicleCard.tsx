@@ -24,10 +24,19 @@ interface VehicleCardProps {
 
 export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
   const title = vehicleTitle(vehicle)
-  /* Arranca con el número que vino con el aviso y sube si se toca acá mismo:
-     esperar a recargar la página para ver el propio toque se lee como que
-     no contó. */
-  const [interest, setInterest] = useState(vehicle.interestCount)
+  /* El número sube si se toca "Me interesa" acá mismo: esperar a recargar la
+     página para ver el propio toque se lee como que no contó.
+
+     Se guarda de qué aviso es, y no sólo el número, que es el mismo criterio
+     que usa la ficha del aviso. Con un
+     `useState(vehicle.interestCount)` a secas, el valor se toma una sola vez:
+     cuando la grilla vuelve a pedir los resultados ---cambiar un filtro, pasar
+     de página y volver--- React reusa la instancia de las cards cuyo aviso
+     sigue estando, no vuelve a correr el inicializador, y el contador queda
+     clavado en el que tenía. Derivándolo, lo que viene de la base gana siempre,
+     salvo para el aviso que la persona tocó recién. */
+  const [bumped, setBumped] = useState<{ id: string; count: number } | null>(null)
+  const interest = bumped?.id === vehicle.id ? bumped.count : vehicle.interestCount
 
   return (
     <article className={`vcard vcard--${layout}`}>
@@ -89,7 +98,11 @@ export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
         {/* Va en su propia fila y no dentro del pie: ahí conviven la ubicación
             y los sellos del vendedor, y un tercer elemento rompe el reparto. */}
         <div className="vcard__actions">
-          <InterestButton vehicle={vehicle} title={title} onCount={setInterest} />
+          <InterestButton
+            vehicle={vehicle}
+            title={title}
+            onCount={(count) => setBumped({ id: vehicle.id, count })}
+          />
           <CompareButton slug={vehicle.slug} title={title} className="vcard__compare" />
         </div>
         {interest > 0 && (
