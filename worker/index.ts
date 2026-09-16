@@ -307,7 +307,14 @@ function robots(origin: string): Response {
      buscador, que el worker marca `noindex` en la propia pagina.
 
      `/gente` se bloquea aunque sea publica: es un formulario de busqueda, y lo
-     unico que Google indexaria son resultados para nombres sueltos. */
+     unico que Google indexaria son resultados para nombres sueltos. `/compare`
+     por lo mismo y peor: la comparacion vive en la query string, asi que es un
+     espacio infinito de URLs distintas ---cada combinacion de tres autos--- y
+     ninguna dice nada que no diga la ficha de cada uno.
+
+     `/settings` y `/admin` entran por el primer criterio y faltaban, al lado de
+     `/profile` y `/my-listings` que ya estaban. `/reset` es un paso de un flujo
+     y ademas se llega con un token en el link. */
   const body = [
     'User-agent: *',
     'Allow: /',
@@ -316,6 +323,10 @@ function robots(origin: string): Response {
     'Disallow: /profile',
     'Disallow: /my-listings',
     'Disallow: /favorites',
+    'Disallow: /settings',
+    'Disallow: /admin',
+    'Disallow: /compare',
+    'Disallow: /reset',
     'Disallow: /gente',
     'Disallow: /siguiendo',
     'Disallow: /garage/mio',
