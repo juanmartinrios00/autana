@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FilterPanel } from '../components/search/FilterPanel'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -17,6 +17,13 @@ import type { Paginated, SortOption, Vehicle } from '../types'
 import './Cars.css'
 
 const PAGE_SIZE = 12
+
+/* El ancho a partir del cual los filtros dejan de ser una hoja y vuelven a ser
+   la columna de la izquierda. Está escrito también en el `@media` de Cars.css,
+   que es donde manda: acá se repite porque el efecto que bloquea el scroll
+   tiene que saber cuándo la hoja dejó de existir. Si uno de los dos cambia, el
+   otro tiene que acompañar. */
+const SHEET_BREAKPOINT = '(min-width: 900px)'
 
 const sortOptions: { value: SortOption; label: string }[] = [
   { value: 'relevance', label: 'Relevancia' },
@@ -49,6 +56,7 @@ export function Cars() {
 
   const [layout, setLayout] = useState<'grid' | 'list'>('grid')
   const [sheetOpen, setSheetOpen] = useState(false)
+  const sheetRef = useRef<HTMLDivElement>(null)
 
   const [makes, setMakes] = useState<string[]>([])
   const [provinces, setProvinces] = useState<string[]>([])
@@ -58,6 +66,70 @@ export function Cars() {
     void listMakes().then(setMakes)
     void listProvinces().then(setProvinces)
   }, [])
+
+  /**
+   * Lo que la hoja de filtros no tiene por ser el único modal hecho a mano.
+   *
+   * Los otros dos del sitio son `<dialog>` nativos y de ahí sacan gratis el
+   * cierre con Escape, el foco adentro y el bloqueo del scroll de atrás. Este
+   * no puede serlo sin rehacerle la forma —es una hoja que sube desde abajo,
+   * no una caja centrada— así que las tres van escritas.
+   *
+   * El scroll es la que más se siente. La hoja tapa la pantalla entera en
+   * celular, y sin bloquear el fondo, arrastrar sobre el velo mueve la lista de
+   * resultados que está abajo: se cierra la hoja y la búsqueda quedó en otro
+   * lado, sin que nadie la haya movido a propósito.
+   *
+   * El corte de ancho es el tercer caso y el menos obvio: la hoja sólo existe
+   * abajo de 900px. Girando el teléfono o agrandando la ventana con la hoja
+   * abierta, el CSS la devuelve a columna y el modal desaparece —pero el
+   * `overflow: hidden` del body se queda puesto, y la página entera deja de
+   * scrollear sin nada en pantalla que lo explique.
+   */
+  useEffect(() => {
+    if (!sheetOpen) return
+
+    /* Si a este ancho la hoja no existe no hay nada que bloquear, y bloquear
+       igual dejaría la página sin scroll con nada en pantalla que lo explique.
+       No se cierra desde acá: cerrar sería un `setState` en el montaje del
+       efecto, que arranca un render de más para un estado al que no se llega
+       —el botón que abre la hoja está en `display: none` a este ancho. El
+       cambio de ancho con la hoja ya abierta lo atiende `onWiden`. */
+    const wide = window.matchMedia(SHEET_BREAKPOINT)
+    if (wide.matches) return
+
+    const close = () => setSheetOpen(false)
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') close()
+    }
+    const onWiden = (event: MediaQueryListEvent) => {
+      if (event.matches) close()
+    }
+
+    /* Se guarda lo que había en vez de asumir que era vacío: el valor sale de
+       acá y de ningún otro lado, pero dejarlo en '' sería decidir por el resto
+       del sitio. */
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    document.addEventListener('keydown', onKey)
+    wide.addEventListener('change', onWiden)
+
+    /* El foco entra a la hoja para que Escape llegue y para que quien navega
+       con teclado no siga tabulando por los resultados de atrás, que es lo que
+       `aria-modal` promete. Se guarda de dónde venía: es el botón que la abrió,
+       que sigue montado atrás mientras la hoja está arriba. */
+    const returnTo = document.activeElement as HTMLElement | null
+    sheetRef.current?.focus()
+
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      wide.removeEventListener('change', onWiden)
+      document.body.style.overflow = previousOverflow
+      /* Vuelve al botón que la abrió, no al principio de la página. */
+      if (returnTo?.isConnected) returnTo.focus()
+    }
+  }, [sheetOpen])
 
   useEffect(() => {
     const make = filters.make
@@ -136,7 +208,14 @@ export function Cars() {
               aria-label="Cerrar filtros"
               onClick={() => setSheetOpen(false)}
             />
-            <div className="sheet" role="dialog" aria-modal="true" aria-label="Filtros">
+            <div
+              ref={sheetRef}
+              className="sheet"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Filtros"
+              tabIndex={-1}
+            >
               <span className="sheet__grip" aria-hidden="true" />
               <div className="sheet__body">{panel}</div>
               <div className="sheet__foot">
@@ -175,6 +254,7 @@ export function Cars() {
               variant="outline"
               size="sm"
               className="cars__filters-trigger"
+              aria-expanded={sheetOpen}
               onClick={() => setSheetOpen(true)}
             >
               <Icon name="list" size={15} />
