@@ -332,8 +332,14 @@ export async function listSellerVehicles(sellerId: string): Promise<Vehicle[]> {
 
 export async function setGarageTheme(userId: string, theme: string): Promise<void> {
   const client = requireSupabase()
-  const { error } = await client.from('profiles').update({ garage_theme: theme }).eq('id', userId)
+  const { data, error } = await client
+    .from('profiles')
+    .update({ garage_theme: theme })
+    .eq('id', userId)
+    .select('id')
+
   if (error) throw error
+  if (!data || data.length === 0) throw new NotAllowedError('cambiar el color de tu garage')
 }
 
 /** Misma carrocería, precio parecido, y nunca el mismo auto. */
@@ -460,13 +466,19 @@ export async function createListing(
   const client = requireSupabase()
 
   /* Los datos de contacto y ubicación viven en el perfil, no en cada aviso:
-     así el vendedor los actualiza una vez y valen para todas sus publicaciones. */
-  const { error: profileError } = await client
+     así el vendedor los actualiza una vez y valen para todas sus publicaciones.
+
+     Se pide `.select()` por lo mismo que el resto: si esta escritura la filtra
+     RLS, el aviso se publica igual pero sin el WhatsApp nuevo, y el vendedor
+     se queda esperando mensajes que no le pueden llegar. */
+  const { data: profileRows, error: profileError } = await client
     .from('profiles')
     .update({ whatsapp: input.whatsapp, city: input.city, province: input.province })
     .eq('id', userId)
+    .select('id')
 
   if (profileError) throw profileError
+  if (!profileRows || profileRows.length === 0) throw new NotAllowedError('guardar tu contacto')
 
   const title = [input.make, input.model, input.trim].filter(Boolean).join(' ')
   /* El sufijo aleatorio evita chocar con otro aviso del mismo auto y año. */
@@ -879,8 +891,17 @@ export async function listContactMessages(): Promise<ContactMessage[]> {
 /** Marcar un mensaje como respondido, o volver atrás. Sólo quien modera. */
 export async function setContactHandled(id: string, handled: boolean): Promise<void> {
   const client = requireSupabase()
-  const { error } = await client.from('contact_messages').update({ handled }).eq('id', id)
+  const { data, error } = await client
+    .from('contact_messages')
+    .update({ handled })
+    .eq('id', id)
+    .select('id')
+
   if (error) throw error
+  /* Acá pesa más que en otros lados: si a quien modera le sacaron el permiso, o
+     se le venció la sesión, el panel marcaba el mensaje como respondido sin
+     estarlo. Un mensaje que figura atendido es uno que nadie vuelve a abrir. */
+  if (!data || data.length === 0) throw new NotAllowedError('marcar el mensaje')
 }
 
 /** Borrar un mensaje. Sólo quien modera. */
@@ -993,12 +1014,14 @@ export async function updateListing(id: string, input: ListingInput, userId: str
   const client = requireSupabase()
 
   /* Igual que al publicar: el contacto y la ubicación viven en el perfil. */
-  const { error: profileError } = await client
+  const { data: profileRows, error: profileError } = await client
     .from('profiles')
     .update({ whatsapp: input.whatsapp, city: input.city, province: input.province })
     .eq('id', userId)
+    .select('id')
 
   if (profileError) throw profileError
+  if (!profileRows || profileRows.length === 0) throw new NotAllowedError('guardar tu contacto')
 
   const { data, error } = await client
     .from('listings')
@@ -1338,13 +1361,18 @@ export async function uploadProfileAvatar(userId: string, file: File): Promise<s
   if (uploadError) throw uploadError
 
   const publicUrl = photoUrl(path)
-  const [{ error: profileError }, { error: authError }] = await Promise.all([
-    client.from('profiles').update({ avatar_url: path }).eq('id', userId),
+  const [{ data: profileRows, error: profileError }, { error: authError }] = await Promise.all([
+    client.from('profiles').update({ avatar_url: path }).eq('id', userId).select('id'),
     client.auth.updateUser({ data: { avatar_url: publicUrl } }),
   ])
 
   if (profileError) throw profileError
   if (authError) throw authError
+  /* La foto ya está en el bucket; lo que puede no haber pasado es que el perfil
+     la apunte. Sin este control la pantalla mostraba la foto nueva ---que sale
+     de la respuesta de la subida, no del perfil--- y al recargar volvía la
+     vieja, sin ningún aviso en el medio. */
+  if (!profileRows || profileRows.length === 0) throw new NotAllowedError('guardar tu foto')
 
   /* Borrar las fotos anteriores. Cada una se sube con otro nombre, y antes la
      vieja quedaba publicada para siempre: quien cambiaba su foto porque no
@@ -1369,7 +1397,7 @@ export interface ProfileUpdate {
 
 export async function updateProfile(userId: string, input: ProfileUpdate): Promise<void> {
   const client = requireSupabase()
-  const { error } = await client
+  const { data, error } = await client
     .from('profiles')
     .update({
       name: input.name,
@@ -1381,8 +1409,10 @@ export async function updateProfile(userId: string, input: ProfileUpdate): Promi
       contact_email: input.contactEmail,
     })
     .eq('id', userId)
+    .select('id')
 
   if (error) throw error
+  if (!data || data.length === 0) throw new NotAllowedError('guardar tu perfil')
 }
 
 /* ---------------------------------------------------------------------------
@@ -1534,8 +1564,16 @@ export async function getDiscoverable(userId: string): Promise<boolean> {
 
 export async function setDiscoverable(userId: string, value: boolean): Promise<void> {
   const client = requireSupabase()
-  const { error } = await client.from('profiles').update({ discoverable: value }).eq('id', userId)
+  const { data, error } = await client
+    .from('profiles')
+    .update({ discoverable: value })
+    .eq('id', userId)
+    .select('id')
+
   if (error) throw error
+  /* De los que no pueden fallar callados: quien apaga el interruptor para no
+     aparecer en el buscador de personas tiene que saber si quedó apagado. */
+  if (!data || data.length === 0) throw new NotAllowedError('cambiar tu visibilidad')
 }
 
 /* ---------------------------------------------------------------------------
@@ -1914,8 +1952,14 @@ export async function getOwnWhatsapp(): Promise<string | null> {
  *  desde que el numero no se puede leer eso lo habria borrado. */
 export async function updateSellerType(userId: string, type: Seller['type']): Promise<void> {
   const client = requireSupabase()
-  const { error } = await client.from('profiles').update({ seller_type: type }).eq('id', userId)
+  const { data, error } = await client
+    .from('profiles')
+    .update({ seller_type: type })
+    .eq('id', userId)
+    .select('id')
+
   if (error) throw error
+  if (!data || data.length === 0) throw new NotAllowedError('cambiar el tipo de vendedor')
 }
 
 /**
