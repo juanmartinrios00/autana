@@ -300,11 +300,49 @@ function appendToHead(html: string): HTMLRewriterElementContentHandlers {
    dominio, que puede dejar de ser el de workers.dev.
 --------------------------------------------------------------------------- */
 
+/**
+ * Lo que no va al buscador: lo que es de cada usuario o parte de un flujo. No
+ * aporta nada en un buscador y gasta presupuesto de rastreo.
+ *
+ * Se exporta junto con `STATIC_PAGES` para que un test pueda cruzarlas. Las dos
+ * listas dicen cosas opuestas sobre las mismas URLs, y una pagina que caiga en
+ * las dos es una contradiccion que Google resuelve solo y a su criterio: el
+ * sitemap la ofrece y el robots la prohibe.
+ */
+export const DISALLOWED = [
+  '/login',
+  '/sell',
+  '/profile',
+  '/my-listings',
+  '/favorites',
+  '/settings',
+  '/admin',
+  '/compare',
+  '/reset',
+  '/gente',
+  '/siguiendo',
+  '/garage/mio',
+  '/novedades',
+]
+
+/** Las publicas con contenido propio, que van fijas al sitemap. */
+export const STATIC_PAGES = [
+  '/',
+  '/cars',
+  '/garage',
+  '/blog',
+  '/help',
+  '/dealers',
+  '/levels',
+  '/contact',
+  '/terms',
+  '/privacy',
+]
+
 function robots(origin: string): Response {
-  /* Se bloquea lo que es de cada usuario o parte de un flujo: no aporta nada
-     en un buscador y gasta presupuesto de rastreo. El garage publico (`/g/`)
-     si se indexa, que para eso se comparte — salvo el de quien se saco del
-     buscador, que el worker marca `noindex` en la propia pagina.
+  /* El garage publico (`/g/`) si se indexa, que para eso se comparte — salvo el
+     de quien se saco del buscador, que el worker marca `noindex` en la propia
+     pagina.
 
      `/gente` se bloquea aunque sea publica: es un formulario de busqueda, y lo
      unico que Google indexaria son resultados para nombres sueltos. `/compare`
@@ -318,19 +356,7 @@ function robots(origin: string): Response {
   const body = [
     'User-agent: *',
     'Allow: /',
-    'Disallow: /login',
-    'Disallow: /sell',
-    'Disallow: /profile',
-    'Disallow: /my-listings',
-    'Disallow: /favorites',
-    'Disallow: /settings',
-    'Disallow: /admin',
-    'Disallow: /compare',
-    'Disallow: /reset',
-    'Disallow: /gente',
-    'Disallow: /siguiendo',
-    'Disallow: /garage/mio',
-    'Disallow: /novedades',
+    ...DISALLOWED.map((path) => `Disallow: ${path}`),
     '',
     `Sitemap: ${origin}/sitemap.xml`,
     '',
@@ -413,18 +439,9 @@ async function sitemap(origin: string): Promise<Response> {
      que alguien llega buscando "como transferir un auto usado"--- y `/dealers`
      es la pagina que le explica el producto a una agencia. Estar en el sitemap
      no garantiza nada, pero no estar es no haberlas ofrecido. */
-  const entries: { loc: string; lastmod?: string }[] = [
-    { loc: `${origin}/` },
-    { loc: `${origin}/cars` },
-    { loc: `${origin}/garage` },
-    { loc: `${origin}/blog` },
-    { loc: `${origin}/help` },
-    { loc: `${origin}/dealers` },
-    { loc: `${origin}/levels` },
-    { loc: `${origin}/contact` },
-    { loc: `${origin}/terms` },
-    { loc: `${origin}/privacy` },
-  ]
+  const entries: { loc: string; lastmod?: string }[] = STATIC_PAGES.map((path) => ({
+    loc: `${origin}${path}`,
+  }))
 
   /* Las notas no salen de la base: viven en el bundle, asi que entran siempre
      —aunque Supabase no conteste— y con su fecha de publicacion. */

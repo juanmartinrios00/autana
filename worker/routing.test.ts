@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { provinces } from '../src/data/makes'
 import { LIMITS } from '../src/lib/limits'
-import { attr, BLOG_URL, buildDescription, buildTitle, GARAGE_URL, LISTING_URL, xmlEscape } from './index'
+import {
+  attr,
+  BLOG_URL,
+  buildDescription,
+  buildTitle,
+  DISALLOWED,
+  GARAGE_URL,
+  LISTING_URL,
+  STATIC_PAGES,
+  xmlEscape,
+} from './index'
 
 /**
  * Lo que el worker decide antes de tocar nada: qué URL es un aviso, qué texto
@@ -201,5 +211,40 @@ describe('el escapado del preview', () => {
   it('el texto sin nada raro pasa igual', () => {
     expect(attr('BMW 320i Sport Line')).toBe('BMW 320i Sport Line')
     expect(xmlEscape('https://autana.com/cars/bmw-320i')).toBe('https://autana.com/cars/bmw-320i')
+  })
+})
+
+
+/**
+ * `robots.txt` y `sitemap.xml` hablan de las mismas URLs y dicen cosas
+ * opuestas: uno las ofrece, el otro las prohíbe. Una página que caiga en los
+ * dos es una contradicción que Google resuelve solo y a su criterio.
+ */
+describe('robots y sitemap no se contradicen', () => {
+  it('ninguna página del sitemap está bloqueada', () => {
+    for (const page of STATIC_PAGES) {
+      const bloqueada = DISALLOWED.find(
+        (path) => page === path || page.startsWith(`${path}/`),
+      )
+      expect(bloqueada, `${page} está en el sitemap y en el Disallow`).toBeUndefined()
+    }
+  })
+
+  /* La home no se puede bloquear ni por accidente: un `Disallow: /` sacaría el
+     sitio entero del buscador, y es un carácter de distancia. */
+  it('nunca se bloquea la raíz', () => {
+    expect(DISALLOWED).not.toContain('/')
+  })
+
+  it('todas las rutas empiezan con barra y no terminan en una', () => {
+    for (const path of [...DISALLOWED, ...STATIC_PAGES]) {
+      expect(path.startsWith('/'), path).toBe(true)
+      if (path !== '/') expect(path.endsWith('/'), path).toBe(false)
+    }
+  })
+
+  it('no hay repetidas', () => {
+    expect(new Set(DISALLOWED).size).toBe(DISALLOWED.length)
+    expect(new Set(STATIC_PAGES).size).toBe(STATIC_PAGES.length)
   })
 })
