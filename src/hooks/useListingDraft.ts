@@ -97,6 +97,21 @@ export function useListingDraft({ persist = true }: { persist?: boolean } = {}) 
   useEffect(() => {
     if (!persist) return
 
+    /* Un formulario recién abierto no tiene nada que guardar. Sin esto, a los
+       600 ms de entrar a /sell aparece un "Guardado 17:45" en verde sobre un
+       formulario en blanco: le dice a la persona que se preservó un trabajo
+       que todavía no hizo, que es la clase de cartel que hace que uno cierre
+       la pestaña tranquilo. Y deja en el storage un borrador vacío que después
+       no se distingue de uno real.
+
+       No se borra lo que ya estaba guardado cuando el formulario vuelve a
+       quedar vacío: si alguien borra todo a mano, el borrador anterior sigue
+       siendo lo último que escribió de verdad. Para tirarlo está `reset`. */
+    const untouched = (Object.keys(emptyDraft) as (keyof ListingDraft)[]).every(
+      (key) => draft[key] === emptyDraft[key],
+    )
+    if (untouched) return
+
     const id = setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(draft))
