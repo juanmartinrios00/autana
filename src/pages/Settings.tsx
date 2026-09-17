@@ -22,6 +22,7 @@ import {
 } from '../lib/api'
 import { changePassword, MIN_PASSWORD } from '../lib/auth'
 import { isContactEmail, normalizeInstagram } from '../lib/contact'
+import { sellerTypeLabels, sellerTypes } from '../lib/format'
 import { LIMITS } from '../lib/limits'
 import { toE164 } from '../lib/whatsapp'
 import type { Seller } from '../types'
@@ -347,10 +348,7 @@ export function Settings() {
 
           <Select
             label="Publico como"
-            options={[
-              { value: 'private', label: 'Particular' },
-              { value: 'dealer', label: 'Concesionaria' },
-            ]}
+            options={sellerTypes.map((type) => ({ value: type, label: sellerTypeLabels[type] }))}
             value={sellerType}
             error={dataError || undefined}
             onChange={(e) => setSellerType(e.target.value as Seller['type'])}

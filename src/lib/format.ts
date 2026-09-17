@@ -67,9 +67,12 @@ export const transmissions = Object.keys(transmissionLabels) as Transmission[]
 export const bodyTypes = Object.keys(bodyLabels) as BodyType[]
 export const conditions = Object.keys(conditionLabels) as VehicleCondition[]
 
+/* Particular primero porque es el orden en que se ofrecen los dos selects que
+   existen ---el de Ajustes y el del filtro--- y ahora los dos salen de aca. Es
+   ademas el caso comun: la mayoria de los avisos son de particulares. */
 export const sellerTypeLabels: Record<SellerType, string> = {
-  dealer: 'Concesionaria',
   private: 'Particular',
+  dealer: 'Concesionaria',
 }
 
 export const sellerTypes = Object.keys(sellerTypeLabels) as SellerType[]

@@ -12,6 +12,7 @@ import {
   sendPasswordReset,
 } from '../lib/auth'
 import { describeError } from '../lib/errors'
+import { sellerTypes } from '../lib/format'
 import { LIMITS } from '../lib/limits'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import type { SellerType } from '../types'
@@ -31,18 +32,24 @@ type Mode = 'signin' | 'signup'
  * Lo que se elige acá es lo mismo que se puede cambiar en Ajustes: no es una
  * cuenta de otro tipo, ni hay una aprobación que esperar.
  */
-const KINDS: { value: SellerType; title: string; text: string }[] = [
-  {
-    value: 'private',
+/* Un `Record` y no una lista, por lo mismo que las etiquetas de `format`: el
+   compilador no deja que falte uno. Escrito como array, sumar un tipo de
+   vendedor al dominio dejaba el registro ofreciendo los dos viejos y nada
+   avisaba ---y este es el unico lugar donde el tipo se elige, asi que el nuevo
+   no habria forma de elegirlo.
+
+   El texto propio de cada uno es lo que no se puede derivar de `sellerTypeLabels`:
+   ahi vive el nombre, aca el argumento. */
+const KINDS: Record<SellerType, { title: string; text: string }> = {
+  private: {
     title: 'Particular',
     text: 'Vendo mi auto. Hasta 5 avisos activos.',
   },
-  {
-    value: 'dealer',
+  dealer: {
     title: 'Concesionaria',
     text: 'Tengo una agencia. Hasta 25 avisos activos y lugar en la portada.',
   },
-]
+}
 
 export function Login() {
   const { session, signIn, signUp, sendMagicLink } = useAuth()
@@ -266,22 +273,22 @@ export function Login() {
                   una sola, y el navegador ya sabe decir eso. */}
               <fieldset className="login__kinds">
                 <legend className="login__kinds-legend">¿Cómo vas a publicar?</legend>
-                {KINDS.map((option) => (
+                {sellerTypes.map((value) => (
                   <label
-                    key={option.value}
-                    className={`login-kind${kind === option.value ? ' login-kind--on' : ''}`}
+                    key={value}
+                    className={`login-kind${kind === value ? ' login-kind--on' : ''}`}
                   >
                     <input
                       type="radio"
                       name="kind"
                       className="login-kind__radio"
-                      value={option.value}
-                      checked={kind === option.value}
-                      onChange={() => setKind(option.value)}
+                      value={value}
+                      checked={kind === value}
+                      onChange={() => setKind(value)}
                     />
                     <span className="login-kind__body">
-                      <span className="login-kind__title">{option.title}</span>
-                      <span className="login-kind__text">{option.text}</span>
+                      <span className="login-kind__title">{KINDS[value].title}</span>
+                      <span className="login-kind__text">{KINDS[value].text}</span>
                     </span>
                   </label>
                 ))}
