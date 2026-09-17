@@ -17,4 +17,4 @@ poco en el centro.
 
 Ojo con la licencia: los logos de las automotrices son marcas registradas. Su
 uso nominativo para identificar publicaciones reales está bien; no los uses
-para merchandising ni para dar a entender que la marca auspicia Autana.
+para merchandising ni para dar a entender que la marca auspicia auteando.

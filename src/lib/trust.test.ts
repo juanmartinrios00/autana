@@ -47,7 +47,7 @@ describe('computeTrust', () => {
     )
     expect(nueva.isNew).toBe(true)
     expect(nueva.monthsOn).toBe(0)
-    /* En la card no entra "en Autana desde septiembre de 2026", y poner el mes
+    /* En la card no entra "en auteando desde septiembre de 2026", y poner el mes
        de una cuenta de seis dias es casi una ironia: dice "cuenta nueva". */
     expect(nueva.sinceShort).toBe('Cuenta nueva')
   })
@@ -85,7 +85,7 @@ describe('computeTrust', () => {
 
   /**
    * Los doce meses tienen nombre y ninguno sale vacio. Es el tipo de cosa que
-   * se rompe callada: un `MONTHS` corto deja "en Autana desde  de 2026" y
+   * se rompe callada: un `MONTHS` corto deja "en auteando desde  de 2026" y
    * nadie lo ve hasta que alguien se registra en diciembre.
    */
   it('los doce meses tienen nombre', () => {

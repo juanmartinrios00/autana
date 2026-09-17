@@ -1,7 +1,7 @@
 import type { TrustSignal } from '../lib/trust'
 
 /**
- * Modelo de dominio de Autana.
+ * Modelo de dominio de auteando.
  *
  * Estos tipos son el contrato con el backend. Cuando exista el servidor en Go,
  * cada interface de acá tiene su struct del otro lado y lo unico que cambia es

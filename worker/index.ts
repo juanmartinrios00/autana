@@ -11,7 +11,7 @@ import { SUPABASE_PUBLIC } from '../src/config/supabase-public'
  * datos del auto los pone React una vez que arrancó. WhatsApp, Telegram,
  * Facebook y compañía no ejecutan JavaScript — leen el HTML crudo y se van. El
  * resultado era que mandar un auto por WhatsApp mostraba el preview genérico de
- * Autana, sin foto, sin precio y sin modelo. Para un marketplace argentino,
+ * auteando, sin foto, sin precio y sin modelo. Para un marketplace argentino,
  * donde el link viaja por WhatsApp, eso es perder la mitad de la venta antes de
  * que alguien haga clic.
  *
@@ -562,7 +562,7 @@ async function renderListing(request: Request, env: Env, slug: string): Promise<
  *
  * La pantalla existe para mandarse por WhatsApp —lo dice la migración 002 y lo
  * dice el botón de copiar link—, y hasta acá ese link mostraba el preview
- * genérico de Autana: ni el nombre ni los autos. Era el mismo problema que
+ * genérico de auteando: ni el nombre ni los autos. Era el mismo problema que
  * este Worker ya resolvía para los avisos, en la única pantalla cuyo propósito
  * es compartirse.
  */

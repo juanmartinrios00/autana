@@ -42,13 +42,6 @@
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.12);
 }
 
-/* La ficha de la marca se invierte: sobre tinta, un cuadrado de tinta no es un
-   cuadrado. */
-.navbar--scrolled .navbar__mark {
-  background: var(--ink-inverse);
-  color: var(--ink);
-}
-
 .navbar--scrolled .navbar__link,
 .navbar--scrolled .navbar__bell {
   color: rgb(255 255 255 / 0.76);
@@ -109,25 +102,21 @@
   flex-shrink: 0;
 }
 
-.navbar__mark {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--r-sm);
-  background: var(--ink);
-  color: var(--accent);
-}
+/* El logotipo es un dibujo, no texto en una fuente, así que se mide por alto y
+   el ancho lo pone su propia proporción.
 
-.navbar--over .navbar__mark {
-  background: var(--ink-inverse);
-  color: var(--ink);
-}
+   Veinte píxeles es el alto que deja el bloque de marca ocupando lo mismo que
+   antes ---el cuadrado de 34 más el espacio más la palabra--- y deja la altura
+   de las minúsculas a la par de los links de al lado.
 
-.navbar__wordmark {
-  font-size: 1.25rem;
-  font-weight: 500;
-  letter-spacing: -0.03em;
+   No lleva color propio: el trazo va en `currentColor` y la navbar ya decide el
+   color de su contenido en cada estado. Sobre el papel queda en tinta, sobre el
+   hero y sobre la barra oscura queda en blanco, y no hay una tercera regla que
+   mantener de acuerdo con las otras dos. */
+.navbar__logo {
+  display: block;
+  height: 20px;
+  width: auto;
 }
 
 .navbar__links {
@@ -579,6 +568,23 @@ button.navbar__link {
   border-radius: var(--r-sm);
   background: var(--accent);
   color: var(--ink);
+}
+
+/* La letra adentro de la caja, con aire alrededor. El símbolo viene ajustado a
+   su trazo ---sin margen propio, para que cada uso decida el suyo--- así que si
+   ocupara los 38 píxeles enteros tocaría los cuatro bordes. */
+.footer__mark-glyph {
+  display: block;
+  width: 20px;
+  height: auto;
+}
+
+/* Un punto más grande que en la navbar: el pie no compite con nada por el
+   ancho. */
+.footer__logo {
+  display: block;
+  height: 24px;
+  width: auto;
 }
 
 .footer__claim {

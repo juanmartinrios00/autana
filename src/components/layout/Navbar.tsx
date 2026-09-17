@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { BRAND } from '../../config/brand'
 import { useAuth } from '../../hooks/useAuth'
 import { useUnseenNovedades } from '../../hooks/useUnseenNovedades'
+import { Wordmark } from '../brand/Logo'
 import { AccountMenu } from './AccountMenu'
 import { Icon } from '../ui/Icon'
 import { NavSearch } from './NavSearch'
@@ -93,11 +94,13 @@ export function Navbar({ atTop }: NavbarProps) {
           <Icon name={menuOpen ? 'close' : 'menu'} size={20} />
         </button>
 
-        <Link to="/" className="navbar__brand">
-          <span className="navbar__mark" aria-hidden="true">
-            <Icon name="car" size={17} />
-          </span>
-          <span className="navbar__wordmark">{BRAND}</span>
+        {/* El logotipo solo, sin el cuadrado con la inicial al lado. El símbolo
+            de la marca es la `a` de este mismo logotipo, así que ponerlos
+            juntos dibuja la misma letra dos veces separadas por tres píxeles.
+            El cuadrado sigue existiendo para donde hace falta una marca sola y
+            cuadrada: el favicon y el icono de la aplicación. */}
+        <Link to="/" className="navbar__brand" aria-label={`${BRAND}, inicio`}>
+          <Wordmark className="navbar__logo" aria-hidden="true" />
         </Link>
 
         <NavSearch />

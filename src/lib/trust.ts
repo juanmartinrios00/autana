@@ -29,7 +29,7 @@ export interface TrustSignal {
   verified: boolean
   /** Meses cumplidos desde que se registró. */
   monthsOn: number
-  /** Para la ficha: "en Autana desde marzo de 2026". */
+  /** Para la ficha: "en auteando desde marzo de 2026". */
   since: string
   /** Para la card, donde no entra más: "Desde mar 2026" o "Cuenta nueva". */
   sinceShort: string

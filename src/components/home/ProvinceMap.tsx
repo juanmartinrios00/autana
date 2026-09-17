@@ -208,7 +208,7 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
       })
 
       /* El PNG se usa para reconocer cada región, pero la capa visible se
-         normaliza al lenguaje de Autana: masa de tinta y límites un punto más
+         normaliza al lenguaje de auteando: masa de tinta y límites un punto más
          claros que ella.
 
          Lo que estaba en discusión no era el color de la masa sino el del

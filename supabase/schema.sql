@@ -1,5 +1,5 @@
 -- ============================================================================
--- Autana — schema inicial
+-- auteando — schema inicial
 --
 -- Cómo aplicarlo: Supabase → SQL Editor → New query → pegar todo → Run.
 -- Es idempotente: se puede correr de nuevo sin romper nada.

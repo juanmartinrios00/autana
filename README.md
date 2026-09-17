@@ -1,8 +1,29 @@
-# Autana
+# auteando
 
 Marketplace de compra y venta de vehículos. React + TypeScript sobre Vite.
 
-> `Autana` es un nombre provisorio.
+El nombre va en minúscula: así está dibujado el logotipo, y así se lee en medio
+de una oración, que es donde más aparece.
+
+## La marca
+
+El logotipo y el símbolo son trazos vectoriales y viven en
+`src/components/brand/Logo.tsx`, no como archivos en `assets`. Dos motivos:
+
+- El logotipo tiene geometría propia. No es una fuente que se pueda instalar,
+  así que un `<img>` no lo hace más portátil que un `<path>`.
+- Todos los trazos van en `currentColor`. La identidad entrega el logo en veinte
+  colores y no hace falta importar ninguno: la navbar ya decide de qué color va
+  su contenido en cada estado y el logo lo hereda. Un solo dibujo para los
+  veinte, y ninguna regla de color que mantener de acuerdo con otra.
+
+El nombre de la marca sale de `src/config/brand.ts`. El único lugar que no puede
+importarlo es `index.html`.
+
+**La paleta de la identidad es `tokens.css`.** Los veinte colores coinciden uno
+a uno, nombre por nombre: amarillo `#FFD100`, negro-verdoso `#0A100C`, marfil,
+piedra, grafito, los dos ámbar, el verde y el rojo. Si alguna vez hay que tocar
+un color, se toca en los tokens y la identidad sigue siendo cierta.
 
 ## Correr el proyecto
 
