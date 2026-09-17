@@ -10,6 +10,7 @@ import {
   fuelLabels,
   fuelTypes,
   sellerTypeLabels,
+  sellerTypes,
   transmissionLabels,
   transmissions,
 } from '../../lib/format'
@@ -231,7 +232,7 @@ export function FilterPanel({
       <Select
         label="Vendedor"
         placeholder="Todos"
-        options={(['dealer', 'private'] as const).map((type) => ({
+        options={sellerTypes.map((type) => ({
           value: type,
           label: sellerTypeLabels[type],
         }))}

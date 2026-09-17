@@ -1,10 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Slider } from '../ui/Slider'
-import { bodyLabels } from '../../lib/format'
-import type { BodyType } from '../../types'
+import { bodyLabels, bodyTypes } from '../../lib/format'
 import './HomeSections.css'
-
-const order: BodyType[] = ['sedan', 'suv', 'hatchback', 'pickup', 'coupe', 'van']
 
 export function CategorySlider({ counts }: { counts: Record<string, number> }) {
   return (
@@ -13,7 +10,7 @@ export function CategorySlider({ counts }: { counts: Record<string, number> }) {
       title="Qué tipo de auto buscás"
       itemWidth="200px"
     >
-      {order.map((body) => {
+      {bodyTypes.map((body) => {
         const count = counts[body] ?? 0
         return (
           <Link key={body} to={`/cars?bodyType=${body}`} className="category">
