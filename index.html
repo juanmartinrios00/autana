@@ -3,7 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- El SVG es el que usan los navegadores al dia. El .ico esta para los que
+         no leen SVG y, sobre todo, porque Google y varios lectores de RSS piden
+         /favicon.ico a secas sin mirar estas etiquetas: sin el archivo, ese
+         pedido cae en el index.html de la SPA, que no es un icono. El
+         apple-touch-icon es el que usa iOS al agregar el sitio a la pantalla de
+         inicio, donde el fondo lo pone la imagen y no el sistema. -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- El color de la barra del navegador en Android, del mismo negro verdoso
+         de la marca. -->
+    <meta name="theme-color" content="#0a100c" />
 
     <title>auteando — Comprá y vendé autos</title>
     <meta

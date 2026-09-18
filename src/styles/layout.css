@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Autana — layout: navbar, footer, envoltorio de página
+   auteando — layout: navbar, footer, envoltorio de página
    ========================================================================== */
 
 .navbar {
@@ -318,12 +318,31 @@ button.navbar__link {
 
 /* --- Buscador de la navbar ---------------------------------------------- */
 
+/* El buscador ocupa lo que sobra entre el logo y los links, en vez de medir
+   260 píxeles fijos.
+
+   Con un ancho fijo, todo el aire de la barra caía en un solo lugar: los links
+   tienen `margin-left: auto`, así que el sobrante se juntaba entre el buscador
+   y ellos. Quedaba un campo corto pegado al logo y un hueco de doscientos
+   píxeles al lado, que es exactamente al revés de como se lee una barra de
+   marketplace ---donde buscar es lo principal y el campo lo tiene que decir por
+   tamaño.
+
+   Con `flex: 1` el sobrante se lo lleva el campo y los links quedan al lado, a
+   la distancia de un gap. Alrededor de los 1320 del ancho máximo de página le
+   tocan unos 450 píxeles; el `min-width` es la red para cuando el idioma o un
+   link más largo empujen.
+
+   El margen izquierdo se suma al gap de la barra: 24 más 16 son 40 píxeles
+   entre el logotipo y el campo, que es lo que hace que se lean como dos cosas
+   distintas y no como un bloque. */
 .navsearch {
   display: flex;
   align-items: center;
-  width: 260px;
+  flex: 1 1 auto;
+  min-width: 220px;
   height: 44px;
-  flex-shrink: 0;
+  margin-left: var(--sp-5);
   padding-right: 8px;
   border: 1px solid transparent;
   border-radius: var(--r-sm);
@@ -331,12 +350,14 @@ button.navbar__link {
   box-shadow: inset 0 0 0 1px transparent;
   transition:
     background var(--dur-fast) var(--ease),
-    box-shadow var(--dur-fast) var(--ease),
-    width var(--dur-slow) var(--ease);
+    box-shadow var(--dur-fast) var(--ease);
 }
 
+/* Al enfocarlo ya no crece: antes pasaba de 260 a 300 para darse a notar, y un
+   campo que ya ocupa el ancho de la barra no tiene a dónde crecer ni necesidad
+   de hacerlo. Queda el cambio de fondo y el halo, que es el mismo gesto que el
+   resto de los campos del sistema. */
 .navsearch:focus-within {
-  width: 300px;
   background: var(--canvas);
   border-color: var(--ink);
   box-shadow: 0 0 0 3px var(--accent-tint);
@@ -464,10 +485,13 @@ button.navbar__link {
     padding-block: var(--sp-3);
   }
 
+  /* En celular baja a su propia fila y ocupa el ancho entero, así que el
+     margen que lo separa del logo en escritorio acá lo desalinearía. */
   .navsearch,
   .navsearch:focus-within {
     order: 10;
     width: 100%;
+    margin-left: 0;
   }
 }
 
