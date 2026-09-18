@@ -75,11 +75,15 @@ const MARK_BOX = 44
 const markY = H - 112
 const brand = [
   `<rect x="64" y="${markY}" width="${MARK_BOX}" height="${MARK_BOX}" rx="6" fill="${ACCENT}"/>`,
+  /* Los altos mandan y los anchos salen de la proporcion de cada dibujo: el
+     simbolo es 0,951 a 1 y el logotipo 5,707 a 1. Escritos a ojo, un `viewBox`
+     nuevo dejaria el logo centrado adentro de una caja que no es la suya ---no
+     se estira, porque `preserveAspectRatio` no deja, pero queda flotando. */
   renderToStaticMarkup(
-    <BrandMark x={74} y={markY + 11} width={24} height={21} color={INK} />,
+    <BrandMark x={76} y={markY + 8} width={27} height={28} color={INK} />,
   ),
   renderToStaticMarkup(
-    <Wordmark x={126} y={markY + 8} width={173} height={28} color="#ffffff" />,
+    <Wordmark x={126} y={markY + 9} width={149} height={26} color="#ffffff" />,
   ),
 ].join('')
 

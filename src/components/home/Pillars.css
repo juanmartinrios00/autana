@@ -18,19 +18,71 @@
   flex-direction: column;
 }
 
+/* Cada panel trae su propia paleta y todo lo de adentro sale de estos seis
+   valores. Escribir el color de cada pieza tres veces ---título, copete, texto,
+   líneas, dibujo, grilla--- son dieciocho reglas que hay que mantener de
+   acuerdo entre sí; declarando la paleta arriba, agregar un cuarto panel es
+   elegir seis colores.
+
+   El de destaque del dibujo no siempre es el amarillo. Su trabajo es ser la
+   línea que se ve primero, y sobre amarillo o sobre gris claro un trazo
+   amarillo de 1,25 píxeles no se ve en absoluto. En esos dos paneles ese papel
+   lo hace la tinta. Es la misma idea aplicada, no la misma variable. */
 .pillar {
   position: sticky;
   top: 0;
   min-height: 100svh;
   display: flex;
-  background: var(--ink);
-  color: var(--ink-inverse);
+  background: var(--pillar-bg);
+  color: var(--pillar-ink);
 }
 
-/* El borde de arriba es lo que hace visible que un panel tapó al anterior. Sin
-   él, dos fondos oscuros iguales se funden y el apilado no se percibe. */
-.pillar + .pillar {
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
+/* Antes acá había una hairline arriba de cada panel, y existía sólo porque los
+   tres eran del mismo color: dos fondos oscuros iguales se funden y el apilado
+   no se percibe. Con un color por panel, el que sube tapa al anterior con un
+   cambio de fondo entero ---el borde ya no hace falta, y sobre el amarillo una
+   línea blanca sería un accidente. */
+
+/* Tinta. El amarillo es el que destaca, como en el resto del sitio. */
+.pillar--tinta {
+  --pillar-bg: var(--ink);
+  --pillar-ink: var(--ink-inverse);
+  --pillar-body: rgba(255, 255, 255, 0.82);
+  --pillar-soft: rgba(255, 255, 255, 0.62);
+  --pillar-line: rgba(255, 255, 255, 0.16);
+  --pillar-cta-line: rgba(255, 255, 255, 0.4);
+  --pillar-art: rgba(255, 255, 255, 0.34);
+  --pillar-grid: rgba(255, 255, 255, 0.09);
+  --pillar-mark: var(--accent);
+}
+
+/* Amarillo. Todo lo de adentro se da vuelta a tinta, incluido el destaque: es
+   el único panel donde el color de fondo es el color de acción, así que la
+   jerarquía la tiene que dar el contraste. */
+.pillar--amarillo {
+  --pillar-bg: var(--accent);
+  --pillar-ink: var(--ink);
+  --pillar-body: rgba(10, 16, 12, 0.78);
+  --pillar-soft: rgba(10, 16, 12, 0.62);
+  --pillar-line: rgba(10, 16, 12, 0.18);
+  --pillar-cta-line: rgba(10, 16, 12, 0.42);
+  --pillar-art: rgba(10, 16, 12, 0.34);
+  --pillar-grid: rgba(10, 16, 12, 0.1);
+  --pillar-mark: var(--ink);
+}
+
+/* Claro. Es `--surface` y no blanco puro: el panel tiene que distinguirse del
+   papel de la página que sigue, o el último del mazo no se lee como panel. */
+.pillar--claro {
+  --pillar-bg: var(--surface);
+  --pillar-ink: var(--ink);
+  --pillar-body: rgba(10, 16, 12, 0.78);
+  --pillar-soft: rgba(10, 16, 12, 0.6);
+  --pillar-line: rgba(10, 16, 12, 0.14);
+  --pillar-cta-line: rgba(10, 16, 12, 0.4);
+  --pillar-art: rgba(10, 16, 12, 0.32);
+  --pillar-grid: rgba(10, 16, 12, 0.08);
+  --pillar-mark: var(--ink);
 }
 
 .pillar__inner {
@@ -56,7 +108,7 @@
   font-weight: 500;
   line-height: 1.02;
   letter-spacing: -0.035em;
-  color: var(--ink-inverse);
+  color: var(--pillar-ink);
 }
 
 .pillar__art {
@@ -69,16 +121,16 @@
   display: block;
   width: 100%;
   height: auto;
-  color: rgba(255, 255, 255, 0.34);
+  color: var(--pillar-art);
 }
 
 /* La grilla va más apagada que el dibujo: es el papel, no lo dibujado. */
 .pillar__grid {
-  stroke: rgba(255, 255, 255, 0.09);
+  stroke: var(--pillar-grid);
 }
 
 .pillar__accent {
-  stroke: var(--accent);
+  stroke: var(--pillar-mark);
 }
 
 .pillar__eyebrow {
@@ -87,7 +139,7 @@
   font-weight: 600;
   letter-spacing: var(--ls-nav);
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--pillar-soft);
 }
 
 .pillar__bottom {
@@ -96,14 +148,14 @@
   align-items: start;
   gap: var(--sp-6);
   padding-top: var(--sp-5);
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid var(--pillar-line);
 }
 
 .pillar__text {
   max-width: 58ch;
   font-size: clamp(1.02rem, 1.6vw, 1.3rem);
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.82);
+  color: var(--pillar-body);
 }
 
 /* El link subrayado y no un botón: el botón de la sección es el amarillo de la
@@ -113,16 +165,18 @@
   align-items: center;
   gap: var(--sp-3);
   padding-bottom: var(--sp-2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid var(--pillar-cta-line);
   white-space: nowrap;
   font-weight: 600;
-  color: var(--ink-inverse);
+  color: var(--pillar-ink);
   transition: border-color var(--dur-med) var(--ease);
 }
 
+/* El mismo color que destaca en el dibujo de ese panel: amarillo sobre tinta,
+   tinta sobre amarillo y sobre claro. */
 .pillar__cta:hover {
-  border-bottom-color: var(--accent);
-  color: var(--accent);
+  border-bottom-color: var(--pillar-mark);
+  color: var(--pillar-mark);
 }
 
 @media (max-width: 899px) {

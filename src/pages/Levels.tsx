@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
 import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getLevelInput } from '../lib/api'
 import { computeLevel, LEVELS, type LevelInput, type LevelState } from '../lib/levels'
@@ -66,6 +67,8 @@ export function Levels() {
   const state: LevelState = computeLevel(input)
   const signedIn = Boolean(session)
 
+  useDarkHero()
+
   useDocumentMeta({
     title: pageTitle('Los niveles'),
     description:
@@ -74,7 +77,7 @@ export function Levels() {
 
   return (
     <>
-      <section className="levels__head">
+      <section className="levels__head hero-bleed">
         <div className="page levels__head-inner">
           <span className="over over--invert">Los niveles</span>
           <h1 className="levels__title">Se suben haciendo, no participando.</h1>

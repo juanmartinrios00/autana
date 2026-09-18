@@ -87,6 +87,26 @@
   color: var(--ink-inverse);
 }
 
+/**
+ * Un hero que sube por detrás de la navbar.
+ *
+ * La barra es sticky, así que ocupa lugar en el flujo: sin esto, el bloque
+ * oscuro arranca justo abajo y la barra ---que sobre un hero oscuro va sin
+ * fondo--- queda flotando sobre el papel blanco, con el logotipo blanco encima
+ * y por lo tanto invisible.
+ *
+ * Es lo mismo que ya hacía el hero de la portada escrito en su propio CSS. Acá
+ * va una vez porque lo necesitan siete pantallas, y el día que haya una octava
+ * el error de olvidarse se ve al instante: el logo desaparece.
+ *
+ * El `padding-top` devuelve el alto que se comió el margen. Cada pantalla
+ * ajusta su aire propio con `--hero-bleed-top` si el suyo no es el de siempre.
+ */
+.hero-bleed {
+  margin-top: calc(var(--nav-h) * -1);
+  padding-top: calc(var(--nav-h) + var(--hero-bleed-top, var(--sp-8)));
+}
+
 .navbar__inner {
   position: relative;
   display: flex;

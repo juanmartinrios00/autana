@@ -4,6 +4,7 @@ import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
 import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getStats, type MarketplaceStats } from '../lib/api'
 import './Dealers.css'
@@ -64,6 +65,8 @@ export function Dealers() {
     }
   }, [])
 
+  useDarkHero()
+
   useDocumentMeta({
     title: pageTitle('Para concesionarias'),
     description:
@@ -72,7 +75,7 @@ export function Dealers() {
 
   return (
     <>
-      <section className="dealers__head">
+      <section className="dealers__head hero-bleed">
         <div className="page dealers__head-inner">
           <span className="over over--invert">Para concesionarias</span>
           <h1 className="dealers__title">Tu stock, sin comisión y sin intermediarios.</h1>

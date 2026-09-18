@@ -30,9 +30,18 @@ function isActiveLink(link: (typeof links)[number], pathname: string, routerActi
 interface NavbarProps {
   /** `true` mientras la página está arriba de todo, sin scrollear. */
   atTop: boolean
+  /**
+   * `true` cuando hay que flotar sobre un hero oscuro: sin fondo y en blanco.
+   *
+   * Lo decide el layout con lo que declara cada pantalla, y no esta barra
+   * mirando la ruta. Antes acá adentro decía `pathname === '/'`, así que la
+   * portada quedaba bien y las otras seis que arrancan en tinta se llevaban una
+   * barra blanca sobre fondo negro.
+   */
+  overHero: boolean
 }
 
-export function Navbar({ atTop }: NavbarProps) {
+export function Navbar({ atTop, overHero }: NavbarProps) {
   const { session, signOut } = useAuth()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -73,10 +82,8 @@ export function Navbar({ atTop }: NavbarProps) {
     }
   }, [menuOpen])
 
-  /* La home tiene un hero oscuro a sangre: ahí la navbar flota encima, sin
-     fondo. En cuanto se scrollea, o en cualquier otra página, se vuelve
-     sólida para no perder legibilidad sobre el contenido blanco. */
-  const overHero = location.pathname === '/' && atTop
+  /* Tres estados: flotando sobre un hero oscuro, apoyada sobre el papel arriba
+     de todo, y sólida en tinta apenas se scrollea. */
   const navbarClass = overHero ? 'navbar navbar--over' : atTop ? 'navbar' : 'navbar navbar--scrolled'
 
   return (

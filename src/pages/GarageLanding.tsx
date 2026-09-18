@@ -3,6 +3,7 @@ import { GarageShowcase } from '../components/garage/GarageShowcase'
 import { Button } from '../components/ui/Button'
 import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import './GarageLanding.css'
 
@@ -19,6 +20,8 @@ import './GarageLanding.css'
 export function GarageLanding() {
   const { session } = useAuth()
 
+  useDarkHero()
+
   useDocumentMeta({
     title: pageTitle('El garage virtual'),
     description:
@@ -27,7 +30,7 @@ export function GarageLanding() {
 
   return (
     <>
-      <section className="glanding__head">
+      <section className="glanding__head hero-bleed">
         <div className="page glanding__head-inner">
           <span className="over over--invert">El garage virtual</span>
           <h1 className="glanding__title">Los autos que te marcaron.</h1>

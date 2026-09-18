@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { DarkHeroContext } from '../../context/dark-hero'
 import { useOrphanPhotoCleanup } from '../../hooks/useOrphanPhotoCleanup'
 import { CompareBar } from '../compare/CompareBar'
 import { ErrorBoundary } from './ErrorBoundary'
@@ -15,6 +16,11 @@ export function Layout() {
      la navbar tiene que nacer sólida y no transparente sobre contenido blanco. */
   const [atTop, setAtTop] = useState(() => window.scrollY < 24)
 
+  /* Lo declara la pantalla que se esté mostrando, con `useDarkHero`. El
+     `setState` es estable, así que el contexto no cambia de identidad y no
+     repinta a nadie por existir. */
+  const [darkHero, setDarkHero] = useState(false)
+
   /* Un centinela de 1px cerca del borde superior dice si estamos arriba de
      todo. Es más barato y más fiable que escuchar el scroll: el observador
      avisa sólo cuando cruza, no en cada frame. */
@@ -28,12 +34,14 @@ export function Layout() {
   }, [])
 
   return (
-    <>
+    <DarkHeroContext.Provider value={setDarkHero}>
       <a className="skip-link" href="#contenido">
         Saltar al contenido
       </a>
       <div className="nav-sentinel" ref={sentinel} aria-hidden="true" />
-      <Navbar atTop={atTop} />
+      {/* Flota sobre el hero sólo si hay hero y todavía no se scrolleó: apenas
+          baja, se vuelve sólida en cualquier pantalla. */}
+      <Navbar atTop={atTop} overHero={darkHero && atTop} />
       {/* El boundary abraza sólo el contenido: si una pantalla se rompe, la
           navbar y el pie siguen ahí y se puede navegar a otro lado en vez de
           quedar en una pantalla en blanco. La `key` es la ruta porque, sin
@@ -52,6 +60,6 @@ export function Layout() {
       </main>
       <Footer />
       <CompareBar />
-    </>
+    </DarkHeroContext.Provider>
   )
 }

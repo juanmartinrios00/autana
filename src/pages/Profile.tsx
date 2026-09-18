@@ -9,6 +9,7 @@ import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
 import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getOwnWhatsapp, getProfile, uploadProfileAvatar, type ProfileSummary } from '../lib/api'
 import { listGarage, removeGarageEntry, saveGarageEntry, SLOTS, type GarageInput } from '../lib/garage'
@@ -96,6 +97,9 @@ export function Profile() {
     garageCars: garage.length,
   })
 
+  /* Mismo criterio que el garage: mientras carga y si falla no hay hero. */
+  useDarkHero(Boolean(showing))
+
   useDocumentMeta({
     title: showing ? pageTitle(`El garage de ${showing.name}`) : pageTitle('Perfil'),
     description: showing
@@ -168,7 +172,7 @@ export function Profile() {
 
   return (
     <>
-      <section className="profile__head">
+      <section className="profile__head hero-bleed">
         <div className="page profile__head-inner">
           <div className="profile__identity">
             <div className="profile__avatar-shell">

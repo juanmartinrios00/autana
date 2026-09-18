@@ -31,6 +31,15 @@ import './Pillars.css'
 
 interface Pillar {
   id: string
+  /**
+   * De qué color va el panel. Los tres eran tinta y el apilado se sostenía con
+   * una hairline arriba de cada uno; con un color por panel, el que sube tapa
+   * al anterior con un cambio de fondo entero y la línea sobra.
+   *
+   * Va declarado y no salido del índice para que reordenar la lista reordene
+   * también los colores, sin que haya que acordarse de nada.
+   */
+  tone: 'tinta' | 'amarillo' | 'claro'
   eyebrow: string
   title: string
   text: string
@@ -117,6 +126,7 @@ function ClearDrawing() {
 const pillars: Pillar[] = [
   {
     id: 'simple',
+    tone: 'tinta',
     eyebrow: 'Simple',
     title: 'Publicar son cuatro pasos.',
     text: 'Datos del vehículo, fotos, precio y contacto. El borrador se guarda solo mientras lo completás, así que podés empezar desde el celular y terminarlo más tarde. Sin llamadas, sin que nadie te tenga que habilitar y sin esperar a que un asesor te confirme el aviso.',
@@ -125,6 +135,7 @@ const pillars: Pillar[] = [
   },
   {
     id: 'directo',
+    tone: 'amarillo',
     eyebrow: 'Directo',
     title: 'Del otro lado hay una persona.',
     text: 'El interesado te escribe al WhatsApp que dejaste, con el mensaje armado y el link del aviso. No hay un chat nuestro en el medio, no guardamos la conversación y nadie te llama después para ofrecerte otra cosa.',
@@ -133,6 +144,7 @@ const pillars: Pillar[] = [
   },
   {
     id: 'claro',
+    tone: 'claro',
     eyebrow: 'Claro',
     title: 'Los datos son los que son.',
     text: 'Kilometraje, año, dónde está y quién lo publica: si es particular o agencia, y desde cuándo tiene cuenta. Sin puntajes inventados ni sellos que no quieren decir nada. Lo que se puede verificar, y nada más.',
@@ -149,7 +161,7 @@ export function Pillars() {
       </h2>
 
       {pillars.map((pillar) => (
-        <article className="pillar" key={pillar.id}>
+        <article className={`pillar pillar--${pillar.tone}`} key={pillar.id}>
           <div className="pillar__inner">
             <div className="pillar__top">
               <h3 className="pillar__title">{pillar.title}</h3>

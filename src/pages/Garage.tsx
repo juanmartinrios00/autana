@@ -13,6 +13,7 @@ import { ReportDialog } from '../components/vehicle/ReportDialog'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getProfile, listSellerVehicles, type ProfileSummary } from '../lib/api'
 import { listGarage, removeGarageEntry, saveGarageEntry, SLOTS, type GarageInput } from '../lib/garage'
@@ -95,6 +96,13 @@ export function Garage() {
     document.getElementById('avisos')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [location.hash, hasListings])
 
+  /* Sólo cuando hay perfil: mientras carga hay un esqueleto sobre papel blanco,
+     y si la cuenta no existe hay un cartel. En los dos casos una barra
+     transparente dejaría el logotipo blanco sobre blanco. Los temas del garage
+     son todos oscuros ---hay un test que se los exige--- así que cuando el hero
+     está, está en tinta. */
+  useDarkHero(Boolean(profile))
+
   useDocumentMeta({
     title: profile ? pageTitle(`El garage de ${profile.name}`) : pageTitle('Garage'),
     description: profile
@@ -161,7 +169,7 @@ export function Garage() {
   return (
     <>
       <section
-        className="garagepage__head"
+        className="garagepage__head hero-bleed"
         style={{ '--garage-bg': garageThemeColor(themeId) } as CSSProperties}
       >
         <div className="page garagepage__head-inner">

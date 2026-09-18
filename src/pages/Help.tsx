@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { BRAND, pageTitle } from '../config/brand'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import './Help.css'
 
@@ -339,6 +340,8 @@ const TOPICS: Topic[] = [
 ]
 
 export function Help() {
+  useDarkHero()
+
   useDocumentMeta({
     title: pageTitle('Ayuda'),
     description:
@@ -347,7 +350,7 @@ export function Help() {
 
   return (
     <>
-      <section className="help__head">
+      <section className="help__head hero-bleed">
         <div className="page help__head-inner">
           <span className="over over--invert">Ayuda</span>
           <h1 className="help__title">Cómo funciona esto</h1>

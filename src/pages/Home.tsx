@@ -32,6 +32,7 @@ import {
   listRecentVehicles,
   type MarketplaceStats,
 } from '../lib/api'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import type { Seller, Vehicle } from '../types'
 import './Home.css'
@@ -46,6 +47,8 @@ const popular = [
 
 export function Home() {
   const navigate = useNavigate()
+
+  useDarkHero()
 
   useDocumentMeta({
     title: `${BRAND} — Comprá y vendé autos`,

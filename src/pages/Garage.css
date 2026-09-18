@@ -4,7 +4,9 @@
 /* El fondo lo elige cada uno de una paleta cerrada (`lib/garage-theme`). La
    variable llega por `style` desde la pantalla; sin ella, el negro de siempre. */
 .garagepage__head {
-  padding-block: var(--sp-8);
+  /* El de arriba lo pone `.hero-bleed`, que ademas sube el bloque por
+     detras de la navbar. */
+  padding-bottom: var(--sp-8);
   background: var(--garage-bg, var(--ink));
   color: var(--ink-inverse);
   transition: background var(--dur-slow) var(--ease);

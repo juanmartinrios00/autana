@@ -7,15 +7,24 @@ de una oración, que es donde más aparece.
 
 ## La marca
 
-El logotipo y el símbolo son trazos vectoriales y viven en
-`src/components/brand/Logo.tsx`, no como archivos en `assets`. Dos motivos:
+El logotipo y el símbolo son contornos y viven en
+`src/components/brand/Logo.tsx`, no como archivos en `assets`.
 
-- El logotipo tiene geometría propia. No es una fuente que se pueda instalar,
-  así que un `<img>` no lo hace más portátil que un `<path>`.
-- Todos los trazos van en `currentColor`. La identidad entrega el logo en veinte
-  colores y no hace falta importar ninguno: la navbar ya decide de qué color va
-  su contenido en cada estado y el logo lo hereda. Un solo dibujo para los
-  veinte, y ninguna regla de color que mantener de acuerdo con otra.
+Están construidos sobre **Archivo**, la misma familia que usa todo el sitio, en
+peso 625 y con el espaciado apretado y unos cortes diagonales en la `a`, la `t`
+y la `d`. Que la base tipográfica sea la del sitio es lo que hace que el logo no
+se lea como una pieza pegada encima: al lado de un titular es la misma letra,
+apenas más cerrada. Vienen del kit ya convertidos a curvas, así que no dependen
+de que la fuente cargue ni de que exista esa variable de peso.
+
+Van adentro de un componente y no como `<img>` por una razón concreta: **todo va
+en `currentColor`**. La identidad entrega el logo en veintiún colores y no hace
+falta importar ninguno, porque la navbar ya decide de qué color va su contenido
+en cada estado y el logo lo hereda. Un dibujo para los veintiuno, y ninguna
+regla de color que después haya que mantener de acuerdo con otra.
+
+El `d` y el `transform` de cada uno salen tal cual del kit. Si el logotipo
+cambia, se reemplazan por los del archivo nuevo y no hay nada más que tocar.
 
 El nombre de la marca sale de `src/config/brand.ts`. El único lugar que no puede
 importarlo es `index.html`.
