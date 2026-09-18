@@ -1,6 +1,7 @@
 import {
   bodyTypes,
   conditions,
+  currencies,
   fuelTypes,
   sellerTypes,
   sortValues,
@@ -76,6 +77,7 @@ export function parseFilters(params: URLSearchParams): VehicleFilters {
     maxYear: num(params, 'maxYear'),
     minPrice: num(params, 'minPrice'),
     maxPrice: num(params, 'maxPrice'),
+    currency: one(params, 'currency', currencies),
     maxMileage: num(params, 'maxMileage'),
     fuelType: list(params, 'fuelType', fuelTypes),
     bodyType: list(params, 'bodyType', bodyTypes),
@@ -145,6 +147,18 @@ export function applyVehicleFilters<Q extends FilterableQuery<Q>>(
   if (filters.province) query = query.eq('province', filters.province)
   if (filters.minYear) query = query.gte('year', filters.minYear)
   if (filters.maxYear) query = query.lte('year', filters.maxYear)
+  /* El tope de precio arrastra la moneda. Sin esto, un `maxPrice=30000` se
+     compara contra la columna cruda y un aviso de treinta millones de pesos
+     entra en "hasta USD 30.000": el numero esta, la consulta funciona, y el
+     resultado es un auto de treinta mil dolares al lado de uno que vale diez
+     veces menos.
+
+     Sin tope de precio no se filtra por moneda. Alguien que busca un auto busca
+     un auto, no una moneda, y esconderle la mitad del catalogo por un dato que
+     no pidio seria peor que el problema. */
+  if (filters.minPrice || filters.maxPrice) {
+    query = query.eq('currency', filters.currency ?? 'USD')
+  }
   if (filters.minPrice) query = query.gte('price', filters.minPrice)
   if (filters.maxPrice) query = query.lte('price', filters.maxPrice)
   if (filters.maxMileage !== undefined) query = query.lte('mileage', filters.maxMileage)

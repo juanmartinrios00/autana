@@ -5,6 +5,7 @@ import { Select } from '../ui/Select'
 import {
   bodyLabels,
   bodyTypes,
+  currencies,
   conditionLabels,
   conditions,
   fuelLabels,
@@ -112,7 +113,28 @@ export function FilterPanel({
       />
 
       <fieldset className="filters__group">
-        <legend className="field__label">Precio (USD)</legend>
+        {/* La moneda es parte del tope, no un filtro aparte: los mismos 30.000
+            son un auto usado en dólares y nada en pesos, así que el número no
+            quiere decir nada hasta que se sepa en cuál está. Por eso va acá
+            arriba y no en la lista de filtros de abajo. */}
+        <legend className="field__label">Precio</legend>
+        <div className="filters__currency" role="radiogroup" aria-label="Moneda del precio">
+          {currencies.map((value) => {
+            const on = (filters.currency ?? 'USD') === value
+            return (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                className={on ? 'filters__money is-on' : 'filters__money'}
+                onClick={() => setParam('currency', value === 'USD' ? undefined : value)}
+              >
+                {value}
+              </button>
+            )
+          })}
+        </div>
         <div className="filters__pair">
           <Input
             label="Desde"

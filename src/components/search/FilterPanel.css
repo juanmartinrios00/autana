@@ -79,3 +79,42 @@
   color: var(--ink-inverse);
   font-weight: 600;
 }
+
+
+/* Las dos monedas del tope de precio. Son un par de pastillas chicas y no un
+   select: son dos opciones, y un desplegable para dos esconde la que no está
+   elegida justo donde hace falta ver que hay otra.
+
+   Arriba de los campos y no al lado: el número se escribe después de saber en
+   qué moneda va, no antes. */
+.filters__currency {
+  display: flex;
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-3);
+}
+
+.filters__money {
+  padding: 5px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--canvas);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--ink-3);
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.filters__money:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.filters__money.is-on {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--ink-inverse);
+}

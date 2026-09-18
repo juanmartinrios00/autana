@@ -1,5 +1,6 @@
 import type {
   BodyType,
+  Currency,
   Drivetrain,
   FuelType,
   ListingStatus,
@@ -77,6 +78,17 @@ export const sellerTypeLabels: Record<SellerType, string> = {
 
 export const sellerTypes = Object.keys(sellerTypeLabels) as SellerType[]
 
+/* Cómo se nombra cada moneda en un select. El símbolo va adelante porque es lo
+   que la persona reconoce de un vistazo; el código está al lado porque en
+   Argentina `$` a secas es ambiguo y esa ambigüedad es justo la que este campo
+   viene a sacar. */
+export const currencyLabels: Record<Currency, string> = {
+  USD: 'USD · dólares',
+  ARS: 'ARS · pesos',
+}
+
+export const currencies = Object.keys(currencyLabels) as Currency[]
+
 /* El orden de los resultados. Estaba escrito dos veces: el desplegable de
    `/cars` tenia su lista con las etiquetas y `search-query` tenia la suya con
    los valores validos. Agregar un orden al desplegable sin agregarlo alla
@@ -100,8 +112,16 @@ export const statusLabels: Record<ListingStatus, string> = {
   blocked: 'Bloqueada',
 }
 
-/** `USD 32.900`. Sin decimales: en autos no aportan nada. */
-export function formatPrice(amount: number, currency: 'USD' | 'ARS' = 'USD'): string {
+/**
+ * `USD 32.900`. Sin decimales: en autos no aportan nada.
+ *
+ * La moneda no tiene valor por defecto a propósito. Lo tenía ---`'USD'`--- y
+ * mientras todos los avisos estuvieran en dólares no se notaba; con avisos en
+ * pesos, cualquier llamada que se olvide de pasarla muestra un precio en pesos
+ * rotulado en dólares, que es un error de tres ceros que nadie va a leer como
+ * error. Sin el default, el compilador los encuentra a todos.
+ */
+export function formatPrice(amount: number, currency: Currency): string {
   return `${currency} ${amount.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`
 }
 

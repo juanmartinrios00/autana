@@ -213,6 +213,7 @@ describe('applyVehicleFilters', () => {
       { method: 'eq', args: ['province', 'Salta'] },
       { method: 'gte', args: ['year', 2018] },
       { method: 'lte', args: ['year', 2024] },
+      { method: 'eq', args: ['currency', 'USD'] },
       { method: 'gte', args: ['price', 10000] },
       { method: 'lte', args: ['price', 50000] },
       { method: 'lte', args: ['mileage', 80000] },
@@ -220,6 +221,51 @@ describe('applyVehicleFilters', () => {
       { method: 'in', args: ['fuel_type', ['diesel']] },
       { method: 'in', args: ['body_type', ['pickup']] },
       { method: 'in', args: ['condition', ['used']] },
+    ])
+  })
+
+  /**
+   * El tope de precio arrastra la moneda.
+   *
+   * Sin esto, un `maxPrice=30000` se compara contra la columna cruda y un aviso
+   * de treinta millones de pesos entra en "hasta USD 30.000". La consulta
+   * funciona, no hay error, y el resultado es un auto de treinta mil dólares al
+   * lado de uno que vale diez veces menos.
+   */
+  it('un tope de precio se aplica en una sola moneda', () => {
+    expect(apply({ maxPrice: 30_000 }).calls).toEqual([
+      { method: 'eq', args: ['currency', 'USD'] },
+      { method: 'lte', args: ['price', 30_000] },
+    ])
+
+    expect(apply({ maxPrice: 30_000_000, currency: 'ARS' }).calls).toEqual([
+      { method: 'eq', args: ['currency', 'ARS'] },
+      { method: 'lte', args: ['price', 30_000_000] },
+    ])
+  })
+
+  /* Dólares cuando no se dice: es lo que valen los links que ya existen ---el
+     selector de presupuesto de la portada manda `maxPrice` a secas--- y es la
+     lectura natural de un número como 30.000 en un marketplace de autos
+     argentino. */
+  it('sin moneda declarada, el tope es en dólares', () => {
+    expect(apply({ minPrice: 5000 }).calls).toContainEqual({
+      method: 'eq',
+      args: ['currency', 'USD'],
+    })
+  })
+
+  /**
+   * Y al revés: sin tope no se filtra por moneda.
+   *
+   * Alguien que busca un auto busca un auto, no una moneda. Esconderle la mitad
+   * del catálogo por un dato que no pidió sería peor que el problema que este
+   * filtro viene a resolver.
+   */
+  it('sin tope de precio, la moneda no filtra nada', () => {
+    expect(apply({ currency: 'ARS' }).calls).toEqual([])
+    expect(apply({ currency: 'ARS', make: 'Ford' }).calls).toEqual([
+      { method: 'eq', args: ['make', 'Ford'] },
     ])
   })
 

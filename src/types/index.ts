@@ -71,7 +71,7 @@ export interface Vehicle {
 
   /** Siempre en la moneda de `currency`, sin decimales. */
   price: number
-  currency: 'USD' | 'ARS'
+  currency: Currency
   negotiable: boolean
 
   mileage: number
@@ -177,6 +177,15 @@ export interface VehicleFilters {
   maxYear?: number
   minPrice?: number
   maxPrice?: number
+  /**
+   * En qué moneda están `minPrice` y `maxPrice`. Por defecto, dólares.
+   *
+   * Sin esto, un tope de 30.000 se compara contra la columna cruda y un aviso
+   * de 30.000.000 de pesos entra en "hasta USD 30.000". El número está, la
+   * consulta funciona, y el resultado es un auto de treinta mil dolares al lado
+   * de uno que vale diez veces menos.
+   */
+  currency?: Currency
   maxMileage?: number
   fuelType?: FuelType[]
   transmission?: Transmission
@@ -185,6 +194,16 @@ export interface VehicleFilters {
   sellerType?: SellerType
   condition?: VehicleCondition[]
 }
+
+/**
+ * En qué moneda está el precio.
+ *
+ * En Argentina el usado se publica casi siempre en dólares, pero no siempre: el
+ * 0 km y lo que se vende financiado van en pesos, y un aviso que no puede decir
+ * su moneda de verdad termina con el número mal o con el precio en la
+ * descripción, que no se puede filtrar ni ordenar.
+ */
+export type Currency = 'USD' | 'ARS'
 
 export type SortOption = 'relevance' | 'price-asc' | 'price-desc' | 'year-desc' | 'mileage-asc'
 

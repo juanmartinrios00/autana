@@ -3,6 +3,7 @@ import { computeTrust, type TrustSignal } from './trust'
 import { applyVehicleFilters } from './search-query'
 import { photoUrl, requireSupabase } from './supabase'
 import type {
+  Currency,
   ListingStatus,
   Paginated,
   Seller,
@@ -60,7 +61,7 @@ interface ListingRow {
   trim: string | null
   year: number
   price: number
-  currency: 'USD' | 'ARS'
+  currency: Currency
   negotiable: boolean
   mileage: number
   condition: Vehicle['condition']
@@ -429,6 +430,7 @@ export interface ListingInput {
   trim: string | null
   year: number
   price: number
+  currency: Currency
   negotiable: boolean
   mileage: number
   condition: Vehicle['condition']
@@ -494,6 +496,7 @@ export async function createListing(
       trim: input.trim,
       year: input.year,
       price: input.price,
+      currency: input.currency,
       negotiable: input.negotiable,
       mileage: input.mileage,
       condition: input.condition,
@@ -1031,6 +1034,7 @@ export async function updateListing(id: string, input: ListingInput, userId: str
       trim: input.trim,
       year: input.year,
       price: input.price,
+      currency: input.currency,
       negotiable: input.negotiable,
       mileage: input.mileage,
       condition: input.condition,

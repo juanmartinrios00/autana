@@ -1,3 +1,5 @@
+import type { Currency } from '../types'
+
 /**
  * Topes de largo de los campos de texto libre.
  *
@@ -63,3 +65,26 @@ export const CONTACT_LIMITS = {
  * camino es borrar el año y no entender por que.
  */
 export const GARAGE_YEARS = { min: 1900, max: 2100 } as const
+
+
+/**
+ * Qué precio es creíble en cada moneda.
+ *
+ * No es un tope de mercado: es un control de tipeo. Lo que agarra es el cero de
+ * más y el precio puesto en la moneda equivocada ---que con dos monedas es el
+ * error fácil de cometer: escribir 12500 pensando en dólares con el select en
+ * pesos, y publicar un auto a doce mil quinientos pesos.
+ *
+ * Los dos rangos son anchos a propósito. El de pesos tiene que envejecer sin
+ * que nadie lo toque, así que el piso está bien abajo y el techo bien arriba:
+ * apretarlo para que siga "el precio de hoy" lo convierte en algo que hay que
+ * actualizar, y un tope desactualizado rechaza avisos buenos sin explicar por
+ * qué.
+ *
+ * Es un `Record` por moneda: si alguna vez se suma una, el compilador pide su
+ * rango en vez de dejarla sin control.
+ */
+export const PRICE_RANGE: Record<Currency, { min: number; max: number }> = {
+  USD: { min: 500, max: 5_000_000 },
+  ARS: { min: 300_000, max: 5_000_000_000 },
+}

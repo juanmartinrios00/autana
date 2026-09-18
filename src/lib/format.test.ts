@@ -10,6 +10,8 @@ import {
   bodyTypes,
   conditionLabels,
   conditions,
+  currencies,
+  currencyLabels,
   drivetrainLabels,
   sellerTypeLabels,
   statusLabels,
@@ -27,17 +29,28 @@ import {
 
 describe('formatPrice', () => {
   it('separa los miles con punto y no muestra centavos', () => {
-    expect(formatPrice(32_900)).toBe('USD 32.900')
-    expect(formatPrice(1_250_000)).toBe('USD 1.250.000')
-    expect(formatPrice(9_990.4)).toBe('USD 9.990')
+    expect(formatPrice(32_900, 'USD')).toBe('USD 32.900')
+    expect(formatPrice(1_250_000, 'USD')).toBe('USD 1.250.000')
+    expect(formatPrice(9_990.4, 'USD')).toBe('USD 9.990')
   })
 
-  it('acepta pesos', () => {
+  it('los pesos se separan igual, y son números mucho más largos', () => {
     expect(formatPrice(4_500_000, 'ARS')).toBe('ARS 4.500.000')
+    expect(formatPrice(38_900_000, 'ARS')).toBe('ARS 38.900.000')
   })
 
   it('el cero se muestra, no se esconde', () => {
-    expect(formatPrice(0)).toBe('USD 0')
+    expect(formatPrice(0, 'USD')).toBe('USD 0')
+  })
+
+  /* La moneda no tiene default a propósito: con avisos en pesos, una llamada
+     que se la olvide muestra un precio en pesos rotulado en dólares, que es un
+     error de tres ceros que nadie lee como error. Esto deja anotado que el
+     parámetro es obligatorio y que sacarlo es una regresión. */
+  it('siempre dice en qué moneda está', () => {
+    for (const currency of currencies) {
+      expect(formatPrice(1000, currency).startsWith(currency)).toBe(true)
+    }
   })
 })
 
@@ -216,6 +229,17 @@ describe('las otras dos listas contra el esquema', () => {
   it('los estados de un aviso salen de la 006, no del esquema', () => {
     expect(Object.keys(statusLabels).sort()).toEqual(
       values(reportsSql, String.raw`status in \(([^)]+)\)`),
+    )
+  })
+
+  /* La moneda es la lista mas chica y la que mas cuesta si se desincroniza: un
+     valor que el `check` acepta y las etiquetas no deja el select sin esa
+     opcion, y uno que las etiquetas ofrecen y el `check` no hace que publicar
+     falle recien al apretar el boton, con el aviso entero escrito. */
+  it('las monedas', () => {
+    expect(Object.keys(currencyLabels).sort()).toEqual(
+      values(schema, String.raw`currency\s+text[^
+]*check \(currency in \(([^)]+)\)\)`),
     )
   })
 

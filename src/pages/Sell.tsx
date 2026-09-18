@@ -21,7 +21,8 @@ import {
   uploadListingPhotos,
 } from '../lib/api'
 import { describeError } from '../lib/errors'
-import { LIMITS } from '../lib/limits'
+import { currencies, currencyLabels } from '../lib/format'
+import { LIMITS, PRICE_RANGE } from '../lib/limits'
 import { toE164 } from '../lib/whatsapp'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
@@ -32,7 +33,7 @@ import {
   fuelLabels,
   transmissionLabels,
 } from '../lib/format'
-import type { VehicleImage } from '../types'
+import type { Currency, VehicleImage } from '../types'
 import './Sell.css'
 
 const steps = ['Vehículo', 'Detalles', 'Fotos', 'Precio y contacto'] as const
@@ -61,9 +62,16 @@ function validate(step: number, draft: ListingDraft): Partial<Record<keyof Listi
   }
 
   if (step === 3) {
+    /* El rango depende de la moneda: los mismos 12.500 son un precio normal en
+       dólares y un error de tipeo en pesos. Es justo el control que hace falta
+       ahora que se puede elegir, porque publicar con el select en la moneda
+       equivocada es el error fácil de cometer. */
     const price = Number(draft.price)
+    const range = PRICE_RANGE[draft.currency]
     if (!draft.price) errors.price = 'Falta el precio.'
-    else if (price < 500 || price > 5_000_000) errors.price = 'Poné un precio en dólares realista.'
+    else if (price < range.min || price > range.max) {
+      errors.price = `Poné un precio en ${draft.currency === 'ARS' ? 'pesos' : 'dólares'} realista.`
+    }
     if (!draft.province) errors.province = 'Elegí la provincia.'
     if (!draft.city.trim()) errors.city = 'Falta la ciudad o el barrio.'
     /* Se valida con la misma funcion que arma el link de WhatsApp, y no con
@@ -256,6 +264,7 @@ export function Sell() {
         trim: cap(draft.trim, LIMITS.trim) || null,
         year: Number(draft.year),
         price: Number(draft.price),
+        currency: draft.currency,
         negotiable: draft.negotiable,
         mileage: Number(draft.mileage),
         condition: draft.condition as Exclude<ListingDraft['condition'], ''>,
@@ -345,7 +354,8 @@ export function Sell() {
           </span>
           <h1>Tu publicación está lista</h1>
           <p className="sell__done-text">
-            {draft.make} {draft.model} {draft.year} · {formatPrice(Number(draft.price))}
+            {draft.make} {draft.model} {draft.year} ·{' '}
+            {formatPrice(Number(draft.price), draft.currency)}
           </p>
           <p className="sell__done-note">
             Ya es visible para cualquiera que entre al marketplace.
@@ -587,15 +597,31 @@ export function Sell() {
           {step === 3 && (
             <div className="sell__fields">
               <div className="sell__pair">
-                <Input
-                  label="Precio en dólares"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder="Ej. 12500"
-                  value={draft.price}
-                  error={errors.price}
-                  onChange={(event) => update('price', event.target.value)}
-                />
+                {/* El precio y su moneda van juntos y no en filas distintas: son
+                    un solo dato, y separados se puede escribir el número sin
+                    mirar el select. El ejemplo del placeholder cambia con la
+                    moneda por lo mismo. */}
+                <div className="sell__price">
+                  <Input
+                    label="Precio"
+                    type="number"
+                    inputMode="numeric"
+                    placeholder={draft.currency === 'ARS' ? 'Ej. 18500000' : 'Ej. 12500'}
+                    value={draft.price}
+                    error={errors.price}
+                    onChange={(event) => update('price', event.target.value)}
+                  />
+                  <Select
+                    label="Moneda"
+                    className="sell__currency"
+                    options={currencies.map((value) => ({
+                      value,
+                      label: currencyLabels[value],
+                    }))}
+                    value={draft.currency}
+                    onChange={(event) => update('currency', event.target.value as Currency)}
+                  />
+                </div>
                 <div className="sell__toggle-field">
                   <span className="field__label">Negociable</span>
                   <button
@@ -725,7 +751,9 @@ export function Sell() {
               </div>
               <div className="sell__summary-row">
                 <dt>Precio</dt>
-                <dd className="mono">{draft.price ? formatPrice(Number(draft.price)) : '—'}</dd>
+                <dd className="mono">
+                  {draft.price ? formatPrice(Number(draft.price), draft.currency) : '—'}
+                </dd>
               </div>
             </dl>
 

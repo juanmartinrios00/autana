@@ -120,6 +120,23 @@
   gap: var(--sp-4);
 }
 
+/* El precio y su moneda comparten la celda del par: el número manda y el select
+   ocupa lo justo para que quepa "ARS · pesos" sin apretarse. Son un solo dato,
+   así que se leen juntos. */
+.sell__price {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: var(--sp-3);
+  align-items: start;
+}
+
+@media (max-width: 599px) {
+  /* En un teléfono angosto 150 píxeles de select dejan el número sin lugar. */
+  .sell__price {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .sell__textarea {
   height: auto;
   padding: var(--sp-3) 14px;

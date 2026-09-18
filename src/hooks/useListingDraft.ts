@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type {
   BodyType,
+  Currency,
   Drivetrain,
   FuelType,
   Transmission,
@@ -30,6 +31,7 @@ export interface ListingDraft {
   doors: string
   color: string
   price: string
+  currency: Currency
   negotiable: boolean
   city: string
   province: string
@@ -41,7 +43,7 @@ export const emptyDraft: ListingDraft = {
   make: '', model: '', trim: '', year: '', condition: '',
   mileage: '', fuelType: '', transmission: '', bodyType: '', drivetrain: '',
   engine: '', doors: '', color: '',
-  price: '', negotiable: false,
+  price: '', currency: 'USD', negotiable: false,
   city: '', province: '',
   description: '', whatsapp: '',
 }
@@ -76,6 +78,7 @@ export function draftFromVehicle(vehicle: Vehicle, whatsapp: string): ListingDra
     doors: vehicle.doors ? String(vehicle.doors) : '',
     color: vehicle.color,
     price: String(vehicle.price),
+    currency: vehicle.currency,
     negotiable: vehicle.negotiable,
     city: vehicle.location.city,
     province: vehicle.location.province,
