@@ -15,14 +15,14 @@ export function Blog() {
   const [lead, ...rest] = postsByDate()
 
   useDocumentMeta({
-    title: pageTitle('Notas'),
-    description: `Trámites, precios y qué mirar antes de comprar o vender un auto en Argentina. Las notas de ${BRAND}.`,
+    title: pageTitle('Blog'),
+    description: `Trámites, precios y qué mirar antes de comprar o vender un auto en Argentina. El blog de ${BRAND}.`,
   })
 
   return (
     <div className="blog">
       <header className="page blog__head">
-        <span className="over">Notas</span>
+        <span className="over">Blog</span>
         <h1 className="blog__title">Lo que conviene saber antes de firmar.</h1>
         <p className="blog__lead">
           Trámites, precios y las cosas que nadie te cuenta hasta que ya es tarde. Escrito para

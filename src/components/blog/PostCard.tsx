@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { coverFor, longDate } from '../../lib/blog'
 import type { PostMeta } from '../../content/blog/posts'
 import { Icon } from '../ui/Icon'
+import './PostCard.css'
 
 /**
  * La tarjeta de una nota, en sus tres tamaños.

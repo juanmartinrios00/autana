@@ -31,7 +31,7 @@ const linkGroups = [
   {
     label: 'Soporte',
     links: [
-      { to: '/blog', label: 'Notas' },
+      { to: '/blog', label: 'Blog' },
       { to: '/help', label: 'Centro de ayuda' },
       { to: '/contact', label: 'Contacto' },
       { to: '/terms', label: 'Términos' },

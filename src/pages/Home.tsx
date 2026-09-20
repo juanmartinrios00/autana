@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BrandSlider } from '../components/home/BrandSlider'
 import { AudienceSection } from '../components/home/AudienceSection'
+import { BlogSlider } from '../components/home/BlogSlider'
 import { BudgetSlider } from '../components/home/BudgetSlider'
 import { CategorySlider } from '../components/home/CategorySlider'
 import { ClosingBand } from '../components/home/ClosingBand'
@@ -247,9 +248,8 @@ export function Home() {
         <GarageSection />
         <BudgetSlider />
         <DealerSlider dealers={dealers} />
+        <BlogSlider />
       </div>
-
-
 
       <section className="page home__faq">
         <Faq />
