@@ -22,6 +22,18 @@
     // archivo no existe, la ruta la resuelve el router en el navegador.
     // `single-page-application` hace que cualquier ruta desconocida sirva el
     // index.html manteniendo la URL.
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+
+    // Por defecto, un pedido que coincide con un archivo de `dist` lo sirve
+    // Cloudflare directo y el worker no llega a correr. Eso dejaba la portada
+    // ---que es `index.html`, un archivo de verdad--- afuera de la redirección
+    // al dominio propio: `/cars` redirigía y `/` no, así que el sitio seguía
+    // existiendo dos veces justo en la página que más importa, y sin `canonical`
+    // que desempatara. El síntoma es el peor: no falla, contesta 200.
+    //
+    // Con esto el worker corre primero en todo salvo `/assets/*`, que son los
+    // bundles con el hash en el nombre. Por ahí no entra nadie: los pide el
+    // navegador después de abrir una página que ya pasó por la redirección.
+    "run_worker_first": ["/*", "!/assets/*"]
   }
 }

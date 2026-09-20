@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest'
+/* Con `?raw`, igual que los tests que leen el esquema: lo que se prueba es
+   el archivo de configuracion tal cual se despliega. */
+import wranglerRaw from '../wrangler.jsonc?raw'
 import { provinces } from '../src/data/makes'
 import { LIMITS } from '../src/lib/limits'
 import {
@@ -287,5 +290,54 @@ describe('el dominio canónico', () => {
 
   it('no toca lo que no es una lectura', () => {
     expect(pedido('https://autana.riosjuanm10.workers.dev/cars', 'POST')).toBeNull()
+  })
+})
+
+/**
+ * La redirección al dominio propio sólo sirve si el worker llega a correr.
+ *
+ * Cloudflare sirve directo cualquier pedido que coincida con un archivo de
+ * `dist`, y en ese caso el worker no se ejecuta. Como la portada es
+ * `index.html` ---un archivo de verdad--- durante unas horas `/cars` redirigió
+ * al dominio propio y `/` no: el sitio siguió existiendo dos veces justo en la
+ * página que más importa, contestando 200 y sin `canonical` que desempatara.
+ *
+ * Lo arregla `run_worker_first`, que es configuración y no código: ningún test
+ * de `canonicalRedirect` lo alcanza, porque la función estaba bien. Por eso
+ * este lee el archivo que se despliega.
+ */
+describe('run_worker_first', () => {
+  const assets = JSON.parse(wranglerRaw.replace(/^\s*\/\/.*$/gm, '')).assets as {
+    run_worker_first?: string[]
+  }
+
+  /* Cómo lee Cloudflare la lista: lo que cae en una regla negativa lo sirve el
+     asset worker, y todo lo demás que matchee una positiva pasa por el nuestro.
+     Las reglas son prefijos con `*` al final, así que alcanza con eso. */
+  const correElWorker = (path: string) => {
+    const reglas = assets.run_worker_first ?? []
+    const matchea = (regla: string) =>
+      regla.endsWith('*') ? path.startsWith(regla.slice(0, -1)) : path === regla
+
+    if (reglas.some((regla) => regla.startsWith('!') && matchea(regla.slice(1)))) return false
+    return reglas.some((regla) => !regla.startsWith('!') && matchea(regla))
+  }
+
+  it('corre en la portada, que es la que se escapaba', () => {
+    expect(correElWorker('/')).toBe(true)
+  })
+
+  it('corre en las pantallas y en los archivos sueltos de la raiz', () => {
+    expect(correElWorker('/cars')).toBe(true)
+    expect(correElWorker('/blog/transferir-un-auto-en-argentina')).toBe(true)
+    expect(correElWorker('/favicon.ico')).toBe(true)
+  })
+
+  /* Los bundles llevan el hash en el nombre y nadie los escribe a mano: los
+     pide el navegador después de abrir una página que ya redirigió. Hacerlos
+     pasar por el worker sería una invocación por archivo y no cambia nada. */
+  it('no corre en los bundles', () => {
+    expect(correElWorker('/assets/index-NXXoz_Hn.js')).toBe(false)
+    expect(correElWorker('/assets/index-eXG7-A66.css')).toBe(false)
   })
 })
