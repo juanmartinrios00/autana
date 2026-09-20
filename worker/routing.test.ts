@@ -10,6 +10,7 @@ import {
   buildDescription,
   buildTitle,
   CANONICAL_HOST,
+  canonicalFor,
   canonicalRedirect,
   DISALLOWED,
   GARAGE_URL,
@@ -339,5 +340,42 @@ describe('run_worker_first', () => {
   it('no corre en los bundles', () => {
     expect(correElWorker('/assets/index-NXXoz_Hn.js')).toBe(false)
     expect(correElWorker('/assets/index-eXG7-A66.css')).toBe(false)
+  })
+})
+
+/**
+ * Cuál es la URL buena de cada pantalla.
+ *
+ * Lo que de verdad se está probando es que la query se caiga. Los filtros viven
+ * en la URL a propósito, así que el listado se alcanza de infinitas formas
+ * ---una por cada combinación--- y todas sirven el mismo listado abajo. Sin un
+ * canonical que las junte, lo que le corresponde a `/cars` queda repartido
+ * entre todas y no alcanza para nada.
+ */
+describe('canonicalFor', () => {
+  const de = (href: string) => canonicalFor(new URL(href))
+
+  it('tira los filtros', () => {
+    expect(de('https://auteando.com/cars?make=BMW&minPrice=20000')).toBe(
+      'https://auteando.com/cars',
+    )
+    expect(de('https://auteando.com/cars?maxYear=2015')).toBe('https://auteando.com/cars')
+  })
+
+  it('tira la barra del final, que sirve la misma pantalla', () => {
+    expect(de('https://auteando.com/cars/')).toBe('https://auteando.com/cars')
+    expect(de('https://auteando.com/help/')).toBe('https://auteando.com/help')
+  })
+
+  it('la portada se queda con su barra', () => {
+    expect(de('https://auteando.com/')).toBe('https://auteando.com/')
+  })
+
+  /* Las fijas son las que no tienen preview propio y son justo las que hasta
+     ahora salian sin canonical. Ninguna deberia cambiar de forma al pasar. */
+  it('deja las pantallas fijas como estan', () => {
+    for (const path of STATIC_PAGES) {
+      expect(de(`https://auteando.com${path}`)).toBe(`https://auteando.com${path}`)
+    }
   })
 })

@@ -530,11 +530,61 @@ function renderPreview(assetResponse: Response, preview: Preview): Response {
     .transform(assetResponse)
 }
 
+/** Si lo que devolvió el asset es HTML, o sea si hay algo que reescribir. */
+function isHtml(response: Response): boolean {
+  return (response.headers.get('content-type') ?? '').includes('text/html')
+}
+
 /** El HTML de la SPA, o `null` si lo que volvió no es HTML y no hay qué tocar. */
 async function htmlFor(request: Request, env: Env): Promise<Response | null> {
   const assetResponse = await env.ASSETS.fetch(request)
-  const type = assetResponse.headers.get('content-type') ?? ''
-  return type.includes('text/html') ? assetResponse : null
+  return isHtml(assetResponse) ? assetResponse : null
+}
+
+/**
+ * La URL que representa a una pantalla: la del pedido, sin la query.
+ *
+ * Tirar la query es el punto. `/cars` se alcanza con cualquier combinación de
+ * filtros ---y los filtros viven en la URL a propósito, que es lo que hace que
+ * una búsqueda se comparta copiando el link--- así que `/cars?make=BMW`,
+ * `/cars?make=BMW&minPrice=20000` y `/cars?maxYear=2015` son URLs distintas con
+ * el mismo listado abajo. Sin esto Google ve un espacio infinito de páginas
+ * casi iguales y reparte entre todas lo que le corresponde a una sola.
+ *
+ * La barra del final se cae porque `/cars/` y `/cars` sirven lo mismo: el
+ * router no distingue, y dos URLs para una pantalla es justo lo que se está
+ * arreglando.
+ */
+export function canonicalFor(url: URL): string {
+  const path = url.pathname.replace(/\/+$/, '')
+  return `${url.origin}${path || '/'}`
+}
+
+/**
+ * El canonical de las pantallas que no tienen preview propio.
+ *
+ * Las fichas, los garages y las notas ya lo traen desde `renderPreview`, que
+ * además les arma título, descripción e imagen. Las demás ---la portada, el
+ * listado, el blog, la ayuda, los términos--- no tienen nada de eso que armar,
+ * pero sí necesitan decir cuál es su URL buena.
+ *
+ * Va en el worker y no en la aplicación por lo mismo de siempre: es lo que se
+ * sirve en el HTML crudo. Que la SPA lo actualice al navegar de una pantalla a
+ * otra no haría falta, porque ningún buscador navega ---pide cada URL por
+ * separado--- y sería la misma regla escrita en dos lugares.
+ */
+function renderCanonical(assetResponse: Response, url: URL): Response {
+  const canonical = canonicalFor(url)
+
+  return new HTMLRewriter()
+    .on(
+      'head',
+      appendToHead(
+        `<meta property="og:url" content="${attr(canonical)}">` +
+          `<link rel="canonical" href="${attr(canonical)}">`,
+      ),
+    )
+    .transform(assetResponse)
 }
 
 async function renderListing(request: Request, env: Env, slug: string): Promise<Response> {
@@ -714,6 +764,9 @@ export default {
       }
     }
 
-    return env.ASSETS.fetch(request)
+    /* Todo lo demás: el HTML de la SPA con su canonical, y los archivos que no
+       son HTML tal cual vienen. */
+    const assetResponse = await env.ASSETS.fetch(request)
+    return isHtml(assetResponse) ? renderCanonical(assetResponse, url) : assetResponse
   },
 } satisfies ExportedHandler<Env>
