@@ -14,5 +14,10 @@ export default defineConfig({
        base--- y vive al lado de lo que revisa, como el resto. */
     include: ['src/**/*.test.ts', 'worker/**/*.test.ts', 'supabase/**/*.test.ts'],
     environment: 'node',
+    /* Sin esto, `import.meta.glob` con `?raw` sobre un `.css` devuelve cadena
+       vacia: vitest apaga el procesamiento de CSS por defecto y los deja en
+       blanco. Hay un test que lee las hojas de las pantallas como texto para
+       encontrar los heros oscuros. */
+    css: true,
   },
 })
