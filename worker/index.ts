@@ -638,12 +638,12 @@ function renderPost(assetResponse: Response, request: Request, slug: string): Re
  * canonical, el `og:url`, el sitemap y la dirección que está adentro del
  * robots--- así que sin esto cada uno diría el dominio por el que entraron.
  *
- * ⚠️ QUEDA EN `null` HASTA QUE EL DOMINIO RESUELVA DE VERDAD. Prendido antes de
- * tiempo, el sitio se redirige a un lugar que todavía no existe y queda caído
- * para todo el mundo. El orden es: atar el dominio en Cloudflare, abrirlo y ver
- * que carga, y recién ahí poner el host acá y desplegar.
+ * Prendido el 20/9/2026, recién después de atar `auteando.com` al Worker en
+ * Cloudflare y de comprobar que servía el sitio con su certificado. Ese orden
+ * es el único que hay: prendido antes de que el dominio resuelva, el sitio se
+ * redirige a un lugar que todavía no existe y queda caído para todo el mundo.
  */
-export const CANONICAL_HOST: string | null = null
+export const CANONICAL_HOST: string | null = 'auteando.com'
 
 /**
  * Manda a `auteando.com` a quien haya entrado por el dominio de `workers.dev`.

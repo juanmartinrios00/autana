@@ -255,22 +255,32 @@ describe('robots y sitemap no se contradicen', () => {
  * La redirección al dominio propio.
  *
  * Es una pieza que sólo se prende una vez y que, prendida mal, tira el sitio
- * entero: apunta a un dominio que todavía no resuelve y nadie entra. Por eso
- * los tests no prueban que redirija, prueban que **no** redirija mientras esté
- * apagada, y que cuando se prenda conserve lo que tiene que conservar.
+ * entero: apunta a un dominio que no resuelve y nadie entra. Prendida, lo que
+ * hay que sostener es que mande a donde tiene que mandar, que no se mande a sí
+ * misma ---que es un bucle, y el sitio deja de existir igual--- y que conserve
+ * el camino y la query, porque un link viejo a una ficha tiene que seguir
+ * cayendo en esa ficha y no en la portada.
  */
 describe('el dominio canónico', () => {
   const pedido = (href: string, method = 'GET') =>
     canonicalRedirect(new URL(href), new Request(href, { method }))
 
-  it('apagado no redirige nada', () => {
-    expect(CANONICAL_HOST).toBeNull()
-    expect(pedido('https://autana.riosjuanm10.workers.dev/cars')).toBeNull()
+  it('manda el dominio de workers.dev al propio', () => {
+    expect(CANONICAL_HOST).toBe('auteando.com')
+    const salida = pedido('https://autana.riosjuanm10.workers.dev/cars')
+    expect(salida?.status).toBe(301)
+    expect(salida?.headers.get('location')).toBe('https://auteando.com/cars')
   })
 
-  /* Los de abajo describen el comportamiento con un host puesto. Como la
-     constante es la del módulo, se prueba la función contra una URL que ya
-     está en el destino: si no redirige ahí, tampoco entra en un bucle. */
+  it('conserva el camino y la query', () => {
+    const salida = pedido(
+      'https://autana.riosjuanm10.workers.dev/cars?make=BMW&minPrice=20000',
+    )
+    expect(salida?.headers.get('location')).toBe(
+      'https://auteando.com/cars?make=BMW&minPrice=20000',
+    )
+  })
+
   it('no se redirige a sí mismo', () => {
     expect(pedido('https://auteando.com/cars')).toBeNull()
   })
