@@ -1,4 +1,7 @@
 .contact__hero {
+  /* El aire de arriba lo pone el `-inner`, asi que `.hero-bleed` solo tiene que
+     recuperar el alto de la navbar. */
+  --hero-bleed-top: 0px;
   background: var(--ink);
   color: var(--ink-inverse);
 }

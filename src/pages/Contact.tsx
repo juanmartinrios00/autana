@@ -6,6 +6,7 @@ import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
 import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { contactSubjects, sendContactMessage, type ContactSubject } from '../lib/api'
 import { describeError } from '../lib/errors'
@@ -33,6 +34,8 @@ export function Contact() {
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
+
+  useDarkHero()
 
   useDocumentMeta({
     title: pageTitle('Contacto'),
@@ -78,7 +81,7 @@ export function Contact() {
 
   return (
     <div className="contact">
-      <header className="contact__hero">
+      <header className="contact__hero hero-bleed">
         <div className="page contact__hero-inner">
           <span className="over over--invert">Hablemos</span>
           <h1 className="contact__title">Estamos para ayudarte.</h1>

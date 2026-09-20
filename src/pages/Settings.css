@@ -1,7 +1,8 @@
 /* Ajustes de la cuenta. */
 
 .settings__head {
-  padding-block: var(--sp-8);
+  /* El de arriba lo pone `.hero-bleed`. */
+  padding-bottom: var(--sp-8);
   background: var(--ink);
   color: var(--ink-inverse);
 }

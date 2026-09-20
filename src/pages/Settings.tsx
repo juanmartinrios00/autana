@@ -8,6 +8,7 @@ import { Skeleton } from '../components/ui/Skeleton'
 import { pageTitle } from '../config/brand'
 import { provinces } from '../data/makes'
 import { useAuth } from '../hooks/useAuth'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
   deleteAccount,
@@ -80,6 +81,11 @@ export function Settings() {
   const [killConfirm, setKillConfirm] = useState('')
   const [killBusy, setKillBusy] = useState(false)
   const [killError, setKillError] = useState('')
+
+  /* Solo cuando el hero esta dibujado: mientras carga la cuenta hay un
+     esqueleto sobre papel blanco, y ahi una barra transparente dejaria el
+     logotipo blanco sobre blanco. */
+  useDarkHero(ready)
 
   useEffect(() => {
     if (!userId) return
@@ -276,7 +282,7 @@ export function Settings() {
 
   return (
     <>
-      <section className="settings__head">
+      <section className="settings__head hero-bleed">
         <div className="page settings__head-inner">
           <span className="over over--invert">Tu cuenta</span>
           <h1 className="settings__title">Ajustes</h1>
