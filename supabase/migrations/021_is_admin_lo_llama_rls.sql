@@ -1,0 +1,47 @@
+-- ============================================================================
+-- Devolverle a `anon` el permiso de ejecutar `is_admin()`
+--
+-- ⚠️ CORRIGE UN ERROR DE LA 020. Pegalo en el SQL Editor cuanto antes: mientras
+-- no se corra, el listado de autos no carga para nadie que no tenga sesión, que
+-- es casi todo el que entra.
+--
+-- Qué pasó
+--
+-- La 020 le sacó a `anon` el permiso de ejecutar `is_admin()`, con el argumento
+-- de que una sesión anónima no tiene ninguna pregunta que hacerle porque
+-- siempre le va a contestar que no. El argumento era cierto y la conclusión
+-- estaba mal: `anon` no la llama, pero la política de RLS de `listings` sí, y
+-- las políticas se evalúan con los permisos de quien está consultando.
+--
+--   create policy listings_select on public.listings
+--     for select using (
+--       status = 'active' or auth.uid() = seller_id or public.is_admin()
+--     );
+--
+-- Entonces cualquiera sin sesión que abría el listado disparaba esa política,
+-- la política llamaba a la función, y Postgres cortaba con
+-- `42501: permission denied for function is_admin`. La consulta entera falla:
+-- no es que el `or` dé false, es que no se puede evaluar.
+--
+-- El mismo problema alcanzaba a `reports`, `profile_reports` y
+-- `contact_messages`, que también la nombran en sus políticas.
+--
+-- Por qué devolverlo y no rodearlo
+--
+-- Que la función sea `security definer` hace que corra con los permisos de su
+-- dueño una vez adentro, pero para entrar hace falta el `execute`. Son dos
+-- cosas distintas y es justo la que confundí.
+--
+-- Y no se filtra nada: `is_admin()` no recibe argumentos y sólo mira
+-- `auth.uid()`. Lo único que se puede averiguar con ella es sobre uno mismo, y
+-- a una sesión anónima le contesta que no. Sacarle el permiso no cerraba
+-- ninguna puerta; sólo rompía las políticas que la usan.
+--
+-- La otra mitad de la 020 ---`listing_allowance`--- queda como está. Esa sí
+-- está bien cerrada: la llama el trigger `enforce_listing_limit`, que es
+-- `security definer`, así que durante su ejecución el usuario actual es el
+-- dueño de la función y el dueño conserva el `execute` siempre. Ninguna política
+-- de RLS la nombra.
+-- ============================================================================
+
+grant execute on function public.is_admin() to anon, authenticated;

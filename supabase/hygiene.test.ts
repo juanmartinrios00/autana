@@ -119,3 +119,84 @@ describe('las migraciones', () => {
     expect(problemas).toEqual([])
   })
 })
+
+/**
+ * Toda función que nombre una política de RLS tiene que poder ejecutarla quien
+ * dispara esa política.
+ *
+ * Esto existe por un error concreto, cometido y desplegado. La 020 le sacó a
+ * `anon` el permiso de ejecutar `is_admin()` razonando que una sesión anónima
+ * no tiene nada que preguntarle, porque siempre le va a contestar que no. Era
+ * cierto y la conclusión estaba mal: `anon` no la llama, pero la política de
+ * `listings` sí, y las políticas se evalúan con los permisos de quien consulta.
+ *
+ *   for select using (status = 'active' or auth.uid() = seller_id
+ *                     or public.is_admin())
+ *
+ * Cualquiera sin sesión que abría el listado disparaba esa política, Postgres
+ * cortaba con `permission denied for function is_admin`, y el listado de autos
+ * ---la pantalla principal del sitio--- dejó de cargar para todo el que no
+ * tuviera sesión. La consulta entera falla: no es que el `or` dé false, es que
+ * no se puede evaluar.
+ *
+ * La trampa de fondo: `security definer` hace que la función corra con los
+ * permisos de su dueño una vez adentro, pero para entrar hace falta el
+ * `execute`. Son dos cosas distintas y es fácil confundirlas.
+ */
+describe('las funciones que usan las políticas de RLS', () => {
+  /** Cómo queda el permiso de cada función después de todos los grant y revoke. */
+  function permisos() {
+    const estado = new Map<string, { anon: boolean; authenticated: boolean }>()
+    const de = (fn: string) => {
+      /* Una función nace con `execute` para `public`, o sea para todos. */
+      if (!estado.has(fn)) estado.set(fn, { anon: true, authenticated: true })
+      return estado.get(fn)!
+    }
+
+    for (const file of files) {
+      for (const m of file.sql.matchAll(
+        /(revoke|grant)\s+[\s\S]*?on function (public\.\w+)[^;]*?(?:from|to)([^;]*);/gi,
+      )) {
+        const quita = m[1]!.toLowerCase() === 'revoke'
+        const roles = m[3]!.toLowerCase()
+        const p = de(m[2]!)
+        if (roles.includes('public') || roles.includes('anon')) p.anon = !quita
+        if (roles.includes('public') || roles.includes('authenticated')) {
+          p.authenticated = !quita
+        }
+      }
+    }
+    return estado
+  }
+
+  /** Las funciones nombradas adentro de una política. */
+  function enPoliticas() {
+    const usadas = new Set<string>()
+    for (const file of files) {
+      for (const m of file.sql.matchAll(/create policy[\s\S]*?;/gi)) {
+        for (const llamada of m[0].matchAll(/(public\.\w+)\s*\(/g)) {
+          usadas.add(llamada[1]!)
+        }
+      }
+    }
+    return usadas
+  }
+
+  it('las puede ejecutar quien dispara la política', () => {
+    const estado = permisos()
+    const rotas: string[] = []
+
+    for (const fn of enPoliticas()) {
+      const p = estado.get(fn)
+      if (!p) continue
+      if (!p.anon) rotas.push(`${fn}: anon no puede ejecutarla`)
+      if (!p.authenticated) rotas.push(`${fn}: authenticated no puede ejecutarla`)
+    }
+
+    expect(rotas.sort()).toEqual([])
+  })
+
+  it('se encontró alguna: el parser no está mirando al vacío', () => {
+    expect(enPoliticas().size).toBeGreaterThan(0)
+  })
+})
