@@ -147,6 +147,30 @@ tropiezo de red en una se lleva puestas las otras y cae en el `catch` general,
 que casi siempre concluye algo demasiado grande — el panel de moderación
 llegaba a decirle a quien modera que no tenía permiso.
 
+## Enlazar el dominio
+
+`auteando.com` está comprado en Hostinger y el sitio vive en un Worker de
+Cloudflare. El orden importa, y el paso 4 va último por una razón: prendido
+antes de tiempo, el sitio se redirige a un lugar que todavía no existe.
+
+1. **Cloudflare.** Agregar el sitio y mover los *nameservers* en Hostinger a los
+   que indique Cloudflare. Mover los nameservers y no crear registros sueltos:
+   es lo que da el SSL y lo que deja atar el dominio al Worker sin tocar DNS a
+   mano. Tarda un rato en propagar.
+2. **El Worker.** En su configuración, *Domains & Routes* → agregar
+   `auteando.com` y `www.auteando.com` como dominio personalizado.
+3. **Supabase.** En *Authentication → URL Configuration*: poner `Site URL` en
+   `https://auteando.com` y agregar `https://auteando.com/**` a las *Redirect
+   URLs*. **Esto no es opcional.** Los links de vuelta del mail salen de
+   `window.location.origin`, así que apuntan solos al dominio nuevo, pero
+   Supabase rechaza cualquier retorno que no esté en esa lista: sin este paso,
+   entrar con link por mail y recuperar la contraseña dejan de funcionar, y el
+   síntoma es que la persona vuelve al dominio viejo sin sesión.
+4. **Recién ahí**, poner `CANONICAL_HOST = 'auteando.com'` en `worker/index.ts`
+   y desplegar. Eso manda con un 301 a todo el que entre por `workers.dev`, que
+   es lo que evita que el sitio exista dos veces para Google, y hace que el
+   canonical, el `og:url` y el sitemap digan siempre el mismo dominio.
+
 ## Tests
 
     npm test

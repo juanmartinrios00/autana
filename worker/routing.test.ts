@@ -6,6 +6,8 @@ import {
   BLOG_URL,
   buildDescription,
   buildTitle,
+  CANONICAL_HOST,
+  canonicalRedirect,
   DISALLOWED,
   GARAGE_URL,
   LISTING_URL,
@@ -246,5 +248,34 @@ describe('robots y sitemap no se contradicen', () => {
   it('no hay repetidas', () => {
     expect(new Set(DISALLOWED).size).toBe(DISALLOWED.length)
     expect(new Set(STATIC_PAGES).size).toBe(STATIC_PAGES.length)
+  })
+})
+
+/**
+ * La redirección al dominio propio.
+ *
+ * Es una pieza que sólo se prende una vez y que, prendida mal, tira el sitio
+ * entero: apunta a un dominio que todavía no resuelve y nadie entra. Por eso
+ * los tests no prueban que redirija, prueban que **no** redirija mientras esté
+ * apagada, y que cuando se prenda conserve lo que tiene que conservar.
+ */
+describe('el dominio canónico', () => {
+  const pedido = (href: string, method = 'GET') =>
+    canonicalRedirect(new URL(href), new Request(href, { method }))
+
+  it('apagado no redirige nada', () => {
+    expect(CANONICAL_HOST).toBeNull()
+    expect(pedido('https://autana.riosjuanm10.workers.dev/cars')).toBeNull()
+  })
+
+  /* Los de abajo describen el comportamiento con un host puesto. Como la
+     constante es la del módulo, se prueba la función contra una URL que ya
+     está en el destino: si no redirige ahí, tampoco entra en un bucle. */
+  it('no se redirige a sí mismo', () => {
+    expect(pedido('https://auteando.com/cars')).toBeNull()
+  })
+
+  it('no toca lo que no es una lectura', () => {
+    expect(pedido('https://autana.riosjuanm10.workers.dev/cars', 'POST')).toBeNull()
   })
 })

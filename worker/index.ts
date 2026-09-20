@@ -624,9 +624,55 @@ function renderPost(assetResponse: Response, request: Request, slug: string): Re
   })
 }
 
+/**
+ * El dominio definitivo del sitio, o `null` mientras no haya uno.
+ *
+ * Un Worker contesta en todos los dominios que tenga atados, así que apenas
+ * `auteando.com` apunte acá el sitio entero va a existir dos veces: en el
+ * dominio propio y en el de `workers.dev`. Para Google eso es el mismo
+ * contenido en dos lugares y tiene que elegir cuál indexar; elige mal más o
+ * menos la mitad de las veces, y ahí el resultado de búsqueda muestra una
+ * dirección que nadie quiere repartir.
+ *
+ * Además todo lo que arma una URL absoluta sale del host del pedido ---el
+ * canonical, el `og:url`, el sitemap y la dirección que está adentro del
+ * robots--- así que sin esto cada uno diría el dominio por el que entraron.
+ *
+ * ⚠️ QUEDA EN `null` HASTA QUE EL DOMINIO RESUELVA DE VERDAD. Prendido antes de
+ * tiempo, el sitio se redirige a un lugar que todavía no existe y queda caído
+ * para todo el mundo. El orden es: atar el dominio en Cloudflare, abrirlo y ver
+ * que carga, y recién ahí poner el host acá y desplegar.
+ */
+export const CANONICAL_HOST: string | null = null
+
+/**
+ * Manda a `auteando.com` a quien haya entrado por el dominio de `workers.dev`.
+ *
+ * 301 y no 302: es permanente, y es lo que hace que los buscadores muevan lo
+ * que ya tenían indexado en vez de guardar los dos. Se conservan el camino y la
+ * query, porque un link viejo a una ficha tiene que seguir cayendo en esa ficha.
+ *
+ * Sólo en `GET` y `HEAD`. Redirigir un `POST` con 301 hace que el navegador lo
+ * repita como `GET` y pierda el cuerpo; acá no hay ninguno que importe, pero es
+ * una trampa que no cuesta nada esquivar.
+ */
+export function canonicalRedirect(url: URL, request: Request): Response | null {
+  if (!CANONICAL_HOST || url.hostname === CANONICAL_HOST) return null
+  if (request.method !== 'GET' && request.method !== 'HEAD') return null
+
+  const destino = new URL(url)
+  destino.hostname = CANONICAL_HOST
+  destino.protocol = 'https:'
+  destino.port = ''
+  return Response.redirect(destino.toString(), 301)
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
+
+    const canonical = canonicalRedirect(url, request)
+    if (canonical) return canonical
 
     if (url.pathname === '/robots.txt') return robots(url.origin)
     if (url.pathname === '/sitemap.xml') return sitemap(url.origin)
