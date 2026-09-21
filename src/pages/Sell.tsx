@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { MissionCard } from '../components/levels/MissionCard'
 import { PhotoUploader, type Photo } from '../components/sell/PhotoUploader'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -15,12 +16,15 @@ import { draftFromVehicle, useListingDraft, type ListingDraft } from '../hooks/u
 import {
   createListing,
   deleteListingImage,
+  getLevelInput,
   getOwnWhatsapp,
   getVehicleBySlug,
   updateListing,
   uploadListingPhotos,
 } from '../lib/api'
 import { describeError } from '../lib/errors'
+import { computeLevel, type Achievement, type LevelState } from '../lib/levels'
+import { levelChange, photosMission, type Mission } from '../lib/missions'
 import { currencies, currencyLabels } from '../lib/format'
 import { LIMITS, PRICE_RANGE } from '../lib/limits'
 import { toE164 } from '../lib/whatsapp'
@@ -37,6 +41,11 @@ import type { Currency, VehicleImage } from '../types'
 import './Sell.css'
 
 const steps = ['Vehículo', 'Detalles', 'Fotos', 'Precio y contacto'] as const
+
+/** "A", "A y B", "A, B y C". */
+function enLista(items: string[]): string {
+  return items.length < 2 ? (items[0] ?? '') : `${items.slice(0, -1).join(', ')} y ${items.at(-1)}`
+}
 
 /** Devuelve el mensaje de error por campo, o `null` si el paso está completo. */
 function validate(step: number, draft: ListingDraft): Partial<Record<keyof ListingDraft, string>> {
@@ -148,6 +157,18 @@ export function Sell() {
   const [failure, setFailure] = useState<string | null>(null)
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null)
 
+  /* El nivel antes de publicar, para decir después qué se ganó. Con la cuenta
+     a la que pertenece, como el resto del código. */
+  const [levelBefore, setLevelBefore] = useState<{ for: string; value: LevelState } | null>(null)
+  /* Lo que se ganó con el aviso recién publicado, con el slug al que
+     pertenece: "Publicar otro" no puede mostrar los logros del anterior. */
+  const [outcome, setOutcome] = useState<{
+    slug: string
+    earned: Achievement[]
+    newLevel: string | null
+    mission: Mission | null
+  } | null>(null)
+
   /* Sólo se usan al editar: el aviso que se está tocando y las fotos que ya
      están subidas, que se manejan aparte de las nuevas. */
   const [listingId, setListingId] = useState<string | null>(null)
@@ -169,6 +190,21 @@ export function Sell() {
       ? undefined
       : `Publicá tu auto en ${BRAND}: cargá las fotos, el precio y los datos, y te contactan directo.`,
   })
+
+  /* Sólo al publicar uno nuevo: la edición vuelve directo a la ficha. Si
+     falla, la pantalla de listo sale igual, sin los logros. */
+  useEffect(() => {
+    if (editing || !userId) return
+    let current = true
+    void getLevelInput(userId)
+      .then((input) => {
+        if (current) setLevelBefore({ for: userId, value: computeLevel(input) })
+      })
+      .catch(() => {})
+    return () => {
+      current = false
+    }
+  }, [editing, userId])
 
   useEffect(() => {
     if (!editing || !slug || !userId) return
@@ -304,6 +340,26 @@ export function Sell() {
 
       setPublishedSlug(vehicle.slug)
       window.scrollTo({ top: 0 })
+
+      /* Después de publicar, y sin esperarlo: la pantalla de listo no depende
+         de esto. Lo de ahora pasa a ser el "antes" del próximo, por si toca
+         "Publicar otro". */
+      const before = levelBefore?.for === userId ? levelBefore.value : null
+      const owner = userId
+      const car = { make: draft.make, model: draft.model, slug: vehicle.slug }
+      const sent = photos.length
+      void getLevelInput(owner)
+        .then((input) => {
+          const after = computeLevel(input)
+          const richDone = after.achievements.find((item) => item.id === 'rich_listing')?.done
+          setLevelBefore({ for: owner, value: after })
+          setOutcome({
+            slug: vehicle.slug,
+            ...(before ? levelChange(before, after) : { earned: [], newLevel: null }),
+            mission: richDone ? null : photosMission(car, sent),
+          })
+        })
+        .catch(() => {})
     } catch (cause) {
       console.error(editing ? 'updateListing' : 'createListing', cause)
       setFailure(
@@ -346,6 +402,7 @@ export function Sell() {
   }
 
   if (publishedSlug) {
+    const result = outcome?.slug === publishedSlug ? outcome : null
     return (
       <div className="page section sell__done">
         <div className="card card--pad sell__done-card">
@@ -360,6 +417,14 @@ export function Sell() {
           <p className="sell__done-note">
             Ya es visible para cualquiera que entre al marketplace.
           </p>
+          {result && result.earned.length > 0 && (
+            <p className="sell__done-earned">
+              Sumaste {enLista(result.earned.map((item) => `«${item.title}»`))}.
+              {result.newLevel && ` Subiste a ${result.newLevel}.`}{' '}
+              <Link to="/niveles">Qué son los logros</Link>
+            </p>
+          )}
+          {result?.mission && <MissionCard mission={result.mission} className="sell__done-mission" />}
           <div className="sell__done-actions">
             <Button variant="yellow" onClick={() => navigate(`/autos/${publishedSlug}`)}>
               Ver mi publicación

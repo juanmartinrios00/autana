@@ -132,6 +132,10 @@
   padding-block: var(--sp-7) var(--sp-9);
 }
 
+.garagepage__mission {
+  margin-bottom: var(--sp-5);
+}
+
 /* La invitación al que llegó por un link ajeno. Es lo último de la página a
    propósito: primero se miran los autos de la otra persona. */
 .garagepage__cta {

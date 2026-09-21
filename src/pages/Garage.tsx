@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { FollowControls } from '../components/garage/FollowControls'
 import { GarageSlotCard } from '../components/garage/GarageSlotCard'
 import { GarageThemePicker } from '../components/garage/GarageThemePicker'
+import { MissionCard } from '../components/levels/MissionCard'
 import { ProfileContact } from '../components/garage/ProfileContact'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -18,6 +19,7 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getProfile, listSellerVehicles, type ProfileSummary } from '../lib/api'
 import { listGarage, removeGarageEntry, saveGarageEntry, SLOTS, type GarageInput } from '../lib/garage'
 import { garageThemeColor } from '../lib/garage-theme'
+import { garageMission } from '../lib/missions'
 import type { GarageEntry, Vehicle } from '../types'
 import './Garage.css'
 
@@ -86,6 +88,9 @@ export function Garage() {
   const garage = fresh ? loaded.garage : []
   const listings = fresh ? loaded.listings : []
   const filled = garage.length
+  /* Sólo al dueño: a quien visita un garage a medio llenar no le corresponde
+     enterarse de qué le falta para un logro. */
+  const mission = editable ? garageMission(filled) : null
 
   /* "Ver publicaciones" desde la ficha de un aviso trae `#avisos`. React Router
      no baja solo a un ancla, y además la sección no existe hasta que llegan
@@ -242,6 +247,7 @@ export function Garage() {
       </section>
 
       <div className="page garagepage__body">
+        {mission && <MissionCard mission={mission} className="garagepage__mission" />}
         <div className="garage">
           {SLOTS.map((slot) => (
             <GarageSlotCard

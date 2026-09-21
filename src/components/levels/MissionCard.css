@@ -1,0 +1,51 @@
+/* La misión. Con el componente y no con una pantalla: la usan Mis avisos, el
+   garage y la pantalla de recién publicado. */
+
+.mission {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--r-lg);
+  background: var(--accent-tint);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+  text-align: left;
+}
+
+.mission__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.mission__over {
+  color: var(--ink-3);
+}
+
+.mission__over a {
+  margin-left: 0.4em;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mission__over a:hover {
+  color: var(--ink);
+}
+
+.mission__text {
+  font-size: 0.94rem;
+  color: var(--ink);
+}
+
+.mission__action {
+  flex-shrink: 0;
+}
+
+@media (max-width: 599px) {
+  .mission {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

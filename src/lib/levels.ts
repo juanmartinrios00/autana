@@ -33,6 +33,11 @@ import type { ListingStatus } from '../types'
  */
 export const PUBLISHED_STATUSES: readonly ListingStatus[] = ['active', 'paused', 'sold']
 
+/** Las fotos que pide "Publicación completa". Exportado porque las misiones
+ *  cuentan cuántas le faltan a cada aviso, y un 8 escrito en dos lugares se
+ *  desacuerda el día que alguien lo afloje en uno solo. */
+export const RICH_PHOTOS = 8
+
 export type AchievementId =
   | 'profile_complete'
   | 'first_listing'
@@ -117,8 +122,8 @@ export function computeLevel({
     {
       id: 'rich_listing',
       title: 'Publicación completa',
-      hint: 'Subí 8 fotos o más en una publicación.',
-      done: bestPhotoCount >= 8,
+      hint: `Subí ${RICH_PHOTOS} fotos o más en una publicación.`,
+      done: bestPhotoCount >= RICH_PHOTOS,
     },
     {
       id: 'three_listings',

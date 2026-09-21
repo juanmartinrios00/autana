@@ -417,6 +417,21 @@
   color: var(--ink-4);
 }
 
+.sell__done-earned {
+  font-size: 0.94rem;
+  color: var(--ink-2);
+}
+
+.sell__done-earned a {
+  color: var(--ink-3);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sell__done-mission {
+  align-self: stretch;
+}
+
 .sell__done-actions {
   display: flex;
   gap: var(--sp-3);

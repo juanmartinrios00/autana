@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { MissionCard } from '../components/levels/MissionCard'
 import { ListingManager } from '../components/listing/ListingManager'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
@@ -9,6 +10,7 @@ import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { deleteListing, listMyListings, setListingStatus } from '../lib/api'
+import { listingMission } from '../lib/missions'
 import type { ListingStatus, Vehicle } from '../types'
 import './MyListings.css'
 
@@ -73,6 +75,9 @@ export function MyListings() {
   }
 
   const active = listings.filter((item) => item.status === 'active').length
+  /* Sale de los mismos avisos que se muestran, así que se recalcula sola al
+     sumar fotos o marcar uno vendido: la recarga que ya hace cada acción. */
+  const mission = loading || failed ? null : listingMission(listings)
 
   return (
     <div className="page section mylistings-page">
@@ -110,6 +115,8 @@ export function MyListings() {
           action={<Button onClick={() => setReloads((count) => count + 1)}>Reintentar</Button>}
         />
       )}
+
+      {mission && <MissionCard mission={mission} />}
 
       {!loading && !failed && (
         <ListingManager
