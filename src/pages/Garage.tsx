@@ -28,7 +28,7 @@ import './Garage.css'
  * decía "El garage de X" y la copy ya prometía que se comparte por link, así
  * que la pantalla estaba implícita; esto la hace explícita.
  *
- * Por qué separarla del panel propio (`/profile`): son dos cosas con dos
+ * Por qué separarla del panel propio (`/perfil`): son dos cosas con dos
  * públicos. El panel es donde uno administra lo suyo. El garage es lo que esa
  * persona manda a un grupo de WhatsApp, y lo que ve quien llega desde un aviso:
  * quién es, qué autos la marcaron, y qué tiene a la venta.
@@ -141,7 +141,7 @@ export function Garage() {
           title="No encontramos ese garage"
           description="Puede que la cuenta ya no exista."
           action={
-            <Link to="/cars">
+            <Link to="/autos">
               <Button variant="yellow">Ver el marketplace</Button>
             </Link>
           }
@@ -222,7 +222,7 @@ export function Garage() {
               {copied ? 'Link copiado' : 'Compartir'}
             </Button>
             {editable && (
-              <Link to="/profile" className="garagepage__back">
+              <Link to="/perfil" className="garagepage__back">
                 {profile.avatarUrl ? 'Volver a mi perfil' : 'Subí tu foto desde tu perfil'}
               </Link>
             )}

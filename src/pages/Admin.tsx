@@ -186,7 +186,7 @@ export function Admin() {
             <li className="admin__item" key={vehicle.id}>
               <div className="admin__item-head">
                 <div className="admin__item-titles">
-                  <Link to={`/cars/${vehicle.slug}`} className="admin__item-title">
+                  <Link to={`/autos/${vehicle.slug}`} className="admin__item-title">
                     {vehicleTitle(vehicle)}
                   </Link>
                   <span className="admin__item-meta mono">
@@ -235,7 +235,7 @@ export function Admin() {
                     Bloquear
                   </Button>
                 )}
-                <Link to={`/cars/${vehicle.slug}`}>
+                <Link to={`/autos/${vehicle.slug}`}>
                   <Button size="sm" variant="ghost">
                     Ver la ficha
                   </Button>

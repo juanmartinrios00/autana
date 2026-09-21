@@ -59,7 +59,7 @@ export function ListingManager({ listings, onStatusChange, onDelete }: ListingMa
     return (
       <div className="mylistings__empty">
         <p className="mylistings__empty-text">Todavía no publicaste ningún auto.</p>
-        <Link to="/sell">
+        <Link to="/vender">
           <Button variant="yellow">Publicar mi vehículo</Button>
         </Link>
       </div>
@@ -103,7 +103,7 @@ export function ListingManager({ listings, onStatusChange, onDelete }: ListingMa
                 <div className="mylisting__head">
                   {/* El link va al aviso público. Si está pausado o vendido lo
                       ve sólo el dueño: la política de RLS ya lo esconde. */}
-                  <Link to={`/cars/${vehicle.slug}`} className="mylisting__title">
+                  <Link to={`/autos/${vehicle.slug}`} className="mylisting__title">
                     {title}
                   </Link>
                   <Badge tone={statusTone[vehicle.status]}>{statusLabels[vehicle.status]}</Badge>
@@ -204,7 +204,7 @@ export function ListingManager({ listings, onStatusChange, onDelete }: ListingMa
                       </Button>
                     )}
 
-                    <Link to={`/sell/${vehicle.slug}/edit`} className="mylisting__edit">
+                    <Link to={`/vender/${vehicle.slug}/editar`} className="mylisting__edit">
                       <Button size="sm" disabled={isBusy}>
                         Editar
                       </Button>

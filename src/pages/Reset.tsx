@@ -67,7 +67,7 @@ export function Reset() {
             Tu contraseña quedó cambiada y ya estás dentro de tu cuenta. La próxima vez
             entrás con ella, sin pedir ningún link.
           </p>
-          <Link to="/profile">
+          <Link to="/perfil">
             <Button variant="yellow">Ir a mi perfil</Button>
           </Link>
         </div>
@@ -77,7 +77,7 @@ export function Reset() {
 
   /* Sin sesión, el link no se abrió o venció. Los de recuperación duran poco a
      propósito, así que lo útil es mandar a pedir otro, no explicar el error. */
-  if (!session) return <Navigate to="/login" replace />
+  if (!session) return <Navigate to="/entrar" replace />
 
   if (!recovering) {
     return (
@@ -88,9 +88,9 @@ export function Reset() {
             Esta pantalla sólo cambia la contraseña cuando llegás desde el link que te
             mandamos por correo. Ya tenés la sesión abierta, así que si te acordás de tu
             contraseña actual podés cambiarla desde{' '}
-            <Link to="/settings">Ajustes</Link>; y si no, pedí un link nuevo.
+            <Link to="/ajustes">Ajustes</Link>; y si no, pedí un link nuevo.
           </p>
-          <Link to="/login">
+          <Link to="/entrar">
             <Button variant="outline">Pedir un link</Button>
           </Link>
         </div>

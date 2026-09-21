@@ -174,7 +174,7 @@ export function ReportDialog({ kind, targetId, title }: ReportDialogProps) {
               {/* Con `from`, el login devuelve acá: sin eso terminaba en la portada
                   y había que volver a buscar qué se quería reportar. */}
               <Link
-                to="/login"
+                to="/entrar"
                 state={{ from: location.pathname + location.search }}
                 className="report__login"
               >

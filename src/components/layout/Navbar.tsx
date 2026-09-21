@@ -16,10 +16,10 @@ import { NavSearch } from './NavSearch'
    repartido entre la página que lo explica, el de cada persona, el buscador y
    a quién seguís, y en cualquiera de esas uno está "en el garage". */
 const links: { to: string; label: string; matches?: string[] }[] = [
-  { to: '/cars', label: 'Comprar' },
+  { to: '/autos', label: 'Comprar' },
   { to: '/garage', label: 'Garage', matches: ['/garage', '/g/', '/gente', '/siguiendo'] },
-  { to: '/favorites', label: 'Favoritos' },
-  { to: '/compare', label: 'Comparar' },
+  { to: '/favoritos', label: 'Favoritos' },
+  { to: '/comparar', label: 'Comparar' },
 ]
 
 function isActiveLink(link: (typeof links)[number], pathname: string, routerActive: boolean) {
@@ -152,12 +152,12 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
           {session ? (
             <AccountMenu user={session.user} onSignOut={() => void signOut()} />
           ) : (
-            <Link to="/login" className="navbar__link navbar__desktop-only">
+            <Link to="/entrar" className="navbar__link navbar__desktop-only">
               Ingresar
             </Link>
           )}
 
-          <Link to="/sell" className="navbar__cta">
+          <Link to="/vender" className="navbar__cta">
             Publicar vehículo
           </Link>
         </div>
@@ -184,11 +184,11 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
             ))}
             {session ? (
               <>
-                <Link to="/profile" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+                <Link to="/perfil" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
                   Mi perfil <Icon name="arrowRight" size={18} />
                 </Link>
                 <Link
-                  to="/my-listings"
+                  to="/mis-avisos"
                   className="navbar__mobile-link"
                   onClick={() => setMenuOpen(false)}
                 >
@@ -222,7 +222,7 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
                   Siguiendo <Icon name="arrowRight" size={18} />
                 </Link>
                 <Link
-                  to="/settings"
+                  to="/ajustes"
                   className="navbar__mobile-link"
                   onClick={() => setMenuOpen(false)}
                 >
@@ -242,7 +242,7 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
                 </button>
               </>
             ) : (
-              <Link to="/login" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+              <Link to="/entrar" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
                 Ingresar <Icon name="arrowRight" size={18} />
               </Link>
             )}

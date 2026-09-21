@@ -111,7 +111,7 @@ export function FollowControls({ targetId, targetName }: FollowControlsProps) {
 
   function follow() {
     if (!userId) {
-      navigate('/login', { state: { from: location.pathname + location.search } })
+      navigate('/entrar', { state: { from: location.pathname + location.search } })
       return
     }
     void run({ following: true, blockedByMe: false, unavailable: false }, 1, () =>

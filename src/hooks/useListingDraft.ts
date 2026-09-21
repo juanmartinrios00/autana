@@ -101,7 +101,7 @@ export function useListingDraft({ persist = true }: { persist?: boolean } = {}) 
     if (!persist) return
 
     /* Un formulario recién abierto no tiene nada que guardar. Sin esto, a los
-       600 ms de entrar a /sell aparece un "Guardado 17:45" en verde sobre un
+       600 ms de entrar a /vender aparece un "Guardado 17:45" en verde sobre un
        formulario en blanco: le dice a la persona que se preservó un trabajo
        que todavía no hizo, que es la clase de cartel que hace que uno cierre
        la pestaña tranquilo. Y deja en el storage un borrador vacío que después

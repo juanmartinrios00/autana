@@ -126,7 +126,7 @@ const transferir = (
     </p>
 
     <p>
-      Si estás por publicar, en {BRAND} <Link to="/sell">cargás el aviso vos mismo</Link> y el
+      Si estás por publicar, en {BRAND} <Link to="/vender">cargás el aviso vos mismo</Link> y el
       contacto va directo a tu WhatsApp: no hay un intermediario que se meta en la
       negociación ni en el trámite.
     </p>
@@ -255,7 +255,7 @@ const revisar = (
     </p>
 
     <p>
-      En {BRAND} podés <Link to="/cars">filtrar por año, kilometraje y ubicación</Link> y ver
+      En {BRAND} podés <Link to="/autos">filtrar por año, kilometraje y ubicación</Link> y ver
       quién publica cada aviso antes de escribir.
     </p>
   </>
@@ -341,8 +341,8 @@ const precio = (
     <p>
       En {BRAND} el precio lo ponés vos y lo negociás directo con el que pregunta: no hay un
       asesor en el medio empujando para cerrar. Antes de decidir, podés{' '}
-      <Link to="/cars">mirar lo que se está pidiendo</Link> por autos como el tuyo, y{' '}
-      <Link to="/sell">cargar el aviso</Link> cuando lo tengas.
+      <Link to="/autos">mirar lo que se está pidiendo</Link> por autos como el tuyo, y{' '}
+      <Link to="/vender">cargar el aviso</Link> cuando lo tengas.
     </p>
   </>
 )
@@ -450,8 +450,8 @@ const estafas = (
     <p>
       Si ves una publicación rara, reportala desde la ficha del aviso. Con tres reportes de
       personas distintas se bloquea sola mientras alguien la mira. Si te quedan dudas, en el{' '}
-      <Link to="/help">centro de ayuda</Link> está el resto, y podés{' '}
-      <Link to="/contact">escribirnos</Link>.
+      <Link to="/ayuda">centro de ayuda</Link> está el resto, y podés{' '}
+      <Link to="/contacto">escribirnos</Link>.
     </p>
   </>
 )

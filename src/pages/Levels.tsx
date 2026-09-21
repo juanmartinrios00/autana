@@ -146,11 +146,11 @@ export function Levels() {
 
         <div className="levels__cta">
           {signedIn ? (
-            <Link to="/profile">
+            <Link to="/perfil">
               <Button variant="yellow">Ver mi perfil</Button>
             </Link>
           ) : (
-            <Link to="/login">
+            <Link to="/entrar">
               <Button variant="yellow">Crear mi cuenta</Button>
             </Link>
           )}

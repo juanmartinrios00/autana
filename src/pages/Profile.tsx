@@ -153,7 +153,7 @@ export function Profile() {
           title="No encontramos ese perfil"
           description="Puede que la cuenta ya no exista."
           action={
-            <Link to="/cars">
+            <Link to="/autos">
               <Button variant="yellow">Ver el marketplace</Button>
             </Link>
           }
@@ -257,7 +257,7 @@ export function Profile() {
             entero, no como un link perdido: es lo que más viene a hacer
             alguien que entra a su propio perfil. */}
         {editable && (
-          <Link to="/my-listings" className="profile__listings">
+          <Link to="/mis-avisos" className="profile__listings">
             <span className="profile__listings-copy">
               <span className="over">Tus avisos</span>
               <span className="profile__listings-title">Mis publicaciones</span>
@@ -311,7 +311,7 @@ export function Profile() {
                   Es un juego del perfil, no una calificación de vendedor. A quien
                   mira tus autos le mostramos hechos: si estás verificada y desde
                   cuándo tenés cuenta.{' '}
-                  <Link to="/levels">Cómo funcionan los niveles</Link>.
+                  <Link to="/niveles">Cómo funcionan los niveles</Link>.
                 </p>
               </div>
             </header>

@@ -14,7 +14,9 @@ import {
   canonicalRedirect,
   DISALLOWED,
   GARAGE_URL,
+  legacyRedirect,
   LISTING_URL,
+  RUTAS_VIEJAS,
   STATIC_PAGES,
   xmlEscape,
 } from './index'
@@ -45,15 +47,15 @@ const row = {
 
 describe('las URL que el worker reescribe', () => {
   it('reconoce la ficha de un aviso', () => {
-    expect('/cars/bmw-320i-2022'.match(LISTING_URL)?.[1]).toBe('bmw-320i-2022')
+    expect('/autos/bmw-320i-2022'.match(LISTING_URL)?.[1]).toBe('bmw-320i-2022')
     /* Con barra al final es la misma pagina. */
-    expect('/cars/bmw-320i-2022/'.match(LISTING_URL)?.[1]).toBe('bmw-320i-2022')
+    expect('/autos/bmw-320i-2022/'.match(LISTING_URL)?.[1]).toBe('bmw-320i-2022')
   })
 
   it('no toca el listado ni las busquedas', () => {
-    expect('/cars'.match(LISTING_URL)).toBeNull()
-    expect('/cars/'.match(LISTING_URL)).toBeNull()
-    expect('/cars/bmw/320i'.match(LISTING_URL)).toBeNull()
+    expect('/autos'.match(LISTING_URL)).toBeNull()
+    expect('/autos/'.match(LISTING_URL)).toBeNull()
+    expect('/autos/bmw/320i'.match(LISTING_URL)).toBeNull()
   })
 
   /**
@@ -63,14 +65,14 @@ describe('las URL que el worker reescribe', () => {
    */
   it('rechaza lo que no tiene forma de slug', () => {
     const intentos = [
-      "/cars/bmw'or'1'='1",
-      '/cars/bmw%20320i',
-      '/cars/bmw.320i',
-      '/cars/bmw_320i',
-      '/cars/bmw,320i',
-      '/cars/bmw*',
-      '/cars/bmw(320i)',
-      `/cars/${'a'.repeat(121)}`,
+      "/autos/bmw'or'1'='1",
+      '/autos/bmw%20320i',
+      '/autos/bmw.320i',
+      '/autos/bmw_320i',
+      '/autos/bmw,320i',
+      '/autos/bmw*',
+      '/autos/bmw(320i)',
+      `/autos/${'a'.repeat(121)}`,
     ]
     for (const intento of intentos) {
       expect(intento.match(LISTING_URL), intento).toBeNull()
@@ -299,7 +301,7 @@ describe('el dominio canónico', () => {
  *
  * Cloudflare sirve directo cualquier pedido que coincida con un archivo de
  * `dist`, y en ese caso el worker no se ejecuta. Como la portada es
- * `index.html` ---un archivo de verdad--- durante unas horas `/cars` redirigió
+ * `index.html` ---un archivo de verdad--- durante unas horas `/autos` redirigió
  * al dominio propio y `/` no: el sitio siguió existiendo dos veces justo en la
  * página que más importa, contestando 200 y sin `canonical` que desempatara.
  *
@@ -329,7 +331,7 @@ describe('run_worker_first', () => {
   })
 
   it('corre en las pantallas y en los archivos sueltos de la raiz', () => {
-    expect(correElWorker('/cars')).toBe(true)
+    expect(correElWorker('/autos')).toBe(true)
     expect(correElWorker('/blog/transferir-un-auto-en-argentina')).toBe(true)
     expect(correElWorker('/favicon.ico')).toBe(true)
   })
@@ -349,7 +351,7 @@ describe('run_worker_first', () => {
  * Lo que de verdad se está probando es que la query se caiga. Los filtros viven
  * en la URL a propósito, así que el listado se alcanza de infinitas formas
  * ---una por cada combinación--- y todas sirven el mismo listado abajo. Sin un
- * canonical que las junte, lo que le corresponde a `/cars` queda repartido
+ * canonical que las junte, lo que le corresponde a `/autos` queda repartido
  * entre todas y no alcanza para nada.
  */
 describe('canonicalFor', () => {
@@ -376,6 +378,66 @@ describe('canonicalFor', () => {
   it('deja las pantallas fijas como estan', () => {
     for (const path of STATIC_PAGES) {
       expect(de(`https://auteando.com${path}`)).toBe(`https://auteando.com${path}`)
+    }
+  })
+})
+
+/**
+ * Las rutas viejas, de cuando los caminos estaban en inglés.
+ *
+ * Lo que sostiene este bloque no es que redirija ---eso se ve enseguida--- sino
+ * que **no entre en un bucle**. Si alguna ruta nueva empezara con una vieja, el
+ * 301 se mandaría a sí mismo y esa pantalla dejaría de existir, con el agravante
+ * de que la que se rompe es la nueva: la vieja sigue "funcionando" hasta que
+ * alguien la abre. Es exactamente lo que pasa si dentro de un año se agrega una
+ * ruta sin mirar esta lista.
+ */
+describe('las rutas viejas', () => {
+  const pedido = (href: string, method = 'GET') =>
+    legacyRedirect(new URL(href), new Request(href, { method }))
+
+  const destino = (href: string) => pedido(href)?.headers.get('location')
+
+  it('manda cada una a la nueva', () => {
+    expect(destino('https://auteando.com/cars')).toBe('https://auteando.com/autos')
+    expect(destino('https://auteando.com/login')).toBe('https://auteando.com/entrar')
+    expect(pedido('https://auteando.com/cars')?.status).toBe(301)
+  })
+
+  it('conserva lo que viene despues, y la query', () => {
+    expect(destino('https://auteando.com/cars/bmw-320i-2022')).toBe(
+      'https://auteando.com/autos/bmw-320i-2022',
+    )
+    expect(destino('https://auteando.com/cars?make=BMW&minPrice=20000')).toBe(
+      'https://auteando.com/autos?make=BMW&minPrice=20000',
+    )
+  })
+
+  /* La unica vieja que ademas tenia una palabra propia despues del slug. */
+  it('traduce el editar del formulario', () => {
+    expect(destino('https://auteando.com/sell/bmw-320i-2022/edit')).toBe(
+      'https://auteando.com/vender/bmw-320i-2022/editar',
+    )
+  })
+
+  it('ninguna ruta nueva cae en una vieja', () => {
+    for (const nueva of Object.values(RUTAS_VIEJAS)) {
+      expect(pedido(`https://auteando.com${nueva}`), nueva).toBeNull()
+      expect(pedido(`https://auteando.com${nueva}/algo`), nueva).toBeNull()
+    }
+  })
+
+  it('no toca lo que no es una lectura', () => {
+    expect(pedido('https://auteando.com/cars', 'POST')).toBeNull()
+  })
+
+  /* Las dos listas del robots y el sitemap se escribieron a mano con los
+     caminos nuevos. Si quedo una vieja adentro, el sitemap estaria ofreciendo
+     una URL que redirige, que es pedirle a Google que gaste dos pedidos en cada
+     pagina y que ademas no es la que queremos que muestre. */
+  it('el sitemap y el robots no nombran ninguna vieja', () => {
+    for (const path of [...STATIC_PAGES, ...DISALLOWED]) {
+      expect(RUTAS_VIEJAS[path], path).toBeUndefined()
     }
   })
 })

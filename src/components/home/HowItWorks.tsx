@@ -168,11 +168,11 @@ export function HowItWorks() {
 
         <div className="how__cta">
           {current.id === 'sell' ? (
-            <Link to="/sell">
+            <Link to="/vender">
               <Button variant="yellow">Publicar mi vehículo</Button>
             </Link>
           ) : (
-            <Link to="/cars">
+            <Link to="/autos">
               <Button variant="yellow">Ver los autos publicados</Button>
             </Link>
           )}

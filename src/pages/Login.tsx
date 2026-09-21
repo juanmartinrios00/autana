@@ -340,7 +340,7 @@ export function Login() {
           <p className="login__kinds-hint">
             Podés cambiarlo después en Ajustes. El sello de <strong>Verificada</strong> es
             aparte: lo ponemos a mano tras confirmar que la agencia existe.{' '}
-            <Link to="/dealers">Qué cambia si sos concesionaria</Link>.
+            <Link to="/agencias">Qué cambia si sos concesionaria</Link>.
           </p>
         )}
 
@@ -389,8 +389,8 @@ export function Login() {
         </p>
 
         <p className="login__legal">
-          Al continuar aceptás los <Link to="/terms">términos</Link> y la{' '}
-          <Link to="/privacy">política de privacidad</Link>.
+          Al continuar aceptás los <Link to="/terminos">términos</Link> y la{' '}
+          <Link to="/privacidad">política de privacidad</Link>.
         </p>
 
         <div className="login__note">

@@ -121,7 +121,7 @@ export function Home() {
 
   const models = make ? modelsForMake(make, publishedModels[make]) : []
 
-  /* Los filtros viven en la URL: buscar es navegar a /cars con la query. */
+  /* Los filtros viven en la URL: buscar es navegar a /autos con la query. */
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const params = new URLSearchParams()
@@ -129,7 +129,7 @@ export function Home() {
     if (model) params.set('model', model)
     if (province) params.set('province', province)
     if (maxPrice) params.set('maxPrice', maxPrice)
-    navigate({ pathname: '/cars', search: params.toString() })
+    navigate({ pathname: '/autos', search: params.toString() })
   }
 
   return (
@@ -197,7 +197,7 @@ export function Home() {
                 key={item.label}
                 type="button"
                 className="chip-button"
-                onClick={() => navigate({ pathname: '/cars', search: item.query })}
+                onClick={() => navigate({ pathname: '/autos', search: item.query })}
               >
                 <Badge>{item.label}</Badge>
               </button>
@@ -226,7 +226,7 @@ export function Home() {
             title="Recién publicados"
             vehicles={recent}
             loading={loadingRecent}
-            action={{ label: 'Ver todos', to: '/cars' }}
+            action={{ label: 'Ver todos', to: '/autos' }}
           />
           <VehicleSlider eyebrow="Los que más miran" title="Más vistos" vehicles={mostSeen} />
         </div>

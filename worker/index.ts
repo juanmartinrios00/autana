@@ -32,7 +32,7 @@ interface Env {
  * usarlo. Lo que no entre en este patrón no es un slug nuestro: los generamos
  * con letras, números y guiones.
  */
-export const LISTING_URL = /^\/cars\/([A-Za-z0-9-]{1,120})\/?$/
+export const LISTING_URL = /^\/autos\/([A-Za-z0-9-]{1,120})\/?$/
 export const BLOG_URL = /^\/blog\/([a-z0-9-]{1,120})\/?$/
 
 /**
@@ -310,15 +310,15 @@ function appendToHead(html: string): HTMLRewriterElementContentHandlers {
  * sitemap la ofrece y el robots la prohibe.
  */
 export const DISALLOWED = [
-  '/login',
-  '/sell',
-  '/profile',
-  '/my-listings',
-  '/favorites',
-  '/settings',
+  '/entrar',
+  '/vender',
+  '/perfil',
+  '/mis-avisos',
+  '/favoritos',
+  '/ajustes',
   '/admin',
-  '/compare',
-  '/reset',
+  '/comparar',
+  '/recuperar',
   '/gente',
   '/siguiendo',
   '/garage/mio',
@@ -328,15 +328,15 @@ export const DISALLOWED = [
 /** Las publicas con contenido propio, que van fijas al sitemap. */
 export const STATIC_PAGES = [
   '/',
-  '/cars',
+  '/autos',
   '/garage',
   '/blog',
-  '/help',
-  '/dealers',
-  '/levels',
-  '/contact',
-  '/terms',
-  '/privacy',
+  '/ayuda',
+  '/agencias',
+  '/niveles',
+  '/contacto',
+  '/terminos',
+  '/privacidad',
 ]
 
 function robots(origin: string): Response {
@@ -345,13 +345,13 @@ function robots(origin: string): Response {
      pagina.
 
      `/gente` se bloquea aunque sea publica: es un formulario de busqueda, y lo
-     unico que Google indexaria son resultados para nombres sueltos. `/compare`
+     unico que Google indexaria son resultados para nombres sueltos. `/comparar`
      por lo mismo y peor: la comparacion vive en la query string, asi que es un
      espacio infinito de URLs distintas ---cada combinacion de tres autos--- y
      ninguna dice nada que no diga la ficha de cada uno.
 
-     `/settings` y `/admin` entran por el primer criterio y faltaban, al lado de
-     `/profile` y `/my-listings` que ya estaban. `/reset` es un paso de un flujo
+     `/ajustes` y `/admin` entran por el primer criterio y faltaban, al lado de
+     `/perfil` y `/mis-avisos` que ya estaban. `/recuperar` es un paso de un flujo
      y ademas se llega con un token en el link. */
   const body = [
     'User-agent: *',
@@ -435,8 +435,8 @@ async function sitemap(origin: string): Promise<Response> {
 
      Son todas las publicas que tienen contenido propio y no estan en el
      `Disallow` de robots. Faltaban cuatro, y dos de esas son justo las que le
-     sirven al negocio: `/help` es un FAQ escrito ---el tipo de pagina por la
-     que alguien llega buscando "como transferir un auto usado"--- y `/dealers`
+     sirven al negocio: `/ayuda` es un FAQ escrito ---el tipo de pagina por la
+     que alguien llega buscando "como transferir un auto usado"--- y `/agencias`
      es la pagina que le explica el producto a una agencia. Estar en el sitemap
      no garantiza nada, pero no estar es no haberlas ofrecido. */
   const entries: { loc: string; lastmod?: string }[] = STATIC_PAGES.map((path) => ({
@@ -451,7 +451,7 @@ async function sitemap(origin: string): Promise<Response> {
 
   for (const row of listings) {
     entries.push({
-      loc: `${origin}/cars/${row.slug}`,
+      loc: `${origin}/autos/${row.slug}`,
       lastmod: row.updated_at.slice(0, 10),
     })
   }
@@ -544,14 +544,14 @@ async function htmlFor(request: Request, env: Env): Promise<Response | null> {
 /**
  * La URL que representa a una pantalla: la del pedido, sin la query.
  *
- * Tirar la query es el punto. `/cars` se alcanza con cualquier combinación de
+ * Tirar la query es el punto. `/autos` se alcanza con cualquier combinación de
  * filtros ---y los filtros viven en la URL a propósito, que es lo que hace que
- * una búsqueda se comparta copiando el link--- así que `/cars?make=BMW`,
- * `/cars?make=BMW&minPrice=20000` y `/cars?maxYear=2015` son URLs distintas con
+ * una búsqueda se comparta copiando el link--- así que `/autos?make=BMW`,
+ * `/autos?make=BMW&minPrice=20000` y `/autos?maxYear=2015` son URLs distintas con
  * el mismo listado abajo. Sin esto Google ve un espacio infinito de páginas
  * casi iguales y reparte entre todas lo que le corresponde a una sola.
  *
- * La barra del final se cae porque `/cars/` y `/cars` sirven lo mismo: el
+ * La barra del final se cae porque `/autos/` y `/autos` sirven lo mismo: el
  * router no distingue, y dos URLs para una pantalla es justo lo que se está
  * arreglando.
  */
@@ -603,7 +603,7 @@ async function renderListing(request: Request, env: Env, slug: string): Promise<
     title,
     description: buildDescription(row),
     image: coverImage(row),
-    canonical: `${url.origin}/cars/${row.slug}`,
+    canonical: `${url.origin}/autos/${row.slug}`,
   })
 }
 
@@ -717,12 +717,73 @@ export function canonicalRedirect(url: URL, request: Request): Response | null {
   return Response.redirect(destino.toString(), 301)
 }
 
+/**
+ * Las rutas de antes, cuando los caminos estaban en ingles.
+ *
+ * El sitio es para Argentina y las pantallas ya se llamaban mitad y mitad
+ * ---`/gente` y `/novedades` en castellano, `/cars` y `/sell` en ingles--- asi
+ * que se unificaron. Esto existe para que nada de lo que ya este dando vueltas
+ * se caiga: un link mandado por WhatsApp, un favorito del navegador, lo que
+ * Google haya alcanzado a indexar.
+ *
+ * Ninguna de las nuevas empieza con una de las viejas, asi que no hay forma de
+ * entrar en un bucle. Hay un test que lo sostiene, porque es la clase de cosa
+ * que se rompe agregando una ruta un año despues.
+ */
+export const RUTAS_VIEJAS: Record<string, string> = {
+  '/cars': '/autos',
+  '/sell': '/vender',
+  '/favorites': '/favoritos',
+  '/my-listings': '/mis-avisos',
+  '/settings': '/ajustes',
+  '/compare': '/comparar',
+  '/login': '/entrar',
+  '/reset': '/recuperar',
+  '/levels': '/niveles',
+  '/dealers': '/agencias',
+  '/help': '/ayuda',
+  '/contact': '/contacto',
+  '/terms': '/terminos',
+  '/privacy': '/privacidad',
+  '/profile': '/perfil',
+}
+
+/**
+ * Manda una ruta vieja a la nueva, conservando lo que venga despues.
+ *
+ * 301 y por el mismo motivo que la del dominio: es permanente, y es lo que hace
+ * que un buscador mueva lo que tenia en vez de guardar las dos. Quien entre por
+ * el dominio viejo *y* una ruta vieja va a dar dos saltos, uno por cada cosa que
+ * cambio. Se podrian juntar en uno, pero serian dos reglas escritas adentro de
+ * una, y un salto de mas no le cuesta nada a nadie.
+ */
+export function legacyRedirect(url: URL, request: Request): Response | null {
+  if (request.method !== 'GET' && request.method !== 'HEAD') return null
+
+  for (const [viejo, nuevo] of Object.entries(RUTAS_VIEJAS)) {
+    if (url.pathname !== viejo && !url.pathname.startsWith(`${viejo}/`)) continue
+
+    /* `/sell/:slug/edit` es la unica vieja con una palabra propia despues del
+       slug, asi que es la unica que ademas hay que traducir por dentro. */
+    const resto = url.pathname.slice(viejo.length).replace(/\/edit$/, '/editar')
+
+    const destino = new URL(url)
+    destino.pathname = nuevo + resto
+    return Response.redirect(destino.toString(), 301)
+  }
+
+  return null
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
 
     const canonical = canonicalRedirect(url, request)
     if (canonical) return canonical
+
+    const legacy = legacyRedirect(url, request)
+    if (legacy) return legacy
 
     if (url.pathname === '/robots.txt') return robots(url.origin)
     if (url.pathname === '/sitemap.xml') return sitemap(url.origin)

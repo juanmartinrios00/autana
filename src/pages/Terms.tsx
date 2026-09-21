@@ -151,7 +151,7 @@ export function Terms() {
       <LegalSection n={9} title="Cambios y contacto">
         <p>
           Si estas reglas cambian, cambia la fecha de arriba. Ver también la{' '}
-          <Link to="/privacy">política de privacidad</Link>.
+          <Link to="/privacidad">política de privacidad</Link>.
         </p>
         <span className="legal__todo">
           Pendiente de definir: quién es el titular del servicio, el mail de contacto para

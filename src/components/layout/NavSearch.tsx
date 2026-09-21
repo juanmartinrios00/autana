@@ -27,14 +27,14 @@ export function NavSearch() {
 
     /* Si ya estamos en el listado, buscar afina lo que hay: se conservan los
        filtros puestos. Desde cualquier otra página, arranca limpio. */
-    const next = location.pathname === '/cars' ? new URLSearchParams(params) : new URLSearchParams()
+    const next = location.pathname === '/autos' ? new URLSearchParams(params) : new URLSearchParams()
 
     const term = value.trim()
     if (term) next.set('q', term)
     else next.delete('q')
     next.delete('page')
 
-    navigate({ pathname: '/cars', search: next.toString() })
+    navigate({ pathname: '/autos', search: next.toString() })
   }
 
   return (

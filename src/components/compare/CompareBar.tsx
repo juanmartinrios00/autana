@@ -8,7 +8,7 @@ import './CompareBar.css'
  * La barra que aparece abajo cuando hay autos elegidos para comparar.
  *
  * Es el puente entre elegir y comparar: sin ella habría que acordarse de ir a
- * `/compare` a mano, y nadie se acuerda. Aparece sola con el primer auto y se
+ * `/comparar` a mano, y nadie se acuerda. Aparece sola con el primer auto y se
  * va cuando no queda ninguno.
  *
  * En la propia pantalla de comparación no se muestra: ahí la selección ya está
@@ -18,9 +18,9 @@ export function CompareBar() {
   const { slugs, remove, clear } = useCompare()
   const location = useLocation()
 
-  if (slugs.length === 0 || location.pathname === '/compare') return null
+  if (slugs.length === 0 || location.pathname === '/comparar') return null
 
-  const target = `/compare?ids=${slugs.map(encodeURIComponent).join(',')}`
+  const target = `/comparar?ids=${slugs.map(encodeURIComponent).join(',')}`
 
   return (
     <div className="cmpbar" role="region" aria-label="Autos elegidos para comparar">

@@ -90,7 +90,7 @@ export const currencyLabels: Record<Currency, string> = {
 export const currencies = Object.keys(currencyLabels) as Currency[]
 
 /* El orden de los resultados. Estaba escrito dos veces: el desplegable de
-   `/cars` tenia su lista con las etiquetas y `search-query` tenia la suya con
+   `/autos` tenia su lista con las etiquetas y `search-query` tenia la suya con
    los valores validos. Agregar un orden al desplegable sin agregarlo alla
    hacia que elegirlo cayera en `relevance`: la pantalla decia "Precio: menor
    primero" y los resultados venian ordenados por otra cosa. */

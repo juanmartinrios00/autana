@@ -67,7 +67,7 @@ const TOPICS: Topic[] = [
         a: (
           <p>
             Desde el botón de comparar de cada card, y después en{' '}
-            <Link to="/compare">Comparar</Link>. La comparación vive en la dirección del
+            <Link to="/comparar">Comparar</Link>. La comparación vive en la dirección del
             navegador, así que mandarle a alguien los dos autos es copiar el link.
           </p>
         ),
@@ -78,7 +78,7 @@ const TOPICS: Topic[] = [
           <p>
             Sí, con cuenta y con filtros puestos: arriba de los resultados aparece{' '}
             <strong>Guardar búsqueda</strong>, le ponés un nombre y queda en{' '}
-            <Link to="/favorites">Favoritos</Link>. Todavía no avisamos por mail cuando
+            <Link to="/favoritos">Favoritos</Link>. Todavía no avisamos por mail cuando
             aparece un auto que le cierra: eso necesita algo que corra solo todos los días y
             no está construido, así que preferimos no ofrecerlo antes de que exista.
           </p>
@@ -115,10 +115,10 @@ const TOPICS: Topic[] = [
           <p>
             Cinco activos si sos particular, veinticinco si sos concesionaria — eso lo
             elegís al crear la cuenta y lo cambiás cuando quieras en{' '}
-            <Link to="/settings">Ajustes</Link>. Los que marcás como vendidos no ocupan
+            <Link to="/ajustes">Ajustes</Link>. Los que marcás como vendidos no ocupan
             lugar, así que podés seguir publicando sin borrar tu historial. Hay además un
             tope de avisos nuevos por día, alto como para que no lo toques cargando tu
-            stock. <Link to="/dealers">Qué cambia si sos concesionaria</Link>.
+            stock. <Link to="/agencias">Qué cambia si sos concesionaria</Link>.
           </p>
         ),
       },
@@ -136,7 +136,7 @@ const TOPICS: Topic[] = [
         q: '¿Puedo editar, pausar o marcar como vendido?',
         a: (
           <p>
-            Las tres cosas, desde <Link to="/my-listings">Mis publicaciones</Link>. Al
+            Las tres cosas, desde <Link to="/mis-avisos">Mis publicaciones</Link>. Al
             editar, los cambios en las fotos se aplican al instante; el resto se guarda
             cuando confirmás.
           </p>
@@ -240,13 +240,13 @@ const TOPICS: Topic[] = [
         q: '¿Cómo me registro?',
         a: (
           <p>
-            Con tu mail y una contraseña, en <Link to="/login">Ingresar</Link>. Si te
+            Con tu mail y una contraseña, en <Link to="/entrar">Ingresar</Link>. Si te
             pedimos confirmar el mail, te llega un link: lo abrís y ya estás dentro, y si
             no aparece podés pedir desde esa misma pantalla que te lo mandemos de nuevo.
             En el mismo formulario elegís
             si publicás como <strong>particular</strong> o como{' '}
             <strong>concesionaria</strong>: es lo que define si tenés 5 o 25 avisos
-            activos, y se puede cambiar después en <Link to="/settings">Ajustes</Link>.
+            activos, y se puede cambiar después en <Link to="/ajustes">Ajustes</Link>.
           </p>
         ),
       },
@@ -254,7 +254,7 @@ const TOPICS: Topic[] = [
         q: '¿Cómo cambio mi nombre, mi WhatsApp o mi ubicación?',
         a: (
           <p>
-            En <Link to="/settings">Ajustes</Link>, desde el menú de tu cuenta. Ahí también
+            En <Link to="/ajustes">Ajustes</Link>, desde el menú de tu cuenta. Ahí también
             elegís si publicás como particular o como concesionaria. Antes esos datos sólo
             se cargaban al publicar un aviso; ya no.
           </p>
@@ -264,7 +264,7 @@ const TOPICS: Topic[] = [
         q: '¿Cómo cambio mi contraseña?',
         a: (
           <p>
-            En <Link to="/settings">Ajustes</Link>. Te vamos a pedir la actual: sin eso,
+            En <Link to="/ajustes">Ajustes</Link>. Te vamos a pedir la actual: sin eso,
             cualquiera que agarre tu teléfono desbloqueado con la sesión abierta podría
             dejarte afuera de tu propia cuenta.
           </p>
@@ -286,7 +286,7 @@ const TOPICS: Topic[] = [
         q: '¿Cómo borro mi cuenta?',
         a: (
           <p>
-            En <Link to="/settings">Ajustes</Link>, abajo de todo. Te pedimos que escribas
+            En <Link to="/ajustes">Ajustes</Link>, abajo de todo. Te pedimos que escribas
             tu mail para confirmar porque no tiene vuelta atrás: se borran en el momento tu
             perfil, tus avisos con sus fotos, tu garage, tus favoritos y tus búsquedas
             guardadas, sin período de gracia ni copia que podamos restaurar. Lo único que
@@ -301,8 +301,8 @@ const TOPICS: Topic[] = [
           <p>
             Tocando tu foto arriba a la derecha se abre el menú de tu cuenta, con tus
             publicaciones, tu garage, tus ajustes y el botón de cerrar sesión. La foto se
-            cambia desde el ícono de cámara en <Link to="/profile">tu perfil</Link>, y el
-            nombre, el WhatsApp y la ubicación desde <Link to="/settings">Ajustes</Link>.
+            cambia desde el ícono de cámara en <Link to="/perfil">tu perfil</Link>, y el
+            nombre, el WhatsApp y la ubicación desde <Link to="/ajustes">Ajustes</Link>.
           </p>
         ),
       },
@@ -331,7 +331,7 @@ const TOPICS: Topic[] = [
             sitio, incluido cargar autos en el garage, que es nostalgia y no dice nada sobre
             con quién es seguro encontrarse. A quien mira tus autos le mostramos hechos: si
             estás verificada y desde cuándo tenés cuenta.{' '}
-            <Link to="/levels">Cómo funcionan los niveles</Link>.
+            <Link to="/niveles">Cómo funcionan los niveles</Link>.
           </p>
         ),
       },
@@ -388,8 +388,8 @@ export function Help() {
         ))}
 
         <p className="help__foot">
-          También podés leer los <Link to="/terms">términos</Link> y la{' '}
-          <Link to="/privacy">política de privacidad</Link>.
+          También podés leer los <Link to="/terminos">términos</Link> y la{' '}
+          <Link to="/privacidad">política de privacidad</Link>.
         </p>
       </div>
     </>

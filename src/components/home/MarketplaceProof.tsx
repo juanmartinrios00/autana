@@ -18,7 +18,7 @@ const label = (value: number, singular: string, plural: string) =>
  * cortar.
  *
  * Los números salen de la base, no de un archivo de constantes. Si hay una
- * publicación, dice una. Es la misma regla que sigue /dealers: un número
+ * publicación, dice una. Es la misma regla que sigue /agencias: un número
  * inflado en la portada se desmiente solo en cuanto alguien toca "ver todos".
  */
 export function MarketplaceProof({ stats }: MarketplaceProofProps) {

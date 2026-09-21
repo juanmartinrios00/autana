@@ -130,7 +130,7 @@ const pillars: Pillar[] = [
     eyebrow: 'Simple',
     title: 'Publicar son cuatro pasos.',
     text: 'Datos del vehículo, fotos, precio y contacto. El borrador se guarda solo mientras lo completás, así que podés empezar desde el celular y terminarlo más tarde. Sin llamadas, sin que nadie te tenga que habilitar y sin esperar a que un asesor te confirme el aviso.',
-    cta: { label: 'Publicar mi vehículo', to: '/sell' },
+    cta: { label: 'Publicar mi vehículo', to: '/vender' },
     Drawing: SimpleDrawing,
   },
   {
@@ -139,7 +139,7 @@ const pillars: Pillar[] = [
     eyebrow: 'Directo',
     title: 'Del otro lado hay una persona.',
     text: 'El interesado te escribe al WhatsApp que dejaste, con el mensaje armado y el link del aviso. No hay un chat nuestro en el medio, no guardamos la conversación y nadie te llama después para ofrecerte otra cosa.',
-    cta: { label: 'Ver los autos publicados', to: '/cars' },
+    cta: { label: 'Ver los autos publicados', to: '/autos' },
     Drawing: DirectDrawing,
   },
   {
@@ -148,7 +148,7 @@ const pillars: Pillar[] = [
     eyebrow: 'Claro',
     title: 'Los datos son los que son.',
     text: 'Kilometraje, año, dónde está y quién lo publica: si es particular o agencia, y desde cuándo tiene cuenta. Sin puntajes inventados ni sellos que no quieren decir nada. Lo que se puede verificar, y nada más.',
-    cta: { label: 'Cómo funcionan los niveles', to: '/levels' },
+    cta: { label: 'Cómo funcionan los niveles', to: '/niveles' },
     Drawing: ClearDrawing,
   },
 ]

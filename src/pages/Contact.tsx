@@ -97,7 +97,7 @@ export function Contact() {
           <div className="contact__aside-block">
             <span className="contact__label">Ayuda rápida</span>
             <p>Las respuestas sobre cuentas, publicaciones y seguridad también están en el centro de ayuda.</p>
-            <Link to="/help" className="contact__text-link">Ir al centro de ayuda →</Link>
+            <Link to="/ayuda" className="contact__text-link">Ir al centro de ayuda →</Link>
           </div>
           <div className="contact__aside-block">
             <span className="contact__label">Email</span>

@@ -56,7 +56,7 @@ export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
       <div className="vcard__body">
         <h3 className="vcard__title">
           {/* El link cubre la card entera; el resto del contenido queda encima. */}
-          <Link to={`/cars/${vehicle.slug}`} className="vcard__link">
+          <Link to={`/autos/${vehicle.slug}`} className="vcard__link">
             {title}
           </Link>
         </h3>

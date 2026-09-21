@@ -14,7 +14,7 @@ export function ClosingBand() {
           Cuatro pasos cortos, el borrador se guarda solo y los interesados te escriben
           directo al WhatsApp. No cobramos comisión.
         </p>
-        <CtaSplit to="/sell">Publicar mi vehículo</CtaSplit>
+        <CtaSplit to="/vender">Publicar mi vehículo</CtaSplit>
       </div>
 
       <div className="closing__col closing__col--alt">
@@ -24,7 +24,7 @@ export function ClosingBand() {
           Filtrá por marca, precio, kilometraje y ubicación. Guardá los que te gusten y
           contactá al vendedor cuando quieras.
         </p>
-        <Link to="/cars" className="closing__link">
+        <Link to="/autos" className="closing__link">
           Ver todos los autos
           <Icon name="arrowRight" size={17} />
         </Link>

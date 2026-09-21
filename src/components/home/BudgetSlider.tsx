@@ -15,7 +15,7 @@ export function BudgetSlider() {
   return (
     <Slider eyebrow="Buscá por presupuesto" title="Cuánto querés gastar" itemWidth="240px">
       {budgets.map((budget) => (
-        <Link key={budget.query} to={`/cars?${budget.query}`} className="budget">
+        <Link key={budget.query} to={`/autos?${budget.query}`} className="budget">
           <span className="budget__label">{budget.label}</span>
           <span className="budget__cta">Ver autos</span>
         </Link>

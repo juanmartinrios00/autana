@@ -148,7 +148,7 @@ export function Favorites() {
             Estos favoritos están guardados sólo en este navegador. Si entrás a tu cuenta se
             suben y los vas a tener en cualquier dispositivo.
           </p>
-          <Link to="/login">
+          <Link to="/entrar">
             <Button size="sm">Entrar</Button>
           </Link>
         </div>
@@ -162,7 +162,7 @@ export function Favorites() {
           title="Todavía no guardaste ningún auto"
           description="Tocá el corazón en cualquier publicación y lo vas a encontrar acá."
           action={
-            <Link to="/cars">
+            <Link to="/autos">
               <Button variant="yellow">Ver los autos publicados</Button>
             </Link>
           }
@@ -175,7 +175,7 @@ export function Favorites() {
           title="Tus favoritos ya no están disponibles"
           description="Los vendedores los pausaron o los marcaron vendidos."
           action={
-            <Link to="/cars">
+            <Link to="/autos">
               <Button variant="yellow">Buscar otros</Button>
             </Link>
           }
@@ -202,7 +202,7 @@ export function Favorites() {
               <li className="searches__item" key={search.id}>
                 {/* El link es la busqueda: se guarda la query string y se
                     restaura poniendola de vuelta en la URL. */}
-                <Link to={`/cars?${search.query}`} className="searches__link">
+                <Link to={`/autos?${search.query}`} className="searches__link">
                   <Icon name="search" size={15} />
                   {search.name}
                 </Link>

@@ -149,7 +149,7 @@ function describe(item: Novedad): { to: string; text: string } {
       return {
         /* Al panel y no a la ficha: quien vende quiere ver cómo le va a sus
            avisos, y ahí tiene las visitas al lado. */
-        to: '/my-listings',
+        to: '/mis-avisos',
         text:
           item.amount === 1
             ? `Una persona se interesó en tu ${item.listing?.title ?? 'aviso'}`

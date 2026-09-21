@@ -11,7 +11,7 @@ import './GarageLanding.css'
  * Qué es el garage, para quien todavía no tiene uno.
  *
  * Existe porque la navbar y la portada necesitaban a dónde mandar. `/g/:id`
- * es el garage de alguien en particular y `/profile` pide sesión, así que un
+ * es el garage de alguien en particular y `/perfil` pide sesión, así que un
  * link "Garage" para un visitante nuevo no tenía destino.
  *
  * No exige sesión: es la pantalla que convence a alguien de armar el suyo, y
@@ -94,7 +94,7 @@ export function GarageLanding() {
         <p className="glanding__note">
           Tu garage es público: cualquiera que tenga el link lo abre. Si preferís no aparecer en
           el buscador ni en Google, se apaga en{' '}
-          {session ? <Link to="/settings">Ajustes</Link> : 'Ajustes'}.
+          {session ? <Link to="/ajustes">Ajustes</Link> : 'Ajustes'}.
         </p>
       </div>
     </>

@@ -136,7 +136,7 @@ export function ProfileContact({ targetId, instagram }: ProfileContactProps) {
       )}
 
       {own && (
-        <Link to="/settings" className="pcontact__ask">
+        <Link to="/ajustes" className="pcontact__ask">
           {instagram ? 'Editar tus datos de contacto' : 'Sumar tu Instagram, WhatsApp o mail'}
         </Link>
       )}

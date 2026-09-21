@@ -37,7 +37,7 @@ export function NotFound() {
       </p>
 
       <div className="notfound__actions">
-        <Link to="/cars">
+        <Link to="/autos">
           <Button variant="yellow">Ver los autos publicados</Button>
         </Link>
         <Link to="/">
@@ -47,7 +47,7 @@ export function NotFound() {
 
       <p className="notfound__hint">
         Si llegaste desde un link nuestro que no debería estar roto, contanos en{' '}
-        <Link to="/help">Ayuda</Link>.
+        <Link to="/ayuda">Ayuda</Link>.
       </p>
     </div>
   )

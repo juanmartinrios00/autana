@@ -183,7 +183,7 @@ export function VehicleDetail() {
           title="No encontramos esa publicación"
           description="Puede que se haya vendido o que el vendedor la haya dado de baja."
           action={
-            <Link to="/cars">
+            <Link to="/autos">
               <Button variant="yellow">Ver todos los autos</Button>
             </Link>
           }
@@ -219,9 +219,9 @@ export function VehicleDetail() {
   return (
     <>
       <nav className="page detail__breadcrumb" aria-label="Ruta de navegación">
-        <Link to="/cars">Autos</Link>
+        <Link to="/autos">Autos</Link>
         <span aria-hidden="true">/</span>
-        <Link to={`/cars?make=${encodeURIComponent(vehicle.make)}`}>{vehicle.make}</Link>
+        <Link to={`/autos?make=${encodeURIComponent(vehicle.make)}`}>{vehicle.make}</Link>
         <span aria-hidden="true">/</span>
         <span className="detail__breadcrumb-current">
           {vehicle.model} {vehicle.year}
@@ -350,7 +350,7 @@ export function VehicleDetail() {
             <div className="section__panel">
               <div className="section__head">
                 <h2>Vehículos similares</h2>
-                <Link to={`/cars?bodyType=${vehicle.bodyType}`} className="detail__similar-link">
+                <Link to={`/autos?bodyType=${vehicle.bodyType}`} className="detail__similar-link">
                   Ver más como este
                   <Icon name="arrowRight" size={15} />
                 </Link>

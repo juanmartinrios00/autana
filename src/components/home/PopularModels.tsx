@@ -47,7 +47,7 @@ export function PopularModels() {
         return (
           <Link
             key={`${item.make}-${item.model}`}
-            to={`/cars?make=${encodeURIComponent(item.make)}&model=${encodeURIComponent(item.model)}`}
+            to={`/autos?make=${encodeURIComponent(item.make)}&model=${encodeURIComponent(item.model)}`}
             className="model"
           >
             <span className="model__copy">

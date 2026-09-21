@@ -92,11 +92,11 @@ export function AccountMenu({ user, onSignOut }: AccountMenuProps) {
             </div>
           </div>
 
-          <Link to="/profile" className="account__item" role="menuitem" onClick={close}>
+          <Link to="/perfil" className="account__item" role="menuitem" onClick={close}>
             <Icon name="user" size={16} />
             Mi perfil
           </Link>
-          <Link to="/my-listings" className="account__item" role="menuitem" onClick={close}>
+          <Link to="/mis-avisos" className="account__item" role="menuitem" onClick={close}>
             <Icon name="list" size={16} />
             Mis publicaciones
           </Link>
@@ -115,7 +115,7 @@ export function AccountMenu({ user, onSignOut }: AccountMenuProps) {
             <Icon name="user" size={16} />
             Siguiendo
           </Link>
-          <Link to="/settings" className="account__item" role="menuitem" onClick={close}>
+          <Link to="/ajustes" className="account__item" role="menuitem" onClick={close}>
             <Icon name="check" size={16} />
             Ajustes
           </Link>

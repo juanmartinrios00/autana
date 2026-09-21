@@ -301,7 +301,7 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
           Elegí una provincia para ver únicamente los vehículos publicados en esa zona.
         </p>
 
-        <Link to="/cars" className="province-map__cta">
+        <Link to="/autos" className="province-map__cta">
           <Button variant="yellow">Ver todos los vehículos</Button>
         </Link>
 
@@ -309,7 +309,7 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
           {provinces.map((province, index) => (
             <li key={province.name}>
               <Link
-                to={`/cars?province=${encodeURIComponent(province.query)}`}
+                to={`/autos?province=${encodeURIComponent(province.query)}`}
                 onPointerEnter={() => select(index)}
                 onPointerLeave={() => select(null)}
                 onFocus={() => select(index)}
@@ -329,7 +329,7 @@ export function ProvinceMap({ counts }: ProvinceMapProps) {
           onPointerMove={onPointerMove}
           onPointerLeave={() => select(null)}
           onClick={() => {
-            if (activeProvince) navigate(`/cars?province=${encodeURIComponent(activeProvince.query)}`)
+            if (activeProvince) navigate(`/autos?province=${encodeURIComponent(activeProvince.query)}`)
           }}
         />
         {activeProvince && tooltip && (

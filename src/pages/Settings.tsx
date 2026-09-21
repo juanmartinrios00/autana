@@ -361,7 +361,7 @@ export function Settings() {
           />
           <p className="settings__hint">
             Define el tope de publicaciones activas: 5 para particulares, 25 para
-            concesionarias. <Link to="/dealers">Qué cambia si sos concesionaria</Link>.
+            concesionarias. <Link to="/agencias">Qué cambia si sos concesionaria</Link>.
           </p>
 
           <div className="settings__actions">
@@ -480,7 +480,7 @@ export function Settings() {
 
           <p className="settings__hint">
             ¿No la recordás? Cerrá sesión y usá{' '}
-            <Link to="/login">¿Olvidaste tu contraseña?</Link> en la pantalla de ingreso: te
+            <Link to="/entrar">¿Olvidaste tu contraseña?</Link> en la pantalla de ingreso: te
             mandamos un link al correo y desde ahí la cambiás sin la anterior.
           </p>
         </form>

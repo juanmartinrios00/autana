@@ -102,7 +102,7 @@ export function BlogPost() {
           <h2>¿Estás por vender el tuyo?</h2>
           <p>Cargalo en cuatro pasos y las consultas te llegan directo al WhatsApp.</p>
         </div>
-        <Link to="/sell">
+        <Link to="/vender">
           <Button variant="dark" arrow>
             Publicar mi vehículo
           </Button>

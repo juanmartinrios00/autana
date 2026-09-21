@@ -60,7 +60,7 @@ export interface VehicleImage {
 
 export interface Vehicle {
   id: string
-  /** Identidad publica en la URL: /cars/bmw-320i-sport-line-2022-a4f19c */
+  /** Identidad publica en la URL: /autos/bmw-320i-sport-line-2022-a4f19c */
   slug: string
   sellerId: string
 
@@ -125,7 +125,7 @@ export interface Favorite {
 
 /**
  * Los filtros se guardan como query string, en el mismo formato que la URL de
- * /cars. Asi hay una sola representacion y compartir una busqueda es copiar
+ * /autos. Asi hay una sola representacion y compartir una busqueda es copiar
  * el link.
  */
 export interface SavedSearch {
@@ -168,7 +168,7 @@ export interface Message {
   createdAt: string
 }
 
-/** Filtros de /cars, ya parseados desde la query string. */
+/** Filtros de /autos, ya parseados desde la query string. */
 export interface VehicleFilters {
   q?: string
   make?: string

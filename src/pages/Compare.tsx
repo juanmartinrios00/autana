@@ -29,10 +29,10 @@ import './Compare.css'
 /**
  * Comparar autos lado a lado.
  *
- * La selección vive en la URL —`/compare?ids=slug-a,slug-b`— y no en el
+ * La selección vive en la URL —`/comparar?ids=slug-a,slug-b`— y no en el
  * estado: comparar es justo lo que uno quiere mandarle a alguien para que
  * opine, y así compartirlo es copiar el link. Es la misma decisión que en los
- * filtros de `/cars`.
+ * filtros de `/autos`.
  */
 
 /** Una fila de la tabla. `best` dice qué valor gana, cuando hay uno objetivo. */
@@ -165,7 +165,7 @@ export function Compare() {
           title="No hay autos para comparar"
           description="Entrá al listado y tocá “Comparar” en los que te interesen. Podés elegir hasta tres."
           action={
-            <Link to="/cars">
+            <Link to="/autos">
               <Button variant="yellow">Ver los autos publicados</Button>
             </Link>
           }
@@ -185,7 +185,7 @@ export function Compare() {
               : 'Lo mejor de cada fila va marcado en amarillo. Este link se puede compartir.'}
           </p>
         </div>
-        <Link to="/cars">
+        <Link to="/autos">
           <Button size="sm">Sumar otro auto</Button>
         </Link>
       </header>
@@ -216,7 +216,7 @@ export function Compare() {
                       <VehicleMedia vehicle={vehicle} />
                     </div>
 
-                    <Link to={`/cars/${vehicle.slug}`} className="compare__name">
+                    <Link to={`/autos/${vehicle.slug}`} className="compare__name">
                       {vehicleTitle(vehicle)}
                     </Link>
 
@@ -259,7 +259,7 @@ export function Compare() {
               </th>
               {vehicles.map((vehicle) => (
                 <td key={vehicle.slug} className="compare__cell">
-                  <Link to={`/cars/${vehicle.slug}`}>
+                  <Link to={`/autos/${vehicle.slug}`}>
                     <Button size="sm" variant="yellow">
                       Ver la ficha
                     </Button>

@@ -13,7 +13,7 @@ import type { SortOption, VehicleFilters } from '../types'
  * La búsqueda, sin depender de React ni del cliente de Supabase.
  *
  * Vive aparte del hook porque ahora hay dos lugares que necesitan entender una
- * búsqueda: la pantalla `/cars` y el trabajo programado que avisa por mail
+ * búsqueda: la pantalla `/autos` y el trabajo programado que avisa por mail
  * cuando aparece un auto que le cierra a una búsqueda guardada. Ese trabajo
  * corre en el worker, donde no hay React ni `useSearchParams`.
  *

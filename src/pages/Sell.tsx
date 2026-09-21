@@ -106,8 +106,8 @@ function options<T extends string>(labels: Record<T, string>) {
 /**
  * Publicar un aviso nuevo y editar uno existente son el mismo formulario.
  *
- * Con `/sell` arranca vacío y va guardando el borrador en el navegador; con
- * `/sell/:slug/edit` arranca lleno con lo que hay en la base y no toca ese
+ * Con `/vender` arranca vacío y va guardando el borrador en el navegador; con
+ * `/vender/:slug/editar` arranca lleno con lo que hay en la base y no toca ese
  * borrador. Duplicar la pantalla habría significado mantener dos veces las
  * mismas validaciones y los mismos campos.
  */
@@ -292,7 +292,7 @@ export function Sell() {
           await uploadListingPhotos(listingId, session.user.id, photos.map((photo) => photo.blob), next)
         }
 
-        navigate(`/cars/${slug}`)
+        navigate(`/autos/${slug}`)
         return
       }
 
@@ -328,7 +328,7 @@ export function Sell() {
           title="No podés editar este aviso"
           description="O no existe, o es de otra cuenta."
           action={
-            <Link to="/profile">
+            <Link to="/perfil">
               <Button variant="yellow">Ir a mis publicaciones</Button>
             </Link>
           }
@@ -361,7 +361,7 @@ export function Sell() {
             Ya es visible para cualquiera que entre al marketplace.
           </p>
           <div className="sell__done-actions">
-            <Button variant="yellow" onClick={() => navigate(`/cars/${publishedSlug}`)}>
+            <Button variant="yellow" onClick={() => navigate(`/autos/${publishedSlug}`)}>
               Ver mi publicación
             </Button>
             <Button

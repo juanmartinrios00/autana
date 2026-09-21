@@ -58,44 +58,44 @@ export default function App() {
                 <Route index element={<Home />} />
 
                 {/* Fase 2 — marketplace */}
-                <Route path="cars" element={<Cars />} />
-                <Route path="cars/:slug" element={<VehicleDetail />} />
+                <Route path="autos" element={<Cars />} />
+                <Route path="autos/:slug" element={<VehicleDetail />} />
 
                 {/* Los favoritos no exigen sesión: sin cuenta viven en el
                     navegador, y pedir registro para ver lo que uno mismo guardó
                     sería un peaje justo donde el visitante está decidiendo. */}
-                <Route path="favorites" element={<Favorites />} />
+                <Route path="favoritos" element={<Favorites />} />
 
                 {/* Fase 3 — sistema de usuario */}
                 {/* La comparación vive en la query: `?ids=slug-a,slug-b`. Así
                     mandarle a alguien "mirá estos dos" es copiar el link. */}
-                <Route path="compare" element={<Compare />} />
-                <Route path="login" element={<Login />} />
+                <Route path="comparar" element={<Compare />} />
+                <Route path="entrar" element={<Login />} />
 
                 {/* Explica los niveles y no exige sesión: es la pantalla a la
                     que se manda a alguien que pregunta qué son, y pedirle
                     registro para leer una explicación es la forma más rápida
                     de que no la lea. */}
-                <Route path="levels" element={<Levels />} />
+                <Route path="niveles" element={<Levels />} />
 
                 {/* Donde cae el link de recuperacion. Fuera de `RequireAuth`:
                     la sesion la abre el propio link, y mandarlo a login seria
                     devolverlo al problema que vino a resolver. */}
-                <Route path="reset" element={<Reset />} />
+                <Route path="recuperar" element={<Reset />} />
 
                 {/* Capta concesionarias, asi que no exige sesion: la lee alguien
                     que todavia no decidio abrir cuenta. */}
-                <Route path="dealers" element={<Dealers />} />
+                <Route path="agencias" element={<Dealers />} />
 
                 {/* Los legales no exigen sesion, y menos que ninguna otra
                     pantalla: el login pide aceptarlos antes de que exista la
                     cuenta. */}
-                <Route path="help" element={<Help />} />
-                <Route path="contact" element={<Contact />} />
+                <Route path="ayuda" element={<Help />} />
+                <Route path="contacto" element={<Contact />} />
                 <Route path="blog" element={<Blog />} />
                 <Route path="blog/:slug" element={<BlogPost />} />
-                <Route path="terms" element={<Terms />} />
-                <Route path="privacy" element={<Privacy />} />
+                <Route path="terminos" element={<Terms />} />
+                <Route path="privacidad" element={<Privacy />} />
 
                 {/* El garage es público y tiene pantalla propia: el link que
                     alguien manda por WhatsApp abre los autos, no el panel. */}
@@ -103,7 +103,7 @@ export default function App() {
 
                 {/* Qué es el garage, para quien no tiene uno. Es el destino del
                     link de la navbar y de la portada: `/g/:id` necesita saber
-                    de quién es, y `/profile` pide sesión. */}
+                    de quién es, y `/perfil` pide sesión. */}
                 <Route path="garage" element={<GarageLanding />} />
 
                 {/* La otra mitad del garage: encontrar a alguien sin que te
@@ -114,11 +114,11 @@ export default function App() {
                 {/* Publicar y el perfil propio exigen sesión: mandan a login y
                     después vuelven acá. */}
                 <Route element={<RequireAuth />}>
-                  <Route path="sell" element={<Sell />} />
+                  <Route path="vender" element={<Sell />} />
                   {/* Mismo formulario que publicar, pero arranca lleno. */}
-                  <Route path="sell/:slug/edit" element={<Sell />} />
-                  <Route path="my-listings" element={<MyListings />} />
-                  <Route path="settings" element={<Settings />} />
+                  <Route path="vender/:slug/editar" element={<Sell />} />
+                  <Route path="mis-avisos" element={<MyListings />} />
+                  <Route path="ajustes" element={<Settings />} />
                   {/* El garage propio sin saber el id: sin sesión pasa por el
                       login y vuelve acá. Es lo que usa "Armá el tuyo". */}
                   <Route path="garage/mio" element={<MyGarageRedirect />} />
@@ -130,7 +130,7 @@ export default function App() {
                     de `reports` sólo devuelven datos a un admin, así que a
                     cualquier otro la pantalla le llega vacía. */}
                 <Route path="admin" element={<Admin />} />
-                  <Route path="profile" element={<Profile />} />
+                  <Route path="perfil" element={<Profile />} />
                 </Route>
 
                 <Route path="*" element={<NotFound />} />

@@ -13,10 +13,10 @@ const linkGroups = [
   {
     label: 'Marketplace',
     links: [
-      { to: '/cars', label: 'Comprar un auto' },
-      { to: '/sell', label: 'Publicar un vehículo' },
-      { to: '/favorites', label: 'Favoritos' },
-      { to: '/compare', label: 'Comparar vehículos' },
+      { to: '/autos', label: 'Comprar un auto' },
+      { to: '/vender', label: 'Publicar un vehículo' },
+      { to: '/favoritos', label: 'Favoritos' },
+      { to: '/comparar', label: 'Comparar vehículos' },
     ],
   },
   {
@@ -24,18 +24,18 @@ const linkGroups = [
     links: [
       { to: '/garage', label: `Garage ${BRAND}` },
       { to: '/gente', label: 'Buscar personas' },
-      { to: '/dealers', label: 'Concesionarias' },
-      { to: '/levels', label: 'Niveles y logros' },
+      { to: '/agencias', label: 'Concesionarias' },
+      { to: '/niveles', label: 'Niveles y logros' },
     ],
   },
   {
     label: 'Soporte',
     links: [
       { to: '/blog', label: 'Blog' },
-      { to: '/help', label: 'Centro de ayuda' },
-      { to: '/contact', label: 'Contacto' },
-      { to: '/terms', label: 'Términos' },
-      { to: '/privacy', label: 'Privacidad' },
+      { to: '/ayuda', label: 'Centro de ayuda' },
+      { to: '/contacto', label: 'Contacto' },
+      { to: '/terminos', label: 'Términos' },
+      { to: '/privacidad', label: 'Privacidad' },
     ],
   },
 ]

@@ -86,7 +86,7 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
 
   async function open() {
     if (!session) {
-      navigate('/login', { state: { from: location.pathname + location.search } })
+      navigate('/entrar', { state: { from: location.pathname + location.search } })
       return
     }
 
@@ -123,7 +123,7 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
 
   /* El link del aviso va en el mensaje de WhatsApp. Desde la caja del listado
      `location` es el listado, no el aviso, así que se arma a mano. */
-  const listingUrl = `${window.location.origin}/cars/${vehicle.slug}`
+  const listingUrl = `${window.location.origin}/autos/${vehicle.slug}`
   const whatsapp = contact?.whatsapp
     ? whatsappLink(contact.whatsapp, listingMessage(title, listingUrl))
     : null

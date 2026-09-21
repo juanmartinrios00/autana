@@ -367,7 +367,7 @@ export async function getSimilarVehicles(vehicle: Vehicle, limit = 3): Promise<V
 /**
  * Varios vehiculos por su slug, en una sola consulta.
  *
- * El comparador vive en la URL —`/compare?ids=corolla-2019-x,cruze-2020-y`—
+ * El comparador vive en la URL —`/comparar?ids=corolla-2019-x,cruze-2020-y`—
  * asi que compararlo con alguien es mandarle el link. Por eso van los slugs y
  * no los ids: el que recibe el mensaje ve de que autos se trata antes de
  * abrirlo.
@@ -1476,7 +1476,7 @@ export async function getSellerTrust(userIds: string[]): Promise<Map<string, Tru
 --------------------------------------------------------------------------- */
 
 /**
- * Una busqueda guardada es la query string de `/cars` con un nombre.
+ * Una busqueda guardada es la query string de `/autos` con un nombre.
  *
  * Los filtros ya viven en la URL, asi que no hace falta inventar una
  * representacion nueva: guardar una busqueda es guardar el texto que ya esta en

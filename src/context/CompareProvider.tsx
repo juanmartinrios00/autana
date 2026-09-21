@@ -21,7 +21,7 @@ function read(): string[] {
  * rato, no algo que uno quiera encontrar la semana que viene. Los favoritos
  * son la lista que se guarda; esto es el changuito.
  *
- * La comparación en sí no se guarda acá: va en la URL de `/compare`, que es lo
+ * La comparación en sí no se guarda acá: va en la URL de `/comparar`, que es lo
  * que la hace compartible. Este provider sólo arma esa URL.
  */
 export function CompareProvider({ children }: { children: ReactNode }) {

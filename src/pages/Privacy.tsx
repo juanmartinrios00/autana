@@ -163,7 +163,7 @@ export function Privacy() {
           cambiás tu foto de perfil, la anterior se borra: no queda publicada en otro link.
         </p>
         <p>
-          Y podés borrar la cuenta entera desde <Link to="/settings">Ajustes</Link>, abajo
+          Y podés borrar la cuenta entera desde <Link to="/ajustes">Ajustes</Link>, abajo
           de todo. Se borra en el momento: tu perfil, tus avisos y sus fotos, tu garage,
           tus favoritos y tus búsquedas guardadas. No hay período de gracia ni copia que
           podamos restaurar después — si te arrepentís al día siguiente, no hay nada que
@@ -182,8 +182,8 @@ export function Privacy() {
           En Argentina rige la Ley 25.326 de Protección de Datos Personales, que te da
           derecho a acceder a tus datos, corregirlos y pedir que se supriman. Los tres se
           ejercen desde la propia aplicación, sin pedirle permiso a nadie: ver lo tuyo en{' '}
-          <Link to="/profile">tu perfil</Link>, corregirlo en{' '}
-          <Link to="/settings">Ajustes</Link>, y suprimirlo con el borrado de cuenta de esa
+          <Link to="/perfil">tu perfil</Link>, corregirlo en{' '}
+          <Link to="/ajustes">Ajustes</Link>, y suprimirlo con el borrado de cuenta de esa
           misma pantalla.
         </p>
         <span className="legal__todo">
@@ -199,7 +199,7 @@ export function Privacy() {
           los vas a ver anunciados en el sitio, no escondidos en una fecha nueva.
         </p>
         <p>
-          Ver también los <Link to="/terms">términos y condiciones</Link>.
+          Ver también los <Link to="/terminos">términos y condiciones</Link>.
         </p>
       </LegalSection>
     </LegalPage>

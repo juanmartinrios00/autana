@@ -17,7 +17,7 @@ import './People.css'
  *
  * El término vive en la URL y no en el estado: buscar es navegar, y así una
  * búsqueda se comparte y el botón atrás hace lo que se espera. Es la misma
- * decisión que en `/cars`.
+ * decisión que en `/autos`.
  */
 export function People() {
   const [params, setParams] = useSearchParams()
@@ -115,7 +115,7 @@ export function People() {
         {!term.trim() && (
           <p className="people__idle">
             Los garages son públicos: cualquiera puede ver el tuyo con el link. Si preferís no
-            aparecer acá, se apaga en <Link to="/settings">Ajustes</Link>.
+            aparecer acá, se apaga en <Link to="/ajustes">Ajustes</Link>.
           </p>
         )}
 

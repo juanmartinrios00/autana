@@ -28,7 +28,7 @@ export function BrandSlider() {
     <Slider
       eyebrow="Buscá por marca"
       title="Todas las marcas"
-      action={{ label: 'Ver todos los autos', to: '/cars' }}
+      action={{ label: 'Ver todos los autos', to: '/autos' }}
       itemWidth="128px"
     >
       {brands.map((brand) => {
@@ -36,7 +36,7 @@ export function BrandSlider() {
         return (
           <Link
             key={brand.slug}
-            to={`/cars?make=${encodeURIComponent(brand.name)}`}
+            to={`/autos?make=${encodeURIComponent(brand.name)}`}
             className="brand"
           >
             <span className="brand__circle">

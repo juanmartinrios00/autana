@@ -220,7 +220,7 @@ export async function changePassword(
 export async function sendPasswordReset(email: string): Promise<void> {
   const client = requireSupabase()
   const { error } = await client.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset`,
+    redirectTo: `${window.location.origin}/recuperar`,
   })
   if (error) throw describe(error)
 }

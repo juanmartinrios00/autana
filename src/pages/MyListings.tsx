@@ -78,7 +78,7 @@ export function MyListings() {
     <div className="page section mylistings-page">
       <header className="mylistings-page__head">
         <div className="mylistings-page__titles">
-          <Link to="/profile" className="mylistings-page__back">
+          <Link to="/perfil" className="mylistings-page__back">
             <Icon name="arrowLeft" size={15} />
             Volver a mi perfil
           </Link>
@@ -91,7 +91,7 @@ export function MyListings() {
           )}
         </div>
 
-        <Link to="/sell">
+        <Link to="/vender">
           <Button variant="yellow">
             <Icon name="plus" size={16} />
             Publicar vehículo

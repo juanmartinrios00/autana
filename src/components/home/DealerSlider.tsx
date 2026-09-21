@@ -25,7 +25,7 @@ export function DealerSlider({ dealers }: { dealers: Seller[] }) {
   return (
     <Slider eyebrow="Vendedores" title={`Concesionarias en ${BRAND}`} itemWidth="260px">
       {dealers.map((dealer) => (
-        <Link key={dealer.id} to={`/cars?sellerType=dealer`} className="dealer">
+        <Link key={dealer.id} to={`/autos?sellerType=dealer`} className="dealer">
           <span className="dealer__avatar" aria-hidden="true">
             {initials(dealer.name)}
           </span>

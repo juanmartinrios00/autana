@@ -7,7 +7,7 @@ import { useAuth } from './useAuth'
  *
  * Va en el layout y no en una pantalla porque tiene que correr para cualquiera
  * que entre con sesión, llegue por donde llegue: desde que el garage es el
- * perfil público, casi nadie pasa por `/profile`.
+ * perfil público, casi nadie pasa por `/perfil`.
  *
  * Una vez por sesión del navegador y no en cada carga: son dos listados de
  * Storage, y las huérfanas nuevas ya no se generan —esto limpia las que

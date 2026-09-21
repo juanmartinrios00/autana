@@ -86,15 +86,15 @@ export function Dealers() {
 
           <div className="dealers__actions">
             {session ? (
-              <Link to="/settings">
+              <Link to="/ajustes">
                 <Button variant="yellow">Cambiar mi perfil a concesionaria</Button>
               </Link>
             ) : (
-              <Link to="/login">
+              <Link to="/entrar">
                 <Button variant="yellow">Crear la cuenta de la agencia</Button>
               </Link>
             )}
-            <Link to="/cars?sellerType=dealer" className="dealers__secondary">
+            <Link to="/autos?sellerType=dealer" className="dealers__secondary">
               Ver las que ya publican
             </Link>
           </div>
@@ -140,7 +140,7 @@ export function Dealers() {
               <span className="dstep__n mono">2</span>
               <p>
                 Si ya tenías una cuenta de particular no hace falta crear otra: el mismo
-                cambio está en <Link to="/settings">Ajustes</Link>, y pasás de 5 a 25 en el
+                cambio está en <Link to="/ajustes">Ajustes</Link>, y pasás de 5 a 25 en el
                 acto.
               </p>
             </li>
@@ -165,11 +165,11 @@ export function Dealers() {
 
         <div className="dealers__cta">
           {session ? (
-            <Link to="/settings">
+            <Link to="/ajustes">
               <Button variant="yellow">Ir a mis ajustes</Button>
             </Link>
           ) : (
-            <Link to="/login">
+            <Link to="/entrar">
               <Button variant="yellow">Empezar</Button>
             </Link>
           )}
