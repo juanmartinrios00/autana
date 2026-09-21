@@ -27,6 +27,7 @@ import {
 import { describeError } from '../lib/errors'
 import { formatPrice, relativeDate, statusLabels, vehicleTitle } from '../lib/format'
 import './Admin.css'
+import { reportError } from '../lib/report'
 
 /**
  * Moderación: las publicaciones reportadas, ordenadas por cuántas denuncias
@@ -79,14 +80,14 @@ export function Admin() {
 
           const caida = [listings, people, contact].find((r) => r.status === 'rejected')
           if (caida) {
-            console.error('moderación', caida.reason)
+            reportError('moderación', caida.reason)
             setFailure('No pudimos traer una de las listas. Recargá para volver a intentarlo.')
           }
         }
       })
       .catch((cause) => {
         if (!current) return
-        console.error('moderación', cause)
+        reportError('moderación', cause)
         setAllowed(false)
       })
       .finally(() => {
@@ -107,7 +108,7 @@ export function Admin() {
       await setListingStatus(id, next)
       setReloads((count) => count + 1)
     } catch (cause) {
-      console.error('moderar', cause)
+      reportError('moderar', cause)
       setFailure(describeError(cause, 'No pudimos aplicar el cambio.'))
     } finally {
       setBusy(null)
@@ -125,7 +126,7 @@ export function Admin() {
       await action()
       setReloads((count) => count + 1)
     } catch (cause) {
-      console.error(what, cause)
+      reportError(what, cause)
       setFailure(describeError(cause, 'No pudimos aplicar el cambio.'))
     } finally {
       setBusy(null)

@@ -34,6 +34,7 @@ import {
 import { interestLabel } from '../lib/contact'
 import type { Seller, Vehicle } from '../types'
 import './VehicleDetail.css'
+import { reportError } from '../lib/report'
 
 type Status = 'loading' | 'ready' | 'notfound' | 'error'
 
@@ -85,7 +86,7 @@ export function VehicleDetail() {
             if (current) setSeller({ slug, seller: its })
           })
           .catch((cause: unknown) => {
-            console.error('getSeller', cause)
+            reportError('getSeller', cause)
             if (current) setSeller({ slug, seller: null })
           })
 
@@ -94,7 +95,7 @@ export function VehicleDetail() {
             if (current) setSimilar({ slug, items: alike })
           })
           .catch((cause: unknown) => {
-            console.error('getSimilarVehicles', cause)
+            reportError('getSimilarVehicles', cause)
             if (current) setSimilar({ slug, items: [] })
           })
       })
@@ -104,7 +105,7 @@ export function VehicleDetail() {
            a buscar en otro lado por nada. Uno se cierra con «no está»; el otro
            tiene arreglo y se ofrece reintentar. */
         const missing = cause instanceof NotFoundError
-        if (!missing) console.error('getVehicleBySlug', cause)
+        if (!missing) reportError('getVehicleBySlug', cause)
         if (current) setLoaded({ slug, vehicle: null, failure: missing ? 'notfound' : 'error' })
       })
 

@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import { ErrorBoundary } from './components/layout/ErrorBoundary'
 import './index.css'
 import App from './App.tsx'
+import { installErrorReporting } from './lib/report'
+
+installErrorReporting()
 
 /* El de adentro, en `Layout`, cubre cada pantalla y deja la navegación viva.
    Este es el último recurso: agarra lo que se rompa en el armazón mismo

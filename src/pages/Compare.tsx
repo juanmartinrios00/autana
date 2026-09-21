@@ -25,6 +25,7 @@ import {
 } from '../lib/format'
 import type { Vehicle } from '../types'
 import './Compare.css'
+import { reportError } from '../lib/report'
 
 /**
  * Comparar autos lado a lado.
@@ -127,7 +128,7 @@ export function Compare() {
       })
       .catch((cause) => {
         if (!current) return
-        console.error('getVehiclesBySlugs', cause)
+        reportError('getVehiclesBySlugs', cause)
         setVehicles([])
       })
       .finally(() => {

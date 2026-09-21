@@ -200,6 +200,19 @@ completas: el beacon entra con `"spa": 2`, que es el modo que sigue los cambios
 de ruta de una SPA. Es la explicación de que tres visitas den veintidós páginas
 vistas, que la primera vez parece un error y no lo es.
 
+### Errores
+
+Van a Sentry, sin su SDK: `src/lib/report.ts` le manda el sobre directo a la
+API. Todo lo que antes era `console.error` pasa por `reportError`, más lo que
+se escapa de todo (`window.onerror` y promesas sin atrapar) y los errores de
+render de `ErrorBoundary`. Sentry manda un mail la primera vez que aparece
+cada error.
+
+Se prende con `VITE_SENTRY_DSN` en el `.env` de la máquina que hace el deploy
+---el build lo lee de ahí---. Sin esa variable no se manda nada, y en
+desarrollo tampoco. El DSN es público por diseño: va en el JavaScript que baja
+cualquiera, igual que la clave `anon` de Supabase.
+
 ## Tests
 
     npm test

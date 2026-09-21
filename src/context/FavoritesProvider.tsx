@@ -8,6 +8,7 @@ import {
   removeFavorite,
 } from '../lib/api'
 import { FavoritesContext, type FavoritesValue } from './favorites-context'
+import { reportError } from '../lib/report'
 
 const STORAGE_KEY = 'autana:favorites'
 
@@ -94,7 +95,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       })
       .catch((cause) => {
         if (!current) return
-        console.error('sincronizar favoritos', cause)
+        reportError('sincronizar favoritos', cause)
         /* Si falla, se sigue con los del navegador y se permite reintentar. */
         syncedFor.current = null
         setFailure('No pudimos sincronizar tus favoritos con tu cuenta.')
@@ -132,7 +133,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         : addFavorite(userId, vehicleId)
 
       void write.catch((cause) => {
-        console.error('guardar favorito', cause)
+        reportError('guardar favorito', cause)
         /* Se vuelve atrás sobre el estado real del momento, no sobre `next`:
            entre el clic y el error el usuario pudo tocar otros corazones. */
         setIds((current) =>
@@ -161,7 +162,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
        pantalla los cincuenta ---incluidos los cuarenta y nueve que sí se
        borraron. Deshacer solo puede ser honesto si la escritura era una sola. */
     void clearFavorites(userId).catch((cause) => {
-      console.error('vaciar favoritos', cause)
+      reportError('vaciar favoritos', cause)
       setIds(previous)
       setFailure('No pudimos vaciar la lista.')
     })

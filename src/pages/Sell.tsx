@@ -39,6 +39,7 @@ import {
 } from '../lib/format'
 import type { Currency, VehicleImage } from '../types'
 import './Sell.css'
+import { reportError } from '../lib/report'
 
 const steps = ['Vehículo', 'Detalles', 'Fotos', 'Precio y contacto'] as const
 
@@ -231,7 +232,7 @@ export function Sell() {
       })
       .catch((cause) => {
         if (!current) return
-        console.error('cargar el aviso para editar', cause)
+        reportError('cargar el aviso para editar', cause)
         setDenied(true)
       })
       .finally(() => {
@@ -268,7 +269,7 @@ export function Sell() {
       await deleteListingImage(imageId)
       setExisting((current) => current.filter((image) => image.id !== imageId))
     } catch (cause) {
-      console.error('deleteListingImage', cause)
+      reportError('deleteListingImage', cause)
       setFailure(describeError(cause, 'No pudimos borrar la foto.'))
     }
   }
@@ -361,7 +362,7 @@ export function Sell() {
         })
         .catch(() => {})
     } catch (cause) {
-      console.error(editing ? 'updateListing' : 'createListing', cause)
+      reportError(editing ? 'updateListing' : 'createListing', cause)
       setFailure(
         describeError(
           cause,

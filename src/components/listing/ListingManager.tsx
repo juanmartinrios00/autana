@@ -8,6 +8,7 @@ import { formatPrice, statusLabels, vehicleTitle } from '../../lib/format'
 import { interestLabel } from '../../lib/contact'
 import type { ListingStatus, Vehicle } from '../../types'
 import './ListingManager.css'
+import { reportError } from '../../lib/report'
 
 /**
  * La lista de avisos propios con sus acciones. Se llama por el trabajo que
@@ -47,7 +48,7 @@ export function ListingManager({ listings, onStatusChange, onDelete }: ListingMa
     try {
       await action()
     } catch (cause) {
-      console.error(fallback, cause)
+      reportError(fallback, cause)
       setFailure(describeError(cause, fallback))
     } finally {
       setBusy(null)

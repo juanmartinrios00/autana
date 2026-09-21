@@ -3,6 +3,8 @@
 interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL?: string
   readonly VITE_SUPABASE_ANON_KEY?: string
+  /** Sin él no se reporta nada: ver `lib/report.ts`. */
+  readonly VITE_SENTRY_DSN?: string
 }
 
 interface ImportMeta {

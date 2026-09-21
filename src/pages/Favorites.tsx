@@ -16,6 +16,7 @@ import {
 } from '../lib/api'
 import type { Vehicle } from '../types'
 import './Favorites.css'
+import { reportError } from '../lib/report'
 
 /**
  * Los autos que guardaste.
@@ -63,7 +64,7 @@ export function Favorites() {
       })
       .catch((cause) => {
         if (!current) return
-        console.error('getVehiclesByIds', cause)
+        reportError('getVehiclesByIds', cause)
         setVehicles([])
       })
       .finally(() => {

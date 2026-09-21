@@ -13,6 +13,7 @@ import { deleteListing, listMyListings, setListingStatus } from '../lib/api'
 import { listingMission } from '../lib/missions'
 import type { ListingStatus, Vehicle } from '../types'
 import './MyListings.css'
+import { reportError } from '../lib/report'
 
 /**
  * Los autos que publicaste, con todo lo que se puede hacer con ellos.
@@ -50,7 +51,7 @@ export function MyListings() {
       })
       .catch((cause) => {
         if (!current) return
-        console.error('listMyListings', cause)
+        reportError('listMyListings', cause)
         setFailed(true)
       })
       .finally(() => {

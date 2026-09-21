@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { Button } from '../ui/Button'
 import { EmptyState } from '../ui/EmptyState'
+import { reportError } from '../../lib/report'
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -67,9 +68,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return
     }
 
-    /* Por ahora a la consola, que es lo que se ve en el navegador del que
-       reporta. Cuando haya monitoreo, el envío va acá y en ningún otro lado. */
-    console.error('error de render', error, info.componentStack)
+    reportError('error de render', error, info.componentStack)
   }
 
   retry = () => {

@@ -16,6 +16,7 @@ import {
 } from '../../lib/api'
 import { describeError } from '../../lib/errors'
 import './ReportDialog.css'
+import { reportError } from '../../lib/report'
 
 /**
  * Qué se reporta, con lo que cambia de un caso al otro: los motivos, los
@@ -97,7 +98,7 @@ export function ReportDialog({ kind, targetId, title }: ReportDialogProps) {
       .catch((cause) => {
         /* Que falle esta consulta no puede impedir reportar: en el peor caso
            el índice único de la base rechaza el duplicado. */
-        console.error('reporte: ya reportado', cause)
+        console.warn('reporte: ya reportado', cause)
       })
 
     return () => {
@@ -125,7 +126,7 @@ export function ReportDialog({ kind, targetId, title }: ReportDialogProps) {
       setDone(targetId)
       dialogRef.current?.close()
     } catch (cause) {
-      console.error('reporte', cause)
+      reportError('reporte', cause)
       setFailure(describeError(cause, 'No pudimos enviar el reporte.'))
     } finally {
       setSending(false)

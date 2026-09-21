@@ -12,6 +12,7 @@ import { contactSubjects, sendContactMessage, type ContactSubject } from '../lib
 import { describeError } from '../lib/errors'
 import { CONTACT_LIMITS } from '../lib/limits'
 import './Contact.css'
+import { reportError } from '../lib/report'
 
 /* Con el dominio del sitio. Decía `autana.com.ar`, el nombre de antes, que no
    es nuestro: lo que se mandaba ahí no llegaba a nadie o le llegaba a otro. La
@@ -76,7 +77,7 @@ export function Contact() {
       )
       setSent(true)
     } catch (cause) {
-      console.error('contacto', cause)
+      reportError('contacto', cause)
       setFailure(describeError(cause, 'No pudimos enviar el mensaje. Probá de nuevo en un momento.'))
     } finally {
       setSending(false)
