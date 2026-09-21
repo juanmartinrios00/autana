@@ -142,11 +142,14 @@ function toVehicle(row: ListingRow): Vehicle {
     condition: row.condition,
     fuelType: row.fuel_type,
     transmission: row.transmission,
-    drivetrain: row.drivetrain ?? 'fwd',
+    /* Sin valor por defecto: inventar "Delantera" o "4 puertas" le mostraba al
+       comprador un dato que el vendedor nunca dio, y al editar el aviso el
+       formulario arrancaba con él y lo guardaba en la base como propio. */
+    drivetrain: row.drivetrain ?? null,
     bodyType: row.body_type,
     engine: row.engine ?? '',
     power: row.power,
-    doors: row.doors ?? 4,
+    doors: row.doors ?? null,
     color: row.color ?? '',
     location: { city: row.city, province: row.province },
     description: row.description,

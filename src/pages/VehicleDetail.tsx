@@ -247,10 +247,13 @@ export function VehicleDetail() {
             <VehicleSpecs vehicle={vehicle} />
           </section>
 
-          <section className="detail__section">
-            <h2 className="detail__heading">Descripción del vendedor</h2>
-            <p className="detail__description">{vehicle.description}</p>
-          </section>
+          {/* Igual que el vendedor de abajo: sin descripción, sin título. */}
+          {vehicle.description.trim() && (
+            <section className="detail__section">
+              <h2 className="detail__heading">Descripción del vendedor</h2>
+              <p className="detail__description">{vehicle.description}</p>
+            </section>
+          )}
 
           {/* Si el vendedor no vino, el bloque no queda como título con un
               hueco abajo: se va entero. */}

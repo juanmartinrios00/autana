@@ -515,6 +515,43 @@ button.navbar__link {
   }
 }
 
+/* Un celular: la primera fila tiene que entrar entera ---menú, logo, campanita
+   y publicar--- porque la barra mide dos filas y no tres. Con "Publicar
+   vehículo" completo y el logotipo nuevo, que es más ancho que el anterior, el
+   botón bajaba a una fila propia y las tres no entraban: el logo y el menú
+   quedaban cortados arriba, que es lo primero que ve quien llega desde un link.
+   Con sesión la campanita suma lo suyo, y a 360 de ancho ---el de muchos
+   Android--- entra con el logotipo un poco más chico. */
+@media (max-width: 520px) {
+  .navbar__inner,
+  .navbar__actions {
+    gap: var(--sp-2);
+  }
+
+  .navbar__logo {
+    height: 16px;
+  }
+
+  .navbar__cta {
+    padding-inline: 16px;
+  }
+
+  .navbar__cta-extra {
+    display: none;
+  }
+
+  /* Contra el borde, lejos del logo: pegados se leían como una sola cosa. */
+  .navbar__actions {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .navbar__logo {
+    height: 14px;
+  }
+}
+
 .navbar__mobile {
   position: absolute;
   top: calc(100% + 1px);

@@ -15,11 +15,11 @@ export function VehicleSpecs({ vehicle }: { vehicle: Vehicle }) {
     { label: 'Motor', value: vehicle.engine },
     { label: 'Combustible', value: fuelLabels[vehicle.fuelType] },
     { label: 'Transmisión', value: transmissionLabels[vehicle.transmission] },
-    { label: 'Tracción', value: drivetrainLabels[vehicle.drivetrain] },
+    { label: 'Tracción', value: vehicle.drivetrain ? drivetrainLabels[vehicle.drivetrain] : '' },
     { label: 'Carrocería', value: bodyLabels[vehicle.bodyType] },
-    { label: 'Puertas', value: String(vehicle.doors) },
+    { label: 'Puertas', value: vehicle.doors ? String(vehicle.doors) : '' },
     { label: 'Color', value: vehicle.color },
-  ]
+  ].filter((row) => row.value.trim() !== '')
 
   if (vehicle.power !== null) {
     rows.splice(3, 0, { label: 'Potencia', value: `${vehicle.power} cv` })

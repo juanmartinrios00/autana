@@ -73,7 +73,7 @@ export function draftFromVehicle(vehicle: Vehicle, whatsapp: string): ListingDra
     fuelType: vehicle.fuelType,
     transmission: vehicle.transmission,
     bodyType: vehicle.bodyType,
-    drivetrain: vehicle.drivetrain,
+    drivetrain: vehicle.drivetrain ?? '',
     engine: vehicle.engine,
     doors: vehicle.doors ? String(vehicle.doors) : '',
     color: vehicle.color,

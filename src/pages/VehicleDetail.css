@@ -363,20 +363,44 @@
 @media (max-width: 1099px) {
   .detail {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* En una columna el orden es fotos, precio y el resto. Antes el panel iba
+     primero entero, y en un celular la primera foto quedaba debajo de la
+     pantalla: quien llega desde un video a ver un auto veía una tarjeta de
+     texto. Tampoco puede ir al final, porque "Me interesa" quedaría después de
+     toda la ficha. Para meterlo entre la galería y las secciones, la columna
+     principal se disuelve (`display: contents`) y sus hijos pasan a ser
+     hermanos del panel, que se ordenan. */
+  .detail__main {
+    display: contents;
   }
 
   .detail__aside {
     position: static;
     width: 100%;
-    order: -1;
   }
 
-  .detail__main {
-    width: 100%;
+  .detail__main > .detail__section {
+    order: 1;
   }
 }
 
 @media (max-width: 699px) {
+  /* Angosto, los datos del vendedor se parten en varias líneas y los puntos
+     que los separan quedaban colgando al final de cada una. Uno por renglón,
+     sin puntos. */
+  .seller__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-1);
+  }
+
+  .seller__dot {
+    display: none;
+  }
+
   .gallery__thumbs {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }

@@ -13,7 +13,11 @@ import { describeError } from '../lib/errors'
 import { CONTACT_LIMITS } from '../lib/limits'
 import './Contact.css'
 
-const contactEmail = 'contacto@autana.com.ar'
+/* Con el dominio del sitio. Decía `autana.com.ar`, el nombre de antes, que no
+   es nuestro: lo que se mandaba ahí no llegaba a nadie o le llegaba a otro. La
+   casilla no existe como tal: Cloudflare reenvía lo que llega a la cuenta de
+   quien administra (Email Routing). */
+const contactEmail = 'contacto@auteando.com'
 
 /**
  * La página de contacto.

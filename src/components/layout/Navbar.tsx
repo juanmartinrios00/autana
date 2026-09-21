@@ -158,8 +158,9 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
             </Link>
           )}
 
+          {/* En un celular angosto dice sólo "Publicar": ver `.navbar__cta-extra`. */}
           <Link to="/vender" className="navbar__cta">
-            Publicar vehículo
+            Publicar<span className="navbar__cta-extra"> vehículo</span>
           </Link>
         </div>
 

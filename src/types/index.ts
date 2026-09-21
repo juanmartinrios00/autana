@@ -78,13 +78,15 @@ export interface Vehicle {
   condition: VehicleCondition
   fuelType: FuelType
   transmission: Transmission
-  drivetrain: Drivetrain
+  /** `null` si el vendedor no la cargó: es opcional al publicar. */
+  drivetrain: Drivetrain | null
   bodyType: BodyType
   /** Texto libre: "2.0 T", "1.6 16v". */
   engine: string
   /** Caballos de fuerza. `null` si el vendedor no lo cargo. */
   power: number | null
-  doors: number
+  /** `null` si el vendedor no las cargó. */
+  doors: number | null
   color: string
 
   location: Location

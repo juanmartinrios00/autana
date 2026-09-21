@@ -41,7 +41,9 @@ export function SellerCard({ seller, trust }: SellerCardProps) {
           <span className="seller__dot" aria-hidden="true">·</span>
           <span>{locationLabel(seller.location)}</span>
           <span className="seller__dot" aria-hidden="true">·</span>
-          <span className="mono">{seller.listingCount} publicaciones</span>
+          <span className="mono">
+            {seller.listingCount} {seller.listingCount === 1 ? 'publicación' : 'publicaciones'}
+          </span>
           {trust && (
             <>
               <span className="seller__dot" aria-hidden="true">·</span>
