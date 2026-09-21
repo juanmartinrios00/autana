@@ -31,7 +31,7 @@ function ArrivedScene({ className }: SceneProps) {
   )
 }
 
-/** Nivel 2 — Vendedor: el auto con el cartel en la ventanilla. */
+/** Nivel 2 — En marcha: el auto con el cartel en la ventanilla. */
 function SellerScene({ className }: SceneProps) {
   return (
     <svg {...sceneSvgProps} className={className}>

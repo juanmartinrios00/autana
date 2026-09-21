@@ -36,16 +36,29 @@ const completo: LevelInput = {
 
 describe('la escalera', () => {
   /**
-   * `LEVELS` y la lista de logros son dos definiciones separadas que hoy
-   * coinciden en siete. Si alguien suma un logro y no toca la escalera, el
-   * ultimo nivel pasa a ganarse sin ese logro y queda uno que no sirve para
-   * nada; si suma un nivel y no un logro, el ultimo es inalcanzable y la barra
-   * de progreso de todo el mundo se queda a mitad de camino para siempre. Este
-   * test es lo unico que ata las dos listas.
+   * `LEVELS` y la lista de logros son dos definiciones separadas. El ultimo
+   * nivel pide todos menos uno, a proposito: ver `LEVELS`. Si alguien suma un
+   * logro y no toca la escalera, el ultimo pasa a ganarse con dos de menos; si
+   * sube el umbral a todos, vuelve a quedar sólo para agencias. Este test es lo
+   * unico que ata las dos listas.
    */
-  it('el ultimo nivel pide exactamente todos los logros', () => {
+  it('el ultimo nivel pide todos los logros menos uno', () => {
     const cima = LEVELS[LEVELS.length - 1]!
-    expect(cima.at).toBe(computeLevel(vacio).achievements.length)
+    expect(cima.at).toBe(computeLevel(vacio).achievements.length - 1)
+  })
+
+  /* El caso por el que se bajo el tope: un particular con un solo auto, que
+     nunca va a tener tres activos a la vez. */
+  it('un particular con un solo auto llega arriba', () => {
+    const state = computeLevel({
+      profile: perfilCompleto,
+      ...avisos({ vendidos: 1 }),
+      bestPhotoCount: 8,
+      garageCars: 4,
+    })
+    expect(state.achievements.find((item) => item.id === 'three_listings')!.done).toBe(false)
+    expect(state.level).toBe(LEVELS.length)
+    expect(state.toNext).toBeNull()
   })
 
   it('arranca en cero y sube de a uno', () => {

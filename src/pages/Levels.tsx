@@ -128,9 +128,13 @@ export function Levels() {
                   <span className="over rung__number">Nivel {number}</span>
                   <h2 className="rung__title">{rung.title}</h2>
                   <p className="rung__need">
+                    {/* "Los que sean" en el último: si no se aclara, se lee
+                        como que falta uno en particular y se busca cuál. */}
                     {rung.at === 0
                       ? 'Desde que abrís la cuenta.'
-                      : `Con ${rung.at} de los ${total} logros.`}
+                      : index === LEVELS.length - 1
+                        ? `Con ${rung.at} de los ${total} logros, los que sean.`
+                        : `Con ${rung.at} de los ${total} logros.`}
                   </p>
                   {here && <span className="rung__badge">Estás acá</span>}
                 </div>

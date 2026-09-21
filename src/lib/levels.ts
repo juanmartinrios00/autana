@@ -74,12 +74,21 @@ export interface LevelState {
  * actual: si sólo se ve el propio, nadie entiende de qué se trata ni qué falta.
  * Es la única definición de los niveles que hay, así que agregar uno acá lo
  * agrega en todas partes.
+ *
+ * El último pide todos los logros menos uno, cualquiera. Pedía los siete, y
+ * "Tres autos activos" un particular que vende su único auto no lo tiene
+ * nunca: el nivel de arriba era sólo para agencias. Con seis, el particular
+ * que publica, vende y llena el garage llega, y a nadie le cierra la puerta un
+ * logro que no le corresponde.
+ *
+ * El segundo se llamaba "Vendedor", y se gana con el perfil y un auto en el
+ * garage, sin haber publicado nada: el nombre afirmaba algo que no pasó.
  */
 export const LEVELS = [
   { at: 0, title: 'Recién llegado' },
-  { at: 2, title: 'Vendedor' },
+  { at: 2, title: 'En marcha' },
   { at: 4, title: 'Fierrero' },
-  { at: 7, title: 'Referente' },
+  { at: 6, title: 'Referente' },
 ] as const
 
 export interface LevelInput {

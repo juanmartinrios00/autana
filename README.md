@@ -228,8 +228,9 @@ dos lugares que tienen que coincidir y que nada obliga a coincidir.
 
 - `GARAGE_THEMES` y el `check` de la migración 015.
 - `SLOTS`, el tipo `GarageSlot` y el `check` de la migración 002.
-- `LEVELS` y la cantidad de logros: si se suma un logro y no se toca la
-  escalera, el último nivel se gana con seis de siete.
+- `LEVELS` y la cantidad de logros: el último nivel pide todos menos uno,
+  para que un particular con un solo auto llegue sin "Tres autos activos". Si
+  se suma un logro y no se toca la escalera, se gana con dos de menos.
 - `LIMITS.city` y el presupuesto de 200 caracteres del preview: aflojar el tope
   deja los avisos de la provincia con el nombre más largo sin descripción.
 - Las notas del blog y sus láminas de `public/og-blog-*.png`: escribir una nota
