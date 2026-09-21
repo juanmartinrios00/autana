@@ -7,24 +7,36 @@ de una oración, que es donde más aparece.
 
 ## La marca
 
-El logotipo y el símbolo son contornos y viven en
+El logotipo, el símbolo y los dos juntos viven en
 `src/components/brand/Logo.tsx`, no como archivos en `assets`.
 
-Están construidos sobre **Archivo**, la misma familia que usa todo el sitio, en
-peso 625 y con el espaciado apretado y unos cortes diagonales en la `a`, la `t`
-y la `d`. Que la base tipográfica sea la del sitio es lo que hace que el logo no
-se lea como una pieza pegada encima: al lado de un titular es la misma letra,
-apenas más cerrada. Vienen del kit ya convertidos a curvas, así que no dependen
-de que la fuente cargue ni de que exista esa variable de peso.
+El logotipo es geométrico, en minúsculas y en bold: cada letra es un trazo de
+20 unidades con curvas de radio 21, y la `o` se estira en un remate que cierra
+la palabra. El símbolo es esa misma `a`, en tinta, sobre un cuadrado amarillo
+con las esquinas redondeadas, y el remate de la `a` se sale por el borde.
 
-Van adentro de un componente y no como `<img>` por una razón concreta: **todo va
-en `currentColor`**. La identidad entrega el logo en veintiún colores y no hace
-falta importar ninguno, porque la navbar ya decide de qué color va su contenido
-en cada estado y el logo lo hereda. Un dibujo para los veintiuno, y ninguna
-regla de color que después haya que mantener de acuerdo con otra.
+Van adentro de un componente y no como `<img>` por una razón concreta: **el
+texto va en `currentColor`**. La identidad entrega el logo en veintiún colores y
+no hace falta importar ninguno, porque la navbar ya decide de qué color va su
+contenido en cada estado y el logo lo hereda. El símbolo sí trae sus colores
+escritos: es la parte de la marca que no cambia sobre fondo claro ni oscuro.
 
-El `d` y el `transform` de cada uno salen tal cual del kit. Si el logotipo
-cambia, se reemplazan por los del archivo nuevo y no hay nada más que tocar.
+`BrandLockup` es el símbolo con el logotipo, y no son dos piezas puestas al
+lado con CSS: el kit ajusta el símbolo para que su borde de arriba y el de abajo
+coincidan con los del texto, y el componente es ese dibujo con las coordenadas
+del kit. El pie lo lleva siempre.
+
+Los `d` y los `transform` salen tal cual del kit (`auteando-minuscula-bold/02-bold`
+y `auteando-bold-alineado`). Si el logotipo cambia, se reemplazan por los del
+archivo nuevo, y después:
+
+    npm run iconos      favicon.svg, favicon.ico y apple-touch-icon.png
+    npm run og:home     la lámina que se ve al compartir la portada
+    npm run og:garage   la del garage sin fotos
+    npm run og:blog     una por nota
+
+Todo sale del mismo componente, así que con eso no queda ninguna pieza con la
+marca vieja.
 
 El nombre de la marca sale de `src/config/brand.ts`. El único lugar que no puede
 importarlo es `index.html`.

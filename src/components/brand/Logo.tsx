@@ -1,53 +1,134 @@
-import type { SVGProps } from 'react'
+import { useId, type SVGProps } from 'react'
+import { BRAND } from '../../config/brand'
 
 /**
- * El logotipo y el símbolo de la marca.
+ * El logotipo, el símbolo y los dos juntos.
  *
- * Son contornos, no texto en una fuente. El logotipo está construido sobre
- * Archivo ---la misma familia que usa todo el sitio, en peso 625, con el
- * espaciado apretado y unos cortes diagonales en la `a`, la `t` y la `d`--- y
- * viene del kit ya convertido a curvas, así que no depende de que la fuente
- * cargue ni de que exista una variable de peso intermedia.
+ * Es la versión geométrica en minúsculas, en bold: cada letra es un trazo de
+ * 20 unidades, no un contorno relleno, con las curvas de radio 21 y la `o`
+ * estirada en un remate horizontal que cierra la palabra. Viene del kit
+ * `auteando-minuscula-bold/02-bold` (el texto) y `auteando-bold-alineado` (los
+ * dos juntos).
  *
- * Que la base tipográfica sea la del sitio es lo que hace que el logo no se lea
- * como una pieza pegada encima: al lado de un titular en Archivo es la misma
- * letra, apenas más cerrada.
+ * El texto va en `currentColor`. El kit trae veintiún colores y no hace falta
+ * importar ninguno: la navbar ya decide de qué color va su contenido en cada
+ * estado ---blanco sobre el hero, tinta sobre el papel--- y el logo lo hereda.
  *
- * Los dos van en `currentColor`. La identidad entrega veintiún colores y no
- * hace falta importar ninguno: la navbar ya decide de qué color va su contenido
- * en cada estado ---blanco sobre el hero, blanco sobre la barra de tinta, tinta
- * sobre el papel--- y el logo lo hereda. Un dibujo para los veintiuno.
+ * El símbolo no. Es un cuadrado amarillo con la `a` en tinta, y es igual sobre
+ * fondo claro y sobre fondo oscuro: es la parte de la marca que no cambia. Por
+ * eso sus dos colores van escritos acá y no heredados.
  *
- * Los `viewBox` están ajustados al dibujo: el kit exporta con margen parejo
- * alrededor y ese aire, acá, lo pone el CSS de cada uso.
- *
- * El `d` y el `transform` salen tal cual del kit. Si el logotipo cambia, se
- * reemplazan los dos por los del archivo nuevo y no hay nada más que tocar.
+ * Los `viewBox` están ajustados al dibujo, medidos renderizando el kit y no
+ * calculados a mano: el kit exporta con aire alrededor, y ese aire acá lo pone
+ * el CSS de cada uso. Los `d` y los `transform` salen tal cual del kit; si el
+ * logo cambia, se reemplazan por los del archivo nuevo.
  */
 
-/** `auteando`, el logotipo. Proporción 5,71 a 1. */
+const AMARILLO = '#FFD100'
+const TINTA = '#0A100C'
+
+/* Las ocho letras, cada una con su corrimiento en x. La `a` y la segunda `a`
+   son el mismo dibujo, y es también la letra del símbolo. */
+const A = ['M67 28H29Q8 28 8 49V72Q8 93 29 93H46Q67 93 67 72V28Z', 'M67 29V80Q67 93 80 93H86']
+
+const LETRAS: [number, string[]][] = [
+  [0, A],
+  [98, ['M8 20V72Q8 93 29 93H49Q70 93 70 72V20']],
+  [188, ['M25 0V74Q25 93 44 93H68', 'M0 29H67']],
+  [268, ['M72 93H29Q8 93 8 72V49Q8 28 29 28H49Q70 28 70 49V59H8']],
+  [358, A],
+  [456, ['M8 101V49Q8 28 29 28H49Q70 28 70 49V101']],
+  [546, ['M70 28H29Q8 28 8 49V72Q8 93 29 93H49Q70 93 70 72V0']],
+  [636, ['M29 28H49Q70 28 70 49V72Q70 93 49 93H29Q8 93 8 72V49Q8 28 29 28Z', 'M49 93H108']],
+]
+
+function Letras() {
+  return (
+    <g
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={20}
+      strokeLinecap="butt"
+      strokeLinejoin="round"
+    >
+      {LETRAS.map(([x, trazos], index) => (
+        <g key={index} transform={`translate(${x} 0)`}>
+          {trazos.map((d) => (
+            <path key={d} d={d} />
+          ))}
+        </g>
+      ))}
+    </g>
+  )
+}
+
+/**
+ * El cuadrado amarillo con la `a`, en las coordenadas del kit (el cuadrado va
+ * de 16 a 224).
+ *
+ * El remate de la `a` se sale por el borde derecho y el cuadrado lo corta: por
+ * eso el recorte. El `id` sale de `useId` porque el símbolo aparece más de una
+ * vez en la misma página ---la navbar y el pie--- y dos `clipPath` con el mismo
+ * id hacen que el segundo recorte con el del primero.
+ */
+function Simbolo() {
+  const recorte = useId()
+  return (
+    <>
+      <rect x="16" y="16" width="208" height="208" rx="45" fill={AMARILLO} />
+      <defs>
+        <clipPath id={recorte}>
+          <rect x="16" y="16" width="208" height="208" rx="45" />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${recorte})`}>
+        <g transform="translate(58 -9) scale(2.14)" fill="none" stroke={TINTA} strokeWidth={20}>
+          <path d={A[0]} strokeLinejoin="round" />
+          <path d={A[1]} />
+        </g>
+      </g>
+    </>
+  )
+}
+
+/** `auteando`, el logotipo solo. Proporción 7,24 a 1. */
 export function Wordmark(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="48 36 1104 193.5" role="img" aria-label="auteando" {...props}>
-      <g fill="currentColor" transform="translate(39.1097 226.2948) scale(0.263162)">
-        <path d="M200.87 12Q242.088 12 273.778 3.027Q305.468 -5.946 329.186 -22.364Q352.903 -38.782 370.121 -59.674H376.175Q382.23 -37.782 396.474 -21.837Q410.719 -5.891 431.736 2.582Q452.752 11.054 479.514 11.054Q508.003 11.054 527.465 5.5Q546.928 -0.054 557.036 -4.218V-56.96L525.009 -89.903H524.819Q511.656 -89.903 500.819 -98.094Q489.982 -106.284 489.982 -125.121V-370.837Q489.982 -424.489 466.166 -461.517Q442.351 -498.544 395.008 -518.326Q347.665 -538.109 275.61 -538.109Q211.142 -538.109 162.408 -520.446Q113.674 -502.782 86.429 -469.592Q59.184 -436.402 59.184 -391.184V-379.456Q59.184 -374.565 60.184 -369.619H182.426V-383.076Q182.426 -397.293 190.616 -410.13Q198.807 -422.967 219.644 -431.695Q240.48 -440.423 276.393 -440.423Q312.577 -440.423 330.996 -430.113Q349.414 -419.804 356.604 -402.048Q363.795 -384.293 363.795 -361.347V-319.272Q290.979 -319.272 230.098 -310.826Q169.218 -302.381 125.527 -281.908Q81.837 -261.435 57.81 -225.853Q33.782 -190.272 33.782 -136Q33.782 -88.381 50.592 -58.935Q67.402 -29.489 93.82 -14.353Q120.239 0.782 149.038 6.391Q177.837 12 200.87 12ZM240.263 -89.305Q214.752 -89.305 197.361 -96.615Q179.97 -103.924 171.388 -117.289Q162.807 -130.653 162.807 -148.761Q162.807 -182.946 189.736 -201.728Q216.665 -220.511 262.621 -227.619Q308.577 -234.728 363.795 -234.728V-209.586Q363.795 -183.184 355.322 -160.701Q346.849 -138.218 331.431 -122.571Q316.012 -106.924 292.838 -98.115Q269.665 -89.305 240.263 -89.305ZM777.544 12Q700.565 12 653.201 -30.071Q605.837 -72.142 605.837 -171.816V-526.109H732.024V-193.924Q732.024 -166.577 738.416 -148.322Q744.807 -130.067 757.062 -118.648Q769.317 -107.23 787.045 -102.202Q804.773 -97.175 826.447 -97.175Q859.012 -97.175 885.077 -112.931Q911.142 -128.686 926.37 -156.669Q941.598 -184.653 941.598 -219.891V-526.109H1067.786V0H963.414L953.414 -70.544H946.414Q928.36 -46.272 903.588 -27.636Q878.816 -9 847.125 1.5Q815.435 12 777.544 12ZM1324.351 12Q1338.568 12 1354.976 9.527Q1371.384 7.054 1386.373 3.5Q1401.363 -0.054 1411.689 -4.109V-89.903H1364.2Q1341.547 -89.903 1330.547 -101.73Q1319.547 -113.556 1319.547 -135.263V-424.205H1411.689V-493.166L1379.661 -526.109H1319.547V-673.816H1219.773L1196.631 -526.109H1129.761V-424.205H1193.36V-120.489Q1193.36 -87.293 1205.485 -56.766Q1217.61 -26.239 1246.344 -7.119Q1275.079 12 1324.351 12ZM1713.937 12Q1629.338 12 1572.604 -17.5Q1515.87 -47 1487.354 -108Q1458.837 -169 1458.837 -263.054Q1458.837 -357.946 1487.326 -418.473Q1515.816 -479 1572.387 -508.554Q1628.958 -538.109 1713.284 -538.109Q1790.317 -538.109 1842.633 -509.554Q1894.949 -481 1921.438 -421.891Q1947.928 -362.782 1947.928 -268.728V-232.837H1587.861Q1589.752 -184.544 1602.616 -151.452Q1615.48 -118.36 1642.763 -102.023Q1670.045 -85.686 1714.665 -85.686Q1737.882 -85.686 1757.801 -91.686Q1777.719 -97.686 1792.529 -110.077Q1807.338 -122.468 1815.648 -141.196Q1823.958 -159.924 1823.958 -184.435H1947.928Q1947.928 -134.598 1930.401 -97.544Q1912.873 -60.489 1881.129 -36.353Q1849.384 -12.218 1806.758 -0.109Q1764.133 12 1713.937 12ZM1589.807 -319.272H1816.903Q1816.903 -351.619 1809.485 -374.266Q1802.067 -396.912 1788.675 -411.722Q1775.284 -426.532 1756.42 -433.004Q1737.556 -439.477 1713.719 -439.477Q1675.045 -439.477 1648.79 -426.586Q1622.535 -413.695 1608.644 -387.103Q1594.752 -360.511 1589.807 -319.272ZM2170.87 12Q2212.088 12 2243.778 3.027Q2275.468 -5.946 2299.186 -22.364Q2322.903 -38.782 2340.121 -59.674H2346.175Q2352.23 -37.782 2366.474 -21.837Q2380.719 -5.891 2401.736 2.582Q2422.752 11.054 2449.514 11.054Q2478.003 11.054 2497.465 5.5Q2516.928 -0.054 2527.036 -4.218V-56.96L2495.009 -89.903H2494.819Q2481.656 -89.903 2470.819 -98.094Q2459.982 -106.284 2459.982 -125.121V-370.837Q2459.982 -424.489 2436.166 -461.517Q2412.351 -498.544 2365.008 -518.326Q2317.665 -538.109 2245.61 -538.109Q2181.142 -538.109 2132.408 -520.446Q2083.674 -502.782 2056.429 -469.592Q2029.184 -436.402 2029.184 -391.184V-379.456Q2029.184 -374.565 2030.184 -369.619H2152.426V-383.076Q2152.426 -397.293 2160.616 -410.13Q2168.807 -422.967 2189.644 -431.695Q2210.48 -440.423 2246.393 -440.423Q2282.577 -440.423 2300.996 -430.113Q2319.414 -419.804 2326.604 -402.048Q2333.795 -384.293 2333.795 -361.347V-319.272Q2260.979 -319.272 2200.098 -310.826Q2139.218 -302.381 2095.527 -281.908Q2051.837 -261.435 2027.81 -225.853Q2003.782 -190.272 2003.782 -136Q2003.782 -88.381 2020.592 -58.935Q2037.402 -29.489 2063.82 -14.353Q2090.239 0.782 2119.038 6.391Q2147.837 12 2170.87 12ZM2210.263 -89.305Q2184.752 -89.305 2167.361 -96.615Q2149.97 -103.924 2141.388 -117.289Q2132.807 -130.653 2132.807 -148.761Q2132.807 -182.946 2159.736 -201.728Q2186.665 -220.511 2232.621 -227.619Q2278.577 -234.728 2333.795 -234.728V-209.586Q2333.795 -183.184 2325.322 -160.701Q2316.849 -138.218 2301.431 -122.571Q2286.012 -106.924 2262.839 -98.115Q2239.665 -89.305 2210.263 -89.305ZM2579.728 0V-526.109H2685.045L2695.208 -455.565H2702.208Q2720.372 -479.946 2745.062 -498.554Q2769.752 -517.163 2801.388 -527.636Q2833.024 -538.109 2870.916 -538.109Q2921.623 -538.109 2960.231 -519.81Q2998.84 -501.511 3020.731 -461.293Q3042.623 -421.076 3042.623 -354.293V0H2915.49V-332.184Q2915.49 -359.586 2909.098 -377.814Q2902.707 -396.042 2890.452 -407.461Q2878.196 -418.879 2860.495 -423.906Q2842.795 -428.933 2821.066 -428.933Q2788.501 -428.933 2762.437 -413.178Q2736.372 -397.423 2721.144 -369.94Q2705.916 -342.456 2705.916 -306.218V0ZM3335.598 12Q3386.653 12 3429.125 -8.527Q3471.598 -29.054 3496.761 -70.272H3503.761L3513.979 0H3618.296V-683.156L3579.273 -723.109H3492.109V-465.761H3486.054Q3470.109 -489.598 3447.136 -505.935Q3424.163 -522.272 3394.354 -530.19Q3364.544 -538.109 3328.979 -538.109Q3270.326 -538.109 3224.109 -509.027Q3177.891 -479.946 3151.864 -419.418Q3125.837 -358.891 3125.837 -264.054Q3125.837 -168.218 3151.391 -107.19Q3176.946 -46.163 3224.109 -17.082Q3271.272 12 3335.598 12ZM3374.903 -95.284Q3330.665 -95.284 3304.573 -112.512Q3278.48 -129.74 3267.144 -165.033Q3255.807 -200.326 3255.807 -254.021V-270.142Q3255.807 -324.782 3267.144 -360.548Q3278.48 -396.314 3304.573 -413.569Q3330.665 -430.825 3374.903 -430.825Q3405.468 -430.825 3427.669 -419.933Q3449.87 -409.042 3464.153 -388.341Q3478.435 -367.64 3485.326 -337.211Q3492.218 -306.782 3492.218 -268.653V-254.565Q3492.218 -203.707 3479.908 -168.278Q3467.598 -132.849 3441.952 -114.067Q3416.305 -95.284 3374.903 -95.284ZM3966.849 12Q3880.631 12 3822.169 -17.554Q3763.707 -47.109 3734.272 -108.136Q3704.837 -169.163 3704.837 -263.054Q3704.837 -357.946 3734.272 -418.473Q3763.707 -479 3822.169 -508.554Q3880.631 -538.109 3966.849 -538.109Q4054.012 -538.109 4112.029 -508.554Q4170.045 -479 4199.48 -418.473Q4228.916 -357.946 4228.916 -263.054Q4228.916 -169.163 4199.48 -108.136Q4170.045 -47.109 4112.029 -17.554Q4054.012 12 3966.849 12ZM3966.849 -89.903Q4014.142 -89.903 4043.234 -108.131Q4072.326 -126.36 4085.636 -163.18Q4098.946 -200 4098.946 -254.858V-271.196Q4098.946 -326.054 4085.636 -362.902Q4072.326 -399.749 4043.234 -417.977Q4014.142 -436.205 3966.849 -436.205Q3919.556 -436.205 3890.491 -417.977Q3861.426 -399.749 3848.116 -362.902Q3834.807 -326.054 3834.807 -271.196V-254.858Q3834.807 -200 3848.116 -163.18Q3861.426 -126.36 3890.491 -108.131Q3919.556 -89.903 3966.849 -89.903Z" />
-      </g>
+    <svg viewBox="-2 0 746 103" role="img" aria-label={BRAND} {...props}>
+      <Letras />
+    </svg>
+  )
+}
+
+/** El símbolo solo: cuadrado, para el favicon y donde la marca va sola. */
+export function BrandMark(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="16 16 208 208" role="img" aria-label={BRAND} {...props}>
+      <Simbolo />
     </svg>
   )
 }
 
 /**
- * El símbolo: la misma `a` del logotipo, con su remate diagonal.
+ * El símbolo y el logotipo juntos, alineados.
  *
- * Va sin caja. La caja ---el cuadrado con las esquinas cortadas en diagonal, el
- * mismo gesto que el `--button-cut` de los botones amarillos--- la pone quien lo
- * usa, que es lo que deja elegir si va tinta con la letra amarilla o al revés.
+ * No es poner uno al lado del otro con CSS. El kit ajusta el tamaño del símbolo
+ * para que su borde de arriba y el de abajo coincidan con los del texto ---el
+ * alto de la `t` y la `d` arriba, el pie de las letras abajo--- y deja entre los
+ * dos un espacio de dos tercios del símbolo. Es un dibujo solo, con las
+ * coordenadas del kit tal cual: así la alineación no depende de que dos alturas
+ * de CSS redondeen igual. Proporción 8,9 a 1.
  */
-export function BrandMark(props: SVGProps<SVGSVGElement>) {
+export function BrandLockup(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="38.6 34 178.8 188" role="img" aria-label="auteando" {...props}>
-      <g fill="currentColor" transform="translate(27.0436 217.8990) scale(0.341751)">
-        <path d="M200.87 12Q242.088 12 273.778 3.027Q305.468 -5.946 329.186 -22.364Q352.903 -38.782 370.121 -59.674H376.175Q382.23 -37.782 396.474 -21.837Q410.719 -5.891 431.736 2.582Q452.752 11.054 479.514 11.054Q508.003 11.054 527.465 5.5Q546.928 -0.054 557.036 -4.218V-56.96L525.009 -89.903H524.819Q511.656 -89.903 500.819 -98.094Q489.982 -106.284 489.982 -125.121V-370.837Q489.982 -424.489 466.166 -461.517Q442.351 -498.544 395.008 -518.326Q347.665 -538.109 275.61 -538.109Q211.142 -538.109 162.408 -520.446Q113.674 -502.782 86.429 -469.592Q59.184 -436.402 59.184 -391.184V-379.456Q59.184 -374.565 60.184 -369.619H182.426V-383.076Q182.426 -397.293 190.616 -410.13Q198.807 -422.967 219.644 -431.695Q240.48 -440.423 276.393 -440.423Q312.577 -440.423 330.996 -430.113Q349.414 -419.804 356.604 -402.048Q363.795 -384.293 363.795 -361.347V-319.272Q290.979 -319.272 230.098 -310.826Q169.218 -302.381 125.527 -281.908Q81.837 -261.435 57.81 -225.853Q33.782 -190.272 33.782 -136Q33.782 -88.381 50.592 -58.935Q67.402 -29.489 93.82 -14.353Q120.239 0.782 149.038 6.391Q177.837 12 200.87 12ZM240.263 -89.305Q214.752 -89.305 197.361 -96.615Q179.97 -103.924 171.388 -117.289Q162.807 -130.653 162.807 -148.761Q162.807 -182.946 189.736 -201.728Q216.665 -220.511 262.621 -227.619Q308.577 -234.728 363.795 -234.728V-209.586Q363.795 -183.184 355.322 -160.701Q346.849 -138.218 331.431 -122.571Q316.012 -106.924 292.838 -98.115Q269.665 -89.305 240.263 -89.305Z" />
+    <svg viewBox="41.88 87.75 1487.75 167.25" role="img" aria-label={BRAND} {...props}>
+      <g transform="translate(29.019777265745006 74.93049155145928) scale(0.8034514208909371)">
+        <Simbolo />
+      </g>
+      <g transform="translate(276 46) scale(0.9285714285714286)">
+        <g transform="translate(50 45) scale(1.7473118279569892)">
+          <Letras />
+        </g>
       </g>
     </svg>
   )

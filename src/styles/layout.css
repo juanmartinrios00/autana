@@ -597,37 +597,14 @@ button.navbar__link {
 
 .footer__brand {
   display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 1.35rem;
-  font-weight: 500;
-  letter-spacing: -0.03em;
 }
 
-.footer__mark {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--r-sm);
-  background: var(--accent);
-  color: var(--ink);
-}
-
-/* La letra adentro de la caja, con aire alrededor. El símbolo viene ajustado a
-   su trazo ---sin margen propio, para que cada uso decida el suyo--- así que si
-   ocupara los 38 píxeles enteros tocaría los cuatro bordes. */
-.footer__mark-glyph {
-  display: block;
-  width: 20px;
-  height: auto;
-}
-
-/* Un punto más grande que en la navbar: el pie no compite con nada por el
-   ancho. */
+/* El símbolo y el logotipo juntos, medidos por alto: el ancho lo pone su
+   proporción. Más grande que en la navbar porque el pie no compite con nada
+   por el ancho. */
 .footer__logo {
   display: block;
-  height: 24px;
+  height: 30px;
   width: auto;
 }
 

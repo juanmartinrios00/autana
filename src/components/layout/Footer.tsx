@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BrandMark, Wordmark } from '../brand/Logo'
+import { BrandLockup } from '../brand/Logo'
 import { BRAND } from '../../config/brand'
 
 /* El pie es donde viven las pantallas que se leen una vez: explicaciones,
@@ -45,15 +45,11 @@ export function Footer() {
     <footer className="footer">
       <div className="page footer__inner">
         <div className="footer__main">
-          {/* Acá sí va el lockup completo: el símbolo en su caja amarilla y el
-              logotipo al lado. La navbar lleva el logotipo solo porque compite
-              por el ancho con el buscador y los links; el pie tiene lugar, y es
-              donde la marca puede firmar. */}
+          {/* Acá va siempre el símbolo con el logotipo: el pie tiene lugar, y
+              es donde la marca firma. Un solo dibujo y no dos piezas al lado,
+              porque el kit los alinea al píxel ---ver `BrandLockup`---. */}
           <Link to="/" className="footer__brand" aria-label={`${BRAND}, inicio`}>
-            <span className="footer__mark" aria-hidden="true">
-              <BrandMark className="footer__mark-glyph" />
-            </span>
-            <Wordmark className="footer__logo" aria-hidden="true" />
+            <BrandLockup className="footer__logo" aria-hidden="true" />
           </Link>
           <p className="footer__claim">Comprar y vender un auto debería ser simple.</p>
           <p className="footer__description">

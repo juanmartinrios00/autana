@@ -11,7 +11,7 @@ import { writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { renderToStaticMarkup } from 'react-dom/server'
 import sharp from 'sharp'
-import { BrandMark, Wordmark } from '../src/components/brand/Logo'
+import { BrandLockup } from '../src/components/brand/Logo'
 
 /* La medida que piden Open Graph y Twitter para la tarjeta grande. */
 export const W = 1200
@@ -25,28 +25,25 @@ export const ACCENT = '#ffd100'
 export const FONT = 'font-family="Arial, Helvetica, sans-serif"'
 
 /**
- * La firma de abajo a la izquierda: el símbolo en su caja amarilla y el
- * logotipo al lado, el mismo lockup que el pie del sitio.
+ * La firma de abajo a la izquierda: el símbolo y el logotipo, el mismo dibujo
+ * alineado que va en el pie del sitio.
  *
- * Los componentes son los mismos que usa la aplicación, así que si el logotipo
- * cambia se vuelven a correr los scripts y las dos imágenes acompañan.
+ * Es el componente de la aplicación, así que si la marca cambia se vuelven a
+ * correr los scripts y todas las láminas acompañan. Un `<svg>` anidado con `x`,
+ * `y`, `width` y `height` se posiciona y escala solo contra su `viewBox`; el
+ * `color` es el del texto, que va en `currentColor`. El símbolo trae sus
+ * propios colores.
  *
- * Un `<svg>` anidado con `x`, `y`, `width` y `height` se posiciona y escala
- * solo contra su propio `viewBox`; el `color` es lo que resuelven los trazos,
- * que van todos en `currentColor`. Los altos mandan y los anchos salen de la
- * proporción de cada dibujo ---el símbolo es 0,951 a 1 y el logotipo 5,707 a
- * 1--- porque un `viewBox` escrito a ojo dejaría el logo flotando adentro de
- * una caja que no es la suya.
+ * El ancho sale de la proporción del dibujo y no escrito a ojo: un ancho que no
+ * coincide deja el logo flotando adentro de una caja que no es la suya.
  */
 export function brandLockup(): string {
-  const MARK_BOX = 44
-  const y = H - 112
+  const alto = 34
+  const ancho = (alto * 1487.75) / 167.25
 
-  return [
-    `<rect x="64" y="${y}" width="${MARK_BOX}" height="${MARK_BOX}" rx="6" fill="${ACCENT}"/>`,
-    renderToStaticMarkup(<BrandMark x={76} y={y + 8} width={27} height={28} color={INK} />),
-    renderToStaticMarkup(<Wordmark x={126} y={y + 9} width={149} height={26} color="#ffffff" />),
-  ].join('')
+  return renderToStaticMarkup(
+    <BrandLockup x={64} y={H - 107} width={ancho} height={alto} color="#ffffff" />,
+  )
 }
 
 /**

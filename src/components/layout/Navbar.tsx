@@ -101,11 +101,12 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
           <Icon name={menuOpen ? 'close' : 'menu'} size={20} />
         </button>
 
-        {/* El logotipo solo, sin el cuadrado con la inicial al lado. El símbolo
-            de la marca es la `a` de este mismo logotipo, así que ponerlos
-            juntos dibuja la misma letra dos veces separadas por tres píxeles.
-            El cuadrado sigue existiendo para donde hace falta una marca sola y
-            cuadrada: el favicon y el icono de la aplicación. */}
+        {/* El logotipo solo, sin el símbolo. Se probaron los dos lado a lado,
+            con el texto del mismo alto. A 20 px la `a` del símbolo se pierde y
+            queda un cuadrado amarillo con un aro, que repite la primera letra
+            de la palabra; y el amarillo en esta barra es del botón de
+            publicar: un segundo amarillo a la izquierda le compite. El símbolo
+            va donde la marca firma sola: el pie, el favicon, las láminas. */}
         <Link to="/" className="navbar__brand" aria-label={`${BRAND}, inicio`}>
           <Wordmark className="navbar__logo" aria-hidden="true" />
         </Link>
