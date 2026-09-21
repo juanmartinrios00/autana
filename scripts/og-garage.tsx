@@ -15,18 +15,10 @@
  * vuelve a correr esto y la imagen acompaña. Va con Vite en modo SSR porque las
  * escenas son componentes de React.
  */
-import { writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { renderToStaticMarkup } from 'react-dom/server'
-import sharp from 'sharp'
-import { BrandMark, Wordmark } from '../src/components/brand/Logo'
 import { GarageScene } from '../src/components/garage/scenes'
 import type { GarageSlot } from '../src/types'
-
-const W = 1200
-const H = 630
-const INK = '#0a100c'
-const ACCENT = '#ffd100'
+import { ACCENT, brandLockup, FONT, H, INK, W, writeLamina } from './og-base'
 
 /* Los mismos autos de ejemplo que la sección del garage en la portada: un
    clásico con cromados, una camioneta, uno bajo y el que ya no está. */
@@ -56,51 +48,16 @@ const cells = SLOTS.map((slot, index) => {
   return `<rect x="${x}" y="${y}" width="${CELL_W}" height="${CELL_H}" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.16)"/>${scene}`
 }).join('')
 
-const font = `font-family="Arial, Helvetica, sans-serif"`
-
-/* La firma de abajo a la izquierda: el símbolo en su caja amarilla y el
-   logotipo al lado, el mismo lockup que el pie del sitio.
-
-   Antes era un cuadrado amarillo y el nombre escrito en Arial. Funcionaba como
-   marcador de posición, pero esta imagen es lo que se ve en un grupo de
-   WhatsApp: ahí la marca tiene que aparecer dibujada, no tipeada en la fuente
-   que haya.
-
-   Los componentes son los mismos que usa la aplicación, así que si el logotipo
-   cambia se vuelve a correr esto y la imagen acompaña ---igual que con las
-   escenas del garage. Un `<svg>` anidado con `x`, `y`, `width` y `height` se
-   posiciona y escala solo contra su propio `viewBox`; el `color` es lo que
-   resuelven los trazos, que van todos en `currentColor`. */
-const MARK_BOX = 44
-const markY = H - 112
-const brand = [
-  `<rect x="64" y="${markY}" width="${MARK_BOX}" height="${MARK_BOX}" rx="6" fill="${ACCENT}"/>`,
-  /* Los altos mandan y los anchos salen de la proporcion de cada dibujo: el
-     simbolo es 0,951 a 1 y el logotipo 5,707 a 1. Escritos a ojo, un `viewBox`
-     nuevo dejaria el logo centrado adentro de una caja que no es la suya ---no
-     se estira, porque `preserveAspectRatio` no deja, pero queda flotando. */
-  renderToStaticMarkup(
-    <BrandMark x={76} y={markY + 8} width={27} height={28} color={INK} />,
-  ),
-  renderToStaticMarkup(
-    <Wordmark x={126} y={markY + 9} width={149} height={26} color="#ffffff" />,
-  ),
-].join('')
+const brand = brandLockup()
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <rect width="${W}" height="${H}" fill="${INK}"/>
-  <text x="64" y="118" ${font} font-size="22" font-weight="700" letter-spacing="3" fill="rgba(255,255,255,0.56)">EL GARAGE VIRTUAL</text>
-  <text x="64" y="220" ${font} font-size="76" font-weight="700" fill="#ffffff">Los autos</text>
-  <text x="64" y="304" ${font} font-size="76" font-weight="700" fill="#ffffff">que me</text>
-  <text x="64" y="388" ${font} font-size="76" font-weight="700" fill="#ffffff">marcaron.</text>
+  <text x="64" y="118" ${FONT} font-size="22" font-weight="700" letter-spacing="3" fill="rgba(255,255,255,0.56)">EL GARAGE VIRTUAL</text>
+  <text x="64" y="220" ${FONT} font-size="76" font-weight="700" fill="#ffffff">Los autos</text>
+  <text x="64" y="304" ${FONT} font-size="76" font-weight="700" fill="#ffffff">que me</text>
+  <text x="64" y="388" ${FONT} font-size="76" font-weight="700" fill="#ffffff">marcaron.</text>
   ${brand}
   ${cells}
 </svg>`
 
-/* Contra el directorio de trabajo y no contra `import.meta.url`: esto corre
-   compilado desde `node_modules/.cache`, y ahí `../public` es otra carpeta.
-   `npm run` siempre arranca en la raíz del proyecto. */
-const out = resolve(process.cwd(), 'public/og-garage.png')
-const png = await sharp(Buffer.from(svg)).png({ compressionLevel: 9, palette: true }).toBuffer()
-writeFileSync(out, png)
-console.log(`og-garage.png: ${W}x${H}, ${png.length} bytes`)
+await writeLamina('og-garage.png', svg)

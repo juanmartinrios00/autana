@@ -576,11 +576,25 @@ export function canonicalFor(url: URL): string {
 function renderCanonical(assetResponse: Response, url: URL): Response {
   const canonical = canonicalFor(url)
 
+  /* La lámina fija, `public/og-home.png`, que genera `npm run og:home`.
+     Una por pantalla no tendría qué dibujar: la ayuda y los términos no tienen
+     foto, y la portada cambia de autos todos los días. Lo que la imagen tiene
+     que decir ---que acá se compran y se venden autos--- no cambia nunca.
+
+     Sin esto el link salía sin imagen, que en un chat es un renglón de texto al
+     lado de otros que sí la tienen. Las fichas, los garages y las notas no
+     pasan por acá: cada una arma la suya en `renderPreview`. */
+  const image = `${url.origin}/og-home.png`
+
   return new HTMLRewriter()
     .on(
       'head',
       appendToHead(
         `<meta property="og:url" content="${attr(canonical)}">` +
+          `<meta property="og:site_name" content="${attr(BRAND)}">` +
+          `<meta property="og:image" content="${attr(image)}">` +
+          `<meta property="og:image:alt" content="${attr(`Comprá y vendé autos sin comisión | ${BRAND}`)}">` +
+          `<meta name="twitter:card" content="summary_large_image">` +
           `<link rel="canonical" href="${attr(canonical)}">`,
       ),
     )

@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "og:garage": "vite build --ssr scripts/og-garage.tsx --outDir node_modules/.cache/og-garage --emptyOutDir --logLevel warn && node node_modules/.cache/og-garage/og-garage.js",
+    "og:home": "vite build --ssr scripts/og-home.tsx --outDir node_modules/.cache/og-home --emptyOutDir --logLevel warn && node node_modules/.cache/og-home/og-home.js",
     "test:db": "node scripts/db-test.mjs"
   },
   "dependencies": {
@@ -28,6 +29,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
+    "sharp": "^0.35.2",
     "oxlint": "^1.79.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.2",
