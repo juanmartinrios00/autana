@@ -171,6 +171,23 @@ antes de tiempo, el sitio se redirige a un lugar que todavía no existe.
    es lo que evita que el sitio exista dos veces para Google, y hace que el
    canonical, el `og:url` y el sitemap digan siempre el mismo dominio.
 
+## Medición
+
+Cloudflare Web Analytics está prendido para `auteando.com` y **no hay nada de
+esto en el repo**. El beacon lo inyecta Cloudflare en el borde, después del
+worker, y sólo cuando el pedido trae un `Accept` de navegador. Por eso no
+aparece con un `curl` a secas ---hay que mandarle
+`Accept: text/html,application/xhtml+xml,...`--- y por eso tampoco hay un
+`<script>` que buscar en `index.html`.
+
+Se prende y se mira en el panel: *Analytics & Logs* → *Web analytics*. No usa
+cookies ni huellas del navegador, así que no pide cartel de consentimiento.
+
+Cuenta las navegaciones del router como páginas vistas y no sólo las cargas
+completas: el beacon entra con `"spa": 2`, que es el modo que sigue los cambios
+de ruta de una SPA. Es la explicación de que tres visitas den veintidós páginas
+vistas, que la primera vez parece un error y no lo es.
+
 ## Tests
 
     npm test
