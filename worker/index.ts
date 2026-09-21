@@ -561,6 +561,26 @@ export function canonicalFor(url: URL): string {
 }
 
 /**
+ * La lámina fija del sitio: `public/og-home.png`, que genera `npm run og:home`.
+ *
+ * Es el piso de todo lo que se comparte. Una imagen por pantalla no tendría qué
+ * dibujar ---la ayuda y los términos no tienen foto, y la portada cambia de
+ * autos todos los días--- y lo que la lámina dice, que acá se compran y se
+ * venden autos, no cambia nunca.
+ *
+ * La usan tres. Las pantallas fijas, que no tienen nada propio. Las notas del
+ * blog, que no tienen imagen y nunca la tuvieron, justo siendo lo que uno manda
+ * cuando quiere que alguien conozca el sitio. Y las fichas sin fotos, que se
+ * pueden publicar: `if (photos.length > 0)` en el alta, asi que subir ninguna
+ * es una opcion y esa ficha salia sin nada.
+ *
+ * Mismo criterio que el garage con `og-garage.png`, que ya lo hacía.
+ */
+function homeImage(origin: string): string {
+  return `${origin}/og-home.png`
+}
+
+/**
  * El canonical de las pantallas que no tienen preview propio.
  *
  * Las fichas, los garages y las notas ya lo traen desde `renderPreview`, que
@@ -575,16 +595,7 @@ export function canonicalFor(url: URL): string {
  */
 function renderCanonical(assetResponse: Response, url: URL): Response {
   const canonical = canonicalFor(url)
-
-  /* La lámina fija, `public/og-home.png`, que genera `npm run og:home`.
-     Una por pantalla no tendría qué dibujar: la ayuda y los términos no tienen
-     foto, y la portada cambia de autos todos los días. Lo que la imagen tiene
-     que decir ---que acá se compran y se venden autos--- no cambia nunca.
-
-     Sin esto el link salía sin imagen, que en un chat es un renglón de texto al
-     lado de otros que sí la tienen. Las fichas, los garages y las notas no
-     pasan por acá: cada una arma la suya en `renderPreview`. */
-  const image = `${url.origin}/og-home.png`
+  const image = homeImage(url.origin)
 
   return new HTMLRewriter()
     .on(
@@ -616,7 +627,7 @@ async function renderListing(request: Request, env: Env, slug: string): Promise<
   return renderPreview(assetResponse, {
     title,
     description: buildDescription(row),
-    image: coverImage(row),
+    image: coverImage(row) ?? homeImage(url.origin),
     canonical: `${url.origin}/autos/${row.slug}`,
   })
 }
@@ -683,7 +694,7 @@ function renderPost(assetResponse: Response, request: Request, slug: string): Re
   return renderPreview(assetResponse, {
     title: pageTitle(post.title),
     description: post.summary,
-    image: null,
+    image: homeImage(url.origin),
     canonical: `${url.origin}/blog/${post.slug}`,
   })
 }
