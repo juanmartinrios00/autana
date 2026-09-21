@@ -211,7 +211,7 @@ export function Home() {
       {/* Fuera de `.page` a propósito: es la única sección que llega a los dos
           bordes de la pantalla, y desde adentro del contenedor con márgenes no
           hay forma de llegar sin sumar una barra de scroll horizontal. */}
-      {stats && stats.listings > 0 && <MarketplaceProof stats={stats} />}
+      {stats && <MarketplaceProof stats={stats} />}
 
       <div className="page home__sections">
         <div className="home__cluster home__cluster--discovery">
@@ -228,7 +228,16 @@ export function Home() {
             loading={loadingRecent}
             action={{ label: 'Ver todos', to: '/autos' }}
           />
-          <VehicleSlider eyebrow="Los que más miran" title="Más vistos" vehicles={mostSeen} />
+          {/* Sólo si trae algún auto que no esté ya en la fila de arriba. Con
+              pocos avisos las dos consultas devuelven lo mismo, y dos filas con
+              el mismo auto se leen como un sitio que no tiene otra cosa que
+              mostrar. Se apaga sola: en cuanto hay más avisos que lugares en
+              la fila, lo más visto deja de coincidir con lo último. */}
+          <VehicleSlider
+            eyebrow="Los que más miran"
+            title="Más vistos"
+            vehicles={mostSeen.some((car) => !recent.some((other) => other.id === car.id)) ? mostSeen : []}
+          />
         </div>
 
         <ProvinceMap counts={provinceCounts} />

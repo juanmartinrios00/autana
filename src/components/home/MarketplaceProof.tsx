@@ -7,6 +7,21 @@ interface MarketplaceProofProps {
   stats: MarketplaceStats
 }
 
+/**
+ * Desde cuántos avisos activos aparece la banda.
+ *
+ * Los números son de verdad y eso no se toca: si hay uno, dice uno. Lo que
+ * cambia es cuándo vale la pena decirlos. "1 publicación activa, 1 marca, 1
+ * provincia" es lo segundo que ve alguien que llega desde un video, y no le
+ * cuenta que el sitio funciona: le cuenta que está vacío. Una banda de números
+ * existe para impresionar, y hasta que los números impresionen conviene que no
+ * esté ---la portada sin ella se lee terminada igual.
+ *
+ * Veinte porque ahí la fila de marcas y la de provincias ya dejan de decir uno
+ * o dos. Es un criterio, no un cálculo: se cambia acá y en ningún otro lado.
+ */
+const MIN_LISTINGS = 20
+
 const label = (value: number, singular: string, plural: string) =>
   `${value === 1 ? singular : plural} en ${BRAND}`
 
@@ -22,6 +37,8 @@ const label = (value: number, singular: string, plural: string) =>
  * inflado en la portada se desmiente solo en cuanto alguien toca "ver todos".
  */
 export function MarketplaceProof({ stats }: MarketplaceProofProps) {
+  if (stats.listings < MIN_LISTINGS) return null
+
   const items = [
     {
       value: formatCount(stats.listings),
