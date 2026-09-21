@@ -200,6 +200,14 @@ completas: el beacon entra con `"spa": 2`, que es el modo que sigue los cambios
 de ruta de una SPA. Es la explicación de que tres visitas den veintidós páginas
 vistas, que la primera vez parece un error y no lo es.
 
+### De dónde viene la gente
+
+`auteando.com/tiktok` y `auteando.com/instagram` muestran la portada en su
+propia URL: puesto en la bio, cada uno aparece en Web Analytics como una
+página aparte. No redirigen, porque una redirección se come la ruta antes de
+que cargue el contador; el canonical las manda a `/`. La lista está en
+`src/config/entradas.ts`.
+
 ### Errores
 
 Van a Sentry, sin su SDK: `src/lib/report.ts` le manda el sobre directo a la

@@ -364,6 +364,15 @@ describe('canonicalFor', () => {
     expect(de('https://auteando.com/cars?maxYear=2015')).toBe('https://auteando.com/cars')
   })
 
+  /* Las puertas de entrada son la portada con otro nombre. Sin esto Google ve
+     tres portadas iguales y reparte entre ellas lo que es de una. */
+  it('las puertas de entrada apuntan a la portada', () => {
+    expect(de('https://auteando.com/tiktok')).toBe('https://auteando.com/')
+    expect(de('https://auteando.com/tiktok/')).toBe('https://auteando.com/')
+    expect(de('https://auteando.com/instagram?x=1')).toBe('https://auteando.com/')
+    expect(de('https://auteando.com/tiktokers')).toBe('https://auteando.com/tiktokers')
+  })
+
   it('tira la barra del final, que sirve la misma pantalla', () => {
     expect(de('https://auteando.com/cars/')).toBe('https://auteando.com/cars')
     expect(de('https://auteando.com/help/')).toBe('https://auteando.com/help')

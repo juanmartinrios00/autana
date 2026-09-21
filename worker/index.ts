@@ -3,6 +3,7 @@
 import { BRAND, pageTitle } from '../src/config/brand'
 import { findPost, postsByDate } from '../src/content/blog/posts'
 import { SUPABASE_PUBLIC } from '../src/config/supabase-public'
+import { ENTRADAS } from '../src/config/entradas'
 
 /**
  * Previews de los avisos al compartir el link.
@@ -557,6 +558,9 @@ async function htmlFor(request: Request, env: Env): Promise<Response | null> {
  */
 export function canonicalFor(url: URL): string {
   const path = url.pathname.replace(/\/+$/, '')
+  /* `/tiktok` es la portada con otro nombre, para contar de dónde vienen:
+     ver `ENTRADAS`. */
+  if ((ENTRADAS as readonly string[]).includes(path.slice(1))) return `${url.origin}/`
   return `${url.origin}${path || '/'}`
 }
 

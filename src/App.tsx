@@ -7,6 +7,7 @@ import { CompareProvider } from './context/CompareProvider'
 import { FavoritesProvider } from './context/FavoritesProvider'
 import { Home } from './pages/Home'
 import { NotFound } from './pages/NotFound'
+import { ENTRADAS } from './config/entradas'
 
 /* Cada pantalla viaja en su propio chunk, que baja cuando alguien entra a la
    ruta. `Home` y `NotFound` quedan afuera a proposito: la primera es la que
@@ -56,6 +57,9 @@ export default function App() {
             <Routes>
               <Route element={<Layout />}>
                 <Route index element={<Home />} />
+                {ENTRADAS.map((entrada) => (
+                  <Route key={entrada} path={entrada} element={<Home />} />
+                ))}
 
                 {/* Fase 2 — marketplace */}
                 <Route path="autos" element={<Cars />} />
