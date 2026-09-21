@@ -38,11 +38,13 @@
 /* --- Carrocería --------------------------------------------------------- */
 
 .category {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--sp-1);
-  height: 132px;
+  height: 212px;
   padding: var(--sp-5);
   border-radius: var(--r-lg);
   background: var(--surface);
@@ -55,6 +57,24 @@
 .category:hover {
   background: var(--canvas);
   border-color: var(--ink);
+}
+
+/* El auto mira hacia el texto y se sale por el borde derecho: la caja lo corta
+   de cola y lo que queda a la vista es la trompa. El alto es fijo y el ancho
+   sale de la foto, así que todos quedan del mismo tamaño aunque una pick-up sea
+   más larga que un hatchback ---lo que cambia es cuánto se corta, que es lo
+   que se tiene que notar menos.
+
+   `max-width: none` pisa la regla global que no deja a una imagen pasarse de
+   su contenedor: acá pasarse es justamente la idea. */
+.category__photo {
+  position: absolute;
+  top: var(--sp-5);
+  left: var(--sp-5);
+  height: 104px;
+  width: auto;
+  max-width: none;
+  pointer-events: none;
 }
 
 .category__name {

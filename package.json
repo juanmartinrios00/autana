@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "og:garage": "vite build --ssr scripts/og-garage.tsx --outDir node_modules/.cache/og-garage --emptyOutDir --logLevel warn && node node_modules/.cache/og-garage/og-garage.js",
     "og:home": "vite build --ssr scripts/og-home.tsx --outDir node_modules/.cache/og-home --emptyOutDir --logLevel warn && node node_modules/.cache/og-home/og-home.js",
+    "foto:carroceria": "node scripts/foto-carroceria.mjs",
     "og:blog": "vite build --ssr scripts/og-blog.tsx --outDir node_modules/.cache/og-blog --emptyOutDir --logLevel warn && node node_modules/.cache/og-blog/og-blog.js",
     "test:db": "node scripts/db-test.mjs"
   },
