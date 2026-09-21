@@ -43,6 +43,8 @@ describe('SLOTS', () => {
     const hint = computeLevel({
       profile: null,
       activeListings: 0,
+      publishedListings: 0,
+      soldListings: 0,
       bestPhotoCount: 0,
       garageCars: 0,
     }).achievements.find((item) => item.id === 'garage_complete')!.hint
@@ -51,7 +53,14 @@ describe('SLOTS', () => {
 
   it('el logro de garage completo se gana con todos los espacios llenos', () => {
     const conGarage = (garageCars: number) =>
-      computeLevel({ profile: null, activeListings: 0, bestPhotoCount: 0, garageCars })
+      computeLevel({
+        profile: null,
+        activeListings: 0,
+        publishedListings: 0,
+        soldListings: 0,
+        bestPhotoCount: 0,
+        garageCars,
+      })
         .achievements.find((item) => item.id === 'garage_complete')!.done
 
     expect(conGarage(SLOTS.length - 1)).toBe(false)

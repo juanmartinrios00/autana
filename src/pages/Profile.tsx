@@ -93,6 +93,8 @@ export function Profile() {
       ? { name: showing.name, hasWhatsapp: Boolean(ownWhatsapp), city: showing.city }
       : null,
     activeListings: showing?.activeListings ?? 0,
+    publishedListings: showing?.publishedListings ?? 0,
+    soldListings: showing?.soldListings ?? 0,
     bestPhotoCount: showing?.bestPhotoCount ?? 0,
     garageCars: garage.length,
   })

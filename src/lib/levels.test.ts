@@ -1,17 +1,35 @@
 import { describe, expect, it } from 'vitest'
-import { computeLevel, LEVELS, type LevelInput } from './levels'
+/* Con `?raw`, igual que los otros tests que leen el esquema. */
+import migracion022 from '../../supabase/migrations/022_niveles_cuentan_vendidos.sql?raw'
+import { computeLevel, LEVELS, PUBLISHED_STATUSES, type LevelInput } from './levels'
+
+/**
+ * Los avisos, coherentes entre sí: los activos, los pausados y los vendidos
+ * son parte de los publicados. Escribir los tres números a mano deja armar
+ * combinaciones que la base nunca devuelve ---tres activos y cero publicados---
+ * y un test sobre eso prueba algo que no puede pasar.
+ */
+function avisos({ activos = 0, pausados = 0, vendidos = 0 } = {}) {
+  return {
+    activeListings: activos,
+    publishedListings: activos + pausados + vendidos,
+    soldListings: vendidos,
+  }
+}
 
 const vacio: LevelInput = {
   profile: null,
-  activeListings: 0,
+  ...avisos(),
   bestPhotoCount: 0,
   garageCars: 0,
 }
 
-/** El que tiene los seis logros. */
+const perfilCompleto = { name: 'Tiziano', hasWhatsapp: true, city: 'Rosario' }
+
+/** El que tiene los siete logros. */
 const completo: LevelInput = {
-  profile: { name: 'Tiziano', hasWhatsapp: true, city: 'Rosario' },
-  activeListings: 3,
+  profile: perfilCompleto,
+  ...avisos({ activos: 3, vendidos: 1 }),
   bestPhotoCount: 8,
   garageCars: 4,
 }
@@ -19,11 +37,11 @@ const completo: LevelInput = {
 describe('la escalera', () => {
   /**
    * `LEVELS` y la lista de logros son dos definiciones separadas que hoy
-   * coinciden en seis. Si alguien suma un logro y no toca la escalera, el
-   * ultimo nivel pasa a ganarse con seis de siete y queda un logro que no
-   * sirve para nada; si suma un nivel y no un logro, el ultimo es inalcanzable
-   * y la barra de progreso de todo el mundo se queda a mitad de camino para
-   * siempre. Este test es lo unico que ata las dos listas.
+   * coinciden en siete. Si alguien suma un logro y no toca la escalera, el
+   * ultimo nivel pasa a ganarse sin ese logro y queda uno que no sirve para
+   * nada; si suma un nivel y no un logro, el ultimo es inalcanzable y la barra
+   * de progreso de todo el mundo se queda a mitad de camino para siempre. Este
+   * test es lo unico que ata las dos listas.
    */
   it('el ultimo nivel pide exactamente todos los logros', () => {
     const cima = LEVELS[LEVELS.length - 1]!
@@ -35,6 +53,23 @@ describe('la escalera', () => {
     for (let i = 1; i < LEVELS.length; i += 1) {
       expect(LEVELS[i]!.at).toBeGreaterThan(LEVELS[i - 1]!.at)
     }
+  })
+})
+
+/**
+ * Qué estados cuentan como "lo publicaste" está escrito dos veces: en
+ * `PUBLISHED_STATUSES`, que usa el perfil, y en la vista `profile_stats` de la
+ * migración 022, que usa la pantalla de niveles. Si se desacuerdan, el mismo
+ * usuario tiene un nivel en su perfil y otro en `/niveles`, y ninguno de los
+ * dos da error.
+ */
+describe('los estados que cuentan como publicados', () => {
+  it('la vista cuenta los mismos que el perfil', () => {
+    const lista = migracion022.match(/li\.status in \(([^)]+)\)/)
+    expect(lista, 'no se encontró la lista de estados en la 022').not.toBeNull()
+    const enLaBase = [...lista![1]!.matchAll(/'([^']+)'/g)].map((match) => match[1])
+
+    expect([...PUBLISHED_STATUSES].sort()).toEqual([...enLaBase].sort())
   })
 })
 
@@ -66,14 +101,24 @@ describe('computeLevel', () => {
     expect(done({ bestPhotoCount: 7 }, 'rich_listing')).toBe(false)
     expect(done({ bestPhotoCount: 8 }, 'rich_listing')).toBe(true)
 
-    expect(done({ activeListings: 2 }, 'three_listings')).toBe(false)
-    expect(done({ activeListings: 3 }, 'three_listings')).toBe(true)
+    expect(done(avisos({ activos: 2 }), 'three_listings')).toBe(false)
+    expect(done(avisos({ activos: 3 }), 'three_listings')).toBe(true)
 
     expect(done({ garageCars: 3 }, 'garage_complete')).toBe(false)
     expect(done({ garageCars: 4 }, 'garage_complete')).toBe(true)
 
-    expect(done({ activeListings: 0 }, 'first_listing')).toBe(false)
-    expect(done({ activeListings: 1 }, 'first_listing')).toBe(true)
+    expect(done(avisos(), 'first_listing')).toBe(false)
+    expect(done(avisos({ activos: 1 }), 'first_listing')).toBe(true)
+
+    expect(done(avisos(), 'first_sale')).toBe(false)
+    expect(done(avisos({ vendidos: 1 }), 'first_sale')).toBe(true)
+  })
+
+  /* "Tres autos activos" es el unico logro que habla del presente: tener tres
+     a la vez. Los vendidos cuentan para todo lo demas, pero no para este. */
+  it('tres activos son tres activos hoy, no tres alguna vez', () => {
+    const tres = computeLevel({ ...vacio, ...avisos({ activos: 2, vendidos: 1 }) })
+    expect(tres.achievements.find((item) => item.id === 'three_listings')!.done).toBe(false)
   })
 
   /* "Perfil completo" es el unico logro con tres condiciones, y las tres son
@@ -82,7 +127,7 @@ describe('computeLevel', () => {
     const perfil = (extra: Partial<{ name: string; hasWhatsapp: boolean; city: string | null }>) =>
       computeLevel({
         ...vacio,
-        profile: { name: 'Tiziano', hasWhatsapp: true, city: 'Rosario', ...extra },
+        profile: { ...perfilCompleto, ...extra },
       }).achievements[0]!.done
 
     expect(perfil({})).toBe(true)
@@ -93,7 +138,7 @@ describe('computeLevel', () => {
   })
 
   /**
-   * Barrido por los siete estados posibles de `earned`. La barra de progreso
+   * Barrido por los ocho estados posibles de `earned`. La barra de progreso
    * es lo que mas se mira de esta pantalla y un valor fuera de rango la dibuja
    * vacia o desbordada; un nivel que baja al sumar un logro es peor todavia.
    */
@@ -101,11 +146,12 @@ describe('computeLevel', () => {
     /* Ordenados para que cada uno sume un logro al anterior. */
     const escalones: LevelInput[] = [
       vacio,
-      { ...vacio, activeListings: 1 },
-      { ...vacio, activeListings: 1, garageCars: 1 },
-      { ...vacio, activeListings: 3, garageCars: 1 },
-      { ...vacio, activeListings: 3, garageCars: 4 },
-      { ...vacio, activeListings: 3, garageCars: 4, bestPhotoCount: 8 },
+      { ...vacio, ...avisos({ activos: 1 }) },
+      { ...vacio, ...avisos({ activos: 1 }), garageCars: 1 },
+      { ...vacio, ...avisos({ activos: 3 }), garageCars: 1 },
+      { ...vacio, ...avisos({ activos: 3 }), garageCars: 4 },
+      { ...vacio, ...avisos({ activos: 3 }), garageCars: 4, bestPhotoCount: 8 },
+      { ...vacio, ...avisos({ activos: 3, vendidos: 1 }), garageCars: 4, bestPhotoCount: 8 },
       completo,
     ]
 
@@ -123,20 +169,58 @@ describe('computeLevel', () => {
   /* Lo que falta para el proximo tiene que ser una cuenta que cierre: si dice
      "te faltan 2" y con uno mas subis, el numero miente. */
   it('lo que falta para el proximo nivel es exacto', () => {
-    const state = computeLevel({ ...vacio, activeListings: 1 })
+    const state = computeLevel({ ...vacio, ...avisos({ activos: 1 }) })
     expect(state.earned).toBe(1)
     expect(state.toNext).toBe(1)
 
-    const subio = computeLevel({ ...vacio, activeListings: 1, garageCars: 1 })
+    const subio = computeLevel({ ...vacio, ...avisos({ activos: 1 }), garageCars: 1 })
     expect(subio.level).toBe(state.level + 1)
   })
 
-  /* El nivel no se guarda: sale de los datos. Borrar una publicacion tiene que
-     bajarlo, que es justo lo que los contadores guardados hacen mal. */
+  /**
+   * El caso que motivo la 022. Un particular publica su unico auto con ocho
+   * fotos y completa el perfil: queda en Vendedor. Lo vende y lo marca como
+   * vendido. Antes perdia "Primera publicacion" y "Publicacion completa" y
+   * volvia a Recien llegado: el sistema premiaba dejar publicado un auto que
+   * ya no estaba. Ahora conserva los dos y suma la primera venta.
+   */
+  it('vender no te baja de nivel, te sube', () => {
+    const publicado = computeLevel({
+      ...vacio,
+      profile: perfilCompleto,
+      ...avisos({ activos: 1 }),
+      bestPhotoCount: 8,
+    })
+    const vendido = computeLevel({
+      ...vacio,
+      profile: perfilCompleto,
+      ...avisos({ vendidos: 1 }),
+      bestPhotoCount: 8,
+    })
+
+    const hecho = (id: string) => vendido.achievements.find((item) => item.id === id)!.done
+    expect(hecho('first_listing')).toBe(true)
+    expect(hecho('rich_listing')).toBe(true)
+    expect(hecho('first_sale')).toBe(true)
+    expect(vendido.earned).toBe(publicado.earned + 1)
+    expect(vendido.level).toBeGreaterThanOrEqual(publicado.level)
+  })
+
+  /* Pausar un aviso ---de vacaciones, o mientras se arregla algo--- tampoco
+     puede costar logros: sigue siendo tuyo y sigue estando. */
+  it('pausar no te baja de nivel', () => {
+    const activo = computeLevel({ ...vacio, ...avisos({ activos: 1 }), bestPhotoCount: 8 })
+    const pausado = computeLevel({ ...vacio, ...avisos({ pausados: 1 }), bestPhotoCount: 8 })
+    expect(pausado.earned).toBe(activo.earned)
+  })
+
+  /* El nivel no se guarda: sale de los datos. Borrar tiene que bajarlo, que es
+     justo lo que los contadores guardados hacen mal. Un aviso borrado se lleva
+     todo: la publicacion, sus fotos y la venta si la tenia. */
   it('el nivel baja si el dato que lo sostenia desaparece', () => {
     const conAvisos = computeLevel({ ...completo })
-    const sinAvisos = computeLevel({ ...completo, activeListings: 0 })
-    expect(sinAvisos.earned).toBe(conAvisos.earned - 2)
+    const sinAvisos = computeLevel({ ...completo, ...avisos(), bestPhotoCount: 0 })
+    expect(sinAvisos.earned).toBe(conAvisos.earned - 4)
     expect(sinAvisos.level).toBeLessThan(conAvisos.level)
   })
 })

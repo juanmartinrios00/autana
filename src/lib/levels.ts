@@ -8,7 +8,7 @@
  *
  * Todos los logros son verificables. Ninguno se otorga "por participar".
  *
- * Lo que el nivel NO es: una señal de confianza. Dos de los seis logros son
+ * Lo que el nivel NO es: una señal de confianza. Dos de los siete logros son
  * del garage —el primer auto, el que más se extraña—, que es nostalgia y no
  * dice nada sobre con quién es seguro encontrarse a entregar plata. Por eso
  * vive solo en el perfil. Lo que ve el comprador junto al precio son hechos
@@ -16,12 +16,29 @@
  */
 
 import { SLOTS } from '../data/garage-slots'
+import type { ListingStatus } from '../types'
+
+/**
+ * Los estados de un aviso que cuentan como "lo publicaste".
+ *
+ * Activo, pausado y vendido: salió publicado y sigue en la base. Hasta la 022
+ * sólo contaba el activo, y marcar un auto como vendido te sacaba "Primera
+ * publicación" y "Publicación completa" de golpe ---o sea que vender, que es
+ * para lo que existe el sitio, te bajaba de nivel---. Un borrador no cuenta
+ * porque nunca salió, uno bloqueado por moderación tampoco, y uno borrado ya
+ * no está: borrar sí baja el nivel, a propósito.
+ *
+ * La misma lista está en la migración 022, porque la vista `profile_stats`
+ * cuenta lo mismo del lado de la base. Un test lee el SQL y las compara.
+ */
+export const PUBLISHED_STATUSES: readonly ListingStatus[] = ['active', 'paused', 'sold']
 
 export type AchievementId =
   | 'profile_complete'
   | 'first_listing'
   | 'rich_listing'
   | 'three_listings'
+  | 'first_sale'
   | 'garage_started'
   | 'garage_complete'
 
@@ -57,15 +74,20 @@ export const LEVELS = [
   { at: 0, title: 'Recién llegado' },
   { at: 2, title: 'Vendedor' },
   { at: 4, title: 'Fierrero' },
-  { at: 6, title: 'Referente' },
+  { at: 7, title: 'Referente' },
 ] as const
 
 export interface LevelInput {
   /** `hasWhatsapp` y no el numero: el logro solo necesita saber si esta
    *  cargado, y desde la migracion 008 el numero no se lee de `profiles`. */
   profile: { name: string; hasWhatsapp: boolean; city: string | null } | null
+  /** Activos hoy. Sólo para "Tres autos activos", que habla del presente. */
   activeListings: number
-  /** Cuántas fotos tiene la publicación con más fotos. */
+  /** Los que alguna vez salieron publicados: ver `PUBLISHED_STATUSES`. */
+  publishedListings: number
+  /** Los marcados como vendidos. */
+  soldListings: number
+  /** Cuántas fotos tiene la publicación con más fotos, entre las publicadas. */
   bestPhotoCount: number
   /** Autos cargados en el garage. */
   garageCars: number
@@ -74,6 +96,8 @@ export interface LevelInput {
 export function computeLevel({
   profile,
   activeListings,
+  publishedListings,
+  soldListings,
   bestPhotoCount,
   garageCars,
 }: LevelInput): LevelState {
@@ -88,7 +112,7 @@ export function computeLevel({
       id: 'first_listing',
       title: 'Primera publicación',
       hint: 'Publicá tu primer auto.',
-      done: activeListings >= 1,
+      done: publishedListings >= 1,
     },
     {
       id: 'rich_listing',
@@ -101,6 +125,16 @@ export function computeLevel({
       title: 'Tres autos activos',
       hint: 'Tené tres publicaciones activas a la vez.',
       done: activeListings >= 3,
+    },
+    {
+      id: 'first_sale',
+      title: 'Primera venta',
+      hint: 'Marcá un auto como vendido cuando lo vendas.',
+      /* No prueba que hubo una venta: marcar como vendido es una declaración.
+         Pero mentirla cuesta el aviso, que sale del listado, y el nivel no es
+         una señal de confianza para nadie. Lo que sí hace es premiar la única
+         acción que mantiene el listado limpio de autos que ya no están. */
+      done: soldListings >= 1,
     },
     {
       id: 'garage_started',

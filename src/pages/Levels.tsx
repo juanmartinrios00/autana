@@ -17,12 +17,17 @@ import './Levels.css'
  *
  * Existe porque el nivel solo, arriba del perfil, no se explica: dice
  * "Fierrero" y no dice de dónde salió ni qué falta para el que sigue. Acá se
- * ven los cuatro y los seis logros, con el propio marcado encima.
+ * ven los cuatro niveles y todos los logros, con el propio marcado encima.
  *
  * Funciona sin sesión a propósito. Es la pantalla a la que se manda a alguien
  * que pregunta qué son los niveles, y pedirle que se registre para leer una
  * explicación es la forma más rápida de que no la lea.
  */
+
+/* Cuántos logros hay, en letras, que es como se leen en esta pantalla. Sale del
+   largo de la lista y no escrito a mano: decía "seis" en cinco lugares, y sumar
+   un logro obligaba a encontrarlos todos. Así pasó con "Primera venta". */
+const EN_LETRAS = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez']
 
 /* Sin sesión se muestra la escalera con el primer nivel como si fuera el
    propio: es el estado real de alguien que todavía no se registró, y deja ver
@@ -30,6 +35,8 @@ import './Levels.css'
 const EMPTY: LevelInput = {
   profile: null,
   activeListings: 0,
+  publishedListings: 0,
+  soldListings: 0,
   bestPhotoCount: 0,
   garageCars: 0,
 }
@@ -65,6 +72,7 @@ export function Levels() {
      en vez de escribirse en el estado desde el efecto. */
   const input = userId && fetched?.for === userId ? fetched.value : EMPTY
   const state: LevelState = computeLevel(input)
+  const total = EN_LETRAS[state.achievements.length] ?? String(state.achievements.length)
   const signedIn = Boolean(session)
 
   useDarkHero()
@@ -72,7 +80,7 @@ export function Levels() {
   useDocumentMeta({
     title: pageTitle('Los niveles'),
     description:
-      `Cómo funcionan los niveles de ${BRAND}: seis logros, cuatro escalones, y todos salen de cosas que ya hiciste.`,
+      `Cómo funcionan los niveles de ${BRAND}: ${total} logros, cuatro escalones, y todos salen de cosas que ya hiciste.`,
   })
 
   return (
@@ -82,8 +90,9 @@ export function Levels() {
           <span className="over over--invert">Los niveles</span>
           <h1 className="levels__title">Se suben haciendo, no participando.</h1>
           <p className="levels__lead">
-            Los seis logros salen de datos que ya existen: si borrás una publicación, el
-            nivel baja. No hay puntos por entrar todos los días.
+            Los {total} logros salen de datos que ya existen: si borrás una publicación, el
+            nivel baja; si la marcás como vendida, no. No hay puntos por entrar todos los
+            días.
           </p>
           {/* La misma aclaración que está en el perfil. Va acá arriba y no al
               pie porque es lo que más se malinterpreta: alguien que llega desde
@@ -121,7 +130,7 @@ export function Levels() {
                   <p className="rung__need">
                     {rung.at === 0
                       ? 'Desde que abrís la cuenta.'
-                      : `Con ${rung.at} de los seis logros.`}
+                      : `Con ${rung.at} de los ${total} logros.`}
                   </p>
                   {here && <span className="rung__badge">Estás acá</span>}
                 </div>
@@ -132,7 +141,7 @@ export function Levels() {
 
         <section className="levels__section">
           <header className="levels__section-head">
-            <span className="over">Los seis</span>
+            <span className="over">Los {total}</span>
             <h2 className="levels__section-title">Qué cuenta como logro</h2>
             {signedIn && (
               <p className="levels__progress mono">

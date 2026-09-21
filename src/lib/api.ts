@@ -1,4 +1,4 @@
-import type { LevelInput } from './levels'
+import { PUBLISHED_STATUSES, type LevelInput } from './levels'
 import { computeTrust, type TrustSignal } from './trust'
 import { applyVehicleFilters } from './search-query'
 import { photoUrl, requireSupabase } from './supabase'
@@ -1302,7 +1302,14 @@ export interface ProfileSummary {
   contentHidden: boolean
   /** Publicaciones activas. */
   activeListings: number
-  /** Fotos de la publicación que más tiene. Alimenta el logro correspondiente. */
+  /**
+   * Activas, pausadas y vendidas. Para los logros: ver `PUBLISHED_STATUSES`.
+   * Mirando el perfil de otro da lo mismo que `activeListings`, porque sus
+   * pausadas y vendidas no se pueden leer.
+   */
+  publishedListings: number
+  soldListings: number
+  /** Fotos de la publicación que más tiene, entre las publicadas. */
   bestPhotoCount: number
 }
 
@@ -1315,7 +1322,7 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
       .from('listings')
       .select('id, status, listing_images(id)')
       .eq('seller_id', userId)
-      .eq('status', 'active'),
+      .in('status', PUBLISHED_STATUSES),
   ])
 
   if (profile.error) throw profile.error
@@ -1323,7 +1330,11 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
   if (listings.error) throw listings.error
 
   const profileRow = profile.data as ProfileRow
-  const rows = listings.data as { id: string; listing_images: { id: string }[] | null }[]
+  const rows = listings.data as {
+    id: string
+    status: string
+    listing_images: { id: string }[] | null
+  }[]
 
   return {
     id: profileRow.id,
@@ -1340,7 +1351,9 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
     instagram: profileRow.instagram ?? null,
     garageTheme: profileRow.garage_theme ?? 'ink',
     contentHidden: profileRow.content_hidden ?? false,
-    activeListings: rows.length,
+    activeListings: rows.filter((row) => row.status === 'active').length,
+    publishedListings: rows.length,
+    soldListings: rows.filter((row) => row.status === 'sold').length,
     bestPhotoCount: rows.reduce((max, row) => Math.max(max, row.listing_images?.length ?? 0), 0),
   }
 }
@@ -1432,6 +1445,8 @@ interface StatsRow {
   active_listings: number
   best_photos: number
   garage_cars: number
+  published_listings: number
+  sold_listings: number
 }
 
 /** @deprecated El nivel ya no viaja con los avisos. Ver `getSellerTrust`. */
@@ -1977,7 +1992,7 @@ export async function getLevelInput(userId: string): Promise<LevelInput> {
   const client = requireSupabase()
   const { data, error } = await client
     .from('profile_stats')
-    .select('name, city, active_listings, best_photos, garage_cars')
+    .select('name, city, active_listings, published_listings, sold_listings, best_photos, garage_cars')
     .eq('user_id', userId)
     .maybeSingle()
 
@@ -1990,29 +2005,8 @@ export async function getLevelInput(userId: string): Promise<LevelInput> {
   return {
     profile: row ? { name: row.name, hasWhatsapp, city: row.city } : null,
     activeListings: row?.active_listings ?? 0,
-    bestPhotoCount: row?.best_photos ?? 0,
-    garageCars: row?.garage_cars ?? 0,
-  }
-}
-
-/** Los números crudos de un perfil, para la pantalla propia. */
-export async function getProfileStats(userId: string): Promise<{
-  activeListings: number
-  bestPhotoCount: number
-  garageCars: number
-}> {
-  const client = requireSupabase()
-  const { data, error } = await client
-    .from('profile_stats')
-    .select('active_listings, best_photos, garage_cars')
-    .eq('user_id', userId)
-    .maybeSingle()
-
-  if (error) throw error
-  const row = data as Pick<StatsRow, 'active_listings' | 'best_photos' | 'garage_cars'> | null
-
-  return {
-    activeListings: row?.active_listings ?? 0,
+    publishedListings: row?.published_listings ?? 0,
+    soldListings: row?.sold_listings ?? 0,
     bestPhotoCount: row?.best_photos ?? 0,
     garageCars: row?.garage_cars ?? 0,
   }
