@@ -220,6 +220,9 @@ dos lugares que tienen que coincidir y que nada obliga a coincidir.
   escalera, el último nivel se gana con seis de siete.
 - `LIMITS.city` y el presupuesto de 200 caracteres del preview: aflojar el tope
   deja los avisos de la provincia con el nombre más largo sin descripción.
+- Las notas del blog y sus láminas de `public/og-blog-*.png`: escribir una nota
+  y no correr `npm run og:blog` deja el link compartido con una imagen rota,
+  que es peor que sin imagen.
 
 Esos tests leen el SQL con `?raw` y lo comparan contra el TypeScript. Si uno
 falla, **no lo ajustes al valor nuevo**: fijate cuál de las dos definiciones

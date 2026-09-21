@@ -694,7 +694,10 @@ function renderPost(assetResponse: Response, request: Request, slug: string): Re
   return renderPreview(assetResponse, {
     title: pageTitle(post.title),
     description: post.summary,
-    image: homeImage(url.origin),
+    /* Cada nota tiene la suya, con su titulo dibujado: las genera
+       `npm run og:blog` y un test ata las dos listas. Una sola para todas
+       seria el mismo link dos veces en un chat. */
+    image: `${url.origin}/og-blog-${post.slug}.png`,
     canonical: `${url.origin}/blog/${post.slug}`,
   })
 }

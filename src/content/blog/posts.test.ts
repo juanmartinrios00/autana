@@ -66,3 +66,42 @@ describe('metadatos y cuerpos', () => {
     expect(Object.keys(bodies).sort()).toEqual(posts.map((post) => post.slug).sort())
   })
 })
+
+/**
+ * Cada nota tiene su lámina de preview, dibujada de antemano en `public/` por
+ * `npm run og:blog` y servida por el worker cuando alguien comparte el link.
+ *
+ * Es otra forma de romperlo que no avisa, y de las peores: se escribe una nota
+ * nueva, se publica, se comparte — y el link sale con una imagen rota, que es
+ * peor que sin imagen. No falla el build, no falla la pantalla, y el que se
+ * entera es el que recibió el mensaje.
+ *
+ * Va en los dos sentidos. Una lámina sin su nota es una nota que se borró y
+ * dejó el archivo: no rompe nada, pero son 24 KB que se despliegan para
+ * siempre y la próxima persona no sabe si sobra o si falta la nota.
+ *
+ * Con `import.meta.glob` y sin `eager`: sólo hacen falta los nombres, así que
+ * no hay por qué leer cuatro PNG para contarlos.
+ */
+describe('las láminas del blog', () => {
+  const LAMINAS = import.meta.glob('../../../public/og-blog-*.png')
+
+  const slugsConLamina = Object.keys(LAMINAS).map((path) =>
+    (path.split('/').pop() ?? '').replace(/^og-blog-/, '').replace(/\.png$/, ''),
+  )
+
+  it('hay una por nota', () => {
+    for (const post of posts) {
+      expect(slugsConLamina, `falta la lámina de "${post.slug}": corré npm run og:blog`).toContain(
+        post.slug,
+      )
+    }
+  })
+
+  it('y ninguna de más', () => {
+    const slugs = posts.map((post) => post.slug)
+    for (const slug of slugsConLamina) {
+      expect(slugs, `sobra la lámina de "${slug}": esa nota ya no existe`).toContain(slug)
+    }
+  })
+})
