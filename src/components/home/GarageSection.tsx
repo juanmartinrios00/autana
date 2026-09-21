@@ -11,9 +11,10 @@ import './GarageSection.css'
  * de la cuenta. Un visitante nuevo sólo se enteraba si alguien le mandaba un
  * link.
  *
- * Va en banda oscura, como la cabecera del propio garage, porque es lo único de
- * la portada que no es comprar ni vender: tiene que leerse como otra cosa y no
- * como una sección más del marketplace.
+ * Va en banda gris. Fue oscura, como la cabecera del propio garage, para que se
+ * leyera como otra cosa que comprar y vender; pero con los paneles de tinta más
+ * arriba la portada acumulaba demasiado negro, y el gris alcanza para separarla
+ * de la sección blanca que tiene al lado.
  *
  * "Armá el tuyo" va a `/garage/mio`, que resuelve solo si hay sesión o no: con
  * sesión lleva a tu garage, sin sesión pasa por el login y vuelve ahí.
@@ -22,7 +23,7 @@ export function GarageSection() {
   return (
     <section className="gsection" aria-labelledby="gsection-title">
       <header className="gsection__head">
-        <span className="over over--invert">El garage virtual</span>
+        <span className="over">El garage virtual</span>
         <h2 className="gsection__title" id="gsection-title">
           No todo auto es para vender.
         </h2>
@@ -32,7 +33,7 @@ export function GarageSection() {
         </p>
       </header>
 
-      <GarageShowcase tone="dark" />
+      <GarageShowcase />
 
       <div className="gsection__cta">
         <Link to="/garage/mio">

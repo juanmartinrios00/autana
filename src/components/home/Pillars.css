@@ -18,16 +18,14 @@
   flex-direction: column;
 }
 
-/* Cada panel trae su propia paleta y todo lo de adentro sale de estos seis
+/* Cada panel trae su propia paleta y todo lo de adentro sale de estos siete
    valores. Escribir el color de cada pieza tres veces ---título, copete, texto,
-   líneas, dibujo, grilla--- son dieciocho reglas que hay que mantener de
-   acuerdo entre sí; declarando la paleta arriba, agregar un cuarto panel es
-   elegir seis colores.
+   líneas--- son reglas que hay que mantener de acuerdo entre sí; declarando la
+   paleta arriba, agregar un cuarto panel es elegir siete colores.
 
-   El de destaque del dibujo no siempre es el amarillo. Su trabajo es ser la
-   línea que se ve primero, y sobre amarillo o sobre gris claro un trazo
-   amarillo de 1,25 píxeles no se ve en absoluto. En esos dos paneles ese papel
-   lo hace la tinta. Es la misma idea aplicada, no la misma variable. */
+   `--pillar-mark` es el que destaca, y hoy sólo lo usa el link al pasar el
+   mouse. No siempre es el amarillo: sobre amarillo no se vería, y sobre el gris
+   claro tampoco se ve una línea amarilla de un píxel. Ahí lo hace la tinta. */
 .pillar {
   position: sticky;
   top: 0;
@@ -43,7 +41,7 @@
    cambio de fondo entero ---el borde ya no hace falta, y sobre el amarillo una
    línea blanca sería un accidente. */
 
-/* Tinta. El amarillo es el que destaca, como en el resto del sitio. */
+/* Tinta. */
 .pillar--tinta {
   --pillar-bg: var(--ink);
   --pillar-ink: var(--ink-inverse);
@@ -51,14 +49,12 @@
   --pillar-soft: rgba(255, 255, 255, 0.62);
   --pillar-line: rgba(255, 255, 255, 0.16);
   --pillar-cta-line: rgba(255, 255, 255, 0.4);
-  --pillar-art: rgba(255, 255, 255, 0.34);
-  --pillar-grid: rgba(255, 255, 255, 0.09);
   --pillar-mark: var(--accent);
 }
 
-/* Amarillo. Todo lo de adentro se da vuelta a tinta, incluido el destaque: es
-   el único panel donde el color de fondo es el color de acción, así que la
-   jerarquía la tiene que dar el contraste. */
+/* Amarillo. Todo lo de adentro se da vuelta a tinta: es el único panel donde
+   el color de fondo es el color de acción, así que la jerarquía la tiene que
+   dar el contraste. */
 .pillar--amarillo {
   --pillar-bg: var(--accent);
   --pillar-ink: var(--ink);
@@ -66,8 +62,6 @@
   --pillar-soft: rgba(10, 16, 12, 0.62);
   --pillar-line: rgba(10, 16, 12, 0.18);
   --pillar-cta-line: rgba(10, 16, 12, 0.42);
-  --pillar-art: rgba(10, 16, 12, 0.34);
-  --pillar-grid: rgba(10, 16, 12, 0.1);
   --pillar-mark: var(--ink);
 }
 
@@ -80,8 +74,6 @@
   --pillar-soft: rgba(10, 16, 12, 0.6);
   --pillar-line: rgba(10, 16, 12, 0.14);
   --pillar-cta-line: rgba(10, 16, 12, 0.4);
-  --pillar-art: rgba(10, 16, 12, 0.32);
-  --pillar-grid: rgba(10, 16, 12, 0.08);
   --pillar-mark: var(--ink);
 }
 
@@ -93,12 +85,9 @@
   padding: clamp(var(--sp-6), 5vw, var(--sp-9));
 }
 
+/* Crece para empujar el copete y el texto al pie del panel. */
 .pillar__top {
   flex: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
-  align-items: start;
-  gap: var(--sp-6);
 }
 
 .pillar__title {
@@ -109,28 +98,6 @@
   line-height: 1.02;
   letter-spacing: -0.035em;
   color: var(--pillar-ink);
-}
-
-.pillar__art {
-  justify-self: end;
-  width: 100%;
-  max-width: 420px;
-}
-
-.pillar__svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  color: var(--pillar-art);
-}
-
-/* La grilla va más apagada que el dibujo: es el papel, no lo dibujado. */
-.pillar__grid {
-  stroke: var(--pillar-grid);
-}
-
-.pillar__accent {
-  stroke: var(--pillar-mark);
 }
 
 .pillar__eyebrow {
@@ -172,8 +139,8 @@
   transition: border-color var(--dur-med) var(--ease);
 }
 
-/* El mismo color que destaca en el dibujo de ese panel: amarillo sobre tinta,
-   tinta sobre amarillo y sobre claro. */
+/* El color que destaca en cada panel: amarillo sobre tinta, tinta sobre
+   amarillo y sobre claro. */
 .pillar__cta:hover {
   border-bottom-color: var(--pillar-mark);
   color: var(--pillar-mark);
@@ -188,14 +155,8 @@
     min-height: 0;
   }
 
-  .pillar__top,
   .pillar__bottom {
     grid-template-columns: 1fr;
-  }
-
-  .pillar__art {
-    justify-self: start;
-    max-width: 280px;
   }
 
   .pillar__title {

@@ -9,7 +9,8 @@
   flex-direction: column;
   gap: var(--sp-6);
   padding: clamp(var(--sp-6), 4vw, var(--sp-9));
-  background: var(--surface);
+  /* El blanco de la página: el borde es lo que la recorta como bloque. */
+  background: var(--canvas);
   border: 1px solid var(--line);
 }
 
@@ -134,31 +135,8 @@
 /* La línea, con el marcador encima. `position: relative` acá y absolute en el
    marcador para que el círculo quede sobre el trazo y no lo empuje. */
 .hstep__rule {
-  position: relative;
   margin-block: var(--sp-5);
   border-top: 1px solid var(--line-strong);
-}
-
-.hstep__marker {
-  position: absolute;
-  top: 50%;
-  right: 6%;
-  width: 22px;
-  height: 22px;
-  transform: translateY(-50%);
-  border: 1px solid var(--ink-3);
-  border-radius: 50%;
-  background: var(--surface-2);
-}
-
-/* Vacío, medio y entero. El relleno del medio es un degradado duro y no un
-   pseudo-elemento: son dos líneas en vez de seis. */
-.hstep__marker--half {
-  background: linear-gradient(90deg, var(--ink-3) 50%, var(--surface-2) 50%);
-}
-
-.hstep__marker--full {
-  background: var(--ink-3);
 }
 
 .hstep__text {
