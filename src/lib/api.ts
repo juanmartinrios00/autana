@@ -12,6 +12,7 @@ import type {
   VehicleFilters,
   VehicleImage,
 } from '../types'
+import type { MakeModelCount } from './suggest'
 
 /**
  * Única capa que habla con el backend. Todo lo que la UI sabe de la red pasa
@@ -408,6 +409,27 @@ export function listMakes(): Promise<string[]> {
 
 export function listProvinces(): Promise<string[]> {
   return distinct('province')
+}
+
+/**
+ * Cada marca y modelo publicado, con cuántos hay: lo que sugiere el buscador
+ * de la navbar (`lib/suggest`). Una consulta de dos columnas y se cuenta acá;
+ * el buscador la pide una vez, la primera vez que alguien lo toca.
+ */
+export async function listMakeModels(): Promise<MakeModelCount[]> {
+  const client = requireSupabase()
+  const { data, error } = await client.from('listings').select('make, model').eq('status', 'active')
+
+  if (error) throw error
+  const counts = new Map<string, MakeModelCount>()
+  for (const { make, model } of data as { make: string; model: string }[]) {
+    if (!make || !model) continue
+    const key = JSON.stringify([make, model])
+    const found = counts.get(key)
+    if (found) found.count += 1
+    else counts.set(key, { make, model, count: 1 })
+  }
+  return [...counts.values()]
 }
 
 export async function listModels(make: string): Promise<string[]> {

@@ -461,6 +461,58 @@ button.navbar__link {
   color: rgba(255, 255, 255, 0.64);
 }
 
+/* Las sugerencias. Siempre en papel y tinta, también cuando la navbar flota
+   en blanco sobre el hero: es un menú que se abre encima de la página, no
+   parte de la barra. */
+.navsearch {
+  position: relative;
+}
+
+.navsearch__suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  z-index: 50;
+  margin: 0;
+  padding: var(--sp-2);
+  list-style: none;
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+  box-shadow: var(--sh-overlay);
+  color: var(--ink);
+}
+
+.navsearch__suggestions[hidden] {
+  display: none;
+}
+
+.navsearch__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: 44px;
+  padding: 0 var(--sp-3);
+  border-radius: var(--r-sm);
+  font-size: 0.94rem;
+  cursor: pointer;
+}
+
+.navsearch__option.is-active {
+  background: var(--surface);
+}
+
+.navsearch__option-all {
+  color: var(--ink-3);
+}
+
+.navsearch__option-count {
+  flex-shrink: 0;
+  font-size: var(--fs-xs);
+  color: var(--ink-4);
+}
+
 /* Marca el borde superior del documento para el observador de la navbar.
    Va absoluto para no ocupar lugar ni empujar nada. */
 .nav-sentinel {
