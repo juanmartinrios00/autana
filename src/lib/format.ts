@@ -65,6 +65,7 @@ export const bodyLabels: Record<BodyType, string> = {
    sirve que `Object.keys` lo conserve. */
 export const fuelTypes = Object.keys(fuelLabels) as FuelType[]
 export const transmissions = Object.keys(transmissionLabels) as Transmission[]
+export const drivetrains = Object.keys(drivetrainLabels) as Drivetrain[]
 export const bodyTypes = Object.keys(bodyLabels) as BodyType[]
 export const conditions = Object.keys(conditionLabels) as VehicleCondition[]
 
@@ -95,7 +96,11 @@ export const currencies = Object.keys(currencyLabels) as Currency[]
    hacia que elegirlo cayera en `relevance`: la pantalla decia "Precio: menor
    primero" y los resultados venian ordenados por otra cosa. */
 export const sortLabels: Record<SortOption, string> = {
-  relevance: 'Relevancia',
+  /* El valor sigue siendo `relevance` porque está en las URL compartidas y en
+     las búsquedas guardadas. La etiqueta decía "Relevancia", pero lo que hace
+     es ordenar por fecha de publicación: no hay ninguna relevancia calculada,
+     y prometerla hace pensar que el primero es el mejor. */
+  relevance: 'Más recientes',
   'price-asc': 'Precio: menor primero',
   'price-desc': 'Precio: mayor primero',
   'year-desc': 'Año: más nuevo',

@@ -162,6 +162,25 @@
   display: none;
 }
 
+/* Un celular: "Filtros" y el orden comparten la fila y se reparten el ancho.
+   La grilla o lista se va: a este ancho la grilla ya es una columna, y con el
+   botón al lado el orden quedaba en "Más r…". Arranca siempre en grilla, así
+   que nadie queda atrapado en la lista. */
+@media (max-width: 520px) {
+  .cars__head > div:last-child {
+    width: 100%;
+  }
+
+  .cars__sort {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .view-toggle {
+    display: none;
+  }
+}
+
 @media (max-width: 899px) {
   .cars {
     flex-direction: column;

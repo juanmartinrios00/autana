@@ -8,6 +8,8 @@ import {
   currencies,
   conditionLabels,
   conditions,
+  drivetrainLabels,
+  drivetrains,
   fuelLabels,
   fuelTypes,
   sellerTypeLabels,
@@ -20,7 +22,8 @@ import './FilterPanel.css'
 
 type FilterState = ReturnType<typeof useVehicleFilters>
 
-interface FilterPanelProps extends Pick<FilterState, 'filters' | 'setParam' | 'toggleInList' | 'clearAll'> {
+interface FilterPanelProps
+  extends Pick<FilterState, 'filters' | 'setParam' | 'setParams' | 'toggleInList' | 'clearAll'> {
   makes: string[]
   models: string[]
   provinces: string[]
@@ -69,6 +72,7 @@ function ChipGroup<T extends string>({
 export function FilterPanel({
   filters,
   setParam,
+  setParams,
   toggleInList,
   clearAll,
   makes,
@@ -97,10 +101,8 @@ export function FilterPanel({
         placeholder="Todas"
         options={makes.map((make) => ({ value: make, label: make }))}
         value={filters.make ?? ''}
-        onChange={(event) => {
-          setParam('make', event.target.value || undefined)
-          setParam('model', undefined)
-        }}
+        /* Las dos juntas: ver `setParams`. */
+        onChange={(event) => setParams({ make: event.target.value || undefined, model: undefined })}
       />
 
       <Select
@@ -220,6 +222,14 @@ export function FilterPanel({
       </fieldset>
 
       <ChipGroup
+        legend="Tracción"
+        options={drivetrains}
+        labels={drivetrainLabels}
+        selected={filters.drivetrain}
+        onToggle={(value) => toggleInList('drivetrain', value)}
+      />
+
+      <ChipGroup
         legend="Combustible"
         options={fuelTypes}
         labels={fuelLabels}
@@ -242,6 +252,24 @@ export function FilterPanel({
         selected={filters.condition}
         onToggle={(value) => toggleInList('condition', value)}
       />
+
+      {/* Un interruptor y no un grupo: hay una sola opción que tenga sentido
+          pedir. `negotiable=1` en la URL, como las demás claves. */}
+      <fieldset className="filters__group">
+        <legend className="field__label">Precio negociable</legend>
+        <div className="filters__chips">
+          <button
+            type="button"
+            className="chip-button"
+            aria-pressed={Boolean(filters.negotiable)}
+            onClick={() => setParam('negotiable', filters.negotiable ? undefined : '1')}
+          >
+            <Badge tone={filters.negotiable ? 'tint' : 'outline'} className="filters__chip">
+              Acepta ofertas
+            </Badge>
+          </button>
+        </div>
+      </fieldset>
 
       <Select
         label="Ubicación"

@@ -1,10 +1,17 @@
 import {
+  bodyLabels,
   bodyTypes,
+  conditionLabels,
   conditions,
   currencies,
+  drivetrainLabels,
+  drivetrains,
+  fuelLabels,
   fuelTypes,
+  sellerTypeLabels,
   sellerTypes,
   sortValues,
+  transmissionLabels,
   transmissions,
 } from './format'
 import type { SortOption, VehicleFilters } from '../types'
@@ -83,6 +90,8 @@ export function parseFilters(params: URLSearchParams): VehicleFilters {
     bodyType: list(params, 'bodyType', bodyTypes),
     condition: list(params, 'condition', conditions),
     transmission: one(params, 'transmission', transmissions),
+    drivetrain: list(params, 'drivetrain', drivetrains),
+    negotiable: params.get('negotiable') === '1' ? true : undefined,
     sellerType: one(params, 'sellerType', sellerTypes),
   }
 }
@@ -91,11 +100,75 @@ export function parseSort(params: URLSearchParams): SortOption {
   return one(params, 'sort', sortValues) ?? 'relevance'
 }
 
-/** Cuántos filtros hay puestos, para el contador de "3 activos". */
+/**
+ * Cuántos filtros hay puestos, para el contador de "3 activos".
+ *
+ * Son los mismos que se ven como chips arriba de los resultados: si el
+ * contador dice tres, hay tres chips. Contaba claves de la URL, y la moneda
+ * sola ---sin precio, que es cuando no filtra nada--- sumaba uno que no se veía
+ * en ningún lado.
+ */
 export function countActive(filters: VehicleFilters): number {
-  return Object.values(filters).filter((value) =>
-    Array.isArray(value) ? value.length > 0 : value !== undefined && value !== '',
-  ).length
+  return activeChips(filters).length
+}
+
+/**
+ * Un filtro puesto, como se muestra arriba de los resultados: el texto, y qué
+ * sacar de la URL al tocar la ×.
+ *
+ * `value` es para las listas: sacar "Diésel" de `fuelType=diesel,petrol` deja
+ * la nafta. Sin `value` se borra la clave entera.
+ */
+export interface FilterChip {
+  key: string
+  value?: string
+  label: string
+}
+
+const miles = (n: number) => n.toLocaleString('es-AR')
+
+/**
+ * Los filtros puestos, en el orden del panel.
+ *
+ * Vive acá y no en el componente para poder probarla sin React: es la parte
+ * que se equivoca en silencio ---un filtro que filtra pero no aparece como
+ * chip, y el visitante no entiende por qué ve tan pocos autos---.
+ */
+export function activeChips(filters: VehicleFilters): FilterChip[] {
+  const chips: FilterChip[] = []
+  const moneda = filters.currency ?? 'USD'
+
+  if (filters.q?.trim()) chips.push({ key: 'q', label: `"${filters.q.trim()}"` })
+  /* Sacar la marca saca también el modelo: un modelo sin su marca no se
+     puede elegir en el panel, y quedaría un filtro que no se puede tocar. */
+  if (filters.make) chips.push({ key: 'make', label: filters.make })
+  if (filters.model) chips.push({ key: 'model', label: filters.model })
+  if (filters.minPrice) chips.push({ key: 'minPrice', label: `Desde ${moneda} ${miles(filters.minPrice)}` })
+  if (filters.maxPrice) chips.push({ key: 'maxPrice', label: `Hasta ${moneda} ${miles(filters.maxPrice)}` })
+  if (filters.minYear) chips.push({ key: 'minYear', label: `Desde ${filters.minYear}` })
+  if (filters.maxYear) chips.push({ key: 'maxYear', label: `Hasta ${filters.maxYear}` })
+  if (filters.maxMileage !== undefined) {
+    chips.push({
+      key: 'maxMileage',
+      label: filters.maxMileage === 0 ? '0 km' : `Hasta ${miles(filters.maxMileage)} km`,
+    })
+  }
+  if (filters.transmission) {
+    chips.push({ key: 'transmission', label: transmissionLabels[filters.transmission] })
+  }
+  for (const value of filters.drivetrain ?? []) {
+    chips.push({ key: 'drivetrain', value, label: `Tracción ${drivetrainLabels[value].toLowerCase()}` })
+  }
+  if (filters.negotiable) chips.push({ key: 'negotiable', label: 'Acepta ofertas' })
+  for (const value of filters.fuelType ?? []) chips.push({ key: 'fuelType', value, label: fuelLabels[value] })
+  for (const value of filters.bodyType ?? []) chips.push({ key: 'bodyType', value, label: bodyLabels[value] })
+  for (const value of filters.condition ?? []) {
+    chips.push({ key: 'condition', value, label: conditionLabels[value] })
+  }
+  if (filters.province) chips.push({ key: 'province', label: filters.province })
+  if (filters.sellerType) chips.push({ key: 'sellerType', label: sellerTypeLabels[filters.sellerType] })
+
+  return chips
 }
 
 function searchTerms(q: string): string[] {
@@ -163,6 +236,8 @@ export function applyVehicleFilters<Q extends FilterableQuery<Q>>(
   if (filters.maxPrice) query = query.lte('price', filters.maxPrice)
   if (filters.maxMileage !== undefined) query = query.lte('mileage', filters.maxMileage)
   if (filters.transmission) query = query.eq('transmission', filters.transmission)
+  if (filters.drivetrain?.length) query = query.in('drivetrain', filters.drivetrain as never[])
+  if (filters.negotiable) query = query.eq('negotiable', true)
   if (filters.fuelType?.length) query = query.in('fuel_type', filters.fuelType as never[])
   if (filters.bodyType?.length) query = query.in('body_type', filters.bodyType as never[])
   if (filters.condition?.length) query = query.in('condition', filters.condition as never[])

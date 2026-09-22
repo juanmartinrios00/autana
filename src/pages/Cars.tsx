@@ -9,7 +9,8 @@ import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { pageTitle } from '../config/brand'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { SaveSearch } from '../components/search/SaveSearch'
-import { countActive, useVehicleFilters } from '../hooks/useVehicleFilters'
+import { activeChips, useVehicleFilters } from '../hooks/useVehicleFilters'
+import { ActiveFilters } from '../components/search/ActiveFilters'
 import { listMakes, listModels, listProvinces, listVehicles } from '../lib/api'
 import { formatCount, sortLabels, sortValues } from '../lib/format'
 import { pageWindow } from '../lib/pagination'
@@ -34,7 +35,8 @@ const sortOptions = sortValues.map((value) => ({ value, label: sortLabels[value]
 type Status = 'loading' | 'ready' | 'error'
 
 export function Cars() {
-  const { filters, sort, page, setParam, toggleInList, clearAll } = useVehicleFilters()
+  const { filters, sort, page, setParam, setParams, toggleInList, clearAll, removeChip } =
+    useVehicleFilters()
 
   /* Reintentar no cambia la búsqueda, así que sin este contador no cambiaría
      nada: la query string queda igual, `requestKey` también, y el botón no
@@ -160,7 +162,8 @@ export function Cars() {
   const result = answer.data
   const models = filters.make ? (modelsByMake[filters.make] ?? []) : []
 
-  const activeCount = countActive(filters)
+  const chips = activeChips(filters)
+  const activeCount = chips.length
 
   /* Un nombre que se entienda sin abrirla. Si no alcanza con marca, modelo y
      texto libre, cae en la provincia; y si tampoco, el usuario le pone el que
@@ -186,6 +189,7 @@ export function Cars() {
     <FilterPanel
       filters={filters}
       setParam={setParam}
+      setParams={setParams}
       toggleInList={toggleInList}
       clearAll={clearAll}
       makes={makes}
@@ -291,6 +295,8 @@ export function Cars() {
             </div>
           </div>
         </div>
+
+        <ActiveFilters chips={chips} onRemove={removeChip} onClear={clearAll} />
 
         {status === 'error' && (
           <EmptyState

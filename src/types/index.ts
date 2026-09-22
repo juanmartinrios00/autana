@@ -191,6 +191,11 @@ export interface VehicleFilters {
   maxMileage?: number
   fuelType?: FuelType[]
   transmission?: Transmission
+  /** Lista, como carrocería: "4x4 o integral" es una búsqueda común. */
+  drivetrain?: Drivetrain[]
+  /** Sólo los que aceptan ofertas. `undefined` es no filtrar, nunca `false`:
+   *  nadie busca a propósito los que no aceptan. */
+  negotiable?: true
   bodyType?: BodyType[]
   province?: string
   sellerType?: SellerType

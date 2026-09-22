@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { VehicleFilters } from '../types'
 import {
+  activeChips,
   applyVehicleFilters,
   countActive,
   list,
@@ -149,6 +150,13 @@ describe('parseFilters', () => {
     expect(countActive(parseFilters(p('')))).toBe(0)
   })
 
+  it('lee la tracción y "acepta ofertas"', () => {
+    const filters = parseFilters(p('drivetrain=4x4,awd,cohete&negotiable=1'))
+    expect(filters.drivetrain).toEqual(['4x4', 'awd'])
+    expect(filters.negotiable).toBe(true)
+    expect(parseFilters(p('negotiable=0')).negotiable).toBeUndefined()
+  })
+
   it('ignora valores que no pertenecen al dominio', () => {
     const filters = parseFilters(p('transmission=cohete&bodyType=submarino&condition=nuevito'))
     expect(filters.transmission).toBeUndefined()
@@ -177,12 +185,67 @@ describe('countActive', () => {
     expect(countActive({ make: '', fuelType: [], maxPrice: undefined })).toBe(0)
   })
 
-  it('cuenta una lista con valores como un filtro, no como varios', () => {
-    expect(countActive({ fuelType: ['petrol', 'diesel', 'hybrid'] })).toBe(1)
+  /* Cuenta lo que se ve: cada valor de una lista es un chip con su propia ×,
+     así que tres combustibles son tres. Contaba uno, y el badge decía "1"
+     arriba de tres chips. */
+  it('cuenta lo mismo que los chips que se ven', () => {
+    const filters: VehicleFilters = { fuelType: ['petrol', 'diesel', 'hybrid'], make: 'Ford' }
+    expect(countActive(filters)).toBe(4)
+    expect(countActive(filters)).toBe(activeChips(filters).length)
+  })
+
+  /* La moneda sola, sin precio, no filtra nada: ver `applyVehicleFilters`. */
+  it('la moneda sin precio no cuenta', () => {
+    expect(countActive({ currency: 'ARS' })).toBe(0)
   })
 
   it('cuenta el cero: 0 km es un filtro puesto', () => {
     expect(countActive({ maxMileage: 0 })).toBe(1)
+  })
+})
+
+describe('activeChips', () => {
+  it('un chip por filtro, con el texto que se entiende', () => {
+    const chips = activeChips({
+      make: 'Toyota',
+      maxPrice: 20000,
+      currency: 'ARS',
+      maxMileage: 0,
+      drivetrain: ['4x4'],
+      negotiable: true,
+    })
+    expect(chips.map((chip) => chip.label)).toEqual([
+      'Toyota',
+      'Hasta ARS 20.000',
+      '0 km',
+      'Tracción 4x4',
+      'Acepta ofertas',
+    ])
+  })
+
+  /* La × de un valor de lista saca ese valor y no la lista entera. */
+  it('en las listas, cada valor lleva el suyo para sacarlo solo', () => {
+    const chips = activeChips({ fuelType: ['diesel', 'petrol'] })
+    expect(chips).toEqual([
+      { key: 'fuelType', value: 'diesel', label: 'Diésel' },
+      { key: 'fuelType', value: 'petrol', label: 'Nafta' },
+    ])
+  })
+
+  /* Cada clave que `parseFilters` entiende tiene que poder verse como chip.
+     Si se suma un filtro y no su chip, filtra sin que se vea: el visitante ve
+     pocos autos y no sabe por qué. */
+  it('todo filtro que se lee de la URL aparece como chip', () => {
+    const todo = parseFilters(
+      p(
+        'q=hilux&make=Toyota&model=Hilux&province=Salta&minYear=2018&maxYear=2024' +
+          '&minPrice=10000&maxPrice=50000&maxMileage=80000&fuelType=diesel&bodyType=pickup' +
+          '&condition=used&transmission=automatic&sellerType=dealer&drivetrain=4x4&negotiable=1',
+      ),
+    )
+    const conValor = Object.entries(todo).filter(([, value]) => value !== undefined).map(([key]) => key)
+    const conChip = new Set(activeChips(todo).map((chip) => chip.key))
+    expect(conValor.filter((key) => key !== 'currency' && !conChip.has(key))).toEqual([])
   })
 })
 
@@ -202,6 +265,8 @@ describe('applyVehicleFilters', () => {
       maxPrice: 50000,
       maxMileage: 80000,
       transmission: 'automatic',
+      drivetrain: ['4x4'],
+      negotiable: true,
       fuelType: ['diesel'],
       bodyType: ['pickup'],
       condition: ['used'],
@@ -218,6 +283,8 @@ describe('applyVehicleFilters', () => {
       { method: 'lte', args: ['price', 50000] },
       { method: 'lte', args: ['mileage', 80000] },
       { method: 'eq', args: ['transmission', 'automatic'] },
+      { method: 'in', args: ['drivetrain', ['4x4']] },
+      { method: 'eq', args: ['negotiable', true] },
       { method: 'in', args: ['fuel_type', ['diesel']] },
       { method: 'in', args: ['body_type', ['pickup']] },
       { method: 'in', args: ['condition', ['used']] },

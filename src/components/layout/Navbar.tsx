@@ -160,7 +160,10 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
 
           {/* En un celular angosto dice sólo "Publicar": ver `.navbar__cta-extra`. */}
           <Link to="/vender" className="navbar__cta">
-            Publicar<span className="navbar__cta-extra"> vehículo</span>
+            {/* El espacio es duro a propósito: el botón es flex, y un espacio
+                común al principio del span se descarta ---decía
+                "PUBLICARVEHÍCULO"---. */}
+            Publicar<span className="navbar__cta-extra">&nbsp;vehículo</span>
           </Link>
         </div>
 
