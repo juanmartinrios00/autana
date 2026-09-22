@@ -104,7 +104,7 @@ let counter = 0
  * Un usuario nuevo, con sesión. Cada test usa los suyos: así ninguno depende del
  * estado que dejó otro.
  */
-export async function newUser(name = 'Test'): Promise<TestUser> {
+export async function newUser(name = 'Test', meta: Record<string, string> = {}): Promise<TestUser> {
   counter += 1
   const email = `t${Date.now()}${counter}${Math.random().toString(36).slice(2, 6)}@test.local`
   const answer = await call<{ access_token: string; user: { id: string } }>(
@@ -112,7 +112,7 @@ export async function newUser(name = 'Test'): Promise<TestUser> {
     '/auth/v1/signup',
     ANON!,
     ANON!,
-    { email, password: 'contraseña-de-prueba-123', data: { name } },
+    { email, password: 'contraseña-de-prueba-123', data: { name, ...meta } },
   )
   if (answer.status >= 300 || !answer.body?.access_token) {
     throw new Error(`No se pudo crear el usuario de prueba: ${answer.status} ${JSON.stringify(answer.body)}`)

@@ -59,6 +59,8 @@ export function Settings() {
   const [city, setCity] = useState('')
   const [province, setProvince] = useState('')
   const [sellerType, setSellerType] = useState<Seller['type']>('private')
+  /* El tipo guardado, no el del select: decide si se puede cambiar (023). */
+  const [savedType, setSavedType] = useState<Seller['type']>('private')
 
   const [discoverable, setDiscoverableState] = useState(true)
   const [visibilityBusy, setVisibilityBusy] = useState(false)
@@ -107,6 +109,7 @@ export function Settings() {
         setCity(profile.city ?? '')
         setProvince(profile.province ?? '')
         setSellerType(profile.sellerType)
+        setSavedType(profile.sellerType)
         setWhatsapp(own?.whatsapp ?? '')
         setInstagram(own?.instagram ?? '')
         setContactEmail(own?.contactEmail ?? '')
@@ -213,6 +216,7 @@ export function Settings() {
       })
       /* Lo que quedó guardado es la forma normalizada: se muestra esa. */
       setInstagram(handle ?? '')
+      setSavedType(sellerType)
       setDataSaved(true)
     } catch {
       setDataError('No pudimos guardar los cambios. Probá de nuevo.')
@@ -352,17 +356,38 @@ export function Settings() {
             />
           </div>
 
-          <Select
-            label="Publico como"
-            options={sellerTypes.map((type) => ({ value: type, label: sellerTypeLabels[type] }))}
-            value={sellerType}
-            error={dataError || undefined}
-            onChange={(e) => setSellerType(e.target.value as Seller['type'])}
-          />
-          <p className="settings__hint">
-            Define el tope de publicaciones activas: 5 para particulares, 25 para
-            concesionarias. <Link to="/agencias">Qué cambia si sos concesionaria</Link>.
-          </p>
+          {/* De particular a concesionaria no se pasa desde acá: sube el tope de
+              avisos y cambia lo que lee el comprador, así que es una decisión
+              del alta. La base lo frena igual (023); esto es para no ofrecer
+              algo que va a fallar. La otra dirección sí, avisando que no
+              tiene vuelta. */}
+          {savedType === 'private' ? (
+            <div className="settings__fixed">
+              <span className="field__label">Publico como</span>
+              <p className="settings__fixed-value">{sellerTypeLabels.private}</p>
+              <p className="settings__hint">
+                Hasta 5 publicaciones activas. Si sos una concesionaria y te registraste
+                como particular, <Link to="/contacto">escribinos</Link> y la cambiamos.
+              </p>
+              {dataError && <p className="field__error">{dataError}</p>}
+            </div>
+          ) : (
+            <>
+              <Select
+                label="Publico como"
+                options={sellerTypes.map((type) => ({ value: type, label: sellerTypeLabels[type] }))}
+                value={sellerType}
+                error={dataError || undefined}
+                onChange={(e) => setSellerType(e.target.value as Seller['type'])}
+              />
+              <p className="settings__hint">
+                {sellerType === 'private'
+                  ? 'Ojo: una cuenta particular no puede volver a ser concesionaria, y el tope baja a 5 publicaciones activas.'
+                  : 'Hasta 25 publicaciones activas. '}
+                {sellerType === 'dealer' && <Link to="/agencias">Qué cambia si sos concesionaria</Link>}
+              </p>
+            </>
+          )}
 
           <div className="settings__actions">
             <Button type="submit" variant="yellow" disabled={dataBusy}>

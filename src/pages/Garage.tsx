@@ -22,6 +22,8 @@ import { garageThemeColor } from '../lib/garage-theme'
 import { garageMission } from '../lib/missions'
 import type { GarageEntry, Vehicle } from '../types'
 import './Garage.css'
+import { sellerTypeLabels } from '../lib/format'
+import { computeTrust } from '../lib/trust'
 
 /**
  * El garage, en pantalla propia. Es el perfil público de cada persona.
@@ -197,7 +199,30 @@ export function Garage() {
                   </Badge>
                 )}
               </span>
-              {placeLabel && <span className="garagepage__place">{placeLabel}</span>}
+              {/* Lo mismo que el comprador lee de esta persona al lado de su
+                  aviso: el tipo, dónde está y desde cuándo tiene cuenta. */}
+              <span className="garagepage__place">
+                {[sellerTypeLabels[profile.sellerType], placeLabel].filter(Boolean).join(' · ')}
+              </span>
+              <span className="garagepage__place">
+                {computeTrust({ verified: profile.verified, memberSince: profile.memberSince }).since}
+              </span>
+              {/* El atajo para quien vino a ver qué vende: la sección de avisos
+                  está abajo de todo el garage. Scroll a mano y no sólo el ancla,
+                  porque si la URL ya tiene `#avisos` tocarla de nuevo no baja. */}
+              {!editable && hasListings && (
+                <a
+                  href="#avisos"
+                  className="garagepage__to-listings"
+                  onClick={(event) => {
+                    event.preventDefault()
+                    document.getElementById('avisos')?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                >
+                  {listings.length} {listings.length === 1 ? 'auto' : 'autos'} a la venta
+                  <Icon name="chevronDown" size={14} />
+                </a>
+              )}
             </div>
           </div>
 
@@ -218,22 +243,27 @@ export function Garage() {
             </p>
           )}
 
-          <div className="garagepage__actions">
-            <span className="garagepage__count mono">
-              {filled} de {SLOTS.length}
-            </span>
-            <Button variant="outline" size="sm" onClick={() => void share()}>
-              <Icon name="link" size={14} />
-              {copied ? 'Link copiado' : 'Compartir'}
-            </Button>
-            {editable && (
-              <Link to="/perfil" className="garagepage__back">
-                {profile.avatarUrl ? 'Volver a mi perfil' : 'Subí tu foto desde tu perfil'}
-              </Link>
-            )}
-          </div>
+          {/* Una sola barra: el garage (cuántos, compartir) y la persona
+              (seguidores, seguir). Eran dos filas sueltas; en el celular esto
+              se parte solo. */}
+          <div className="garagepage__bar">
+            <div className="garagepage__actions">
+              <span className="garagepage__count mono">
+                {filled} de {SLOTS.length}
+              </span>
+              <Button variant="outline" size="sm" onClick={() => void share()}>
+                <Icon name="link" size={14} />
+                {copied ? 'Link copiado' : 'Compartir'}
+              </Button>
+              {editable && (
+                <Link to="/perfil" className="garagepage__back">
+                  {profile.avatarUrl ? 'Volver a mi perfil' : 'Subí tu foto desde tu perfil'}
+                </Link>
+              )}
+            </div>
 
-          <FollowControls targetId={userId} targetName={profile.name} />
+            <FollowControls targetId={userId} targetName={profile.name} />
+          </div>
           <ProfileContact targetId={userId} instagram={profile.instagram} />
 
           {editable && (
@@ -285,10 +315,15 @@ export function Garage() {
           </section>
         )}
 
+        {/* Un botón que se ve. Era un link sin subrayado en medio de texto gris
+            y no se distinguía de la frase. */}
         {!editable && (
-          <p className="garagepage__cta">
-            <Link to="/garage/mio">Armá el tuyo</Link> y compartilo.
-          </p>
+          <div className="garagepage__cta">
+            <p>¿Tenés tus autos? Armá tu garage y compartilo.</p>
+            <Link to="/garage/mio">
+              <Button variant="outline">Armar el mío</Button>
+            </Link>
+          </div>
         )}
 
         {/* Al final y en voz baja, igual que en la ficha de un aviso: tiene que

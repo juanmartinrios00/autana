@@ -99,6 +99,8 @@ interface ProfileRow {
   city: string | null
   province: string | null
   verified: boolean
+  /** Ya venía en `PROFILE_COLUMNS`; faltaba en el tipo. */
+  created_at: string
   /** Público desde la 014. El WhatsApp y el mail de contacto no están, igual que antes. */
   instagram: string | null
   /** El fondo de la cabecera del garage (015). */
@@ -1316,6 +1318,8 @@ export interface ProfileSummary {
   city: string | null
   province: string | null
   verified: boolean
+  /** Cuándo se abrió la cuenta, para "en auteando desde…" (`computeTrust`). */
+  memberSince: string
   /** Usuario de Instagram, sin arroba. Es el único dato de contacto público. */
   instagram: string | null
   /** Id del fondo de la cabecera del garage. Ver `lib/garage-theme`. */
@@ -1373,6 +1377,7 @@ export async function getProfile(userId: string): Promise<ProfileSummary> {
     city: profileRow.city,
     province: profileRow.province,
     verified: profileRow.verified,
+    memberSince: profileRow.created_at,
     instagram: profileRow.instagram ?? null,
     garageTheme: profileRow.garage_theme ?? 'ink',
     contentHidden: profileRow.content_hidden ?? false,

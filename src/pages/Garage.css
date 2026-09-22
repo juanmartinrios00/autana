@@ -108,12 +108,39 @@
   color: rgba(255, 255, 255, 0.66);
 }
 
+.garagepage__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--sp-3) var(--sp-6);
+  margin-top: var(--sp-5);
+}
+
+/* Adentro de la barra, sin su margen de arriba: lo pone la barra. */
+.garagepage__bar .follow {
+  margin-top: 0;
+}
+
 .garagepage__actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-3);
-  margin-top: var(--sp-5);
+}
+
+.garagepage__to-listings {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--sp-1);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.garagepage__to-listings:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* Cuántos espacios están llenos. Va en mono porque es un dato, no una
@@ -143,6 +170,10 @@
 /* La invitación al que llegó por un link ajeno. Es lo último de la página a
    propósito: primero se miran los autos de la otra persona. */
 .garagepage__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
   margin-top: var(--sp-7);
   text-align: center;
   color: var(--ink-3);
