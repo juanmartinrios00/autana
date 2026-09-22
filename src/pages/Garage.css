@@ -132,6 +132,10 @@
   padding-block: var(--sp-7) var(--sp-9);
 }
 
+.garagepage__empty {
+  color: var(--ink-3);
+}
+
 .garagepage__mission {
   margin-bottom: var(--sp-5);
 }

@@ -248,8 +248,16 @@ export function Garage() {
 
       <div className="page garagepage__body">
         {mission && <MissionCard mission={mission} className="garagepage__mission" />}
-        <div className="garage">
-          {SLOTS.map((slot) => (
+        {/* Quien visita ve sólo los espacios cargados. Los vacíos le hablan al
+            dueño ---"Tu auto actual."--- y en el celular eran casi una pantalla
+            de cajas vacías entre la persona y el auto que vende, que es lo que
+            vino a ver quien llega desde un aviso. El dueño los sigue viendo
+            todos: son lo que le falta completar. */}
+        {!editable && filled === 0 && (
+          <p className="garagepage__empty">{profile.name} todavía no cargó autos en su garage.</p>
+        )}
+        <div className={editable ? 'garage' : 'garage garage--visita'}>
+          {SLOTS.filter((slot) => editable || garage.some((entry) => entry.slot === slot.id)).map((slot) => (
             <GarageSlotCard
               key={slot.id}
               slot={slot.id}

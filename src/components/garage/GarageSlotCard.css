@@ -10,6 +10,12 @@
   gap: var(--sp-5);
 }
 
+/* Visto por otro van sólo los cargados, que pueden ser uno. Con `auto-fit` uno
+   solo se estira a todo el ancho; `auto-fill` le deja el ancho de siempre. */
+.garage--visita {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
 .gslot {
   display: flex;
   flex-direction: column;
