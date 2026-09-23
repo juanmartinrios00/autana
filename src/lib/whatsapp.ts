@@ -96,3 +96,15 @@ export function whatsappLink(phone: string, message: string): string | null {
 export function listingMessage(title: string, url: string): string {
   return `Hola, te escribo por el ${title} que publicaste en ${BRAND}. ¿Sigue disponible?\n\n${url}`
 }
+
+/**
+ * El mensaje para pasarle un aviso a otra persona, que no es el mismo que se le
+ * escribe a quien vende: acá nadie pregunta si sigue disponible.
+ *
+ * Con el precio adelante, que es lo primero que se mira cuando alguien te pasa
+ * un auto, y el link solo al final, que es lo que WhatsApp convierte en tarjeta
+ * con la foto.
+ */
+export function shareMessage(title: string, price: string, url: string): string {
+  return `Mirá este ${title} — ${price}\n\n${url}`
+}

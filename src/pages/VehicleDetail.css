@@ -360,7 +360,36 @@
   font-weight: 600;
 }
 
+/* La barra de contacto del celular. En una computadora el panel es fijo a la
+   derecha y siempre se ve, así que no hace falta. */
+.detail__bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--page-pad);
+  /* El respiro de abajo del iPhone, donde vive la barra del navegador. */
+  padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom));
+  background: var(--canvas);
+  box-shadow: 0 -1px 0 var(--line), 0 -10px 30px rgba(11, 11, 12, 0.08);
+}
+
+.detail__bar-price {
+  font-size: 1.12rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 @media (max-width: 1099px) {
+  .detail__bar {
+    display: flex;
+  }
+
   .detail {
     flex-direction: column;
     align-items: stretch;

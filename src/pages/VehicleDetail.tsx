@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { SellerCard } from '../components/seller/SellerCard'
 import { Badge } from '../components/ui/Badge'
@@ -12,7 +12,9 @@ import { VehicleGallery } from '../components/vehicle/VehicleGallery'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { VehicleSpecs } from '../components/vehicle/VehicleSpecs'
 import { ReportDialog } from '../components/vehicle/ReportDialog'
+import { ShareButton } from '../components/vehicle/ShareButton'
 import { BRAND, pageTitle } from '../config/brand'
+import { useAuth } from '../hooks/useAuth'
 import { useCompare } from '../hooks/useCompare'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { useFavorites } from '../hooks/useFavorites'
@@ -39,6 +41,7 @@ import { reportError } from '../lib/report'
 type Status = 'loading' | 'ready' | 'notfound' | 'error'
 
 export function VehicleDetail() {
+  const { session } = useAuth()
   const { slug = '' } = useParams()
   const { has, toggle } = useFavorites()
   const compare = useCompare()
@@ -65,6 +68,20 @@ export function VehicleDetail() {
      de interesados, que sube si se toca en esta misma ficha. */
   const [interest, setInterest] = useState<{ slug: string; count: number } | null>(null)
   const [similar, setSimilar] = useState<{ slug: string; items: Vehicle[] } | null>(null)
+
+  /**
+   * La barra de contacto fija del celular aparece cuando "Me interesa" se fue
+   * de pantalla.
+   *
+   * En el celular la ficha es una columna larga ---fotos, especificaciones,
+   * vendedor, similares--- y el botón queda arriba de todo: quien baja a mirar
+   * se queda sin forma de contactar sin volver a subir.
+   *
+   * Se mira el botón real en vez de contar píxeles scrolleados: si el panel
+   * cambia de lugar, esto sigue andando.
+   */
+  const actionsRef = useRef<HTMLDivElement>(null)
+  const [contactOut, setContactOut] = useState(false)
 
   useEffect(() => {
     let current = true
@@ -117,6 +134,21 @@ export function VehicleDetail() {
   const fresh = loaded.slug === slug
   const status: Status = !fresh ? 'loading' : (loaded.failure ?? 'ready')
   const vehicle = fresh ? loaded.vehicle : null
+
+  /* Depende del aviso porque el nodo se monta con él: yendo de un auto a otro
+     por "similares", el observador tiene que mirar el botón nuevo. */
+  useEffect(() => {
+    const node = actionsRef.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(([entry]) => setContactOut(!entry?.isIntersecting))
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [vehicle?.id])
+
+  /* En el aviso propio no hay botón de contacto, así que tampoco barra: sería
+     una franja con el precio y nada más. */
+  const own = Boolean(session && vehicle && session.user.id === vehicle.sellerId)
 
   /* Del auto que está en pantalla, no del anterior. */
   const itsSeller = seller?.slug === slug ? seller : null
@@ -298,7 +330,7 @@ export function VehicleDetail() {
               </p>
             )}
 
-            <div className="detail__actions">
+            <div className="detail__actions" ref={actionsRef}>
               <InterestButton
                 vehicle={vehicle}
                 title={title}
@@ -330,6 +362,14 @@ export function VehicleDetail() {
                   {compare.has(vehicle.slug) ? 'Comparando' : 'Comparar'}
                 </Button>
               </div>
+              {/* Compartir va acá abajo y a lo ancho: un auto se pasa por
+                  WhatsApp, y hasta ahora había que copiar la dirección de la
+                  barra del navegador a mano. */}
+              <ShareButton
+                title={`${title} ${vehicle.year}`}
+                price={formatPrice(vehicle.price, vehicle.currency)}
+                block
+              />
             </div>
 
             <hr className="rule detail__panel-rule" />
@@ -347,6 +387,22 @@ export function VehicleDetail() {
           </div>
         </aside>
       </div>
+
+      {/* Sólo en el celular (lo esconde el CSS) y sólo cuando el botón de
+          arriba no está a la vista. El precio va al lado: es la otra mitad de
+          la decisión, y volver a buscarlo obliga a subir. */}
+      {contactOut && !own && (
+        <div className="detail__bar" role="region" aria-label="Contactar">
+          <span className="detail__bar-price mono">
+            {formatPrice(vehicle.price, vehicle.currency)}
+          </span>
+          <InterestButton
+            vehicle={vehicle}
+            title={title}
+            onCount={(count) => setInterest({ slug: vehicle.slug, count })}
+          />
+        </div>
+      )}
 
       {similarNow.length > 0 && (
         <section className="section detail__similar">

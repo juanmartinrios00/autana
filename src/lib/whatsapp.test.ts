@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { listingMessage, toE164, whatsappLink } from './whatsapp'
+import { listingMessage, shareMessage, toE164, whatsappLink } from './whatsapp'
 
 /**
  * El numero es el unico dato del que depende una venta: si esto falla, el
@@ -114,5 +114,19 @@ describe('listingMessage', () => {
     const message = listingMessage('BMW 320i', 'https://autana.com/cars/bmw-320i')
     expect(message).toContain('BMW 320i')
     expect(message.endsWith('https://autana.com/cars/bmw-320i')).toBe(true)
+  })
+})
+
+describe('shareMessage', () => {
+  it('nombra el auto, su precio, y deja el link al final para que WhatsApp lo muestre', () => {
+    const message = shareMessage('Renault Symbol 2012', 'USD 7.000', 'https://auteando.com/autos/x')
+    expect(message).toContain('Renault Symbol 2012')
+    expect(message).toContain('USD 7.000')
+    expect(message.endsWith('https://auteando.com/autos/x')).toBe(true)
+  })
+
+  /* El que se le manda al vendedor pregunta; el que se le pasa a un amigo, no. */
+  it('no es el mensaje que se le escribe a quien vende', () => {
+    expect(shareMessage('Fiat 600', 'USD 1', 'https://x/y')).not.toContain('disponible')
   })
 })
