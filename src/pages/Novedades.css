@@ -82,6 +82,22 @@
   color: var(--ink-3);
 }
 
+/* La foto del auto, en el lugar del avatar y con la misma medida: si una fila
+   tiene foto y la otra no, las dos tienen que arrancar en la misma columna. */
+.novedad__car {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  background: var(--surface-2);
+}
+
+.novedad__note {
+  color: var(--ink-3);
+  font-size: var(--fs-sm);
+}
+
 .novedad__text {
   display: grid;
   gap: var(--sp-1);

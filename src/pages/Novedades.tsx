@@ -10,6 +10,7 @@ import { NOVEDADES_SEEN_EVENT } from '../hooks/useUnseenNovedades'
 import { listNovedades, markNovedadesSeen, type Novedad } from '../lib/api'
 import { relativeDate } from '../lib/format'
 import './Novedades.css'
+import type { GarageSlot } from '../types'
 
 /**
  * Lo que pasó con lo tuyo: interesados en tus avisos, gente que te empezó a
@@ -116,7 +117,11 @@ function NovedadRow({ item }: { item: Novedad }) {
 
   return (
     <Link to={to} className={`novedad${item.unseen ? ' novedad--unseen' : ''}`}>
-      {item.actor ? (
+      {/* La foto del auto le gana a la cara de quien lo cargó: es de lo que
+          habla la novedad, y es lo que hace que alguien la toque. */}
+      {item.garage?.photoUrl ? (
+        <img src={item.garage.photoUrl} alt="" loading="lazy" className="novedad__car" />
+      ) : item.actor ? (
         item.actor.avatarUrl ? (
           <img src={item.actor.avatarUrl} alt="" className="novedad__avatar" />
         ) : (
@@ -133,6 +138,8 @@ function NovedadRow({ item }: { item: Novedad }) {
 
       <span className="novedad__text">
         <span>{text}</span>
+        {/* Lo que escribió la persona sobre ese auto, tal cual. */}
+        {item.garage?.note && <span className="novedad__note">«{item.garage.note}»</span>}
         <span className="novedad__when">
           {item.unseen && <span className="novedad__new">Nueva</span>}
           {relativeDate(item.happenedAt)}
@@ -140,6 +147,15 @@ function NovedadRow({ item }: { item: Novedad }) {
       </span>
     </Link>
   )
+}
+
+/* Los cuatro espacios, dichos de la persona y no de uno mismo: en el garage
+   son "Mi primer auto" y "El que tengo hoy". */
+const SLOT_FRASE: Record<GarageSlot, string> = {
+  first: 'su primer auto',
+  current: 'el auto que tiene hoy',
+  dream: 'el auto de sus sueños',
+  missed: 'el que más extraña',
 }
 
 /** A dónde lleva y qué dice. Sin adjetivos sobre nadie: sólo lo que pasó. */
@@ -160,10 +176,18 @@ function describe(item: Novedad): { to: string; text: string } {
         to: `/g/${item.actor?.id ?? ''}`,
         text: `${item.actor?.name ?? 'Alguien'} te empezó a seguir`,
       }
-    case 'garage':
+    case 'garage': {
+      const name = item.actor?.name ?? 'Alguien'
+      const car = item.garage?.car
+      /* Sin el auto ---no debería pasar--- queda la frase de antes, que es
+         cierta igual. */
+      if (!car) return { to: `/g/${item.actor?.id ?? ''}`, text: `${name} actualizó su garage` }
       return {
         to: `/g/${item.actor?.id ?? ''}`,
-        text: `${item.actor?.name ?? 'Alguien'} actualizó su garage`,
+        text: item.garage?.isNew
+          ? `${name} sumó ${SLOT_FRASE[item.garage.slot]}: ${car}`
+          : `${name} cambió ${SLOT_FRASE[item.garage!.slot]}: ${car}`,
       }
+    }
   }
 }

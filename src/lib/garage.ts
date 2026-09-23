@@ -27,7 +27,8 @@ interface GarageRow {
   created_at: string
 }
 
-function photoUrlFor(path: string | null): string {
+/** La URL pública de una foto del garage. La usan el garage y las novedades. */
+export function garagePhotoUrl(path: string | null): string {
   if (!path || !supabase) return ''
   return supabase.storage.from('garage-photos').getPublicUrl(path).data.publicUrl
 }
@@ -40,7 +41,7 @@ function toEntry(row: GarageRow): GarageEntry {
     make: row.make,
     model: row.model,
     year: row.year,
-    photoUrl: photoUrlFor(row.photo_path),
+    photoUrl: garagePhotoUrl(row.photo_path),
     note: row.note,
     createdAt: row.created_at,
   }

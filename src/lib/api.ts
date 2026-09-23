@@ -4,6 +4,7 @@ import { applyVehicleFilters } from './search-query'
 import { photoUrl, requireSupabase } from './supabase'
 import type {
   Currency,
+  GarageSlot,
   ListingStatus,
   Paginated,
   Seller,
@@ -13,6 +14,7 @@ import type {
   VehicleImage,
 } from '../types'
 import type { MakeModelCount } from './suggest'
+import { garagePhotoUrl } from './garage'
 
 /**
  * Única capa que habla con el backend. Todo lo que la UI sabe de la red pasa
@@ -1795,8 +1797,21 @@ export interface Novedad {
   /** Quién. `null` en los interesados, que nunca dicen quién. */
   actor: { id: string; name: string; avatarUrl: string | null } | null
   listing: { slug: string; title: string } | null
-  /** Cuántos interesados, o cuántos autos del garage cambiaron. */
+  /** Cuántos interesados. En las de garage siempre 1: una por auto. */
   amount: number
+  /**
+   * Sólo en las de garage: qué auto cargó o cambió, con su foto y su nota.
+   * Antes la novedad decía "actualizó su garage" y el dato ya estaba guardado.
+   * La foto y la nota vienen vacías si el perfil está oculto por moderación.
+   */
+  garage: {
+    slot: GarageSlot
+    car: string
+    photoUrl: string
+    note: string
+    /** Recién cargado, o uno que ya estaba y cambió. */
+    isNew: boolean
+  } | null
 }
 
 interface NovedadRow {
@@ -1809,6 +1824,11 @@ interface NovedadRow {
   listing_slug: string | null
   listing_title: string | null
   amount: number
+  garage_slot: GarageSlot | null
+  garage_car: string | null
+  garage_photo: string | null
+  garage_note: string | null
+  garage_is_new: boolean | null
 }
 
 export async function listNovedades(): Promise<Novedad[]> {
@@ -1825,6 +1845,15 @@ export async function listNovedades(): Promise<Novedad[]> {
       : null,
     listing: row.listing_slug ? { slug: row.listing_slug, title: row.listing_title ?? '' } : null,
     amount: Number(row.amount),
+    garage: row.garage_slot
+      ? {
+          slot: row.garage_slot,
+          car: row.garage_car ?? '',
+          photoUrl: garagePhotoUrl(row.garage_photo),
+          note: row.garage_note ?? '',
+          isNew: Boolean(row.garage_is_new),
+        }
+      : null,
   }))
 }
 
