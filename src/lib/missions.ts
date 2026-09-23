@@ -15,7 +15,13 @@
  * que la persona haga una cosa.
  */
 
-import { computeLevel, PUBLISHED_STATUSES, RICH_PHOTOS, type AchievementId, type LevelState } from './levels'
+import {
+  achievementInfo,
+  PUBLISHED_STATUSES,
+  RICH_PHOTOS,
+  type AchievementId,
+  type LevelState,
+} from './levels'
 import { SLOTS } from '../data/garage-slots'
 import type { Vehicle } from '../types'
 
@@ -33,15 +39,7 @@ export interface Mission {
 type ListingForMission = Pick<Vehicle, 'make' | 'model' | 'slug' | 'status' | 'images'>
 
 function titleOf(achievement: AchievementId): string {
-  /* De una corrida vacía: los títulos no dependen de los datos. */
-  return computeLevel({
-    profile: null,
-    activeListings: 0,
-    publishedListings: 0,
-    soldListings: 0,
-    bestPhotoCount: 0,
-    garageCars: 0,
-  }).achievements.find((item) => item.id === achievement)!.title
+  return achievementInfo().find((item) => item.id === achievement)!.title
 }
 
 const fotos = (n: number) => (n === 1 ? 'foto' : 'fotos')

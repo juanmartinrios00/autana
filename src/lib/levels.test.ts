@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest'
 /* Con `?raw`, igual que los otros tests que leen el esquema. */
 import migracion022 from '../../supabase/migrations/022_niveles_cuentan_vendidos.sql?raw'
-import { computeLevel, LEVELS, PUBLISHED_STATUSES, type LevelInput } from './levels'
+import migracion026 from '../../supabase/migrations/026_logros_publicos.sql?raw'
+import { SLOTS } from '../data/garage-slots'
+import {
+  achievementInfo,
+  computeLevel,
+  LEVELS,
+  PUBLISHED_STATUSES,
+  RICH_PHOTOS,
+  type LevelInput,
+} from './levels'
 
 /**
  * Los avisos, coherentes entre sí: los activos, los pausados y los vendidos
@@ -83,6 +92,37 @@ describe('los estados que cuentan como publicados', () => {
     const enLaBase = [...lista![1]!.matchAll(/'([^']+)'/g)].map((match) => match[1])
 
     expect([...PUBLISHED_STATUSES].sort()).toEqual([...enLaBase].sort())
+  })
+})
+
+/**
+ * Las medallas del garage salen de `profile_badges` (026) y no de acá: dos de
+ * los siete logros miran datos que sólo ve su dueño. Entonces la lista existe
+ * dos veces. Si se agrega un logro y no se toca el SQL, la medalla no aparece
+ * nunca; si se cambia un umbral de un lado, el perfil y el garage dicen cosas
+ * distintas de la misma persona, y ninguno de los dos da error.
+ */
+describe('los logros de la base', () => {
+  const ids = [...migracion026.matchAll(/\(\d+, '([a-z_]+)',/g)].map((match) => match[1])
+
+  it('la base conoce los mismos logros, en el mismo orden', () => {
+    expect(ids).toEqual(achievementInfo().map((item) => item.id))
+  })
+
+  it('con los mismos umbrales', () => {
+    expect(migracion026).toContain(`best_photos >= ${RICH_PHOTOS}`)
+    expect(migracion026).toContain(`garage_cars >= ${SLOTS.length}`)
+    /* Los tres activos: el número vive en `computeLevel`, así que se comprueba
+       contra su borde en vez de contra una constante que no existe. */
+    const tres = migracion026.match(/active_listings >= (\d+)/)
+    expect(tres, 'no se encontró el umbral de "Tres autos activos"').not.toBeNull()
+    const enLaBase = Number(tres![1])
+    const hecho = (n: number) =>
+      computeLevel({ ...vacio, ...avisos({ activos: n }) }).achievements.find(
+        (item) => item.id === 'three_listings',
+      )!.done
+    expect(hecho(enLaBase)).toBe(true)
+    expect(hecho(enLaBase - 1)).toBe(false)
   })
 })
 

@@ -1,4 +1,4 @@
-import { PUBLISHED_STATUSES, type LevelInput } from './levels'
+import { PUBLISHED_STATUSES, type AchievementId, type LevelInput } from './levels'
 import { computeTrust, type TrustSignal } from './trust'
 import { applyVehicleFilters } from './search-query'
 import { photoUrl, requireSupabase } from './supabase'
@@ -1855,6 +1855,20 @@ export async function listNovedades(): Promise<Novedad[]> {
         }
       : null,
   }))
+}
+
+/**
+ * Los logros ganados de un perfil, para las medallas del garage.
+ *
+ * Sale de la base (026) y no de `computeLevel` porque dos de los siete miran
+ * datos que sólo ve su dueño: el WhatsApp y los avisos vendidos. La función
+ * devuelve la lista de ganados y nada más.
+ */
+export async function getProfileBadges(userId: string): Promise<AchievementId[]> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('profile_badges', { target: userId })
+  if (error) throw error
+  return (data as AchievementId[] | null) ?? []
 }
 
 export async function markNovedadesSeen(): Promise<void> {

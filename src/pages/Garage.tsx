@@ -4,6 +4,7 @@ import { FollowControls } from '../components/garage/FollowControls'
 import { GarageSlotCard } from '../components/garage/GarageSlotCard'
 import { GarageThemePicker } from '../components/garage/GarageThemePicker'
 import { MissionCard } from '../components/levels/MissionCard'
+import { Trophies } from '../components/levels/Trophies'
 import { ProfileContact } from '../components/garage/ProfileContact'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -16,10 +17,11 @@ import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
-import { getProfile, listSellerVehicles, type ProfileSummary } from '../lib/api'
+import { getProfile, getProfileBadges, listSellerVehicles, type ProfileSummary } from '../lib/api'
 import { listGarage, removeGarageEntry, saveGarageEntry, SLOTS, type GarageInput } from '../lib/garage'
 import { garageThemeColor } from '../lib/garage-theme'
 import { garageMission } from '../lib/missions'
+import type { AchievementId } from '../lib/levels'
 import type { GarageEntry, Vehicle } from '../types'
 import './Garage.css'
 import { sellerTypeLabels } from '../lib/format'
@@ -52,8 +54,9 @@ export function Garage() {
     profile: ProfileSummary | null
     garage: GarageEntry[]
     listings: Vehicle[]
+    badges: AchievementId[]
     failed: boolean
-  }>({ userId: '', profile: null, garage: [], listings: [], failed: false })
+  }>({ userId: '', profile: null, garage: [], listings: [], badges: [], failed: false })
 
   const [reloads, setReloads] = useState(0)
   const [copied, setCopied] = useState(false)
@@ -67,18 +70,23 @@ export function Garage() {
     /* `allSettled` y no `all`: si falla el perfil pero llega el garage, se
        muestran los autos igual. Es lo que la gente vino a ver. Y si fallan los
        avisos, el garage no se esconde por eso. */
-    void Promise.allSettled([getProfile(userId), listGarage(userId), listSellerVehicles(userId)]).then(
-      ([profileResult, garageResult, listingsResult]) => {
-        if (!current) return
-        setLoaded({
-          userId,
-          profile: profileResult.status === 'fulfilled' ? profileResult.value : null,
-          garage: garageResult.status === 'fulfilled' ? garageResult.value : [],
-          listings: listingsResult.status === 'fulfilled' ? listingsResult.value : [],
-          failed: profileResult.status === 'rejected',
-        })
-      },
-    )
+    void Promise.allSettled([
+      getProfile(userId),
+      listGarage(userId),
+      listSellerVehicles(userId),
+      getProfileBadges(userId),
+    ]).then(([profileResult, garageResult, listingsResult, badgesResult]) => {
+      if (!current) return
+      setLoaded({
+        userId,
+        profile: profileResult.status === 'fulfilled' ? profileResult.value : null,
+        garage: garageResult.status === 'fulfilled' ? garageResult.value : [],
+        listings: listingsResult.status === 'fulfilled' ? listingsResult.value : [],
+        /* Si fallan, el garage se muestra sin medallas y nadie se entera. */
+        badges: badgesResult.status === 'fulfilled' ? badgesResult.value : [],
+        failed: profileResult.status === 'rejected',
+      })
+    })
 
     return () => {
       current = false
@@ -89,6 +97,7 @@ export function Garage() {
   const profile = fresh ? loaded.profile : null
   const garage = fresh ? loaded.garage : []
   const listings = fresh ? loaded.listings : []
+  const badges = fresh ? loaded.badges : []
   const filled = garage.length
   /* Sólo al dueño: a quien visita un garage a medio llenar no le corresponde
      enterarse de qué le falta para un logro. */
@@ -299,6 +308,10 @@ export function Garage() {
             />
           ))}
         </div>
+
+        {/* Las medallas van entre el garage y los avisos: son de la persona,
+            no de lo que vende. En la ficha de un aviso no aparecen nunca. */}
+        <Trophies earned={badges} own={editable} name={profile.name} />
 
         {/* Los autos que vende, separados de los que la marcaron. Van después y
             no antes: el garage es lo que distingue esta pantalla de un listado,

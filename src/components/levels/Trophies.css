@@ -1,0 +1,61 @@
+/* Las medallas del garage. Sobre el papel del cuerpo de la página, no sobre la
+   cabecera oscura. */
+
+.trophies {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-8);
+}
+
+.trophies__title {
+  font-size: var(--fs-h3);
+  margin-bottom: var(--sp-4);
+}
+
+.trophies__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--sp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trophy {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+/* El aro amarillo es lo que lo hace medalla y no ícono suelto. */
+.trophy__art {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--r-pill);
+  background: var(--canvas);
+  box-shadow: inset 0 0 0 2px var(--accent);
+  color: var(--ink);
+}
+
+.trophy__name {
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+.trophies__note {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--ink-4);
+}
+
+.trophies__note a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

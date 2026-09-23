@@ -107,6 +107,22 @@ export interface LevelInput {
   garageCars: number
 }
 
+/**
+ * Los siete logros, sin mirar los datos de nadie: el id, el título y qué hay
+ * que hacer. Lo usan las medallas del garage y las misiones, que necesitan el
+ * título de uno sin tener a mano el estado de la persona.
+ */
+export function achievementInfo(): Omit<Achievement, 'done'>[] {
+  return computeLevel({
+    profile: null,
+    activeListings: 0,
+    publishedListings: 0,
+    soldListings: 0,
+    bestPhotoCount: 0,
+    garageCars: 0,
+  }).achievements.map(({ id, title, hint }) => ({ id, title, hint }))
+}
+
 export function computeLevel({
   profile,
   activeListings,
