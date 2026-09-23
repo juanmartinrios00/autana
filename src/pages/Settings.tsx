@@ -23,7 +23,7 @@ import {
 } from '../lib/api'
 import { changePassword, MIN_PASSWORD } from '../lib/auth'
 import { isContactEmail, normalizeInstagram } from '../lib/contact'
-import { sellerTypeLabels, sellerTypes } from '../lib/format'
+import { sellerTypeLabels } from '../lib/format'
 import { LIMITS } from '../lib/limits'
 import { toE164 } from '../lib/whatsapp'
 import type { Seller } from '../types'
@@ -58,8 +58,7 @@ export function Settings() {
   const [contactEmail, setContactEmail] = useState('')
   const [city, setCity] = useState('')
   const [province, setProvince] = useState('')
-  const [sellerType, setSellerType] = useState<Seller['type']>('private')
-  /* El tipo guardado, no el del select: decide si se puede cambiar (023). */
+  /* Se muestra y se reenvía tal cual: no se edita desde acá (024). */
   const [savedType, setSavedType] = useState<Seller['type']>('private')
 
   const [discoverable, setDiscoverableState] = useState(true)
@@ -108,7 +107,6 @@ export function Settings() {
         setName(profile.name)
         setCity(profile.city ?? '')
         setProvince(profile.province ?? '')
-        setSellerType(profile.sellerType)
         setSavedType(profile.sellerType)
         setWhatsapp(own?.whatsapp ?? '')
         setInstagram(own?.instagram ?? '')
@@ -210,13 +208,12 @@ export function Settings() {
         whatsapp: whatsapp.trim(),
         city: city.trim().slice(0, LIMITS.city),
         province,
-        sellerType,
+        sellerType: savedType,
         instagram: handle,
         contactEmail: contactEmail.trim() || null,
       })
       /* Lo que quedó guardado es la forma normalizada: se muestra esa. */
       setInstagram(handle ?? '')
-      setSavedType(sellerType)
       setDataSaved(true)
     } catch {
       setDataError('No pudimos guardar los cambios. Probá de nuevo.')
@@ -356,38 +353,23 @@ export function Settings() {
             />
           </div>
 
-          {/* De particular a concesionaria no se pasa desde acá: sube el tope de
-              avisos y cambia lo que lee el comprador, así que es una decisión
-              del alta. La base lo frena igual (023); esto es para no ofrecer
-              algo que va a fallar. La otra dirección sí, avisando que no
-              tiene vuelta. */}
-          {savedType === 'private' ? (
-            <div className="settings__fixed">
-              <span className="field__label">Publico como</span>
-              <p className="settings__fixed-value">{sellerTypeLabels.private}</p>
-              <p className="settings__hint">
-                Hasta 5 publicaciones activas. Si sos una concesionaria y te registraste
-                como particular, <Link to="/contacto">escribinos</Link> y la cambiamos.
-              </p>
-              {dataError && <p className="field__error">{dataError}</p>}
-            </div>
-          ) : (
-            <>
-              <Select
-                label="Publico como"
-                options={sellerTypes.map((type) => ({ value: type, label: sellerTypeLabels[type] }))}
-                value={sellerType}
-                error={dataError || undefined}
-                onChange={(e) => setSellerType(e.target.value as Seller['type'])}
-              />
-              <p className="settings__hint">
-                {sellerType === 'private'
-                  ? 'Ojo: una cuenta particular no puede volver a ser concesionaria, y el tope baja a 5 publicaciones activas.'
-                  : 'Hasta 25 publicaciones activas. '}
-                {sellerType === 'dealer' && <Link to="/agencias">Qué cambia si sos concesionaria</Link>}
-              </p>
-            </>
-          )}
+          {/* El tipo se elige al registrarse y no se cambia desde acá, en
+              ninguna de las dos direcciones: cambia el tope de avisos y, sobre
+              todo, lo que el comprador lee al lado de cada aviso. Una agencia
+              que se pasa a particular para parecer más confiable es el engaño
+              más viejo del rubro. La base lo frena igual (024); esto es para no
+              ofrecer algo que va a fallar. */}
+          <div className="settings__fixed">
+            <span className="field__label">Publico como</span>
+            <p className="settings__fixed-value">{sellerTypeLabels[savedType]}</p>
+            <p className="settings__hint">
+              Hasta {savedType === 'dealer' ? 25 : 5} publicaciones activas. Se elige al
+              crear la cuenta; si te equivocaste, <Link to="/contacto">escribinos</Link> y
+              lo cambiamos.{' '}
+              {savedType === 'dealer' && <Link to="/agencias">Qué cambia si sos concesionaria</Link>}
+            </p>
+            {dataError && <p className="field__error">{dataError}</p>}
+          </div>
 
           <div className="settings__actions">
             <Button type="submit" variant="yellow" disabled={dataBusy}>

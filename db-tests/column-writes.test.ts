@@ -83,8 +83,8 @@ describe('profiles: lo que nadie se puede cambiar solo', () => {
 })
 
 describe('profiles: lo que la aplicación escribe sigue andando', () => {
-  /* Registrada como concesionaria para poder cambiar el tipo: de particular a
-     concesionaria ya no se puede (023). */
+  /* El tipo va en el PATCH con el valor que ya tiene: Ajustes manda el perfil
+     entero y no se puede cambiar (024). */
   it('Ajustes: nombre, contacto, ubicación y tipo de vendedor', async () => {
     const user = await newUser('Test', { seller_type: 'dealer' })
     const answer = await rest('PATCH', `profiles?id=eq.${user.id}`, user.token, {
@@ -92,7 +92,7 @@ describe('profiles: lo que la aplicación escribe sigue andando', () => {
       whatsapp: '11 2345 6789',
       city: 'Rosario',
       province: 'Santa Fe',
-      seller_type: 'private',
+      seller_type: 'dealer',
       instagram: 'autos.test',
       contact_email: 'ventas@test.local',
     })
@@ -108,7 +108,7 @@ describe('profiles: lo que la aplicación escribe sigue andando', () => {
       whatsapp: '11 2345 6789',
       city: 'Rosario',
       province: 'Santa Fe',
-      seller_type: 'private',
+      seller_type: 'dealer',
       instagram: 'autos.test',
       contact_email: 'ventas@test.local',
     })

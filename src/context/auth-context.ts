@@ -20,11 +20,8 @@ export interface AuthValue {
     name: string,
     sellerType: SellerType,
   ) => Promise<void>
-  /** El perfil sólo se usa si el link termina creando la cuenta. */
-  sendMagicLink: (
-    email: string,
-    profile?: { name?: string; sellerType?: SellerType },
-  ) => Promise<void>
+  /** Sólo entra a una cuenta que ya existe: registrarse es con contraseña. */
+  sendMagicLink: (email: string) => Promise<void>
   signOut: () => Promise<void>
 }
 

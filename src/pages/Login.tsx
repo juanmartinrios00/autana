@@ -128,15 +128,7 @@ export function Login() {
     setError(null)
     setBusy(true)
     try {
-      /* En modo registro el link puede crear la cuenta, así que se lleva lo
-         que ya eligió. En modo ingreso no se manda nada: la cuenta ya existe y
-         no hay que pisarle el perfil. */
-      await sendMagicLink(
-        email,
-        mode === 'signup'
-          ? { name: name.trim().slice(0, LIMITS.name) || undefined, sellerType: kind }
-          : undefined,
-      )
+      await sendMagicLink(email)
       setLinkSent(true)
     } catch (cause) {
       setError(describeError(cause, 'No pudimos mandar el mail. Probá de nuevo en un momento.'))
@@ -214,7 +206,8 @@ export function Login() {
             {linkSent ? (
               <>
                 Te mandamos un link a <strong>{email}</strong>. Abrilo desde este mismo
-                dispositivo y entrás sin contraseña.
+                dispositivo y entrás sin contraseña. Si no llega, fijate que sea el mail
+                de tu cuenta: el link entra, no crea cuentas nuevas.
               </>
             ) : (
               <>
@@ -362,15 +355,13 @@ export function Login() {
           <span>o</span>
         </div>
 
-        {/* Esto es, en los hechos, la recuperación de cuenta: no hay ninguna
-            otra forma de volver a entrar si alguien olvida su contraseña. Antes
-            decía "Mandame un link por mail" a secas y se leía como un segundo
-            camino para registrarse, al punto de tapar que la contraseña era el
-            principal.
+        {/* Sólo al ingresar. Registrarse es con contraseña: es donde se elige
+            si la cuenta es de particular o de concesionaria, y ese dato después
+            no se cambia (024). El link por mail ya no crea cuentas.
 
-            Cuando exista un cambio de contraseña de verdad, esto se puede
-            reemplazar. Hasta entonces sacarlo dejaría afuera de su propia
-            cuenta —y de sus publicaciones— a cualquiera que se olvide. */}
+            Pero sigue siendo, en los hechos, la recuperación de cuenta: sacarlo
+            dejaría afuera de sus publicaciones a cualquiera que se olvide la
+            contraseña. */}
         {mode === 'signin' && (
           /* Esta es la recuperacion de verdad: manda un link que deja poner una
              contrasenia nueva. El de abajo solo deja entrar. */
@@ -381,12 +372,16 @@ export function Login() {
             </button>
           </p>
         )}
-        <Button variant="outline" block disabled={busy} onClick={() => void handleMagicLink()}>
-          Entrar con un link por mail
-        </Button>
-        <p className="login__recover-hint login__recover-hint--after">
-          Este te deja entrar sin contraseña, pero no la cambia.
-        </p>
+        {mode === 'signin' && (
+          <>
+            <Button variant="outline" block disabled={busy} onClick={() => void handleMagicLink()}>
+              Entrar con un link por mail
+            </Button>
+            <p className="login__recover-hint login__recover-hint--after">
+              Este te deja entrar sin contraseña, pero no la cambia.
+            </p>
+          </>
+        )}
 
         <p className="login__legal">
           Al continuar aceptás los <Link to="/terminos">términos</Link> y la{' '}

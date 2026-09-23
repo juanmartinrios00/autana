@@ -130,31 +130,35 @@ export async function signUpWithPassword(
  * Manda el magic link. No devuelve sesión: el usuario tiene que abrir el mail.
  * La sesión llega después, por `onAuthChange`, cuando vuelve con el token.
  *
- * `profile` viaja igual que en el alta con contraseña, porque este camino
- * también crea cuentas: quien elige "Concesionaria" y después toca el link por
- * mail tiene que terminar siendo concesionaria. Supabase usa esta metadata
- * sólo cuando el usuario no existía; para uno que ya tenía cuenta la ignora, y
- * eso es lo que queremos — nadie se reescribe el perfil pidiendo un link.
+ * Sólo deja entrar a una cuenta que ya existe (`shouldCreateUser: false`).
+ * Antes también creaba: pedir el link con un mail sin cuenta daba de alta una
+ * cuenta que nunca eligió si era particular o concesionaria, y quedaba como
+ * particular sin que nadie lo decidiera. Registrarse es con contraseña, que es
+ * donde se elige.
+ *
+ * Con un mail sin cuenta, Supabase contesta con un error. La pantalla no lo
+ * muestra como tal: decir "ese mail no existe" convierte este botón en una
+ * forma de averiguar qué mails están registrados.
  */
-export async function signInWithMagicLink(
-  email: string,
-  profile?: { name?: string; sellerType?: SellerType },
-): Promise<void> {
+export async function signInWithMagicLink(email: string): Promise<void> {
   const client = requireSupabase()
-
-  const data: Record<string, string> = {}
-  if (profile?.name) data.name = profile.name
-  if (profile?.sellerType) data.seller_type = profile.sellerType
 
   const { error } = await client.auth.signInWithOtp({
     email,
-    options: {
-      emailRedirectTo: `${window.location.origin}/`,
-      ...(Object.keys(data).length > 0 ? { data } : {}),
-    },
+    options: { emailRedirectTo: `${window.location.origin}/`, shouldCreateUser: false },
   })
 
-  if (error) throw describe(error)
+  if (error && !isUnknownAccount(error)) throw describe(error)
+}
+
+/** El "no hay cuenta con ese mail" de Supabase, en sus dos formas. */
+function isUnknownAccount(error: AuthError): boolean {
+  const message = error.message.toLowerCase()
+  return (
+    error.code === 'otp_disabled' ||
+    message.includes('signups not allowed') ||
+    message.includes('user not found')
+  )
 }
 
 /**

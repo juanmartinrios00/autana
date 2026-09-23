@@ -46,12 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   )
 
-  const sendMagicLink = useCallback(
-    async (email: string, profile?: { name?: string; sellerType?: SellerType }) => {
-      await signInWithMagicLink(email, profile)
-    },
-    [],
-  )
+  const sendMagicLink = useCallback(async (email: string) => {
+    await signInWithMagicLink(email)
+  }, [])
 
   const signOut = useCallback(async () => {
     setRecovering(false)
