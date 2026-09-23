@@ -45,6 +45,8 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
   const { session, signOut } = useAuth()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  /* El buscador en el celular: cerrado es una lupa. Ver `--nav-h` en el CSS. */
+  const [searchOpen, setSearchOpen] = useState(false)
   const burgerRef = useRef<HTMLButtonElement>(null)
   const unseen = useUnseenNovedades()
 
@@ -84,7 +86,13 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
 
   /* Tres estados: flotando sobre un hero oscuro, apoyada sobre el papel arriba
      de todo, y sólida en tinta apenas se scrollea. */
-  const navbarClass = overHero ? 'navbar navbar--over' : atTop ? 'navbar' : 'navbar navbar--scrolled'
+  const navbarClass = [
+    'navbar',
+    overHero ? 'navbar--over' : atTop ? '' : 'navbar--scrolled',
+    searchOpen ? 'navbar--searching' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <header className={navbarClass}>
@@ -112,6 +120,26 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
         </Link>
 
         <NavSearch />
+
+        {/* Sólo en el celular (lo esconde el CSS). Con el buscador siempre a la
+            vista la barra medía dos filas y 108 px, que en una pantalla de 844
+            son el 13% del alto en todas las pantallas del sitio. Cerrado es una
+            lupa y la barra mide 64. */}
+        <button
+          type="button"
+          className="navbar__search-toggle"
+          aria-label={searchOpen ? 'Cerrar el buscador' : 'Buscar'}
+          aria-expanded={searchOpen}
+          aria-controls="navsearch-input"
+          onClick={() => {
+            const next = !searchOpen
+            setSearchOpen(next)
+            /* El foco después de que aparezca, si no el navegador no lo toma. */
+            if (next) setTimeout(() => document.getElementById('navsearch-input')?.focus(), 50)
+          }}
+        >
+          <Icon name={searchOpen ? 'close' : 'search'} size={20} />
+        </button>
 
         {/* Los links van en un grupo con hairlines entre medio, no sueltos. */}
         <nav className="navbar__links" aria-label="Principal">

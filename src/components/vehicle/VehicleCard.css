@@ -67,6 +67,23 @@
   left: 12px;
 }
 
+/* El contador de fotos, sobre la foto. Tinta translúcida y no un `Badge`: va
+   encima de una imagen que puede ser clara u oscura. */
+.vcard__photos {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
+  background: rgba(11, 11, 12, 0.66);
+  color: var(--ink-inverse);
+  font-size: var(--fs-xs);
+  backdrop-filter: blur(4px);
+}
+
 .vcard__fav {
   position: absolute;
   top: 10px;

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge } from '../ui/Badge'
+import { Icon } from '../ui/Icon'
 import { CompareButton } from './CompareButton'
 import { FavoriteButton } from './FavoriteButton'
 import { InterestButton } from './InterestButton'
@@ -9,6 +10,7 @@ import {
   conditionLabels,
   formatPrice,
   locationLabel,
+  relativeDate,
   sellerTypeLabels,
   vehicleMeta,
   vehicleTitle,
@@ -51,6 +53,16 @@ export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
           </Badge>
         )}
         <FavoriteButton vehicleId={vehicle.id} title={title} className="vcard__fav" />
+        {/* Cuántas fotos tiene, sobre la foto. Es lo que separa un aviso de
+            alguien que se tomó el trabajo de uno hecho a las apuradas, y hasta
+            ahora había que entrar para saberlo. Con una sola no se muestra: no
+            hay nada que anunciar. */}
+        {vehicle.images.length > 1 && (
+          <span className="vcard__photos mono" aria-label={`${vehicle.images.length} fotos`}>
+            <Icon name="camera" size={13} />
+            {vehicle.images.length}
+          </span>
+        )}
       </div>
 
       <div className="vcard__body">
@@ -67,7 +79,12 @@ export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
         <hr className="rule" />
 
         <div className="vcard__foot">
-          <span className="vcard__location">{locationLabel(vehicle.location)}</span>
+          {/* Cuándo se publicó: un aviso de hace cuatro meses puede estar
+              vendido y sin actualizar, y eso cambia a quién le escribís
+              primero. */}
+          <span className="vcard__location">
+            {locationLabel(vehicle.location)} · {relativeDate(vehicle.createdAt)}
+          </span>
           <span className="vcard__seller-info">
             {/* Hechos, no un sello ganado. `Verificada` la pone una persona a
                 mano y es la senial fuerte; cuando no esta, queda la antiguedad,

@@ -325,6 +325,19 @@ button.navbar__link {
   box-shadow: none;
 }
 
+/* La lupa del celular. Misma medida que la hamburguesa, del otro lado. */
+.navbar__search-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: inherit;
+  place-items: center;
+  cursor: pointer;
+}
+
 .navbar__burger {
   display: none;
   width: 44px;
@@ -538,7 +551,49 @@ button.navbar__link {
 /* La experiencia mobile no es el desktop comprimido: se reordena. */
 @media (max-width: 899px) {
   :root {
-    --nav-h: 108px;
+    --nav-h: 64px;
+  }
+
+  /* El buscador se abre con la lupa y baja flotando, como el menú: así la
+     barra no cambia de alto y la página no salta. */
+  .navsearch {
+    display: none;
+  }
+
+  /* El `:focus-within` de más abajo pesa lo mismo y viene después, así que
+     mientras se escribe le ganaba el `width: 100%` y el buscador se salía de la
+     pantalla. Por eso los dos. */
+  .navbar--searching .navsearch,
+  .navbar--searching .navsearch:focus-within {
+    position: absolute;
+    top: calc(100% + 1px);
+    /* Con el mismo margen lateral que el menú. `width: auto` porque la regla
+       de más abajo le pone 100%, y con `left` y `right` puestos eso lo hacía
+       sobresalir 20 px por la derecha. */
+    right: var(--page-pad);
+    left: var(--page-pad);
+    z-index: 45;
+    display: flex;
+    width: auto;
+    background: var(--canvas);
+    box-shadow: var(--sh-overlay);
+  }
+
+  /* Flotando sobre la página, el buscador va en tinta aunque la barra esté en
+     blanco sobre el hero. */
+  .navbar--over.navbar--searching .navsearch,
+  .navbar--over.navbar--searching .navsearch__input,
+  .navbar--over.navbar--searching .navsearch__submit,
+  .navbar--over.navbar--searching .navsearch__clear {
+    color: var(--ink);
+  }
+
+  .navbar--over.navbar--searching .navsearch__input::placeholder {
+    color: var(--ink-4);
+  }
+
+  .navbar__search-toggle {
+    display: grid;
   }
 
   .navbar__actions .navbar__desktop-only {
@@ -554,7 +609,6 @@ button.navbar__link {
     align-content: center;
     row-gap: var(--sp-3);
     gap: var(--sp-3);
-    padding-block: var(--sp-3);
   }
 
   /* En celular baja a su propia fila y ocupa el ancho entero, así que el
