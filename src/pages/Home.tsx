@@ -1,18 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BrandSlider } from '../components/home/BrandSlider'
-import { AudienceSection } from '../components/home/AudienceSection'
 import { BlogSlider } from '../components/home/BlogSlider'
-import { BudgetSlider } from '../components/home/BudgetSlider'
 import { CategorySlider } from '../components/home/CategorySlider'
 import { ClosingBand } from '../components/home/ClosingBand'
-import { DealerSlider } from '../components/home/DealerSlider'
-import { Faq } from '../components/home/Faq'
 import { GarageSection } from '../components/home/GarageSection'
 import { HowItWorks } from '../components/home/HowItWorks'
 import { Pillars } from '../components/home/Pillars'
-import { PopularModels } from '../components/home/PopularModels'
-import { ProvinceMap } from '../components/home/ProvinceMap'
 import { MarketplaceProof } from '../components/home/MarketplaceProof'
 import { VehicleSlider } from '../components/home/VehicleSlider'
 import { Badge } from '../components/ui/Badge'
@@ -27,7 +20,6 @@ import { modelsForMake } from '../data/models'
 import {
   countsBy,
   getStats,
-  listDealers,
   listModels,
   listPopularVehicles,
   listRecentVehicles,
@@ -35,7 +27,7 @@ import {
 } from '../lib/api'
 import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
-import type { Seller, Vehicle } from '../types'
+import type { Vehicle } from '../types'
 import './Home.css'
 
 const popular = [
@@ -65,8 +57,6 @@ export function Home() {
   const [recent, setRecent] = useState<Vehicle[]>([])
   const [mostSeen, setMostSeen] = useState<Vehicle[]>([])
   const [bodyCounts, setBodyCounts] = useState<Record<string, number>>({})
-  const [provinceCounts, setProvinceCounts] = useState<Record<string, number>>({})
-  const [dealers, setDealers] = useState<Seller[]>([])
   const [stats, setStats] = useState<MarketplaceStats | null>(null)
   const [publishedModels, setPublishedModels] = useState<Record<string, string[]>>({})
   const [loadingRecent, setLoadingRecent] = useState(true)
@@ -74,22 +64,20 @@ export function Home() {
   useEffect(() => {
     let current = true
 
+    /* Dos consultas menos que antes: las provincias y las concesionarias eran
+       para secciones que ya no están en la portada. */
     void Promise.allSettled([
       listRecentVehicles(8),
       listPopularVehicles(8),
       countsBy('body_type'),
-      countsBy('province'),
       getStats(),
-      listDealers(8),
-    ]).then(([recentResult, popularResult, bodiesResult, provincesResult, statsResult, dealersResult]) => {
+    ]).then(([recentResult, popularResult, bodiesResult, statsResult]) => {
       if (!current) return
 
       if (recentResult.status === 'fulfilled') setRecent(recentResult.value)
       if (popularResult.status === 'fulfilled') setMostSeen(popularResult.value)
       if (bodiesResult.status === 'fulfilled') setBodyCounts(bodiesResult.value)
-      if (provincesResult.status === 'fulfilled') setProvinceCounts(provincesResult.value)
       if (statsResult.status === 'fulfilled') setStats(statsResult.value)
-      if (dealersResult.status === 'fulfilled') setDealers(dealersResult.value)
       setLoadingRecent(false)
     })
 
@@ -213,13 +201,20 @@ export function Home() {
           hay forma de llegar sin sumar una barra de scroll horizontal. */}
       {stats && <MarketplaceProof stats={stats} />}
 
-      <div className="page home__sections">
-        <div className="home__cluster home__cluster--discovery">
-          <BrandSlider />
-          <CategorySlider counts={bodyCounts} />
-          <PopularModels />
-        </div>
+      {/* Primero los autos y después una sola forma de buscarlos.
 
+          La portada medía quince pantallas de alto en un celular. Tenía cinco
+          maneras de entrar al mismo listado ---marcas, carrocerías, modelos,
+          presupuestos, provincias--- y tres secciones explicando lo mismo. Con
+          pocos avisos publicados cada una de esas filas se ve medio vacía, así
+          que repetirlas no muestra más catálogo: muestra que no hay.
+
+          Quedan afuera de la portada, no del sitio: `BrandSlider`,
+          `PopularModels`, `ProvinceMap`, `AudienceSection`, `BudgetSlider`,
+          `DealerSlider` y `Faq` siguen en el repo y vuelven cuando haya
+          inventario que las llene. Sus pantallas propias ---`/autos`,
+          `/agencias`, `/ayuda`--- ya hacen ese trabajo. */}
+      <div className="page home__sections">
         <div className="home__cluster home__cluster--listings">
           <VehicleSlider
             eyebrow="Lo último"
@@ -240,7 +235,7 @@ export function Home() {
           />
         </div>
 
-        <ProvinceMap counts={provinceCounts} />
+        <CategorySlider counts={bodyCounts} />
       </div>
 
       {/* Los tres motivos van acá y no arriba: quien entra a un clasificado
@@ -252,17 +247,10 @@ export function Home() {
       <Pillars />
 
       <div className="page home__sections">
-        <AudienceSection />
         <HowItWorks />
         <GarageSection />
-        <BudgetSlider />
-        <DealerSlider dealers={dealers} />
         <BlogSlider />
       </div>
-
-      <section className="page home__faq">
-        <Faq />
-      </section>
 
       <section className="page home__closing">
         <ClosingBand />
