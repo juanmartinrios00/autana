@@ -17,6 +17,7 @@ import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useCompare } from '../hooks/useCompare'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
+import { useSlowHint } from '../hooks/useSlowHint'
 import { useFavorites } from '../hooks/useFavorites'
 import {
   getSeller,
@@ -154,6 +155,7 @@ export function VehicleDetail() {
   /* En el aviso propio no hay botón de contacto, así que tampoco barra: sería
      una franja con el precio y nada más. */
   const own = Boolean(session && vehicle && session.user.id === vehicle.sellerId)
+  const tardando = useSlowHint(status === 'loading')
 
   /* Del auto que está en pantalla, no del anterior. */
   const itsSeller = seller?.slug === slug ? seller : null
@@ -243,6 +245,14 @@ export function VehicleDetail() {
             <Skeleton height="38px" width="50%" />
             <Skeleton height="56px" />
           </div>
+          {/* La misma idea que en el listado: a los cuatro segundos la pantalla
+              dice que está tardando, en vez de dejar esqueletos mudos hasta
+              que aparezca el error. */}
+          {tardando && (
+            <p className="detail__slow" role="status">
+              Está tardando más de lo normal. Puede ser tu conexión.
+            </p>
+          )}
         </aside>
       </div>
     )
