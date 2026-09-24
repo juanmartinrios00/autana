@@ -10,6 +10,8 @@
  * y queda como chip que se saca con la ×.
  */
 
+import { plano } from './text'
+
 export interface MakeModelCount {
   make: string
   model: string
@@ -21,11 +23,6 @@ export interface Suggestion {
   /** Sin modelo es la marca entera: "Toyota, todos los modelos". */
   model?: string
   count: number
-}
-
-/** Sin tildes ni mayúsculas: "citroen" encuentra "Citroën". */
-function plano(text: string): string {
-  return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
 }
 
 const MAX = 6

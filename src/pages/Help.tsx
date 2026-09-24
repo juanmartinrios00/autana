@@ -1,8 +1,13 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { Button } from '../components/ui/Button'
+import { EmptyState } from '../components/ui/EmptyState'
+import { Icon } from '../components/ui/Icon'
 import { BRAND, pageTitle } from '../config/brand'
 import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
+import { posts } from '../content/blog/posts'
+import { contieneTodas } from '../lib/text'
 import './Help.css'
 
 /**
@@ -341,6 +346,35 @@ const TOPICS: Topic[] = [
 
 export function Help() {
   useDarkHero()
+  /* La pantalla mide casi cuatro mil píxeles en un celular. Quien entra no
+     viene a leerla: viene con una pregunta. El buscador filtra por la pregunta
+     de cada punto, ignorando tildes y mayúsculas, y abre las que quedan.
+
+     Sobre la pregunta y no sobre la respuesta: las respuestas son JSX con
+     links adentro, y buscar dentro de eso pide convertirlas a texto plano en
+     cada tecla. Las preguntas están escritas justamente con las palabras que
+     alguien usaría para buscarlas. */
+  const [busqueda, setBusqueda] = useState('')
+  const buscando = busqueda.trim().length >= 2
+
+  const temas = buscando
+    ? TOPICS.map((topic) => ({
+        ...topic,
+        items: topic.items.filter(
+          (item) => contieneTodas(item.q, busqueda) || contieneTodas(topic.title, busqueda),
+        ),
+      })).filter((topic) => topic.items.length > 0)
+    : TOPICS
+
+  /* Las notas del blog también contestan preguntas, y a veces son las únicas
+     que contestan la que se hizo: "transferencia" no es un tema de la ayuda
+     ---acá se explica cómo funciona el sitio--- pero hay una nota entera sobre
+     el trámite. Sin esto, el buscador decía que no había nada. */
+  const notas = buscando
+    ? posts.filter((post) => contieneTodas(`${post.title} ${post.summary}`, busqueda)).slice(0, 3)
+    : []
+
+  const cuantas = temas.reduce((total, topic) => total + topic.items.length, 0)
 
   useDocumentMeta({
     title: pageTitle('Ayuda'),
@@ -365,20 +399,48 @@ export function Help() {
         {/* El índice por tópico. Es lo que hace que la pantalla sirva desde el
             celular: sin él hay que scrollear cinco secciones para ver si lo que
             buscás está. */}
-        <nav className="help__index" aria-label="Temas de ayuda">
-          {TOPICS.map((topic) => (
-            <a key={topic.id} href={`#${topic.id}`} className="help__index-link">
-              {topic.label}
-            </a>
-          ))}
-        </nav>
+        <div className="help__search">
+          <label className="sr-only" htmlFor="help-search">
+            Buscar en la ayuda
+          </label>
+          <Icon name="search" size={17} />
+          <input
+            id="help-search"
+            type="search"
+            className="help__search-input"
+            placeholder="Buscá tu pregunta. Ej. transferencia"
+            value={busqueda}
+            onChange={(event) => setBusqueda(event.target.value)}
+          />
+          {/* Cuenta también las notas del blog: decir "0 respuestas" con una
+              nota abajo se lee como que el buscador no anda. */}
+          {buscando && (
+            <span className="help__search-count mono" role="status">
+              {cuantas + notas.length} {cuantas + notas.length === 1 ? 'resultado' : 'resultados'}
+            </span>
+          )}
+        </div>
 
-        {TOPICS.map((topic) => (
+        {/* El índice no tiene sentido mientras se busca: sus anclas llevan a
+            secciones que el filtro puede haber dejado afuera. */}
+        {!buscando && (
+          <nav className="help__index" aria-label="Temas de ayuda">
+            {TOPICS.map((topic) => (
+              <a key={topic.id} href={`#${topic.id}`} className="help__index-link">
+                {topic.label}
+              </a>
+            ))}
+          </nav>
+        )}
+
+        {temas.map((topic) => (
           <section className="help__topic" key={topic.id} id={topic.id}>
             <h2 className="help__topic-title">{topic.title}</h2>
             <div className="help__list">
               {topic.items.map((item) => (
-                <details className="help__item" key={item.q}>
+                /* Buscando van abiertas: si el resultado es una pregunta que
+                   hay que tocar para leer, el buscador contestó a medias. */
+                <details className="help__item" key={item.q} open={buscando}>
                   <summary className="help__q">{item.q}</summary>
                   <div className="help__a">{item.a}</div>
                 </details>
@@ -386,6 +448,35 @@ export function Help() {
             </div>
           </section>
         ))}
+
+        {notas.length > 0 && (
+          <section className="help__topic">
+            <h2 className="help__topic-title">En el blog</h2>
+            <ul className="help__notes">
+              {notas.map((post) => (
+                <li key={post.slug}>
+                  <Link to={`/blog/${post.slug}`} className="help__note">
+                    <span className="help__note-title">{post.title}</span>
+                    <span className="help__note-summary">{post.summary}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {buscando && cuantas === 0 && notas.length === 0 && (
+          <EmptyState
+            icon="search"
+            title={`No encontramos nada sobre "${busqueda.trim()}"`}
+            description="Puede que todavía no exista esa función, o que lo llamemos de otra forma. Escribinos y te contestamos."
+            action={
+              <Link to="/contacto">
+                <Button variant="yellow">Escribirnos</Button>
+              </Link>
+            }
+          />
+        )}
 
         <p className="help__foot">
           También podés leer los <Link to="/terminos">términos</Link> y la{' '}

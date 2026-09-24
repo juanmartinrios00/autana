@@ -137,3 +137,77 @@
   margin-top: var(--sp-8);
   color: var(--ink-3);
 }
+
+/* El buscador de la ayuda. Con la lupa adentro, como el de la navbar: es el
+   mismo gesto y conviene que se vea igual. */
+.help__search {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--canvas);
+  color: var(--ink-3);
+}
+
+.help__search:focus-within {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.help__search-input {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: var(--fs-body);
+}
+
+.help__search-input:focus {
+  outline: none;
+}
+
+.help__search-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.help__search-count {
+  flex-shrink: 0;
+  font-size: var(--fs-sm);
+  color: var(--ink-4);
+}
+
+/* Las notas del blog que contestan lo buscado. */
+.help__notes {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.help__note {
+  display: grid;
+  gap: 4px;
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+.help__note:hover {
+  background: var(--surface-2);
+}
+
+.help__note-title {
+  font-weight: 600;
+}
+
+.help__note-summary {
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+}
