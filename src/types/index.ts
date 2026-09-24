@@ -203,6 +203,9 @@ export interface VehicleFilters {
   /** Sólo los que aceptan ofertas. `undefined` es no filtrar, nunca `false`:
    *  nadie busca a propósito los que no aceptan. */
   negotiable?: true
+  /** Sólo los que bajaron de precio en el último mes (028). Como `negotiable`:
+   *  `undefined` es no filtrar. */
+  rebajados?: true
   bodyType?: BodyType[]
   province?: string
   sellerType?: SellerType

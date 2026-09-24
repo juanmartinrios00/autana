@@ -15,6 +15,7 @@ import {
   transmissions,
 } from './format'
 import type { SortOption, VehicleFilters } from '../types'
+import { REBAJA_DIAS } from './rebaja'
 
 /**
  * La búsqueda, sin depender de React ni del cliente de Supabase.
@@ -92,6 +93,7 @@ export function parseFilters(params: URLSearchParams): VehicleFilters {
     transmission: one(params, 'transmission', transmissions),
     drivetrain: list(params, 'drivetrain', drivetrains),
     negotiable: params.get('negotiable') === '1' ? true : undefined,
+    rebajados: params.get('rebajados') === '1' ? true : undefined,
     sellerType: one(params, 'sellerType', sellerTypes),
   }
 }
@@ -160,6 +162,7 @@ export function activeChips(filters: VehicleFilters): FilterChip[] {
     chips.push({ key: 'drivetrain', value, label: `Tracción ${drivetrainLabels[value].toLowerCase()}` })
   }
   if (filters.negotiable) chips.push({ key: 'negotiable', label: 'Acepta ofertas' })
+  if (filters.rebajados) chips.push({ key: 'rebajados', label: 'Bajaron de precio' })
   for (const value of filters.fuelType ?? []) chips.push({ key: 'fuelType', value, label: fuelLabels[value] })
   for (const value of filters.bodyType ?? []) chips.push({ key: 'bodyType', value, label: bodyLabels[value] })
   for (const value of filters.condition ?? []) {
@@ -238,6 +241,12 @@ export function applyVehicleFilters<Q extends FilterableQuery<Q>>(
   if (filters.transmission) query = query.eq('transmission', filters.transmission)
   if (filters.drivetrain?.length) query = query.in('drivetrain', filters.drivetrain as never[])
   if (filters.negotiable) query = query.eq('negotiable', true)
+  /* La misma ventana que la marca de "bajó" en la caja (`lib/rebaja`): lo que
+     bajó hace más de un mes ya no se muestra como rebajado, así que tampoco
+     tiene que aparecer acá. */
+  if (filters.rebajados) {
+    query = query.gte('price_dropped_at', new Date(Date.now() - REBAJA_DIAS * 86_400_000).toISOString())
+  }
   if (filters.fuelType?.length) query = query.in('fuel_type', filters.fuelType as never[])
   if (filters.bodyType?.length) query = query.in('body_type', filters.bodyType as never[])
   if (filters.condition?.length) query = query.in('condition', filters.condition as never[])

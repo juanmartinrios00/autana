@@ -3,6 +3,7 @@ import { computeTrust, type TrustSignal } from './trust'
 import { applyVehicleFilters } from './search-query'
 import { photoUrl, requireSupabase } from './supabase'
 import { limpiarParaBuscar } from './referencia'
+import { REBAJA_DIAS } from './rebaja'
 import type {
   Currency,
   GarageSlot,
@@ -266,6 +267,12 @@ export async function listVehicles({
     .order(column, { ascending })
     .range(from, from + pageSize - 1)
 
+  /* "Bajaron de precio" filtra por una columna de la 028. Si la migración
+     todavía no corrió, la columna no existe (42703) y lo cierto es que no hay
+     ninguno rebajado: se contesta eso en vez de la pantalla de error. */
+  if (error && filters.rebajados && error.code === '42703') {
+    return { items: [], total: 0, page, pageSize }
+  }
   if (error) throw error
 
   const items = (data as ListingRow[]).map(toVehicle)
@@ -376,6 +383,27 @@ export async function getSimilarVehicles(vehicle: Vehicle, limit = 3): Promise<V
     .slice(0, limit)
 
   return withSellerTrust(similar)
+}
+
+/**
+ * Los que bajaron de precio en el último mes, lo más reciente primero. Para la
+ * fila "Bajaron de precio" de la portada.
+ *
+ * Sin la migración 028 la columna no existe y la consulta falla: quien llama lo
+ * toma como "no hay", y la fila no aparece.
+ */
+export async function listPriceDrops(limit = 8): Promise<Vehicle[]> {
+  const client = requireSupabase()
+  const desde = new Date(Date.now() - REBAJA_DIAS * 86_400_000).toISOString()
+  const { data, error } = await client
+    .from('listings')
+    .select(LISTING_COLUMNS)
+    .eq('status', 'active')
+    .gte('price_dropped_at', desde)
+    .order('price_dropped_at', { ascending: false })
+    .limit(limit)
+  if (error) throw error
+  return withSellerTrust((data as ListingRow[]).map(toVehicle))
 }
 
 /**

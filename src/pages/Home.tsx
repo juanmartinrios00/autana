@@ -22,6 +22,7 @@ import {
   getStats,
   listModels,
   listPopularVehicles,
+  listPriceDrops,
   listRecentVehicles,
   type MarketplaceStats,
 } from '../lib/api'
@@ -57,6 +58,7 @@ export function Home() {
 
   const [recent, setRecent] = useState<Vehicle[]>([])
   const [mostSeen, setMostSeen] = useState<Vehicle[]>([])
+  const [drops, setDrops] = useState<Vehicle[]>([])
   const [bodyCounts, setBodyCounts] = useState<Record<string, number>>({})
   const [stats, setStats] = useState<MarketplaceStats | null>(null)
   const [publishedModels, setPublishedModels] = useState<Record<string, string[]>>({})
@@ -72,13 +74,15 @@ export function Home() {
       listPopularVehicles(8),
       countsBy('body_type'),
       getStats(),
-    ]).then(([recentResult, popularResult, bodiesResult, statsResult]) => {
+      listPriceDrops(8),
+    ]).then(([recentResult, popularResult, bodiesResult, statsResult, dropsResult]) => {
       if (!current) return
 
       if (recentResult.status === 'fulfilled') setRecent(recentResult.value)
       if (popularResult.status === 'fulfilled') setMostSeen(popularResult.value)
       if (bodiesResult.status === 'fulfilled') setBodyCounts(bodiesResult.value)
       if (statsResult.status === 'fulfilled') setStats(statsResult.value)
+      if (dropsResult.status === 'fulfilled') setDrops(dropsResult.value)
       setLoadingRecent(false)
     })
 
@@ -235,6 +239,16 @@ export function Home() {
             vehicles={mostSeen.some((car) => !recent.some((other) => other.id === car.id)) ? mostSeen : []}
           />
         </div>
+
+        {/* Los que bajaron de precio en el último mes. Sin ninguno, la fila no
+            existe (lo resuelve `VehicleSlider`), así que no hace falta
+            esconderla mientras el marketplace arranca. */}
+        <VehicleSlider
+          eyebrow="Oportunidades"
+          title="Bajaron de precio"
+          vehicles={drops}
+          action={{ label: 'Ver todos', to: '/autos?rebajados=1' }}
+        />
 
         {/* Las otras formas de buscar ---marca, modelo, presupuesto,
             provincia--- viven en `/explorar`. */}

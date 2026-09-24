@@ -248,10 +248,11 @@ export function FilterPanel({
         onToggle={(value) => toggleInList('condition', value)}
       />
 
-      {/* Un interruptor y no un grupo: hay una sola opción que tenga sentido
-          pedir. `negotiable=1` en la URL, como las demás claves. */}
+      {/* Dos interruptores independientes y no un grupo: se puede pedir uno,
+          el otro o los dos. `negotiable=1` y `rebajados=1` en la URL, como las
+          demás claves. */}
       <fieldset className="filters__group">
-        <legend className="field__label">Precio negociable</legend>
+        <legend className="field__label">Ofertas</legend>
         <div className="filters__chips">
           <button
             type="button"
@@ -262,6 +263,17 @@ export function FilterPanel({
             <Badge className={filters.negotiable ? 'filters__chip is-on' : 'filters__chip'}>
               {filters.negotiable && <Icon name="check" size={13} strokeWidth={2} />}
               Acepta ofertas
+            </Badge>
+          </button>
+          <button
+            type="button"
+            className="chip-button"
+            aria-pressed={Boolean(filters.rebajados)}
+            onClick={() => setParam('rebajados', filters.rebajados ? undefined : '1')}
+          >
+            <Badge className={filters.rebajados ? 'filters__chip is-on' : 'filters__chip'}>
+              <Icon name={filters.rebajados ? 'check' : 'trendDown'} size={13} strokeWidth={filters.rebajados ? 2 : 1.6} />
+              Bajaron de precio
             </Badge>
           </button>
         </div>

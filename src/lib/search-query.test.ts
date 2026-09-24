@@ -240,7 +240,7 @@ describe('activeChips', () => {
       p(
         'q=hilux&make=Toyota&model=Hilux&province=Salta&minYear=2018&maxYear=2024' +
           '&minPrice=10000&maxPrice=50000&maxMileage=80000&fuelType=diesel&bodyType=pickup' +
-          '&condition=used&transmission=automatic&sellerType=dealer&drivetrain=4x4&negotiable=1',
+          '&condition=used&transmission=automatic&sellerType=dealer&drivetrain=4x4&negotiable=1&rebajados=1',
       ),
     )
     const conValor = Object.entries(todo).filter(([, value]) => value !== undefined).map(([key]) => key)
@@ -252,6 +252,18 @@ describe('activeChips', () => {
 describe('applyVehicleFilters', () => {
   it('sin filtros no toca la consulta', () => {
     expect(apply({}).calls).toEqual([])
+  })
+
+  /* La misma ventana de un mes que la marca de "bajó" en la caja: un auto que
+     aparece en "Bajaron de precio" tiene que verse rebajado. */
+  it('los rebajados son los que bajaron en el último mes', () => {
+    const [call] = apply({ rebajados: true }).calls
+    expect(call?.method).toBe('gte')
+    expect(call?.args[0]).toBe('price_dropped_at')
+    const desde = new Date(call?.args[1] as string).getTime()
+    const dias = (Date.now() - desde) / 86_400_000
+    expect(dias).toBeGreaterThan(29.9)
+    expect(dias).toBeLessThan(30.1)
   })
 
   it('manda cada filtro a su columna y con su operador', () => {
