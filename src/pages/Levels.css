@@ -56,8 +56,8 @@
   display: flex;
   flex-direction: column;
   border-radius: var(--r-xl);
-  background: var(--canvas);
-  box-shadow: var(--sh-flat);
+  background: #fff;
+  box-shadow: var(--sh-card);
   overflow: hidden;
 }
 
@@ -77,7 +77,11 @@
 }
 
 .rung.is-here {
-  box-shadow: 0 0 0 2px var(--ink);
+  /* El nivel propio, con el aro en amarillo y no en negro: es el único
+     marcado de la escalera, y un contorno negro se leía como caja. */
+  box-shadow:
+    0 0 0 2px var(--accent),
+    var(--sh-card);
 }
 
 .rung__art {

@@ -1,18 +1,19 @@
 /* La tarjeta se usa en el listado, al pie de cada artículo y en la portada. */
+/* Sin contorno, como las cajas de los avisos: blanca y apoyada en la sombra,
+   que se estira al pasar el mouse. El hover pasaba el borde a negro. */
 .pcard {
   display: flex;
   flex-direction: column;
-  background: var(--canvas);
-  border: 1px solid var(--line);
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  background: #fff;
+  box-shadow: var(--sh-card);
   color: inherit;
-  transition:
-    border-color var(--dur-med) var(--ease),
-    background var(--dur-med) var(--ease);
+  transition: box-shadow var(--dur-med) var(--ease);
 }
 
 .pcard:hover {
-  border-color: var(--ink);
-  background: var(--surface);
+  box-shadow: var(--sh-card-hover);
 }
 
 .pcard__media {

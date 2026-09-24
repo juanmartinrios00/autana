@@ -363,11 +363,12 @@
 
 /* --- Card --------------------------------------------------------------- */
 
+/* Blanca y apoyada en la sombra, sin contorno: el mismo lenguaje que las
+   cajas de los avisos. */
 .card {
-  border: 1px solid var(--line);
   border-radius: var(--r-xl);
-  background: var(--canvas);
-  box-shadow: none;
+  background: #fff;
+  box-shadow: var(--sh-card);
 }
 
 .card--pad {
@@ -386,8 +387,7 @@
 
 .card--interactive:hover {
   transform: none;
-  border-color: var(--ink);
-  box-shadow: none;
+  box-shadow: var(--sh-card-hover);
 }
 
 /* --- Skeleton ----------------------------------------------------------- */

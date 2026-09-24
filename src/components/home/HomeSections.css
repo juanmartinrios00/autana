@@ -47,16 +47,15 @@
   height: 212px;
   padding: var(--sp-5);
   border-radius: var(--r-lg);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  transition:
-    border-color var(--dur-med) var(--ease),
-    background var(--dur-med) var(--ease);
+  background: #fff;
+  box-shadow: var(--sh-card);
+  transition: box-shadow var(--dur-med) var(--ease);
 }
 
+/* Sin contorno y sin el hover que lo pasaba a negro, como las cajas de los
+   avisos: la sombra se estira. Vale igual para modelos y concesionarias. */
 .category:hover {
-  background: var(--canvas);
-  border-color: var(--ink);
+  box-shadow: var(--sh-card-hover);
 }
 
 /* El auto mira hacia el texto y se sale por el borde derecho: la caja lo corta
@@ -140,11 +139,9 @@
   overflow: hidden;
   padding: var(--sp-4) var(--sp-5);
   border-radius: var(--r-lg);
-  background: var(--canvas);
-  border: 1px solid var(--line);
-  transition:
-    border-color var(--dur-med) var(--ease),
-    background var(--dur-med) var(--ease);
+  background: #fff;
+  box-shadow: var(--sh-card);
+  transition: box-shadow var(--dur-med) var(--ease);
 }
 
 .model__copy {
@@ -177,8 +174,7 @@
 }
 
 .model:hover {
-  border-color: var(--ink);
-  background: var(--surface);
+  box-shadow: var(--sh-card-hover);
 }
 
 .brand__logo {
@@ -218,16 +214,13 @@
   gap: var(--sp-3);
   padding: var(--sp-5);
   border-radius: var(--r-lg);
-  background: var(--canvas);
-  border: 1px solid var(--line);
-  transition:
-    border-color var(--dur-med) var(--ease),
-    background var(--dur-med) var(--ease);
+  background: #fff;
+  box-shadow: var(--sh-card);
+  transition: box-shadow var(--dur-med) var(--ease);
 }
 
 .dealer:hover {
-  border-color: var(--ink);
-  background: var(--surface);
+  box-shadow: var(--sh-card-hover);
 }
 
 .dealer__avatar {
