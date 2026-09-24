@@ -9,7 +9,7 @@ import { Skeleton } from '../components/ui/Skeleton'
 import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
-import { deleteListing, listMyListings, setListingStatus } from '../lib/api'
+import { deleteListing, getMyListingStats, listMyListings, setListingStatus, type ListingDay } from '../lib/api'
 import { listingMission } from '../lib/missions'
 import type { ListingStatus, Vehicle } from '../types'
 import './MyListings.css'
@@ -32,6 +32,9 @@ export function MyListings() {
      estamos esperando, sin un `loading` que prender y apagar a mano. */
   const [loadedFor, setLoadedFor] = useState<string | null>(null)
   const [failed, setFailed] = useState(false)
+  /* Cómo le fue a cada aviso. Si falla, la pantalla se muestra igual sin los
+     gráficos: es el agregado, no lo que la persona vino a ver. */
+  const [stats, setStats] = useState<Record<string, ListingDay[]>>({})
   const [reloads, setReloads] = useState(0)
 
   useDocumentMeta({
@@ -57,6 +60,12 @@ export function MyListings() {
       .finally(() => {
         if (current) setLoadedFor(userId)
       })
+
+    void getMyListingStats()
+      .then((found) => {
+        if (current) setStats(found)
+      })
+      .catch(() => {})
 
     return () => {
       current = false
@@ -124,6 +133,7 @@ export function MyListings() {
           listings={listings}
           onStatusChange={handleStatusChange}
           onDelete={handleDelete}
+          stats={stats}
         />
       )}
     </div>

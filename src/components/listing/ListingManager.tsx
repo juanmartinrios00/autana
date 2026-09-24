@@ -9,6 +9,8 @@ import { interestLabel } from '../../lib/contact'
 import type { ListingStatus, Vehicle } from '../../types'
 import './ListingManager.css'
 import { reportError } from '../../lib/report'
+import { ListingStats } from './ListingStats'
+import type { ListingDay } from '../../lib/api'
 
 /**
  * La lista de avisos propios con sus acciones. Se llama por el trabajo que
@@ -31,9 +33,11 @@ interface ListingManagerProps {
   listings: Vehicle[]
   onStatusChange: (id: string, status: ListingStatus) => Promise<void>
   onDelete: (id: string) => Promise<void>
+  /** Los últimos días de cada aviso, por id. Si no llegaron, no se dibuja. */
+  stats?: Record<string, ListingDay[]>
 }
 
-export function ListingManager({ listings, onStatusChange, onDelete }: ListingManagerProps) {
+export function ListingManager({ listings, onStatusChange, onDelete, stats }: ListingManagerProps) {
   /* El id del aviso que está esperando una respuesta del servidor, para
      bloquear sus botones sin congelar los de las otras filas. */
   const [busy, setBusy] = useState<string | null>(null)
@@ -122,6 +126,11 @@ export function ListingManager({ listings, onStatusChange, onDelete }: ListingMa
                 {interestLabel(vehicle.interestCount) && (
                   <p className="mylisting__interest">{interestLabel(vehicle.interestCount)}</p>
                 )}
+
+                {/* Cómo le fue en las últimas dos semanas. Va acá arriba de los
+                    botones: es lo que se mira antes de decidir si toca el
+                    precio, lo pausa o le suma fotos. */}
+                {stats?.[vehicle.id] && <ListingStats days={stats[vehicle.id]!} />}
 
                 {isConfirming ? (
                   <div className="mylisting__actions mylisting__actions--confirm">

@@ -1871,6 +1871,34 @@ export async function getProfileBadges(userId: string): Promise<AchievementId[]>
   return (data as AchievementId[] | null) ?? []
 }
 
+/** Un día de un aviso: cuántos lo miraron y cuántos pidieron el contacto. */
+export interface ListingDay {
+  day: string
+  views: number
+  interests: number
+}
+
+/**
+ * Los últimos días de cada aviso propio (027), agrupados por aviso.
+ *
+ * La función de la base devuelve sólo filas con movimiento: los días en que
+ * nadie entró no existen. La pantalla rellena los huecos, porque un día en
+ * cero es un dato y no un agujero.
+ */
+export async function getMyListingStats(days = 14): Promise<Record<string, ListingDay[]>> {
+  const client = requireSupabase()
+  const { data, error } = await client.rpc('my_listing_stats', { days })
+  if (error) throw error
+
+  const porAviso: Record<string, ListingDay[]> = {}
+  for (const row of (data ?? []) as { listing_id: string; day: string; views: number; interests: number }[]) {
+    const lista = porAviso[row.listing_id] ?? []
+    lista.push({ day: row.day, views: Number(row.views), interests: Number(row.interests) })
+    porAviso[row.listing_id] = lista
+  }
+  return porAviso
+}
+
 export async function markNovedadesSeen(): Promise<void> {
   const client = requireSupabase()
   const { error } = await client.rpc('mark_novedades_seen')
