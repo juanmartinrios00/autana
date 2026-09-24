@@ -28,8 +28,8 @@
   gap: var(--sp-4);
   padding: var(--sp-3);
   border-radius: var(--r-lg);
-  background: var(--canvas);
-  box-shadow: var(--sh-flat);
+  background: #fff;
+  box-shadow: var(--sh-card);
 }
 
 /* Pausado, vendido o borrador: sigue estando pero pierde protagonismo, para
@@ -143,18 +143,25 @@
   color: var(--ink-3);
 }
 
+/* En el celular, fila con la foto chica: con la foto a todo el ancho cada
+   aviso ocupaba la pantalla entera, y una concesionaria con veinte autos
+   tenía que scrollear veinte pantallas para encontrar el que quería pausar. */
 @media (max-width: 699px) {
   .mylisting {
-    flex-direction: column;
+    gap: var(--sp-3);
   }
 
   .mylisting__media {
-    width: 100%;
-    height: 160px;
+    width: 84px;
+    height: 84px;
   }
 
   .mylisting__body {
-    padding: 0 var(--sp-2) var(--sp-2);
+    padding: 0;
+  }
+
+  .mylisting__title {
+    font-size: 0.98rem;
   }
 
   .mylisting__actions {
@@ -180,4 +187,45 @@
   font-size: 0.82rem;
   font-weight: 500;
   color: var(--danger);
+}
+
+/* Las acciones de cada aviso, como las de la ficha: sin contorno, con su
+   ícono y en caja normal. Eliminar va en rojo, pero sin fondo: confirmarlo
+   ya pide un segundo paso. */
+.mylisting__actions--quiet {
+  gap: var(--sp-1);
+  margin-left: calc(var(--sp-2) * -1);
+}
+
+.mylisting__actions--quiet .btn {
+  height: 34px;
+  padding-inline: 10px;
+  gap: 6px;
+  border: 0;
+  border-radius: var(--r-md);
+  clip-path: none;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.mylisting__actions--quiet .btn:hover:not(:disabled) {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.mylisting__actions--quiet .mylisting__delete {
+  color: var(--danger);
+}
+
+.mylisting__actions--quiet .mylisting__delete:hover:not(:disabled) {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.mylisting__actions--quiet .btn:disabled {
+  background: transparent;
 }

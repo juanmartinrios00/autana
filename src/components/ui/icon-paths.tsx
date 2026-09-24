@@ -63,6 +63,9 @@ export const paths = {
   /* Dos perillas deslizantes: filtrar. `list` sigue siendo la vista en filas. */
   filter: <><path d="M3.5 7h10" /><path d="M17.5 7h3" /><path d="M13.5 4.5h4v5h-4z" /><path d="M3.5 17h3" /><path d="M10.5 17h10" /><path d="M6.5 14.5h4v5h-4z" /></>,
   sort: <><path d="M7.5 20V4" /><path d="m3.5 8 4-4 4 4" /><path d="M16.5 4v16" /><path d="m12.5 16 4 4 4-4" /></>,
+  pause: <><path d="M7.5 4.5v15" /><path d="M16.5 4.5v15" /></>,
+  /* Reactivar: el triángulo de "seguir", con la punta recta como el resto. */
+  play: <path d="M6.5 4v16l13-8z" />,
   flag: <><path d="M5 21.5v-18" /><path d="M5 4.5h13l-2.5 4.5 2.5 4.5H5" /></>,
 
   /* --- Estados --- */

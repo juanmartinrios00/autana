@@ -162,12 +162,16 @@ export function ListingManager({ listings, onStatusChange, onDelete, stats }: Li
                       size="sm"
                       disabled={isBusy}
                       onClick={() => setConfirming(vehicle.id)}
+                      className="mylisting__delete"
                     >
+                      <Icon name="trash" size={15} />
                       Eliminar
                     </Button>
                   </div>
                 ) : (
-                  <div className="mylisting__actions">
+                  /* Acciones calladas, con ícono y en caja normal: cuatro botones
+                     con contorno por aviso eran una planilla de botones. */
+                  <div className="mylisting__actions mylisting__actions--quiet">
                     {vehicle.status === 'active' ? (
                       <Button
                         size="sm"
@@ -180,6 +184,7 @@ export function ListingManager({ listings, onStatusChange, onDelete, stats }: Li
                           )
                         }
                       >
+                        <Icon name="pause" size={15} />
                         Pausar
                       </Button>
                     ) : (
@@ -194,6 +199,7 @@ export function ListingManager({ listings, onStatusChange, onDelete, stats }: Li
                           )
                         }
                       >
+                        <Icon name="play" size={15} />
                         {vehicle.status === 'sold' ? 'Volver a publicar' : 'Reactivar'}
                       </Button>
                     )}
@@ -210,12 +216,14 @@ export function ListingManager({ listings, onStatusChange, onDelete, stats }: Li
                           )
                         }
                       >
+                        <Icon name="tag" size={15} />
                         Marcar vendido
                       </Button>
                     )}
 
                     <Link to={`/vender/${vehicle.slug}/editar`} className="mylisting__edit">
                       <Button size="sm" disabled={isBusy}>
+                        <Icon name="edit" size={15} />
                         Editar
                       </Button>
                     </Link>
@@ -225,7 +233,9 @@ export function ListingManager({ listings, onStatusChange, onDelete, stats }: Li
                       size="sm"
                       disabled={isBusy}
                       onClick={() => setConfirming(vehicle.id)}
+                      className="mylisting__delete"
                     >
+                      <Icon name="trash" size={15} />
                       Eliminar
                     </Button>
                   </div>
