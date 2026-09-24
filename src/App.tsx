@@ -44,6 +44,7 @@ const MyListings = lazy(() => import('./pages/MyListings').then((m) => ({ defaul
 const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.Profile })))
 const Settings = lazy(() => import('./pages/Settings').then((m) => ({ default: m.Settings })))
 const Reset = lazy(() => import('./pages/Reset').then((m) => ({ default: m.Reset })))
+const Sistema = lazy(() => import('./pages/Sistema').then((m) => ({ default: m.Sistema })))
 const Sell = lazy(() => import('./pages/Sell').then((m) => ({ default: m.Sell })))
 const VehicleDetail = lazy(() =>
   import('./pages/VehicleDetail').then((m) => ({ default: m.VehicleDetail })),
@@ -102,6 +103,9 @@ export default function App() {
                 <Route path="blog/:slug" element={<BlogPost />} />
                 <Route path="terminos" element={<Terms />} />
                 <Route path="privacidad" element={<Privacy />} />
+                {/* El catálogo de íconos, obleas y escenas. Para quien diseña:
+                    no está en el menú ni en el buscador. */}
+                <Route path="sistema" element={<Sistema />} />
 
                 {/* El garage es público y tiene pantalla propia: el link que
                     alguien manda por WhatsApp abre los autos, no el panel. */}

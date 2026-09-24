@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Icon, type IconName } from '../ui/Icon'
+import { Oblea } from './Oblea'
 import { achievementInfo, type AchievementId } from '../../lib/levels'
 import './Trophies.css'
 
@@ -17,19 +17,9 @@ import './Trophies.css'
  * hechos verificables. Está explicado arriba de `lib/levels.ts`; si esta
  * sección se muda a la ficha de un aviso, esa separación se rompe.
  *
- * El dibujo de cada medalla es, por ahora, un ícono del sitio dentro de un aro.
- * Cuando haya dibujos propios se reemplaza este mapa y nada más.
+ * Cada una es la oblea del logro (`Oblea.tsx`), con el mismo número que en
+ * `/niveles`: la tercera es la tercera en todos lados.
  */
-
-const DIBUJO: Record<AchievementId, IconName> = {
-  profile_complete: 'user',
-  first_listing: 'car',
-  rich_listing: 'camera',
-  three_listings: 'list',
-  first_sale: 'check',
-  garage_started: 'heart',
-  garage_complete: 'grid',
-}
 
 interface TrophiesProps {
   earned: AchievementId[]
@@ -41,7 +31,9 @@ interface TrophiesProps {
 export function Trophies({ earned, own, name }: TrophiesProps) {
   if (earned.length === 0) return null
 
-  const ganados = achievementInfo().filter((item) => earned.includes(item.id))
+  const ganados = achievementInfo()
+    .map((item, index) => ({ ...item, number: index + 1 }))
+    .filter((item) => earned.includes(item.id))
 
   return (
     <section className="trophies" aria-labelledby="trofeos-title">
@@ -53,9 +45,7 @@ export function Trophies({ earned, own, name }: TrophiesProps) {
       <ul className="trophies__list">
         {ganados.map((item) => (
           <li key={item.id} className="trophy">
-            <span className="trophy__art" aria-hidden="true">
-              <Icon name={DIBUJO[item.id]} size={24} />
-            </span>
+            <Oblea id={item.id} number={item.number} done size={52} />
             {/* Sólo el nombre. La instrucción de cada logro ---"Cargá tu
                 nombre, tu WhatsApp"--- le habla al dueño, y acá la lee
                 cualquiera que abra el garage de otro. Está en `/niveles`. */}

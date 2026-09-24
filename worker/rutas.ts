@@ -54,6 +54,7 @@ export const DISALLOWED = [
   '/siguiendo',
   '/garage/mio',
   '/novedades',
+  '/sistema',
 ]
 
 /** Las publicas con contenido propio, que van fijas al sitemap. */
@@ -148,6 +149,7 @@ export const RUTAS_FIJAS = [
   '/siguiendo',
   '/admin',
   '/perfil',
+  '/sistema',
   ...ENTRADAS.map((entrada) => `/${entrada}`),
 ]
 

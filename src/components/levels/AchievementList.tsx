@@ -1,4 +1,4 @@
-import { Icon } from '../ui/Icon'
+import { Oblea } from './Oblea'
 import type { Achievement } from '../../lib/levels'
 import './AchievementList.css'
 
@@ -15,15 +15,17 @@ interface AchievementListProps {
 export function AchievementList({ achievements, showDone = true }: AchievementListProps) {
   return (
     <ul className="achievements">
-      {achievements.map((item) => {
+      {achievements.map((item, index) => {
         const done = item.done && showDone
         return (
           <li key={item.id} className={done ? 'achievement is-done' : 'achievement'}>
-            <span className="achievement__mark" aria-hidden="true">
-              {done && <Icon name="check" size={14} />}
-            </span>
+            <Oblea id={item.id} number={index + 1} done={done} size={60} />
             <div>
-              <h3 className="achievement__title">{item.title}</h3>
+              <h3 className="achievement__title">
+                {item.title}
+                {/* La oblea es aria-hidden: el estado tiene que estar en el texto. */}
+                {done && <span className="sr-only"> (logrado)</span>}
+              </h3>
               <p className="achievement__hint">{item.hint}</p>
             </div>
           </li>

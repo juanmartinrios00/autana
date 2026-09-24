@@ -1,0 +1,72 @@
+/* La oblea de cada logro. Ver `Oblea.tsx`. */
+
+.oblea {
+  display: block;
+  flex-shrink: 0;
+  color: var(--ink);
+}
+
+.oblea__disc {
+  fill: var(--accent);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.oblea__cut {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 0.6;
+  stroke-dasharray: 1.4 1.8;
+  opacity: 0.55;
+}
+
+.oblea__ring {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+
+.oblea__text {
+  font-family: var(--font-mono);
+  font-size: 6.6px;
+  font-weight: 700;
+  fill: var(--ink);
+}
+
+.oblea__picto {
+  color: var(--ink);
+}
+
+.oblea__number {
+  font-family: var(--font-mono);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  fill: var(--ink);
+}
+
+/* Sin ganar: el lugar donde falta pegarla. Sin relleno, el contorno punteado
+   y el contenido apenas marcado, para que se sepa qué va ahí. */
+.oblea--pending .oblea__disc {
+  fill: none;
+  stroke: var(--ink-4);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+
+.oblea--pending .oblea__cut {
+  display: none;
+}
+
+.oblea--pending .oblea__ring,
+.oblea--pending .oblea__picto {
+  stroke: var(--ink-4);
+  color: var(--ink-4);
+  opacity: 0.5;
+}
+
+.oblea--pending .oblea__text,
+.oblea--pending .oblea__number {
+  fill: var(--ink-4);
+  opacity: 0.5;
+}
