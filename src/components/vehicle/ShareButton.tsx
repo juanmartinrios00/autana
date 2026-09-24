@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
+import { compartir } from '../../lib/share'
 import { shareMessage } from '../../lib/whatsapp'
 
 /**
@@ -19,33 +20,27 @@ import { shareMessage } from '../../lib/whatsapp'
  * convierte en una tarjeta con la foto, que sale de las etiquetas que pone el
  * worker.
  */
-export function ShareButton({ title, price, block }: { title: string; price: string; block?: boolean }) {
+export function ShareButton({
+  title,
+  price,
+  block,
+  url: propia,
+}: {
+  title: string
+  price: string
+  block?: boolean
+  /** Cuál compartir, si no es la pantalla en la que se está: recién publicado,
+   *  el aviso vive en otra dirección que la del formulario. */
+  url?: string
+}) {
   const [copied, setCopied] = useState(false)
 
   async function share() {
-    const url = window.location.href
-    const text = shareMessage(title, price, url)
-
-    /* `share` existe en escritorio en algunos navegadores, pero sin destinos
-       útiles; el celular es donde vale. `canShare` no se pregunta porque sin
-       archivos siempre dice que sí. */
-    if (navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
-      try {
-        await navigator.share({ title, text })
-        return
-      } catch {
-        /* Cancelar el menú tira un error: no es una falla y no se avisa. */
-        return
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      /* Sin permiso de portapapeles no queda nada que hacer desde acá. */
-    }
+    const url = propia ?? window.location.href
+    const hecho = await compartir({ title, text: shareMessage(title, price, url), url })
+    if (hecho !== 'copiado') return
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (

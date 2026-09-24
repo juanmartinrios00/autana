@@ -10,6 +10,7 @@ import { pageTitle } from '../config/brand'
 import { MAX_COMPARE } from '../context/compare-context'
 import { useCompare } from '../hooks/useCompare'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
+import { compartir } from '../lib/share'
 import { getVehiclesBySlugs } from '../lib/api'
 import {
   bodyLabels,
@@ -141,6 +142,19 @@ export function Compare() {
   }, [ids])
 
   const loading = loadedFor !== ids
+  const [copiado, setCopiado] = useState(false)
+
+  /* Con los autos en el título: quien lo recibe ve qué se está comparando
+     antes de abrirlo. */
+  async function compartirComparacion() {
+    const hecho = await compartir({
+      title: `Comparación: ${vehicles.map((v) => vehicleTitle(v)).join(' vs. ')}`,
+      url: window.location.href,
+    })
+    if (hecho !== 'copiado') return
+    setCopiado(true)
+    window.setTimeout(() => setCopiado(false), 2000)
+  }
 
   /* Sacar una columna reescribe la URL, que es la fuente de verdad, y de paso
      la saca del changuito para que las dos vistas no se contradigan. */
@@ -199,9 +213,17 @@ export function Compare() {
               : 'Lo mejor de cada fila va marcado en amarillo. Este link se puede compartir.'}
           </p>
         </div>
-        <Link to="/autos">
-          <Button size="sm">Sumar otro auto</Button>
-        </Link>
+        <div className="compare__actions">
+          {/* La pantalla dice que el link se puede compartir; hasta ahora había
+              que copiarlo de la barra del navegador a mano. */}
+          <Button size="sm" onClick={() => void compartirComparacion()}>
+            <Icon name="link" size={15} />
+            {copiado ? 'Link copiado' : 'Compartir'}
+          </Button>
+          <Link to="/autos">
+            <Button size="sm">Sumar otro auto</Button>
+          </Link>
+        </div>
       </header>
 
       {/* La tabla scrollea sola en pantallas angostas en vez de romper la

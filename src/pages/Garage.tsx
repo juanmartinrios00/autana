@@ -13,13 +13,14 @@ import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
 import { ReportDialog } from '../components/vehicle/ReportDialog'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
-import { pageTitle } from '../config/brand'
+import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { getProfile, getProfileBadges, listSellerVehicles, type ProfileSummary } from '../lib/api'
 import { listGarage, removeGarageEntry, saveGarageEntry, SLOTS, type GarageInput } from '../lib/garage'
 import { garageThemeColor } from '../lib/garage-theme'
+import { compartir } from '../lib/share'
 import { garageMission } from '../lib/missions'
 import type { AchievementId } from '../lib/levels'
 import type { GarageEntry, Vehicle } from '../types'
@@ -136,16 +137,18 @@ export function Garage() {
     setReloads((count) => count + 1)
   }
 
+  /* En el celular abre el menú del sistema, que tiene WhatsApp arriba de todo:
+     un garage se comparte por ahí, que es para lo que existe la pantalla. En
+     una computadora copia, como antes. */
   async function share() {
-    try {
-      await navigator.clipboard.writeText(window.location.href)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 2000)
-    } catch {
-      /* Sin portapapeles —permiso denegado, contexto inseguro— no hay nada que
-         avisar: el link está en la barra de direcciones, que es de donde lo
-         iba a sacar igual. */
-    }
+    const quien = profile?.name ?? ''
+    const hecho = await compartir({
+      title: editable ? `Mi garage en ${BRAND}` : `El garage de ${quien}`,
+      url: window.location.href,
+    })
+    if (hecho !== 'copiado') return
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 2000)
   }
 
   if (fresh && loaded.failed) {

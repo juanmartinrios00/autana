@@ -432,6 +432,10 @@
   align-self: stretch;
 }
 
+.sell__done-share {
+  align-self: stretch;
+}
+
 .sell__done-actions {
   display: flex;
   gap: var(--sp-3);

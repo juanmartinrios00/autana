@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { MissionCard } from '../components/levels/MissionCard'
+import { ShareButton } from '../components/vehicle/ShareButton'
 import { PhotoUploader, type Photo } from '../components/sell/PhotoUploader'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -426,6 +427,18 @@ export function Sell() {
             </p>
           )}
           {result?.mission && <MissionCard mission={result.mission} className="sell__done-mission" />}
+          {/* El momento en que alguien quiere mandar su auto: lo acaba de
+              publicar y lo primero que hace es pasárselo a los conocidos. Antes
+              tenía que entrar al aviso y copiar la dirección del navegador. */}
+          <div className="sell__done-share">
+            <ShareButton
+              title={`${draft.make} ${draft.model} ${draft.year}`}
+              price={formatPrice(Number(draft.price), draft.currency)}
+              url={`${window.location.origin}/autos/${publishedSlug}`}
+              block
+            />
+          </div>
+
           <div className="sell__done-actions">
             <Button variant="yellow" onClick={() => navigate(`/autos/${publishedSlug}`)}>
               Ver mi publicación

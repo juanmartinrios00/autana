@@ -158,3 +158,10 @@
     height: 96px;
   }
 }
+
+/* Compartir y sumar otro, juntos a la derecha del título. */
+.compare__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
