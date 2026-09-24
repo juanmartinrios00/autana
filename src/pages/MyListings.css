@@ -49,3 +49,13 @@
   font-size: 0.94rem;
   color: var(--ink-3);
 }
+
+/* El resumen de la semana, abajo del conteo de avisos. */
+.mylistings-page__week {
+  font-size: 0.94rem;
+  color: var(--ink-3);
+}
+
+.mylistings-page__week strong {
+  color: var(--ink);
+}

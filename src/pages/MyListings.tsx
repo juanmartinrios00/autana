@@ -11,6 +11,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { deleteListing, getMyListingStats, listMyListings, setListingStatus, type ListingDay } from '../lib/api'
 import { listingMission } from '../lib/missions'
+import { fillDays, summarize } from '../lib/stats'
 import type { ListingStatus, Vehicle } from '../types'
 import './MyListings.css'
 import { reportError } from '../lib/report'
@@ -85,6 +86,17 @@ export function MyListings() {
   }
 
   const active = listings.filter((item) => item.status === 'active').length
+
+  /* El resumen de la semana, sumando todos los avisos. Es el número que
+     contesta "¿cómo me está yendo?" sin tener que mirar aviso por aviso, y es
+     también lo que una concesionaria mira antes de decidir si esto le sirve. */
+  const semana = Object.values(stats).reduce(
+    (total, dias) => {
+      const resumen = summarize(fillDays(dias, 14))
+      return { views: total.views + resumen.views, interests: total.interests + resumen.interests }
+    },
+    { views: 0, interests: 0 },
+  )
   /* Sale de los mismos avisos que se muestran, así que se recalcula sola al
      sumar fotos o marcar uno vendido: la recarga que ya hace cada acción. */
   const mission = loading || failed ? null : listingMission(listings)
@@ -102,6 +114,17 @@ export function MyListings() {
             <p className="mylistings-page__count">
               {listings.length} {listings.length === 1 ? 'aviso' : 'avisos'} · {active}{' '}
               {active === 1 ? 'activo' : 'activos'}
+            </p>
+          )}
+
+          {/* Sólo con movimiento: "0 visitas esta semana" arriba de todo es un
+              cartel de fracaso los primeros días, cuando todavía no puede
+              haber pasado nada. */}
+          {semana.views > 0 && (
+            <p className="mylistings-page__week">
+              Esta semana: <strong>{semana.views}</strong>{' '}
+              {semana.views === 1 ? 'visita' : 'visitas'} y <strong>{semana.interests}</strong>{' '}
+              {semana.interests === 1 ? 'consulta' : 'consultas'}
             </p>
           )}
         </div>
