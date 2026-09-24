@@ -166,16 +166,15 @@
   padding-top: var(--sp-4);
 }
 
-/* "Me interesa" en la caja es un botón suave y no el amarillo lleno: en una
-   grilla de doce son doce botones amarillos, y el amarillo deja de señalar
-   nada. Se enciende al pasar por encima. En la ficha sigue siendo el lleno,
-   porque ahí es la acción de la pantalla. */
+/* "Me interesa" en el amarillo pleno de la paleta: es la acción de la caja.
+   Sin la esquina cortada ni versalitas, que en un botón de 38 px dentro de
+   una grilla se leían como un sello; con el texto en tamaño de lectura. */
 .vcard .interest__card-button {
   width: 100%;
   height: 38px;
   clip-path: none;
   border-radius: var(--r-md);
-  background: var(--accent-tint);
+  background: var(--accent);
   color: var(--ink);
   font-size: 0.88rem;
   font-weight: 600;
@@ -184,7 +183,7 @@
 }
 
 .vcard .interest__card-button:hover:not(:disabled) {
-  background: var(--accent);
+  background: var(--accent-hover);
 }
 
 /* --- Vista de lista ----------------------------------------------------- */
