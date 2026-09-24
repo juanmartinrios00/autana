@@ -134,8 +134,9 @@ de diseño. Lo que hay que respetar:
 - Los neutros tiran a verde-gris frío. Es lo que deja al amarillo como lo único
   cálido de la pantalla, y por lo tanto lo primero que se mira.
 - **Archivo** para todo, titulares y UI, en una sola familia variable;
-  **JetBrains Mono** (clase `.mono`) solo para datos duros: precios, kilometraje,
-  años, cilindrada. Las dos salen del `<link>` de Google Fonts en `index.html`:
+  **JetBrains Mono** (clase `.mono`) solo para datos duros: kilometraje, años,
+  cilindrada. Los precios de las cards y de la ficha van en Archivo con números
+  tabulares: en grande y en mono se leían como una planilla. Las dos salen del `<link>` de Google Fonts en `index.html`:
   no metas un `@font-face` apuntando al CDN de otro sitio, que es un archivo que
   no controlamos y una licencia que no tenemos.
 - **Casi recto.** El radio va de 2px a 10px (`--r-xs` a `--r-2xl`) — lo justo para
@@ -143,9 +144,13 @@ de diseño. Lo que hay que respetar:
   la tipografía y la grilla. `--r-pill` es la excepción, solo para lo que de verdad
   es un círculo o una cápsula.
 - La profundidad la dan una hairline que dibuja el contorno más una sombra difusa
-  (`--sh-flat` … `--sh-overlay`). El hover **no desplaza el bloque**: pasa la
-  hairline a tinta plena, que sobre esquinas casi rectas se lee mucho antes que
-  un cambio de sombra.
+  (`--sh-flat` … `--sh-overlay`). El hover **no desplaza el bloque**. Las cajas
+  de avisos, la ficha y el vendedor son la excepción: van sin contorno, blancas
+  y apoyadas en `--sh-card`, y el hover estira la sombra. Una caja negra por
+  cada auto que cruzaba el mouse era demasiado.
+- Los íconos, las obleas y los dibujos propios se ven todos juntos en
+  `/sistema`. Lo que falta dibujar y cómo pedirlo está en
+  `docs/brief-ilustraciones.md`.
 - Movimiento: 150–300 ms, `ease-out`, `transform` y `opacity`.
 
 ## La regla que más se rompe
