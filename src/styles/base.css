@@ -84,6 +84,23 @@ a {
   text-decoration: none;
 }
 
+/* Un link en medio de un párrafo va subrayado.
+
+   Sin eso, lo único que lo distingue del texto de al lado es el color, y en
+   este sitio los dos grises de texto están a 2,3 a 1 entre sí: quien no
+   distingue bien los colores ---o mira la pantalla al sol--- no ve que hay
+   algo para tocar. Es la regla `link-in-text-block` de WCAG, y la encontró
+   axe en "Al continuar aceptás los términos" del registro y en la pantalla de
+   ruta inexistente.
+
+   Sólo dentro de `<p>`: los links que son botones, tarjetas o navegación no
+   son texto corrido y se distinguen solos. `:not(.btn)` por los que llevan un
+   botón adentro. */
+p a:not(.btn) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 img,
 svg {
   display: block;

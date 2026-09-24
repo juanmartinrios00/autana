@@ -29,9 +29,14 @@
   --ink-2: #353b37;
   /* Los dos grises de texto pasan 4.5:1 sobre blanco, surface y surface-2.
      Sobre surface-3 no llegan, asi que ese plano queda para fondos sin texto
-     encima (media de las cards, rieles, separadores). */
+     encima (media de las cards, rieles, separadores).
+
+     El cuarto era #69716c y daba 4.47 sobre `surface`: tres centesimas por
+     debajo del minimo, o sea que la afirmacion de arriba era falsa justo en el
+     caso mas comun ---"1 auto" abajo de cada carroceria, el titulo de cada
+     logro---. Medido con axe sobre el sitio publicado, no a ojo. */
   --ink-3: #555d58;
-  --ink-4: #69716c;
+  --ink-4: #656d68;
   --ink-inverse: #ffffff;
 
   /* --- Accion. Nunca fondo de seccion, nunca color de texto. --- */

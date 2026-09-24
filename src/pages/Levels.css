@@ -62,9 +62,18 @@
 }
 
 /* Los niveles que todavía no se alcanzaron no se esconden ni se tachan: se
-   bajan de intensidad. Hay que poder leer a dónde se va. */
-.rung:not(.is-reached) {
-  opacity: 0.55;
+   bajan de intensidad. Hay que poder leer a dónde se va.
+
+   La intensidad se le baja al dibujo, que es decoración, y no al bloque
+   entero. Con `opacity: 0.55` encima de todo, "Nivel 2" y "Con 2 de los siete
+   logros" quedaban en un gris de 2,4 a 1 contra el papel: menos de la mitad
+   del mínimo legible, y es el texto que explica a dónde se va. */
+.rung:not(.is-reached) .rung__art {
+  opacity: 0.4;
+}
+
+.rung:not(.is-reached) .rung__title {
+  color: var(--ink-3);
 }
 
 .rung.is-here {
