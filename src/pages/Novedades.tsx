@@ -8,7 +8,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import { NOVEDADES_SEEN_EVENT } from '../hooks/useUnseenNovedades'
 import { listNovedades, markNovedadesSeen, type Novedad } from '../lib/api'
-import { relativeDate } from '../lib/format'
+import { formatPrice, relativeDate } from '../lib/format'
 import './Novedades.css'
 import type { GarageSlot } from '../types'
 
@@ -132,9 +132,10 @@ function NovedadRow({ item }: { item: Novedad }) {
           </span>
         )
       ) : (
-        /* Los interesados no tienen cara: la novedad nunca dice quiénes. */
+        /* Los interesados no tienen cara: la novedad nunca dice quiénes. Las
+           rebajas tampoco, porque hablan del auto y no de una persona. */
         <span className="novedad__avatar novedad__avatar--icon" aria-hidden="true">
-          <Icon name="message" size={18} />
+          <Icon name={item.kind === 'price_drop' ? 'trendDown' : 'message'} size={18} />
         </span>
       )}
 
@@ -189,6 +190,18 @@ function describe(item: Novedad): { to: string; text: string } {
         text: item.garage?.isNew
           ? `${name} sumó ${SLOT_FRASE[item.garage.slot]}: ${car}`
           : `${name} cambió ${SLOT_FRASE[item.garage!.slot]}: ${car}`,
+      }
+    }
+    case 'price_drop': {
+      /* El precio nuevo y cuánto bajó, con la moneda: "bajó" solo no alcanza
+         para decidir si vale la pena volver a mirarlo. */
+      const title = item.listing?.title ?? 'auto'
+      const to = item.listing ? `/autos/${item.listing.slug}` : '/favoritos'
+      if (!item.price) return { to, text: `Bajó de precio el ${title} que guardaste` }
+      const { now, before, currency } = item.price
+      return {
+        to,
+        text: `Bajó el ${title} que guardaste: ahora ${formatPrice(now, currency)}, ${formatPrice(before - now, currency)} menos`,
       }
     }
   }

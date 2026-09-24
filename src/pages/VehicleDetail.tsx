@@ -36,6 +36,7 @@ import {
   vehicleTitle,
 } from '../lib/format'
 import { interestLabel } from '../lib/contact'
+import { rebaja } from '../lib/rebaja'
 import type { Seller, Vehicle } from '../types'
 import './VehicleDetail.css'
 import { rememberRecent } from '../lib/recent'
@@ -263,6 +264,7 @@ export function VehicleDetail() {
 
   const title = vehicleTitle(vehicle)
   const saved = has(vehicle.id)
+  const bajo = rebaja(vehicle)
 
   const interestCount = interest?.slug === vehicle.slug ? interest.count : vehicle.interestCount
   const interestText = interestLabel(interestCount)
@@ -338,7 +340,20 @@ export function VehicleDetail() {
               {title} <span className="detail__year">{vehicle.year}</span>
             </h1>
 
-            <p className="detail__price">{formatPrice(vehicle.price, vehicle.currency)}</p>
+            {bajo && (
+              <p className="detail__was">
+                <span className="sr-only">Antes </span>
+                <s>{formatPrice(bajo.before, vehicle.currency)}</s>
+                <span className="detail__off">
+                  <Icon name="trendDown" size={15} />
+                  Bajó {bajo.percent}% {relativeDate(vehicle.priceDroppedAt!)}
+                </span>
+              </p>
+            )}
+            <p className={bajo ? 'detail__price detail__price--after' : 'detail__price'}>
+              {bajo && <span className="sr-only">Ahora </span>}
+              {formatPrice(vehicle.price, vehicle.currency)}
+            </p>
             {vehicle.negotiable && (
               <p className="detail__negotiable">El vendedor acepta ofertas</p>
             )}

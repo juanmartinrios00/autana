@@ -373,6 +373,30 @@
   font-variant-numeric: tabular-nums;
 }
 
+.detail__was {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+  font-size: 0.95rem;
+  color: var(--ink-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.detail__off {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.detail__price--after {
+  margin-top: var(--sp-1);
+}
+
 .detail__negotiable {
   margin-top: var(--sp-1);
   font-size: 0.82rem;

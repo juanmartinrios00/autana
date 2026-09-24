@@ -73,6 +73,13 @@ export interface Vehicle {
   price: number
   currency: Currency
   negotiable: boolean
+  /**
+   * El precio de antes de la última rebaja y cuándo fue (028). Los escribe un
+   * trigger, nunca el vendedor. `null` si no bajó, si subió después o si la
+   * migración todavía no corrió. Para mostrarlo, `lib/rebaja`.
+   */
+  previousPrice: number | null
+  priceDroppedAt: string | null
 
   mileage: number
   condition: VehicleCondition

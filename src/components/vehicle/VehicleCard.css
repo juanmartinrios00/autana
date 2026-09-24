@@ -136,6 +136,26 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* El precio de antes, tachado y chico, con cuánto bajó en verde. */
+.vcard__was {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: var(--sp-3);
+  font-size: 0.8rem;
+  color: var(--ink-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.vcard__off {
+  font-weight: 600;
+  color: var(--success);
+}
+
+.vcard__price--after {
+  margin-top: 2px;
+}
+
 .vcard__meta {
   display: inline-flex;
   align-items: center;
@@ -258,6 +278,15 @@
   .vgrid--grid .vcard__price {
     margin-top: var(--sp-2);
     font-size: 1.2rem;
+  }
+
+  .vgrid--grid .vcard__was {
+    margin-top: var(--sp-2);
+    font-size: 0.74rem;
+  }
+
+  .vgrid--grid .vcard__price--after {
+    margin-top: 0;
   }
 
   .vgrid--grid .vcard__meta {

@@ -6,6 +6,7 @@ import { FavoriteButton } from './FavoriteButton'
 import { InterestButton } from './InterestButton'
 import { VehicleMedia } from './VehicleMedia'
 import { formatMileage, formatPrice, locationLabel, vehicleTitle } from '../../lib/format'
+import { rebaja } from '../../lib/rebaja'
 import type { Vehicle } from '../../types'
 import './VehicleCard.css'
 
@@ -63,6 +64,7 @@ function SellerLine({ vehicle }: { vehicle: Vehicle }) {
 export function VehicleCard({ vehicle, layout = 'grid', priority = false }: VehicleCardProps) {
   const title = vehicleTitle(vehicle)
   const name = `${title} ${vehicle.year}`
+  const bajo = rebaja(vehicle)
 
   return (
     <article className={`vcard vcard--${layout}`}>
@@ -88,7 +90,19 @@ export function VehicleCard({ vehicle, layout = 'grid', priority = false }: Vehi
         </h3>
         <SellerLine vehicle={vehicle} />
 
-        <span className="vcard__price">{formatPrice(vehicle.price, vehicle.currency)}</span>
+        {/* Si bajó hace poco, el precio de antes tachado y cuánto menos. El
+            "antes" lo escribe la base, nunca el vendedor (028). */}
+        {bajo && (
+          <span className="vcard__was">
+            <span className="sr-only">Antes </span>
+            <s>{formatPrice(bajo.before, vehicle.currency)}</s>
+            <span className="vcard__off">{bajo.percent}% menos</span>
+          </span>
+        )}
+        <span className={bajo ? 'vcard__price vcard__price--after' : 'vcard__price'}>
+          {bajo && <span className="sr-only">Ahora </span>}
+          {formatPrice(vehicle.price, vehicle.currency)}
+        </span>
         <span className="vcard__meta">
           {vehicle.year}
           <span className="vcard__sep" aria-hidden="true" />

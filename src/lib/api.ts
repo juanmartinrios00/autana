@@ -66,6 +66,9 @@ interface ListingRow {
   price: number
   currency: Currency
   negotiable: boolean
+  /* Desde la 028. Opcionales: sin la migración no vienen. */
+  previous_price?: number | null
+  price_dropped_at?: string | null
   mileage: number
   condition: Vehicle['condition']
   fuel_type: Vehicle['fuelType']
@@ -143,6 +146,8 @@ function toVehicle(row: ListingRow): Vehicle {
     price: row.price,
     currency: row.currency,
     negotiable: row.negotiable,
+    previousPrice: row.previous_price ?? null,
+    priceDroppedAt: row.price_dropped_at ?? null,
     mileage: row.mileage,
     condition: row.condition,
     fuelType: row.fuel_type,
@@ -1783,7 +1788,7 @@ export async function listBlocked(): Promise<BlockedPerson[]> {
    Novedades
 --------------------------------------------------------------------------- */
 
-export type NovedadKind = 'interest' | 'follow' | 'garage'
+export type NovedadKind = 'interest' | 'follow' | 'garage' | 'price_drop'
 
 /**
  * Algo que pasó con lo propio. Se calculan en la base al pedirlas (migración
@@ -1812,6 +1817,8 @@ export interface Novedad {
     /** Recién cargado, o uno que ya estaba y cambió. */
     isNew: boolean
   } | null
+  /** Sólo en las de rebaja (028): el precio de ahora y el de antes. */
+  price: { now: number; before: number; currency: Currency } | null
 }
 
 interface NovedadRow {
@@ -1829,6 +1836,9 @@ interface NovedadRow {
   garage_photo: string | null
   garage_note: string | null
   garage_is_new: boolean | null
+  price_now?: number | null
+  price_before?: number | null
+  price_currency?: Currency | null
 }
 
 export async function listNovedades(): Promise<Novedad[]> {
@@ -1854,6 +1864,10 @@ export async function listNovedades(): Promise<Novedad[]> {
           isNew: Boolean(row.garage_is_new),
         }
       : null,
+    price:
+      row.price_now != null && row.price_before != null && row.price_currency
+        ? { now: row.price_now, before: row.price_before, currency: row.price_currency }
+        : null,
   }))
 }
 
