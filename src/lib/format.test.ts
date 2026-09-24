@@ -24,7 +24,7 @@ import {
   transmissionLabels,
   transmissions,
   vehicleMeta,
-  vehicleTitle,
+  vehicleTitle, slugTitle,
 } from './format'
 
 describe('formatPrice', () => {
@@ -247,5 +247,26 @@ describe('las otras dos listas contra el esquema', () => {
     expect(Object.keys(sellerTypeLabels).sort()).toEqual(
       values(schema, String.raw`seller_type\s+text[^\n]*check \(seller_type in \(([^)]+)\)\)`),
     )
+  })
+})
+
+/**
+ * La barra de comparación etiqueta lo elegido con el slug, sin pedirle los
+ * autos a la base. El slug termina en un código al azar ---dos avisos iguales
+ * no pueden chocar--- y ese código se veía en pantalla.
+ */
+describe('slugTitle', () => {
+  it('saca el código del final y deja el nombre', () => {
+    expect(slugTitle('renault-symbol-2010-3hbszl')).toBe('Renault Symbol 2010')
+    expect(slugTitle('toyota-corolla-xei-2018-egobba')).toBe('Toyota Corolla Xei 2018')
+  })
+
+  it('con un slug corto no inventa: devuelve lo que hay', () => {
+    expect(slugTitle('fiat-600')).toBe('Fiat 600')
+    expect(slugTitle('auto')).toBe('Auto')
+  })
+
+  it('no rompe con un slug vacío', () => {
+    expect(slugTitle('')).toBe('')
   })
 })

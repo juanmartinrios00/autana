@@ -140,6 +140,27 @@ export function formatCount(value: number): string {
 }
 
 /** El título público del vehículo: `BMW 320i Sport Line`. */
+/**
+ * El nombre de un auto sacado de su slug: `renault-symbol-2010-3hbszl` es
+ * "Renault Symbol 2010".
+ *
+ * Para la barra de comparación, que muestra lo elegido sin pedir los autos a
+ * la base ---son sólo etiquetas, y una consulta para eso sería un viaje por
+ * cada vez que alguien toca "Comparar"---.
+ *
+ * El último pedazo se tira: los slugs se arman como `titulo-año-código`, con
+ * un código al azar para que dos avisos iguales no choquen. Hasta acá la barra
+ * mostraba ese código: "renault symbol 2010 3hbszl".
+ */
+export function slugTitle(slug: string): string {
+  const partes = slug.split('-').filter(Boolean)
+  /* Sin al menos dos pedazos no hay nada que sacar: lo que haya es el nombre. */
+  const sinCodigo = partes.length > 2 ? partes.slice(0, -1) : partes
+  return sinCodigo
+    .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+    .join(' ')
+}
+
 export function vehicleTitle(vehicle: Pick<Vehicle, 'make' | 'model' | 'trim'>): string {
   return [vehicle.make, vehicle.model, vehicle.trim].filter(Boolean).join(' ')
 }

@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import { useCompare } from '../../hooks/useCompare'
+import { slugTitle } from '../../lib/format'
 import './CompareBar.css'
 
 /**
@@ -34,8 +35,9 @@ export function CompareBar() {
               <li key={slug} className="cmpbar__chip">
                 {/* El slug ya dice marca, modelo y año: alcanza como etiqueta
                     sin tener que pedir los vehículos completos sólo para la
-                    barra. Los guiones se leen mejor como espacios. */}
-                <span className="cmpbar__chip-name">{slug.replace(/-/g, ' ')}</span>
+                    barra. `slugTitle` le saca el código del final, que se
+                    estaba viendo en pantalla. */}
+                <span className="cmpbar__chip-name">{slugTitle(slug)}</span>
                 <button
                   type="button"
                   className="cmpbar__chip-remove"
