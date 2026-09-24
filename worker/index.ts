@@ -454,7 +454,80 @@ interface Preview {
   /** Que los buscadores no lo indexen. El preview al compartir va igual. */
   noindex?: boolean
   /** Datos estructurados, ya en JSON. Ver `listingJsonLd`. */
-  jsonLd?: string
+  jsonLd?: string[]
+}
+
+/**
+ * Empaqueta cualquier dato estructurado para meterlo en un `<script>`.
+ *
+ * Los `<` escapados: un `</script>` adentro de un texto ---la descripción de
+ * un aviso, el resumen de una nota--- cerraría la etiqueta antes de tiempo y
+ * el resto del JSON se leería como HTML. Es la forma de meter cualquier cosa
+ * en la página desde un formulario.
+ */
+function comoJsonLd(data: unknown): string {
+  return JSON.stringify(data).replaceAll('<', '\\u003c')
+}
+
+/**
+ * Quién publica el sitio. Va sólo en la portada.
+ *
+ * Es lo que le permite a un buscador juntar el nombre, el logo y el dominio en
+ * una sola cosa en vez de tratarlos como palabras sueltas. Sin esto, "auteando"
+ * es una palabra que aparece en una página; con esto es una organización con
+ * un sitio.
+ */
+export function organizationJsonLd(origin: string): unknown {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: BRAND,
+    url: `${origin}/`,
+    logo: `${origin}/apple-touch-icon.png`,
+    description: 'Marketplace argentino de autos: particulares y concesionarias, sin comisión por vender.',
+    areaServed: { '@type': 'Country', name: 'Argentina' },
+  }
+}
+
+/**
+ * El camino hasta la pantalla: "auteando › Autos › Renault Symbol 2012".
+ *
+ * Google lo muestra arriba del resultado en lugar de la URL cruda, que en un
+ * aviso es un slug con un código pegado al final.
+ */
+export function breadcrumbJsonLd(items: { name: string; url: string }[]): unknown {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  }
+}
+
+/** Una nota del blog como artículo: quién la escribió y cuándo. */
+export function postJsonLd(
+  post: { title: string; summary: string; date: string; slug: string },
+  origin: string,
+): unknown {
+  const url = `${origin}/blog/${post.slug}`
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.summary,
+    datePublished: post.date,
+    /* Sin fecha de modificación inventada: si no se tocó, la de publicación es
+       la única verdad que hay. */
+    mainEntityOfPage: url,
+    url,
+    image: `${origin}/og-blog-${post.slug}.png`,
+    author: { '@type': 'Organization', name: BRAND, url: `${origin}/` },
+    publisher: { '@type': 'Organization', name: BRAND, url: `${origin}/` },
+  }
 }
 
 /**
@@ -513,9 +586,7 @@ export function listingJsonLd(row: ListingRow, canonical: string, image: string 
     },
   }
 
-  /* Los `<` escapados: un `</script>` adentro de la descripción cerraría la
-     etiqueta antes de tiempo y el resto del JSON se leería como HTML. */
-  return JSON.stringify(data).replaceAll('<', '\\u003c')
+  return comoJsonLd(data)
 }
 
 /**
@@ -543,7 +614,9 @@ function renderPreview(assetResponse: Response, preview: Preview): Response {
        El preview al compartir se arma igual: apagar Google no es apagar
        WhatsApp, y el link sigue siendo para mandarlo. */
     noindex ? `<meta name="robots" content="noindex">` : '',
-    preview.jsonLd ? `<script type="application/ld+json">${preview.jsonLd}</script>` : '',
+    ...(preview.jsonLd ?? []).map(
+      (bloque) => `<script type="application/ld+json">${bloque}</script>`,
+    ),
   ]
     .filter(Boolean)
     .join('')
@@ -627,6 +700,12 @@ function renderCanonical(assetResponse: Response, url: URL): Response {
   const canonical = canonicalFor(url)
   const image = homeImage(url.origin)
 
+  /* Quién publica el sitio va sólo en la portada: repetido en cada pantalla no
+     agrega nada y es lo que hace que un buscador junte el nombre, el logo y el
+     dominio en una sola cosa. Las puertas de entrada (`/tiktok`) son la
+     portada con otro nombre, y su canonical ya apunta ahí. */
+  const esPortada = canonical === `${url.origin}/`
+
   return new HTMLRewriter()
     .on(
       'head',
@@ -636,7 +715,10 @@ function renderCanonical(assetResponse: Response, url: URL): Response {
           `<meta property="og:image" content="${attr(image)}">` +
           `<meta property="og:image:alt" content="${attr(`Comprá y vendé autos sin comisión | ${BRAND}`)}">` +
           `<meta name="twitter:card" content="summary_large_image">` +
-          `<link rel="canonical" href="${attr(canonical)}">`,
+          `<link rel="canonical" href="${attr(canonical)}">` +
+          (esPortada
+            ? `<script type="application/ld+json">${comoJsonLd(organizationJsonLd(url.origin))}</script>`
+            : ''),
       ),
     )
     .transform(assetResponse)
@@ -663,7 +745,16 @@ async function renderListing(request: Request, env: Env, slug: string): Promise<
     canonical,
     /* Con la lámina genérica no: es la marca, no el auto, y declararla como
        foto del vehículo sería decirle a Google algo que no es. */
-    jsonLd: listingJsonLd(row, canonical, cover),
+    jsonLd: [
+      listingJsonLd(row, canonical, cover),
+      comoJsonLd(
+        breadcrumbJsonLd([
+          { name: BRAND, url: `${url.origin}/` },
+          { name: 'Autos', url: `${url.origin}/autos` },
+          { name: `${row.make} ${row.model} ${row.year}`, url: canonical },
+        ]),
+      ),
+    ],
   })
 }
 
@@ -734,6 +825,16 @@ function renderPost(assetResponse: Response, request: Request, slug: string): Re
        seria el mismo link dos veces en un chat. */
     image: `${url.origin}/og-blog-${post.slug}.png`,
     canonical: `${url.origin}/blog/${post.slug}`,
+    jsonLd: [
+      comoJsonLd(postJsonLd(post, url.origin)),
+      comoJsonLd(
+        breadcrumbJsonLd([
+          { name: BRAND, url: `${url.origin}/` },
+          { name: 'Blog', url: `${url.origin}/blog` },
+          { name: post.title, url: `${url.origin}/blog/${post.slug}` },
+        ]),
+      ),
+    ],
   })
 }
 

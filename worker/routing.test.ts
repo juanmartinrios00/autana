@@ -11,8 +11,11 @@ import {
   buildTitle,
   canonicalFor,
   canonicalRedirect,
+  breadcrumbJsonLd,
   legacyRedirect,
   listingJsonLd,
+  organizationJsonLd,
+  postJsonLd,
   xmlEscape,
 } from './index'
 /* Las constantes viven aparte: el archivo de entrada del Worker sólo puede
@@ -167,6 +170,62 @@ describe('listingJsonLd', () => {
     expect(salida).toContain('\\u003c')
     /* Y sigue siendo JSON válido después de desescapar. */
     expect(JSON.parse(salida.replaceAll('\\u003c', '<')).description).toContain('</script>')
+  })
+})
+
+/**
+ * Los otros datos estructurados: quién publica el sitio, el camino hasta la
+ * pantalla y las notas del blog como artículos.
+ *
+ * Mismo motivo que los del aviso: un JSON mal armado lo descarta el buscador
+ * sin avisar, y un dato equivocado se publica igual.
+ */
+describe('los demás datos estructurados', () => {
+  const origin = 'https://auteando.com'
+
+  it('la organización dice quién es, con su logo y su dominio', () => {
+    const org = organizationJsonLd(origin) as Record<string, string>
+    expect(org['@type']).toBe('Organization')
+    expect(org.url).toBe('https://auteando.com/')
+    expect(org.logo).toBe('https://auteando.com/apple-touch-icon.png')
+  })
+
+  it('las migas de pan van numeradas y en orden', () => {
+    const camino = breadcrumbJsonLd([
+      { name: 'auteando', url: `${origin}/` },
+      { name: 'Autos', url: `${origin}/autos` },
+      { name: 'Renault Symbol 2012', url: `${origin}/autos/renault-symbol-2012` },
+    ]) as { itemListElement: { position: number; name: string; item: string }[] }
+
+    expect(camino.itemListElement.map((i) => i.position)).toEqual([1, 2, 3])
+    expect(camino.itemListElement[2]).toMatchObject({
+      name: 'Renault Symbol 2012',
+      item: 'https://auteando.com/autos/renault-symbol-2012',
+    })
+  })
+
+  it('la nota lleva su fecha de publicación y su lámina', () => {
+    const post = {
+      slug: 'transferir-un-auto-en-argentina',
+      title: 'Cómo transferir un auto',
+      summary: 'Qué formularios se firman.',
+      date: '2026-09-15',
+    }
+    const data = postJsonLd(post, origin) as Record<string, string>
+    expect(data['@type']).toBe('BlogPosting')
+    expect(data.datePublished).toBe('2026-09-15')
+    expect(data.url).toBe('https://auteando.com/blog/transferir-un-auto-en-argentina')
+    expect(data.image).toBe('https://auteando.com/og-blog-transferir-un-auto-en-argentina.png')
+  })
+
+  /* No se inventa una fecha de modificación: si la nota no se tocó, la de
+     publicación es la única verdad que hay. */
+  it('no declara una modificación que no pasó', () => {
+    const data = postJsonLd(
+      { slug: 'x', title: 'x', summary: 'x', date: '2026-01-01' },
+      origin,
+    ) as Record<string, unknown>
+    expect(data.dateModified).toBeUndefined()
   })
 })
 
