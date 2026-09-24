@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GarageSlotCard } from '../components/garage/GarageSlotCard'
 import { AchievementList } from '../components/levels/AchievementList'
-import { Badge } from '../components/ui/Badge'
+import { Cedula } from '../components/people/Cedula'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
@@ -177,52 +177,48 @@ export function Profile() {
     <>
       <section className="profile__head hero-bleed">
         <div className="page profile__head-inner">
+          {/* Quién es, como la cédula verde del auto: ver `Cedula`. */}
           <div className="profile__identity">
-            <div className="profile__avatar-shell">
-              <span className="profile__avatar" aria-hidden="true">
-                {showing.avatarUrl ? (
-                  <img src={showing.avatarUrl} alt="" className="profile__avatar-img" />
-                ) : (
-                  <Icon name="user" size={34} />
-                )}
-              </span>
-              {editable && (
-                <label className="profile__avatar-action" title="Cambiar foto de perfil">
-                  <Icon name="camera" size={15} />
-                  <span className="sr-only">Cargar foto de perfil</span>
-                  <input
-                    className="sr-only"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    disabled={avatarBusy}
-                    onChange={(event) => {
-                      void handleAvatar(event.target.files?.[0])
-                      event.currentTarget.value = ''
-                    }}
-                  />
-                </label>
-              )}
-            </div>
-            <div>
-              <h1 className="profile__name">{showing.name}</h1>
-              <div className="profile__meta">
-                <Badge tone="dark">{sellerTypeLabels[showing.sellerType]}</Badge>
-                {showing.city && (
-                  <span>
-                    {locationLabel({ city: showing.city, province: showing.province ?? '' })}
-                  </span>
-                )}
-                <span className="mono">
-                  {showing.activeListings}{' '}
-                  {showing.activeListings === 1 ? 'publicación' : 'publicaciones'}
-                </span>
-              </div>
-              {editable && (
-                <p className={avatarError ? 'profile__avatar-status is-error' : 'profile__avatar-status'}>
-                  {avatarBusy ? 'Guardando foto…' : avatarError || 'Podés cambiar tu foto desde el ícono.'}
-                </p>
-              )}
-            </div>
+            <Cedula
+              userId={userId}
+              name={showing.name}
+              nameAs="h1"
+              kind={sellerTypeLabels[showing.sellerType]}
+              place={
+                showing.city
+                  ? locationLabel({ city: showing.city, province: showing.province ?? '' })
+                  : ''
+              }
+              memberSince={showing.memberSince}
+              verified={showing.verified}
+              photoUrl={showing.avatarUrl}
+              photoAction={
+                editable && (
+                  <label className="profile__avatar-action" title="Cambiar foto de perfil">
+                    <Icon name="camera" size={15} />
+                    <span className="sr-only">Cargar foto de perfil</span>
+                    <input
+                      className="sr-only"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      disabled={avatarBusy}
+                      onChange={(event) => {
+                        void handleAvatar(event.target.files?.[0])
+                        event.currentTarget.value = ''
+                      }}
+                    />
+                  </label>
+                )
+              }
+              footer={`${showing.activeListings} ${
+                showing.activeListings === 1 ? 'publicación activa' : 'publicaciones activas'
+              }`}
+            />
+            {editable && (
+              <p className={avatarError ? 'profile__avatar-status is-error' : 'profile__avatar-status'}>
+                {avatarBusy ? 'Guardando foto…' : avatarError || 'Podés cambiar tu foto desde el ícono.'}
+              </p>
+            )}
           </div>
 
           {/* El nivel sale de datos reales, no de un contador guardado: si

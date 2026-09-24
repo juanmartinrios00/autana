@@ -14,48 +14,7 @@
 
 /* Quién es: foto, nombre y de dónde. */
 .garagepage__who {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-  margin-bottom: var(--sp-5);
-}
-
-.garagepage__avatar {
-  flex: none;
-  width: 72px;
-  height: 72px;
-  border: 2px solid rgba(255, 255, 255, 0.24);
-  border-radius: var(--r-pill);
-  object-fit: cover;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.garagepage__avatar--empty {
-  display: grid;
-  place-items: center;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.garagepage__who-text {
-  display: grid;
-  gap: var(--sp-1);
-  min-width: 0;
-}
-
-.garagepage__name {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sp-2);
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.garagepage__place {
-  font-size: var(--fs-sm);
-  color: rgba(255, 255, 255, 0.56);
+  margin-bottom: var(--sp-6);
 }
 
 /* El aviso de contenido oculto. Borde amarillo y no rojo: no acusa a nadie,
@@ -132,10 +91,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: var(--sp-1);
   font-size: var(--fs-sm);
-  font-weight: 500;
-  color: var(--accent);
+  font-weight: 600;
 }
 
 .garagepage__to-listings:hover {

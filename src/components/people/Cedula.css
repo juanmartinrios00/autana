@@ -1,0 +1,227 @@
+/* ==========================================================================
+   La cédula del perfil. Ver `Cedula.tsx`.
+
+   Los dos verdes son del papel y de su tinta, no de la paleta: son el color
+   del objeto que se está citando, como el amarillo de la oblea. No se usan en
+   ningún otro lado.
+   ========================================================================== */
+
+.cedula {
+  --papel: #d8ead9;
+  --tinta: #1d5234;
+  --tinta-2: rgba(29, 82, 52, 0.72);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  width: 100%;
+  max-width: 470px;
+  padding: var(--sp-4) var(--sp-5) var(--sp-4);
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  /* El fondo de seguridad: círculos concéntricos desde una esquina y rayas en
+     diagonal, apenas marcados. Es lo que hace que se lea como documento. */
+  background:
+    repeating-radial-gradient(circle at 92% 18%, rgba(29, 82, 52, 0.08) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(118deg, rgba(29, 82, 52, 0.05) 0 1px, transparent 1px 9px),
+    var(--papel);
+  box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.6);
+  color: var(--ink);
+}
+
+.cedula__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--tinta-2);
+}
+
+.cedula__kind {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+
+.cedula__brand {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--tinta);
+}
+
+.cedula__body {
+  display: flex;
+  gap: var(--sp-4);
+  align-items: flex-start;
+}
+
+.cedula__photo-shell {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* La foto carnet: más alta que ancha, con marco fino. */
+.cedula__photo {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 96px;
+  overflow: hidden;
+  border: 1px solid var(--tinta-2);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--tinta);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.cedula__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cedula__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2) var(--sp-4);
+  flex-grow: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.cedula__field--wide {
+  grid-column: 1 / -1;
+}
+
+.cedula__field dt {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+}
+
+.cedula__field dd {
+  margin: 1px 0 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.cedula__name {
+  display: block;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.cedula__mono {
+  font-family: var(--font-mono);
+  font-size: 0.85rem !important;
+}
+
+.cedula__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  padding-top: var(--sp-2);
+  border-top: 1px dashed var(--tinta-2);
+}
+
+/* La patente, en chico: placa blanca con la franja de arriba. */
+.cedula__plate {
+  display: inline-flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  background: #fff;
+  text-align: center;
+}
+
+.cedula__plate-band {
+  padding: 1px 10px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.cedula__plate-number {
+  padding: 1px 10px 2px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.cedula__footer {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--tinta);
+}
+
+.cedula__footer a {
+  color: inherit;
+}
+
+/* El sello de verificada, estampado un poco torcido sobre la esquina. */
+.cedula__stamp {
+  position: absolute;
+  top: 40px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: rotate(-7deg);
+}
+
+@media (max-width: 480px) {
+  .cedula {
+    padding-inline: var(--sp-4);
+  }
+
+  .cedula__photo {
+    width: 64px;
+    height: 80px;
+  }
+
+  .cedula__name {
+    font-size: 1.2rem;
+  }
+
+  /* Sin lugar al costado del nombre: el sello va arriba, sobre la marca. */
+  .cedula__stamp {
+    top: 12px;
+    right: 10px;
+  }
+
+  .cedula--verified .cedula__brand {
+    visibility: hidden;
+  }
+}

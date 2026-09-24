@@ -21,33 +21,10 @@
 
 .profile__identity {
   display: flex;
-  align-items: center;
-  gap: var(--sp-5);
-}
-
-.profile__avatar {
-  display: grid;
-  place-items: center;
-  width: 72px;
-  height: 72px;
-  flex-shrink: 0;
-  background: var(--ink-inverse);
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 600;
-  overflow: hidden;
-}
-
-.profile__avatar-shell {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.profile__avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  flex-direction: column;
+  gap: var(--sp-2);
+  flex: 1 1 360px;
+  max-width: 470px;
 }
 
 .profile__avatar-action {
@@ -79,21 +56,6 @@
 
 .profile__avatar-status.is-error {
   color: #ffb7b4;
-}
-
-.profile__name {
-  font-size: var(--fs-h1);
-  color: var(--ink-inverse);
-}
-
-.profile__meta {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  flex-wrap: wrap;
-  margin-top: var(--sp-3);
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.66);
 }
 
 /* --- Nivel -------------------------------------------------------------- */

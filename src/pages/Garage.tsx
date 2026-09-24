@@ -6,7 +6,7 @@ import { GarageThemePicker } from '../components/garage/GarageThemePicker'
 import { MissionCard } from '../components/levels/MissionCard'
 import { Trophies } from '../components/levels/Trophies'
 import { ProfileContact } from '../components/garage/ProfileContact'
-import { Badge } from '../components/ui/Badge'
+import { Cedula } from '../components/people/Cedula'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
@@ -26,7 +26,6 @@ import type { AchievementId } from '../lib/levels'
 import type { GarageEntry, Vehicle } from '../types'
 import './Garage.css'
 import { sellerTypeLabels } from '../lib/format'
-import { computeTrust } from '../lib/trust'
 
 /**
  * El garage, en pantalla propia. Es el perfil público de cada persona.
@@ -195,47 +194,34 @@ export function Garage() {
           {/* Quién es, antes que nada. Quien llega desde un aviso o desde el
               buscador tiene que reconocer a la persona de un vistazo. */}
           <div className="garagepage__who">
-            {profile.avatarUrl && !hidden ? (
-              <img src={profile.avatarUrl} alt="" className="garagepage__avatar" />
-            ) : (
-              <span className="garagepage__avatar garagepage__avatar--empty" aria-hidden="true">
-                {initials(profile.name)}
-              </span>
-            )}
-            <div className="garagepage__who-text">
-              <span className="garagepage__name">
-                {profile.name}
-                {profile.verified && (
-                  <Badge tone="success" className="garagepage__verified">
-                    Verificada
-                  </Badge>
-                )}
-              </span>
-              {/* Lo mismo que el comprador lee de esta persona al lado de su
-                  aviso: el tipo, dónde está y desde cuándo tiene cuenta. */}
-              <span className="garagepage__place">
-                {[sellerTypeLabels[profile.sellerType], placeLabel].filter(Boolean).join(' · ')}
-              </span>
-              <span className="garagepage__place">
-                {computeTrust({ verified: profile.verified, memberSince: profile.memberSince }).since}
-              </span>
-              {/* El atajo para quien vino a ver qué vende: la sección de avisos
-                  está abajo de todo el garage. Scroll a mano y no sólo el ancla,
-                  porque si la URL ya tiene `#avisos` tocarla de nuevo no baja. */}
-              {!editable && hasListings && (
-                <a
-                  href="#avisos"
-                  className="garagepage__to-listings"
-                  onClick={(event) => {
-                    event.preventDefault()
-                    document.getElementById('avisos')?.scrollIntoView({ behavior: 'smooth' })
-                  }}
-                >
-                  {listings.length} {listings.length === 1 ? 'auto' : 'autos'} a la venta
-                  <Icon name="chevronDown" size={14} />
-                </a>
-              )}
-            </div>
+            <Cedula
+              userId={userId}
+              name={profile.name}
+              kind={sellerTypeLabels[profile.sellerType]}
+              place={placeLabel ?? ''}
+              memberSince={profile.memberSince}
+              verified={profile.verified}
+              photoUrl={hidden ? null : profile.avatarUrl}
+              footer={
+                /* El atajo para quien vino a ver qué vende: la sección de
+                   avisos está abajo de todo el garage. Scroll a mano y no sólo
+                   el ancla, porque si la URL ya tiene `#avisos` tocarla de
+                   nuevo no baja. */
+                !editable && hasListings ? (
+                  <a
+                    href="#avisos"
+                    className="garagepage__to-listings"
+                    onClick={(event) => {
+                      event.preventDefault()
+                      document.getElementById('avisos')?.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                  >
+                    {listings.length} {listings.length === 1 ? 'auto' : 'autos'} a la venta
+                    <Icon name="chevronDown" size={14} />
+                  </a>
+                ) : undefined
+              }
+            />
           </div>
 
           <span className="over over--invert garagepage__over">El garage</span>
@@ -354,10 +340,3 @@ export function Garage() {
   )
 }
 
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? '')
-    .join('')
-}
