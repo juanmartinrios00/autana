@@ -1,0 +1,59 @@
+/* El cuentakilómetros. Ver `Odometro.tsx`. */
+
+.odo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.odo__tambores {
+  display: inline-flex;
+  gap: 1px;
+  padding: 2px;
+  border-radius: 3px;
+  background: var(--ink);
+}
+
+/* Cada tambor muestra un dígito de la columna del 0 al 9. */
+.odo__tambor {
+  display: block;
+  width: 1.05em;
+  height: 1.4em;
+  overflow: hidden;
+  border-radius: 1px;
+  /* El brillo del plástico: más claro al medio, como un cilindro. */
+  background: linear-gradient(#1e2420, #333a35 45%, #1e2420);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4em;
+  text-align: center;
+  color: #fff;
+}
+
+.odo__rollo {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(var(--d) * -1.4em));
+  animation: odo-gira 900ms var(--ease) both;
+  /* De derecha a izquierda, como cuando se mueve de verdad. */
+  animation-delay: calc((5 - var(--i)) * 70ms);
+}
+
+@keyframes odo-gira {
+  from {
+    transform: translateY(0);
+  }
+}
+
+.odo__unidad {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .odo__rollo {
+    animation: none;
+  }
+}

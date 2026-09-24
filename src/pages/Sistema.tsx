@@ -3,6 +3,9 @@ import { AgenciaDibujo } from '../components/home/AgenciaDibujo'
 import { GarageScene } from '../components/garage/scenes'
 import { Mojones } from '../components/levels/Mojones'
 import { Oblea } from '../components/levels/Oblea'
+import { Escudo } from '../components/sell/Escudo'
+import { Ticket } from '../components/sell/Ticket'
+import { Odometro } from '../components/vehicle/Odometro'
 import { LevelScene } from '../components/levels/scenes'
 import { Button } from '../components/ui/Button'
 import { EMPTY_SCENE_NAMES, EMPTY_SCENES } from '../components/ui/empty-scenes'
@@ -68,6 +71,30 @@ export function Sistema() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="sistema__block">
+        <h2>Objetos</h2>
+        <p className="sistema__note">
+          La regla: cuando una pantalla necesita un contenedor, se usa el objeto que la gente ya
+          conoce para eso. La oblea para los logros, la cédula verde para el perfil, el escudo de
+          ruta para los pasos de publicar, el cuentakilómetros para los km, el ticket de
+          estacionamiento para lo que se acaba de publicar y la línea de la ruta en el pie.
+        </p>
+        <div className="sistema__objetos">
+          <div className="sistema__escudos">
+            <Escudo number={1} state="done" />
+            <Escudo number={2} state="on" />
+            <Escudo number={3} state="next" />
+          </div>
+          <Odometro km={58400} />
+          <Ticket
+            slug="toyota-hilux-2019-3hbszl"
+            vehiculo="Toyota Hilux 2019"
+            precio="USD 32.500"
+            entrada={new Date(2026, 8, 24, 18, 42)}
+          />
+        </div>
       </section>
 
       <section className="sistema__block">

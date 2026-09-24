@@ -137,3 +137,16 @@
   font-weight: 400;
   color: var(--ink-4);
 }
+
+.sistema__objetos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--sp-7);
+  padding-top: var(--sp-3);
+}
+
+.sistema__escudos {
+  display: flex;
+  gap: var(--sp-3);
+}

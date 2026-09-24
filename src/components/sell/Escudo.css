@@ -1,0 +1,52 @@
+/* El escudo de ruta de los pasos de publicar. Ver `Escudo.tsx`. */
+.escudo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 36px;
+}
+
+.escudo__forma {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: var(--canvas);
+  stroke: var(--line-strong);
+  transition:
+    fill var(--dur-med) var(--ease),
+    stroke var(--dur-med) var(--ease);
+}
+
+/* El número va un poco más abajo del centro: arriba está la banda. */
+.escudo__numero {
+  position: relative;
+  padding-top: 5px;
+  font-size: 0.81rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink-4);
+}
+
+.escudo--on .escudo__forma {
+  fill: var(--accent);
+  stroke: var(--ink);
+}
+
+.escudo--on .escudo__numero {
+  color: var(--ink);
+}
+
+.escudo--done .escudo__forma {
+  fill: var(--ink);
+  stroke: var(--ink);
+}
+
+.escudo--done .escudo__banda {
+  stroke: rgb(255 255 255 / 0.35);
+}
+
+.escudo--done .escudo__numero {
+  color: var(--accent);
+}

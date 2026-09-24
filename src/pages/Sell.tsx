@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { MissionCard } from '../components/levels/MissionCard'
 import { ShareButton } from '../components/vehicle/ShareButton'
 import { PhotoUploader, type Photo } from '../components/sell/PhotoUploader'
+import { Escudo } from '../components/sell/Escudo'
+import { Ticket } from '../components/sell/Ticket'
 import { PriceReference } from '../components/sell/PriceReference'
 import { AmountInput } from '../components/ui/AmountInput'
 import { Badge } from '../components/ui/Badge'
@@ -160,6 +162,8 @@ export function Sell() {
   const [publishing, setPublishing] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null)
+  /* La hora de entrada del ticket: la de publicar, no la de cada render. */
+  const [publishedAt, setPublishedAt] = useState<Date | null>(null)
 
   /* El nivel antes de publicar, para decir después qué se ganó. Con la cuenta
      a la que pertenece, como el resto del código. */
@@ -343,6 +347,7 @@ export function Sell() {
       )
 
       setPublishedSlug(vehicle.slug)
+      setPublishedAt(new Date())
       window.scrollTo({ top: 0 })
 
       /* Después de publicar, y sin esperarlo: la pantalla de listo no depende
@@ -410,17 +415,16 @@ export function Sell() {
     return (
       <div className="page section sell__done">
         <div className="card card--pad sell__done-card">
-          <span className="sell__done-icon">
-            <Icon name="check" size={28} />
-          </span>
           <h1>Tu publicación está lista</h1>
-          <p className="sell__done-text">
-            {draft.make} {draft.model} {draft.year} ·{' '}
-            {formatPrice(Number(draft.price), draft.currency)}
-          </p>
           <p className="sell__done-note">
             Ya es visible para cualquiera que entre al marketplace.
           </p>
+          <Ticket
+            slug={publishedSlug}
+            vehiculo={`${draft.make} ${draft.model} ${draft.year}`}
+            precio={formatPrice(Number(draft.price), draft.currency)}
+            entrada={publishedAt ?? new Date()}
+          />
           {result && result.earned.length > 0 && (
             <p className="sell__done-earned">
               Sumaste {enLista(result.earned.map((item) => `«${item.title}»`))}.
@@ -467,17 +471,7 @@ export function Sell() {
       <ol className="stepper">
         {steps.map((label, index) => (
           <li className="stepper__item" key={label}>
-            <span
-              className={
-                index < step
-                  ? 'stepper__dot is-done'
-                  : index === step
-                    ? 'stepper__dot is-on'
-                    : 'stepper__dot'
-              }
-            >
-              {index < step ? <Icon name="check" size={15} /> : <span className="mono">{index + 1}</span>}
-            </span>
+            <Escudo number={index + 1} state={index < step ? 'done' : index === step ? 'on' : 'next'} />
             <span className={index === step ? 'stepper__label is-on' : 'stepper__label'}>
               {label}
             </span>

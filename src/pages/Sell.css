@@ -19,36 +19,6 @@
   flex-grow: 1;
 }
 
-.stepper__dot {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--r-pill);
-  background: var(--canvas);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
-  font-size: 0.81rem;
-  font-weight: 600;
-  color: var(--ink-4);
-  transition:
-    background var(--dur-med) var(--ease),
-    box-shadow var(--dur-med) var(--ease),
-    color var(--dur-med) var(--ease);
-}
-
-.stepper__dot.is-done {
-  background: var(--ink);
-  color: var(--accent);
-  box-shadow: none;
-}
-
-.stepper__dot.is-on {
-  background: var(--accent);
-  color: var(--ink);
-  font-weight: 700;
-  box-shadow: 0 0 0 4px var(--accent-tint);
-}
-
 .stepper__label {
   font-size: 0.78rem;
   color: var(--ink-4);
@@ -63,9 +33,9 @@
 /* La línea une este paso con el siguiente, arrancando después del punto. */
 .stepper__line {
   position: absolute;
-  top: 14px;
-  left: calc(50% + 22px);
-  right: calc(-50% + 22px);
+  top: 17px;
+  left: calc(50% + 24px);
+  right: calc(-50% + 24px);
   height: 2px;
   background: var(--line);
 }
@@ -395,21 +365,6 @@
   max-width: 520px;
   padding: var(--sp-8) var(--sp-7);
   text-align: center;
-}
-
-.sell__done-icon {
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  border-radius: var(--r-pill);
-  background: var(--success-bg);
-  color: var(--success);
-}
-
-.sell__done-text {
-  font-family: var(--font-mono);
-  font-size: 1.06rem;
 }
 
 .sell__done-note {
