@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { BRAND } from '../../config/brand'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
@@ -219,10 +219,32 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
             </ul>
           )}
 
-          <p className="interest__safety">
-            <Icon name="check" size={15} />
-            Nunca transfieras dinero antes de ver el vehículo. {BRAND} no interviene en el pago.
-          </p>
+          {/* El checklist va acá y no en la ficha: es el momento en que
+              alguien está por escribirle a un desconocido por un auto de
+              miles de dólares, y es lo único que se lee de verdad. Cuatro
+              puntos, no una lista larga: uno que no se lee no protege a
+              nadie. */}
+          <div className="interest__safety">
+            <h3 className="interest__safety-title">
+              <Icon name="check" size={15} />
+              Antes de cerrar trato
+            </h3>
+            <ul className="interest__rules">
+              <li>
+                No transfieras ni señes nada antes de ver el auto en persona. {BRAND} no
+                interviene en el pago.
+              </li>
+              <li>Encontrate de día, en un lugar con gente, y mejor acompañado.</li>
+              <li>
+                Pedí cédula y DNI: el nombre del titular tiene que ser el de quien te está
+                vendiendo.
+              </li>
+              <li>Antes de señar, pedí el informe de dominio: dice si tiene deudas o prenda.</li>
+            </ul>
+            <Link to="/blog/estafas-al-comprar-o-vender-un-auto" className="interest__safety-link">
+              Cómo son las estafas más comunes
+            </Link>
+          </div>
         </div>
       </dialog>
     </>

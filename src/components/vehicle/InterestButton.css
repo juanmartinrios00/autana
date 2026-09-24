@@ -131,10 +131,37 @@
 }
 
 .interest__safety {
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--surface);
   font-size: 0.82rem;
   line-height: var(--lh-body);
-  color: var(--ink-4);
+  color: var(--ink-3);
+}
+
+.interest__safety-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: var(--sp-2);
+  font-size: 0.86rem;
+  color: var(--ink);
+}
+
+.interest__rules {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  /* El sitio le saca las viñetas a todas las listas; en un checklist sirven:
+     se lee como cuatro cosas para revisar y no como un párrafo cortado. */
+  list-style: disc;
+}
+
+.interest__safety-link {
+  display: inline-block;
+  margin-top: var(--sp-3);
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '../ui/Icon'
+import { PhotoViewer } from './PhotoViewer'
 import { VehicleMedia } from './VehicleMedia'
 import type { Vehicle } from '../../types'
 
@@ -12,7 +13,9 @@ interface VehicleGalleryProps {
 
 export function VehicleGallery({ vehicle, children }: VehicleGalleryProps) {
   const [index, setIndex] = useState(0)
+  const [zoom, setZoom] = useState(false)
   const count = vehicle.images.length
+  const hasPhotos = count > 0
 
   /* La tira sigue a la foto que se está viendo.
 
@@ -35,7 +38,21 @@ export function VehicleGallery({ vehicle, children }: VehicleGalleryProps) {
   return (
     <div className="gallery">
       <div className="gallery__stage">
-        <VehicleMedia vehicle={vehicle} index={index} />
+        {/* La foto abre el visor. Es un botón y no un `div` con `onClick`:
+            así se llega con el teclado y un lector de pantalla dice qué hace.
+            Sin fotos cargadas no abre nada: el recuadro vacío no es una foto. */}
+        {hasPhotos ? (
+          <button
+            type="button"
+            className="gallery__open"
+            aria-label={`Ver la foto ${index + 1} a pantalla completa`}
+            onClick={() => setZoom(true)}
+          >
+            <VehicleMedia vehicle={vehicle} index={index} />
+          </button>
+        ) : (
+          <VehicleMedia vehicle={vehicle} index={index} />
+        )}
         {children}
 
         {count > 1 && (
@@ -62,6 +79,10 @@ export function VehicleGallery({ vehicle, children }: VehicleGalleryProps) {
           </>
         )}
       </div>
+
+      {/* Al cerrar, la ficha queda en la foto que estaba mirando a pantalla
+          completa: volver a la primera sería perder el lugar. */}
+      {zoom && <PhotoViewer vehicle={vehicle} start={index} onClose={(last) => { setIndex(last); setZoom(false) }} />}
 
       {count > 1 && (
         <div className="gallery__thumbs">

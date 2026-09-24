@@ -1,0 +1,106 @@
+/* El visor de fotos a pantalla completa. Negro y sin nada alrededor: lo único
+   que importa es la foto. */
+
+.viewer {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 0;
+  border: 0;
+  background: #070807;
+  color: var(--ink-inverse);
+  overflow: hidden;
+}
+
+.viewer::backdrop {
+  background: #070807;
+}
+
+.viewer__track {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* El imán: cada foto queda encuadrada sola al soltar el dedo. */
+  scroll-snap-type: x mandatory;
+  /* Sin barra a la vista: el desplazamiento es el gesto, no un control. */
+  scrollbar-width: none;
+}
+
+.viewer__track::-webkit-scrollbar {
+  display: none;
+}
+
+.viewer__slide {
+  display: grid;
+  place-items: center;
+  flex: 0 0 100%;
+  height: 100%;
+  scroll-snap-align: center;
+  padding: var(--sp-4);
+}
+
+/* Entera, nunca recortada: en la ficha la foto va `cover` para que la grilla
+   quede pareja, y acá es justamente lo contrario. */
+.viewer__photo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.viewer__close,
+.viewer__nav {
+  position: fixed;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--ink-inverse);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.viewer__close:hover,
+.viewer__nav:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.viewer__close {
+  top: calc(var(--sp-4) + env(safe-area-inset-top));
+  right: var(--sp-4);
+}
+
+.viewer__nav {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.viewer__nav--prev {
+  left: var(--sp-4);
+}
+
+.viewer__nav--next {
+  right: var(--sp-4);
+}
+
+.viewer__counter {
+  position: fixed;
+  bottom: calc(var(--sp-5) + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.14);
+  font-size: var(--fs-sm);
+}
+
+/* En el celular las flechas estorban al dedo y el gesto ya pasa de foto. */
+@media (max-width: 699px) {
+  .viewer__nav {
+    display: none;
+  }
+}
