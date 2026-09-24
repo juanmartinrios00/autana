@@ -6,6 +6,7 @@ import { CategorySlider } from '../components/home/CategorySlider'
 import { DealerSlider } from '../components/home/DealerSlider'
 import { PopularModels } from '../components/home/PopularModels'
 import { ProvinceMap } from '../components/home/ProvinceMap'
+import { PageHead } from '../components/ui/PageHead'
 import { Button } from '../components/ui/Button'
 import { BRAND, pageTitle } from '../config/brand'
 import { useDarkHero } from '../hooks/useDarkHero'
@@ -65,19 +66,15 @@ export function Explore() {
 
   return (
     <>
-      <section className="explore__head hero-bleed">
-        <div className="page explore__head-inner">
-          <span className="over over--invert">Explorar</span>
-          <h1 className="explore__title">Todas las formas de buscar.</h1>
-          <p className="explore__lead">
-            Por marca, por modelo, por tipo de auto, por lo que tenés para gastar o por dónde
-            estás. Todas llevan al mismo listado, con los filtros ya puestos.
-          </p>
-          <Link to="/autos">
-            <Button variant="yellow">Ver todos los autos</Button>
-          </Link>
-        </div>
-      </section>
+      <PageHead
+        kicker="Explorar"
+        title="Todas las formas de buscar."
+        lead="Por marca, por modelo, por tipo de auto, por lo que tenés para gastar o por dónde estás. Todas llevan al mismo listado, con los filtros ya puestos."
+      >
+        <Link to="/autos">
+          <Button variant="yellow">Ver todos los autos</Button>
+        </Link>
+      </PageHead>
 
       <div className="page explore__body">
         <CategorySlider counts={bodyCounts} />

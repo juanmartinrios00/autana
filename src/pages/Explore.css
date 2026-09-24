@@ -1,27 +1,6 @@
 /* Explorar: la cabecera en tinta, como niveles y el garage, y abajo todas las
    formas de buscar una debajo de la otra. */
 
-.explore__head {
-  /* El de arriba lo pone `.hero-bleed`, que además sube el bloque por detrás
-     de la navbar. */
-  padding-bottom: var(--sp-8);
-  background: var(--ink);
-  color: var(--ink-inverse);
-}
-
-.explore__title {
-  margin-top: var(--sp-3);
-  max-width: 16ch;
-  font-size: var(--fs-h2);
-}
-
-.explore__lead {
-  max-width: 54ch;
-  margin-top: var(--sp-4);
-  margin-bottom: var(--sp-5);
-  color: rgba(255, 255, 255, 0.72);
-}
-
 .explore__body {
   display: flex;
   flex-direction: column;

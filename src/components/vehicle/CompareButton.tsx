@@ -29,7 +29,7 @@ export function CompareButton({ slug, title, className, compact = false }: Compa
       aria-label={picked ? `Sacar ${title} de la comparación` : `Comparar ${title}`}
       onClick={() => toggle(slug)}
     >
-      <Icon name={picked ? 'check' : 'grid'} size={15} />
+      <Icon name={picked ? 'check' : 'compare'} size={15} />
       {!compact && (picked ? 'Comparando' : 'Comparar')}
     </button>
   )

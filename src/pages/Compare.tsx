@@ -4,6 +4,7 @@ import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
+import { PageHead } from '../components/ui/PageHead'
 import { Skeleton } from '../components/ui/Skeleton'
 import { VehicleMedia } from '../components/vehicle/VehicleMedia'
 import { pageTitle } from '../config/brand'
@@ -178,135 +179,137 @@ export function Compare() {
      decir dónde estaba parado. */
   if (vehicles.length === 0) {
     return (
-      <div className="page section compare">
-        <header className="compare__head">
-          <div>
-            <h1 className="compare__title">Comparar</h1>
-            <p className="compare__lead">
-              Hasta tres autos lado a lado, con las diferencias marcadas.
-            </p>
-          </div>
-        </header>
-
-        <EmptyState
-          icon="grid"
-          scene="sinComparar"
-          title="Todavía no elegiste ninguno"
-          description="En el listado, cada auto tiene sobre la foto un botón de cuatro cuadraditos, al lado del corazón. Tocalo en los que te interesen (en el celular, está adentro de cada aviso). Podés elegir hasta tres."
-          action={
-            <Link to="/autos">
-              <Button variant="yellow">Ver los autos publicados</Button>
-            </Link>
-          }
+      <>
+        <PageHead
+          tone="paper"
+          kicker="Comparar"
+          title="Lado a lado"
+          lead={`Hasta ${MAX_COMPARE} autos, con lo mejor de cada fila marcado.`}
         />
-      </div>
+        <div className="page section compare">
+          <EmptyState
+            icon="compare"
+            scene="sinComparar"
+            title="Todavía no elegiste ninguno"
+            description={`En el listado, cada auto tiene sobre la foto un botón con dos flechas, al lado del corazón. Tocalo en los que te interesen (en el celular, está adentro de cada aviso). Podés elegir hasta ${MAX_COMPARE}.`}
+            action={
+              <Link to="/autos">
+                <Button variant="yellow">Ver los autos publicados</Button>
+              </Link>
+            }
+          />
+        </div>
+      </>
     )
   }
 
   return (
-    <div className="page section compare">
-      <header className="compare__head">
-        <div>
-          <h1 className="compare__title">Comparar</h1>
-          <p className="compare__lead">
-            {vehicles.length === 1
-              ? 'Sumá otro auto desde el listado para verlos lado a lado.'
-              : 'Lo mejor de cada fila va marcado en amarillo. Este link se puede compartir.'}
-          </p>
-        </div>
-        <div className="compare__actions">
-          {/* La pantalla dice que el link se puede compartir; hasta ahora había
-              que copiarlo de la barra del navegador a mano. */}
-          <Button size="sm" onClick={() => void compartirComparacion()}>
-            <Icon name="link" size={15} />
-            {copiado ? 'Link copiado' : 'Compartir'}
-          </Button>
-          <Link to="/autos">
-            <Button size="sm">Sumar otro auto</Button>
-          </Link>
-        </div>
-      </header>
-
-      {/* La tabla scrollea sola en pantallas angostas en vez de romper la
-          grilla de la página. */}
-      <div className="compare__scroll">
-        <table className="compare__table">
-          <caption className="sr-only">Comparación de vehículos</caption>
-          <thead>
-            <tr>
-              <th scope="col" className="compare__corner">
-                <span className="sr-only">Característica</span>
-              </th>
-              {vehicles.map((vehicle) => (
-                <th scope="col" key={vehicle.slug} className="compare__col">
-                  <div className="compare__card">
-                    <button
-                      type="button"
-                      className="compare__drop"
-                      onClick={() => drop(vehicle.slug)}
-                      aria-label={`Sacar ${vehicleTitle(vehicle)} de la comparación`}
-                    >
-                      <Icon name="close" size={14} />
-                    </button>
-
-                    <div className="compare__media">
-                      <VehicleMedia vehicle={vehicle} />
-                    </div>
-
-                    <Link to={`/autos/${vehicle.slug}`} className="compare__name">
-                      {vehicleTitle(vehicle)}
-                    </Link>
-
-                    {vehicle.sellerTrust &&
-                      (vehicle.sellerTrust.verified ? (
-                        <Badge tone="success">Verificada</Badge>
-                      ) : (
-                        <Badge tone="tint">{vehicle.sellerTrust.sinceShort}</Badge>
-                      ))}
-                  </div>
+    <>
+      <PageHead
+        tone="paper"
+        kicker="Comparar"
+        title="Lado a lado"
+        lead={
+          vehicles.length === 1
+            ? 'Sumá otro auto desde el listado para verlos lado a lado.'
+            : 'Lo mejor de cada fila va marcado en amarillo. Este link se puede compartir.'
+        }
+        actions={
+          <>
+            {/* La pantalla dice que el link se puede compartir; hasta ahora
+                había que copiarlo de la barra del navegador a mano. */}
+            <Button size="sm" onClick={() => void compartirComparacion()}>
+              <Icon name="link" size={15} />
+              {copiado ? 'Link copiado' : 'Compartir'}
+            </Button>
+            <Link to="/autos">
+              <Button size="sm">Sumar otro auto</Button>
+            </Link>
+          </>
+        }
+      />
+      <div className="page section compare">
+        {/* La tabla scrollea sola en pantallas angostas en vez de romper la
+            grilla de la página. */}
+        <div className="compare__scroll">
+          <table className="compare__table">
+            <caption className="sr-only">Comparación de vehículos</caption>
+            <thead>
+              <tr>
+                <th scope="col" className="compare__corner">
+                  <span className="sr-only">Característica</span>
                 </th>
-              ))}
-            </tr>
-          </thead>
+                {vehicles.map((vehicle) => (
+                  <th scope="col" key={vehicle.slug} className="compare__col">
+                    <div className="compare__card">
+                      <button
+                        type="button"
+                        className="compare__drop"
+                        onClick={() => drop(vehicle.slug)}
+                        aria-label={`Sacar ${vehicleTitle(vehicle)} de la comparación`}
+                      >
+                        <Icon name="close" size={14} />
+                      </button>
 
-          <tbody>
-            {rows.map((row) => {
-              const best = winners(vehicles, row)
-              return (
-                <tr key={row.label}>
-                  <th scope="row" className="compare__label">
-                    {row.label}
+                      <div className="compare__media">
+                        <VehicleMedia vehicle={vehicle} />
+                      </div>
+
+                      <Link to={`/autos/${vehicle.slug}`} className="compare__name">
+                        {vehicleTitle(vehicle)}
+                      </Link>
+
+                      {vehicle.sellerTrust &&
+                        (vehicle.sellerTrust.verified ? (
+                          <Badge tone="success">Verificada</Badge>
+                        ) : (
+                          <Badge tone="tint">{vehicle.sellerTrust.sinceShort}</Badge>
+                        ))}
+                    </div>
                   </th>
-                  {vehicles.map((vehicle, index) => (
-                    <td
-                      key={vehicle.slug}
-                      className={best.has(index) ? 'compare__cell is-best mono' : 'compare__cell mono'}
-                    >
-                      {row.value(vehicle)}
-                      {best.has(index) && <span className="sr-only"> (el mejor de la fila)</span>}
-                    </td>
-                  ))}
-                </tr>
-              )
-            })}
+                ))}
+              </tr>
+            </thead>
 
-            <tr>
-              <th scope="row" className="compare__label">
-                Ver
-              </th>
-              {vehicles.map((vehicle) => (
-                <td key={vehicle.slug} className="compare__cell">
-                  <Link to={`/autos/${vehicle.slug}`}>
-                    <Button size="sm" variant="yellow">
-                      Ver la ficha
-                    </Button>
-                  </Link>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+            <tbody>
+              {rows.map((row) => {
+                const best = winners(vehicles, row)
+                return (
+                  <tr key={row.label}>
+                    <th scope="row" className="compare__label">
+                      {row.label}
+                    </th>
+                    {vehicles.map((vehicle, index) => (
+                      <td
+                        key={vehicle.slug}
+                        className={best.has(index) ? 'compare__cell is-best mono' : 'compare__cell mono'}
+                      >
+                        {row.value(vehicle)}
+                        {best.has(index) && <span className="sr-only"> (el mejor de la fila)</span>}
+                      </td>
+                    ))}
+                  </tr>
+                )
+              })}
+
+              <tr>
+                <th scope="row" className="compare__label">
+                  Ver
+                </th>
+                {vehicles.map((vehicle) => (
+                  <td key={vehicle.slug} className="compare__cell">
+                    <Link to={`/autos/${vehicle.slug}`}>
+                      <Button size="sm" variant="yellow">
+                        Ver la ficha
+                      </Button>
+                    </Link>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </>
   )
 }

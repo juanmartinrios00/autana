@@ -1,0 +1,126 @@
+/* ==========================================================================
+   El encabezado de página, en sus dos tonos. Ver `PageHead`.
+   ========================================================================== */
+
+.pagehead--ink {
+  /* El de arriba lo pone `.hero-bleed`, que además sube el bloque por detrás
+     de la navbar. */
+  padding-bottom: var(--sp-8);
+  background: var(--ink);
+  color: var(--ink-inverse);
+}
+
+.pagehead--paper {
+  padding-block: var(--sp-7) var(--sp-6);
+  background: var(--surface);
+}
+
+.pagehead__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--sp-5) var(--sp-7);
+}
+
+.pagehead__inner--aside {
+  align-items: center;
+}
+
+.pagehead__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.pagehead__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: var(--sp-3);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--ink-3);
+  transition:
+    gap var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.pagehead__back:hover {
+  gap: 10px;
+  color: var(--ink);
+}
+
+.pagehead--ink .pagehead__back {
+  color: rgb(255 255 255 / 0.66);
+}
+
+.pagehead--ink .pagehead__back:hover {
+  color: var(--ink-inverse);
+}
+
+/* Un solo tamaño de título para todas las páginas. La portada es la única que
+   va más grande, y tiene su propio hero. */
+.pagehead__title {
+  max-width: 18ch;
+  margin-top: var(--sp-3);
+  font-size: var(--fs-h2);
+  text-wrap: balance;
+}
+
+.pagehead__lead {
+  max-width: 58ch;
+  margin-top: var(--sp-3);
+  color: var(--ink-3);
+  text-wrap: pretty;
+}
+
+.pagehead--ink .pagehead__lead {
+  color: rgb(255 255 255 / 0.66);
+}
+
+.pagehead__more {
+  width: 100%;
+  margin-top: var(--sp-5);
+}
+
+.pagehead__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.pagehead__aside {
+  color: rgb(255 255 255 / 0.82);
+}
+
+.pagehead--paper .pagehead__aside {
+  color: var(--ink-2);
+}
+
+@media (max-width: 959px) {
+  .pagehead__aside {
+    display: none;
+  }
+}
+
+@media (max-width: 699px) {
+  .pagehead--paper {
+    padding-block: var(--sp-6) var(--sp-5);
+  }
+
+  .pagehead--ink {
+    padding-bottom: var(--sp-7);
+  }
+
+  .pagehead__inner {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* La sección que sigue al encabezado no necesita los 96 px de aire de arriba:
+   la banda ya separa. */
+.pagehead + .section {
+  padding-top: var(--sp-7);
+}

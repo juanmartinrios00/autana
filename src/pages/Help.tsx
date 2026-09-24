@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
+import { PageHead } from '../components/ui/PageHead'
 import { Icon } from '../components/ui/Icon'
 import { BRAND, pageTitle } from '../config/brand'
 import { useDarkHero } from '../hooks/useDarkHero'
@@ -71,7 +72,7 @@ const TOPICS: Topic[] = [
         q: '¿Cómo comparo dos autos?',
         a: (
           <p>
-            Con el botón de cuatro cuadraditos que tiene cada auto sobre la foto, al lado del corazón (en el celular, adentro de cada aviso, donde dice «Comparar»), y después en{' '}
+            Con el botón de las dos flechas que tiene cada auto sobre la foto, al lado del corazón (en el celular, adentro de cada aviso, donde dice «Comparar»), y después en{' '}
             <Link to="/comparar">Comparar</Link>. La comparación vive en la dirección del
             navegador, así que mandarle a alguien los dos autos es copiar el link.
           </p>
@@ -384,16 +385,11 @@ export function Help() {
 
   return (
     <>
-      <section className="help__head hero-bleed">
-        <div className="page help__head-inner">
-          <span className="over over--invert">Ayuda</span>
-          <h1 className="help__title">Cómo funciona esto</h1>
-          <p className="help__lead">
-            Si algo no está acá, probablemente todavía no exista. Preferimos decirlo así
-            antes que mandarte a buscar un botón que no está.
-          </p>
-        </div>
-      </section>
+      <PageHead
+        kicker="Ayuda"
+        title="Cómo funciona esto"
+        lead="Si algo no está acá, probablemente todavía no exista. Preferimos decirlo así antes que mandarte a buscar un botón que no está."
+      />
 
       <div className="page help__body">
         {/* El índice por tópico. Es lo que hace que la pantalla sirva desde el

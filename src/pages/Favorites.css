@@ -8,29 +8,6 @@
   gap: var(--sp-6);
 }
 
-.favorites__head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--sp-5);
-  flex-wrap: wrap;
-}
-
-.favorites__titles {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-}
-
-.favorites__title {
-  font-size: var(--fs-h1);
-}
-
-.favorites__count {
-  font-size: 0.94rem;
-  color: var(--ink-3);
-}
-
 .favorites__failure {
   padding: var(--sp-3) var(--sp-4);
   border-radius: var(--r-md);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { EmptyState } from '../components/ui/EmptyState'
+import { PageHead } from '../components/ui/PageHead'
 import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
 import { pageTitle } from '../config/brand'
@@ -59,13 +60,12 @@ export function Novedades() {
 
   return (
     <>
-      <section className="novedades__head">
-        <div className="page novedades__head-inner">
-          <span className="over">Novedades</span>
-          <h1 className="novedades__title">Lo que pasó con lo tuyo</h1>
-          <p className="novedades__sub">De los últimos 30 días, lo más reciente arriba.</p>
-        </div>
-      </section>
+      <PageHead
+        tone="paper"
+        kicker="Novedades"
+        title="Lo que pasó con lo tuyo"
+        lead="De los últimos 30 días, lo más reciente arriba."
+      />
 
       <div className="page novedades__body">
         {!ready && (

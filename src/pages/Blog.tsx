@@ -1,6 +1,8 @@
 import { PostCard } from '../components/blog/PostCard'
+import { PageHead } from '../components/ui/PageHead'
 import { BRAND, pageTitle } from '../config/brand'
 import { postsByDate } from '../content/blog/posts'
+import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import './Blog.css'
 
@@ -13,6 +15,7 @@ import './Blog.css'
  */
 export function Blog() {
   const [lead, ...rest] = postsByDate()
+  useDarkHero()
 
   useDocumentMeta({
     title: pageTitle('Blog'),
@@ -21,14 +24,11 @@ export function Blog() {
 
   return (
     <div className="blog">
-      <header className="page blog__head">
-        <span className="over">Blog</span>
-        <h1 className="blog__title">Lo que conviene saber antes de firmar.</h1>
-        <p className="blog__lead">
-          Trámites, precios y las cosas que nadie te cuenta hasta que ya es tarde. Escrito para
-          comprar y vender en Argentina, sin relleno.
-        </p>
-      </header>
+      <PageHead
+        kicker="Blog"
+        title="Lo que conviene saber antes de firmar."
+        lead="Trámites, precios y las cosas que nadie te cuenta hasta que ya es tarde. Escrito para comprar y vender en Argentina, sin relleno."
+      />
 
       <div className="page blog__list">
         {lead && <PostCard post={lead} variant="lead" />}

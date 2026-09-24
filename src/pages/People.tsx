@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { EmptyState } from '../components/ui/EmptyState'
 import { PersonRow, PersonRowsSkeleton } from '../components/people/PersonRow'
+import { PageHead } from '../components/ui/PageHead'
 import { Icon } from '../components/ui/Icon'
 import { BRAND, pageTitle } from '../config/brand'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
@@ -84,32 +85,28 @@ export function People() {
 
   return (
     <>
-      <section className="people__head">
-        <div className="page people__head-inner">
-          <span className="over">Buscar personas</span>
-          <h1 className="people__title">¿A quién estás buscando?</h1>
-          <p className="people__sub">
-            Escribí un nombre y mirá su garage: el primer auto, el de hoy, el que sueña y el
-            que extraña.
-          </p>
-
-          <form className="people__form" role="search" onSubmit={(event) => event.preventDefault()}>
-            <label className="sr-only" htmlFor="people-search">
-              Buscar una persona por nombre
-            </label>
-            <Icon name="search" size={18} />
-            <input
-              id="people-search"
-              type="search"
-              className="people__input"
-              placeholder="Ej. Juan Martín"
-              autoComplete="off"
-              value={value}
-              onChange={(event) => setTyped({ text: event.target.value, forTerm: term })}
-            />
-          </form>
-        </div>
-      </section>
+      <PageHead
+        tone="paper"
+        kicker="Buscar personas"
+        title="¿A quién estás buscando?"
+        lead="Escribí un nombre y mirá su garage: el primer auto, el de hoy, el que sueña y el que extraña."
+      >
+        <form className="people__form" role="search" onSubmit={(event) => event.preventDefault()}>
+          <label className="sr-only" htmlFor="people-search">
+            Buscar una persona por nombre
+          </label>
+          <Icon name="search" size={18} />
+          <input
+            id="people-search"
+            type="search"
+            className="people__input"
+            placeholder="Ej. Juan Martín"
+            autoComplete="off"
+            value={value}
+            onChange={(event) => setTyped({ text: event.target.value, forTerm: term })}
+          />
+        </form>
+      </PageHead>
 
       <div className="page people__body">
         {!term.trim() && (

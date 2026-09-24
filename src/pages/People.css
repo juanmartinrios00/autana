@@ -2,37 +2,11 @@
    Se apoya en las clases compartidas (`page`, `over`, `mono`) y sólo define lo
    propio de esta pantalla. */
 
-.people__head {
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
-}
-
-.people__head-inner {
-  padding-block: var(--sp-7) var(--sp-6);
-}
-
-.people__title {
-  margin: var(--sp-2) 0 0;
-  font-family: var(--font-display);
-  font-size: var(--fs-h1);
-  font-weight: var(--fw-display);
-  letter-spacing: var(--ls-display);
-  line-height: var(--lh-tight);
-}
-
-.people__sub {
-  margin: var(--sp-3) 0 0;
-  max-width: 52ch;
-  color: var(--ink-2);
-  line-height: var(--lh-body);
-}
-
 /* El buscador: la lupa adentro del marco, no al lado. */
 .people__form {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  margin-top: var(--sp-5);
   max-width: 30rem;
   padding: 0 var(--sp-3);
   border: 1px solid var(--line-strong);

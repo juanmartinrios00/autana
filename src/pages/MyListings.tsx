@@ -4,6 +4,7 @@ import { MissionCard } from '../components/levels/MissionCard'
 import { ListingManager } from '../components/listing/ListingManager'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
+import { PageHead } from '../components/ui/PageHead'
 import { Icon } from '../components/ui/Icon'
 import { Skeleton } from '../components/ui/Skeleton'
 import { BRAND, pageTitle } from '../config/brand'
@@ -102,64 +103,62 @@ export function MyListings() {
   const mission = loading || failed ? null : listingMission(listings)
 
   return (
-    <div className="page section mylistings-page">
-      <header className="mylistings-page__head">
-        <div className="mylistings-page__titles">
-          <Link to="/perfil" className="mylistings-page__back">
-            <Icon name="arrowLeft" size={15} />
-            Volver a mi perfil
+    <>
+      <PageHead
+        tone="paper"
+        kicker="Tus avisos"
+        title="Mis publicaciones"
+        back={{ to: '/perfil', label: 'Volver a mi perfil' }}
+        lead={
+          !loading && !failed && listings.length > 0
+            ? `${listings.length} ${listings.length === 1 ? 'aviso' : 'avisos'} · ${active} ${active === 1 ? 'activo' : 'activos'}`
+            : undefined
+        }
+        actions={
+          <Link to="/vender">
+            <Button variant="yellow">
+              <Icon name="plus" size={16} />
+              Publicar vehículo
+            </Button>
           </Link>
-          <h1 className="mylistings-page__title">Mis publicaciones</h1>
-          {!loading && !failed && listings.length > 0 && (
-            <p className="mylistings-page__count">
-              {listings.length} {listings.length === 1 ? 'aviso' : 'avisos'} · {active}{' '}
-              {active === 1 ? 'activo' : 'activos'}
-            </p>
-          )}
+        }
+      >
+        {/* Sólo con movimiento: "0 visitas esta semana" arriba de todo es un
+            cartel de fracaso los primeros días, cuando todavía no puede haber
+            pasado nada. */}
+        {semana.views > 0 && (
+          <p className="mylistings-page__week">
+            Esta semana: <strong>{semana.views}</strong>{' '}
+            {semana.views === 1 ? 'visita' : 'visitas'} y <strong>{semana.interests}</strong>{' '}
+            {semana.interests === 1 ? 'consulta' : 'consultas'}
+          </p>
+        )}
+      </PageHead>
+      <div className="page section mylistings-page">
+        {loading && <Skeleton height="280px" />}
 
-          {/* Sólo con movimiento: "0 visitas esta semana" arriba de todo es un
-              cartel de fracaso los primeros días, cuando todavía no puede
-              haber pasado nada. */}
-          {semana.views > 0 && (
-            <p className="mylistings-page__week">
-              Esta semana: <strong>{semana.views}</strong>{' '}
-              {semana.views === 1 ? 'visita' : 'visitas'} y <strong>{semana.interests}</strong>{' '}
-              {semana.interests === 1 ? 'consulta' : 'consultas'}
-            </p>
-          )}
-        </div>
+        {!loading && failed && (
+          <EmptyState
+            tone="error"
+            icon="car"
+            scene="sinConexion"
+            title="No pudimos traer tus publicaciones"
+            description="Puede ser un problema momentáneo de conexión."
+            action={<Button onClick={() => setReloads((count) => count + 1)}>Reintentar</Button>}
+          />
+        )}
 
-        <Link to="/vender">
-          <Button variant="yellow">
-            <Icon name="plus" size={16} />
-            Publicar vehículo
-          </Button>
-        </Link>
-      </header>
+        {mission && <MissionCard mission={mission} />}
 
-      {loading && <Skeleton height="280px" />}
-
-      {!loading && failed && (
-        <EmptyState
-          tone="error"
-          icon="car"
-          scene="sinConexion"
-          title="No pudimos traer tus publicaciones"
-          description="Puede ser un problema momentáneo de conexión."
-          action={<Button onClick={() => setReloads((count) => count + 1)}>Reintentar</Button>}
-        />
-      )}
-
-      {mission && <MissionCard mission={mission} />}
-
-      {!loading && !failed && (
-        <ListingManager
-          listings={listings}
-          onStatusChange={handleStatusChange}
-          onDelete={handleDelete}
-          stats={stats}
-        />
-      )}
-    </div>
+        {!loading && !failed && (
+          <ListingManager
+            listings={listings}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+            stats={stats}
+          />
+        )}
+      </div>
+    </>
   )
 }

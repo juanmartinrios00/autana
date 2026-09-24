@@ -8,24 +8,6 @@
   gap: var(--sp-6);
 }
 
-.compare__head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--sp-5);
-  flex-wrap: wrap;
-}
-
-.compare__title {
-  font-size: var(--fs-h1);
-}
-
-.compare__lead {
-  margin-top: var(--sp-2);
-  max-width: 60ch;
-  color: var(--ink-3);
-}
-
 /* En pantallas angostas la tabla scrollea sola en vez de romper la grilla. */
 .compare__scroll {
   overflow-x: auto;
@@ -171,11 +153,4 @@
   .compare__media {
     height: 96px;
   }
-}
-
-/* Compartir y sumar otro, juntos a la derecha del título. */
-.compare__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-2);
 }

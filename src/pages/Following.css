@@ -1,30 +1,5 @@
 /* A quién seguís. Las filas vienen de `components/people/PersonRow.css`. */
 
-.following__head {
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
-}
-
-.following__head-inner {
-  padding-block: var(--sp-7) var(--sp-6);
-}
-
-.following__title {
-  margin: var(--sp-2) 0 0;
-  font-family: var(--font-display);
-  font-size: var(--fs-h1);
-  font-weight: var(--fw-display);
-  letter-spacing: var(--ls-display);
-  line-height: var(--lh-tight);
-}
-
-.following__sub {
-  margin: var(--sp-3) 0 0;
-  max-width: 52ch;
-  color: var(--ink-2);
-  line-height: var(--lh-body);
-}
-
 .following__body {
   padding-block: var(--sp-6) var(--sp-8);
 }

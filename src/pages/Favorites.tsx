@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
+import { PageHead } from '../components/ui/PageHead'
 import { Icon } from '../components/ui/Icon'
 import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { BRAND, pageTitle } from '../config/brand'
@@ -115,119 +116,126 @@ export function Favorites() {
   const busy = syncing || loadedKey !== key
 
   return (
-    <div className="page section favorites">
-      <header className="favorites__head">
-        <div className="favorites__titles">
-          <h1 className="favorites__title">Favoritos</h1>
-          {!busy && ids.length > 0 && (
-            <p className="favorites__count">
+    <>
+      <PageHead
+        tone="paper"
+        kicker="Favoritos"
+        title="Los autos que guardaste"
+        lead={
+          !busy && ids.length > 0 ? (
+            <>
               {vehicles.length} {vehicles.length === 1 ? 'auto guardado' : 'autos guardados'}
               {gone > 0 && ` · ${gone} ya no ${gone === 1 ? 'está disponible' : 'están disponibles'}`}
-            </p>
-          )}
-        </div>
-
-        {!busy && ids.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={clear}>
-            Vaciar la lista
-          </Button>
-        )}
-      </header>
-
-      {failure && (
-        <p className="favorites__failure" role="alert">
-          {failure}
-        </p>
-      )}
-
-      {/* Sin cuenta la lista vive en este navegador y se pierde al cambiar de
-          teléfono. Conviene decirlo acá, que es donde importa, y no en un
-          cartel genérico en otro lado. */}
-      {!session && ids.length > 0 && (
-        <div className="favorites__notice">
-          <Icon name="heart" size={17} />
-          <p className="favorites__notice-text">
-            Estos favoritos están guardados sólo en este navegador. Si entrás a tu cuenta se
-            suben, los vas a tener en cualquier dispositivo y te avisamos si alguno baja de
-            precio.
+            </>
+          ) : (
+            'Tocá el corazón en cualquier aviso y queda acá.'
+          )
+        }
+        actions={
+          !busy &&
+          ids.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={clear}>
+              Vaciar la lista
+            </Button>
+          )
+        }
+      />
+      <div className="page section favorites">
+        {failure && (
+          <p className="favorites__failure" role="alert">
+            {failure}
           </p>
-          <Link to="/entrar">
-            <Button size="sm">Entrar</Button>
-          </Link>
-        </div>
-      )}
+        )}
 
-      {busy && <VehicleGrid vehicles={[]} loading skeletonCount={3} />}
-
-      {!busy && ids.length === 0 && (
-        <EmptyState
-          icon="heart"
-          scene="sinFavoritos"
-          title="Todavía no guardaste ningún auto"
-          description="Tocá el corazón en cualquier publicación y lo vas a encontrar acá. Con tu cuenta, si alguno baja de precio te avisamos en tus novedades."
-          action={
-            <Link to="/autos">
-              <Button variant="yellow">Ver los autos publicados</Button>
-            </Link>
-          }
-        />
-      )}
-
-      {!busy && ids.length > 0 && vehicles.length === 0 && (
-        <EmptyState
-          icon="heart"
-          title="Tus favoritos ya no están disponibles"
-          description="Los vendedores los pausaron o los marcaron vendidos."
-          action={
-            <Link to="/autos">
-              <Button variant="yellow">Buscar otros</Button>
-            </Link>
-          }
-        />
-      )}
-
-      {!busy && vehicles.length > 0 && (
-        <>
-          <VehicleGrid vehicles={vehicles} />
-          {synced && (
-            <p className="favorites__synced">
-              <Icon name="check" size={15} />
-              Guardados en tu cuenta.
+        {/* Sin cuenta la lista vive en este navegador y se pierde al cambiar de
+            teléfono. Conviene decirlo acá, que es donde importa, y no en un
+            cartel genérico en otro lado. */}
+        {!session && ids.length > 0 && (
+          <div className="favorites__notice">
+            <Icon name="heart" size={17} />
+            <p className="favorites__notice-text">
+              Estos favoritos están guardados sólo en este navegador. Si entrás a tu cuenta se
+              suben, los vas a tener en cualquier dispositivo y te avisamos si alguno baja de
+              precio.
             </p>
-          )}
-        </>
-      )}
+            <Link to="/entrar">
+              <Button size="sm">Entrar</Button>
+            </Link>
+          </div>
+        )}
 
-      {/* Lo que miró y no guardó. Acá es donde alguien vuelve a buscar "ese
-          que había visto": los favoritos son los que decidió guardar, y esto
-          es el resto del recorrido. Se saltean los que ya están arriba. */}
-      <RecentlyViewed excluir={ids} />
+        {busy && <VehicleGrid vehicles={[]} loading skeletonCount={3} />}
 
-      {searches.length > 0 && (
-        <section className="searches">
-          <h2 className="searches__title">Búsquedas guardadas</h2>
-          <ul className="searches__list">
-            {searches.map((search) => (
-              <li className="searches__item" key={search.id}>
-                {/* El link es la busqueda: se guarda la query string y se
-                    restaura poniendola de vuelta en la URL. */}
-                <Link to={`/autos?${search.query}`} className="searches__link">
-                  <Icon name="search" size={15} />
-                  {search.name}
-                </Link>
-                <button
-                  type="button"
-                  className="searches__drop"
-                  aria-label={`Quitar la búsqueda ${search.name}`}
-                  onClick={() => void dropSearch(search.id)}
-                >
-                  <Icon name="close" size={14} />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </div>
+        {!busy && ids.length === 0 && (
+          <EmptyState
+            icon="heart"
+            scene="sinFavoritos"
+            title="Todavía no guardaste ningún auto"
+            description="Tocá el corazón en cualquier publicación y lo vas a encontrar acá. Con tu cuenta, si alguno baja de precio te avisamos en tus novedades."
+            action={
+              <Link to="/autos">
+                <Button variant="yellow">Ver los autos publicados</Button>
+              </Link>
+            }
+          />
+        )}
+
+        {!busy && ids.length > 0 && vehicles.length === 0 && (
+          <EmptyState
+            icon="heart"
+            title="Tus favoritos ya no están disponibles"
+            description="Los vendedores los pausaron o los marcaron vendidos."
+            action={
+              <Link to="/autos">
+                <Button variant="yellow">Buscar otros</Button>
+              </Link>
+            }
+          />
+        )}
+
+        {!busy && vehicles.length > 0 && (
+          <>
+            <VehicleGrid vehicles={vehicles} />
+            {synced && (
+              <p className="favorites__synced">
+                <Icon name="check" size={15} />
+                Guardados en tu cuenta.
+              </p>
+            )}
+          </>
+        )}
+
+        {/* Lo que miró y no guardó. Acá es donde alguien vuelve a buscar "ese
+            que había visto": los favoritos son los que decidió guardar, y esto
+            es el resto del recorrido. Se saltean los que ya están arriba. */}
+        <RecentlyViewed excluir={ids} />
+
+        {searches.length > 0 && (
+          <section className="searches">
+            <h2 className="searches__title">Búsquedas guardadas</h2>
+            <ul className="searches__list">
+              {searches.map((search) => (
+                <li className="searches__item" key={search.id}>
+                  {/* El link es la busqueda: se guarda la query string y se
+                      restaura poniendola de vuelta en la URL. */}
+                  <Link to={`/autos?${search.query}`} className="searches__link">
+                    <Icon name="search" size={15} />
+                    {search.name}
+                  </Link>
+                  <button
+                    type="button"
+                    className="searches__drop"
+                    aria-label={`Quitar la búsqueda ${search.name}`}
+                    onClick={() => void dropSearch(search.id)}
+                  >
+                    <Icon name="close" size={14} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
+    </>
   )
 }

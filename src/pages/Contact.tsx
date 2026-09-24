@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { PageHead } from '../components/ui/PageHead'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Input } from '../components/ui/Input'
@@ -86,16 +87,11 @@ export function Contact() {
 
   return (
     <div className="contact">
-      <header className="contact__hero hero-bleed">
-        <div className="page contact__hero-inner">
-          <span className="over over--invert">Hablemos</span>
-          <h1 className="contact__title">Estamos para ayudarte.</h1>
-          <p className="contact__lead">
-            Consultas sobre publicaciones, tu cuenta, concesionarias o alianzas. Elegí el tema y
-            contanos qué necesitás.
-          </p>
-        </div>
-      </header>
+      <PageHead
+        kicker="Hablemos"
+        title="Estamos para ayudarte."
+        lead="Consultas sobre publicaciones, tu cuenta, concesionarias o alianzas. Elegí el tema y contanos qué necesitás."
+      />
 
       <div className="page contact__layout">
         <aside className="contact__aside">

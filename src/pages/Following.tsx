@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PersonRow, PersonRowsSkeleton } from '../components/people/PersonRow'
 import { Button } from '../components/ui/Button'
+import { PageHead } from '../components/ui/PageHead'
 import { EmptyState } from '../components/ui/EmptyState'
 import { pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
@@ -60,11 +61,12 @@ export function Following() {
 
   return (
     <>
-      <section className="following__head">
-        <div className="page following__head-inner">
-          <span className="over">Siguiendo</span>
-          <h1 className="following__title">A quién seguís</h1>
-          <p className="following__sub">
+      <PageHead
+        tone="paper"
+        kicker="Siguiendo"
+        title="A quién seguís"
+        lead={
+          <>
             Arriba, el que cambió su garage más recientemente.
             {ready && loaded.followers !== null && (
               <>
@@ -74,9 +76,9 @@ export function Following() {
                 {loaded.followers === 1 ? 'persona' : 'personas'}.
               </>
             )}
-          </p>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       <div className="page following__body">
         {!ready && <PersonRowsSkeleton />}
