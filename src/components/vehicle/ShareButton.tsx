@@ -45,7 +45,7 @@ export function ShareButton({
 
   return (
     <Button variant="outline" block={block} onClick={() => void share()}>
-      <Icon name="link" size={16} />
+      <Icon name="share" size={16} />
       {copied ? 'Link copiado' : 'Compartir'}
     </Button>
   )

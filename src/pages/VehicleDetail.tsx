@@ -28,6 +28,7 @@ import {
 } from '../lib/api'
 import {
   conditionLabels,
+  formatMileage,
   formatPrice,
   locationLabel,
   relativeDate,
@@ -239,7 +240,7 @@ export function VehicleDetail() {
           <Skeleton height="470px" radius="20px" />
         </div>
         <aside className="detail__aside">
-          <div className="card card--pad detail__panel">
+          <div className="detail__panel">
             <Skeleton height="30px" width="80%" />
             <Skeleton height="18px" width="60%" />
             <Skeleton height="38px" width="50%" />
@@ -279,11 +280,8 @@ export function VehicleDetail() {
       <div className="page detail">
         <div className="detail__main">
           <VehicleGallery vehicle={vehicle}>
-            {vehicle.condition !== 'used' && (
-              <Badge
-                tone={vehicle.condition === 'new' ? 'dark' : 'outline'}
-                className="gallery__badge"
-              >
+            {vehicle.condition === 'new' && (
+              <Badge tone="dark" className="gallery__badge">
                 {conditionLabels[vehicle.condition]}
               </Badge>
             )}
@@ -291,7 +289,7 @@ export function VehicleDetail() {
           </VehicleGallery>
 
           <section className="detail__section">
-            <h2 className="detail__heading">Especificaciones</h2>
+            <h2 className="detail__heading">Características</h2>
             <VehicleSpecs vehicle={vehicle} />
           </section>
 
@@ -318,31 +316,39 @@ export function VehicleDetail() {
         </div>
 
         <aside className="detail__aside">
-          <div className="card detail__panel">
-            <div className="detail__panel-top">
-              {vehicle.condition !== 'used' && (
-                <Badge tone="outline">{conditionLabels[vehicle.condition]}</Badge>
+          <div className="detail__panel">
+            {/* Lo que en ML va arriba del título: en qué estado está, cuánto
+                anduvo y desde cuándo está publicado. En gris y chico, porque
+                es contexto; lo que se lee primero es qué auto es. */}
+            <p className="detail__kicker">
+              {conditionLabels[vehicle.condition]}
+              {vehicle.condition !== 'new' && (
+                <>
+                  <span className="detail__sep" aria-hidden="true" />
+                  {formatMileage(vehicle.mileage)}
+                </>
               )}
-              <span className="over">Publicado {relativeDate(vehicle.createdAt)}</span>
-            </div>
-
-            <h1 className="detail__title">{title}</h1>
-            <p className="detail__meta mono">
-              {vehicleMeta(vehicle)} · {locationLabel(vehicle.location)}
+              <span aria-hidden="true">·</span>
+              Publicado {relativeDate(vehicle.createdAt)}
             </p>
 
-            <p className="detail__price mono">{formatPrice(vehicle.price, vehicle.currency)}</p>
+            <h1 className="detail__title">
+              {title} <span className="detail__year">{vehicle.year}</span>
+            </h1>
+
+            <p className="detail__price">{formatPrice(vehicle.price, vehicle.currency)}</p>
             {vehicle.negotiable && (
               <p className="detail__negotiable">El vendedor acepta ofertas</p>
             )}
+            <p className="detail__place">
+              <Icon name="mapPin" size={15} />
+              {locationLabel(vehicle.location)}
+            </p>
 
             {interestText && (
               /* El cartel va arriba del botón y no abajo: es lo que empuja a
                  tocarlo, y leído después ya no empuja nada. */
-              <p className="detail__interest">
-                <Icon name="user" size={15} />
-                {interestText} este vehículo
-              </p>
+              <p className="detail__interest">{interestText} este vehículo</p>
             )}
 
             <div className="detail__actions" ref={actionsRef}>
@@ -352,8 +358,11 @@ export function VehicleDetail() {
                 size="detail"
                 onCount={(count) => setInterest({ slug: vehicle.slug, count })}
               />
-              <div className="detail__actions-pair">
-                <Button variant="outline" block onClick={() => toggle(vehicle.id)}>
+              {/* Guardar, comparar y compartir: tres acciones de acompañamiento,
+                  en una fila y sin contorno. Como tres cajas con borde le
+                  disputaban la pantalla al botón de contactar. */}
+              <div className="detail__quick">
+                <Button variant="ghost" onClick={() => toggle(vehicle.id)}>
                   <Icon name="heart" size={16} />
                   {saved ? 'Guardado' : 'Guardar'}
                 </Button>
@@ -362,8 +371,7 @@ export function VehicleDetail() {
                     otro componente. Mismo criterio que ese: con tres elegidos
                     no se suma otro, pero sacar el propio sigue disponible. */}
                 <Button
-                  variant="outline"
-                  block
+                  variant="ghost"
                   aria-pressed={compare.has(vehicle.slug)}
                   disabled={compare.full && !compare.has(vehicle.slug)}
                   title={
@@ -376,21 +384,19 @@ export function VehicleDetail() {
                   <Icon name={compare.has(vehicle.slug) ? 'check' : 'grid'} size={16} />
                   {compare.has(vehicle.slug) ? 'Comparando' : 'Comparar'}
                 </Button>
+                {/* Compartir: un auto se pasa por WhatsApp, y antes había que
+                    copiar la dirección de la barra del navegador a mano. */}
+                <ShareButton
+                  title={`${title} ${vehicle.year}`}
+                  price={formatPrice(vehicle.price, vehicle.currency)}
+                />
               </div>
-              {/* Compartir va acá abajo y a lo ancho: un auto se pasa por
-                  WhatsApp, y hasta ahora había que copiar la dirección de la
-                  barra del navegador a mano. */}
-              <ShareButton
-                title={`${title} ${vehicle.year}`}
-                price={formatPrice(vehicle.price, vehicle.currency)}
-                block
-              />
             </div>
 
             <hr className="rule detail__panel-rule" />
 
             <p className="detail__safety">
-              <Icon name="check" size={16} />
+              <Icon name="shield" size={16} />
               Nunca transfieras dinero antes de ver el vehículo. {BRAND} no interviene en el pago.
             </p>
 
@@ -408,7 +414,7 @@ export function VehicleDetail() {
           la decisión, y volver a buscarlo obliga a subir. */}
       {contactOut && !own && (
         <div className="detail__bar" role="region" aria-label="Contactar">
-          <span className="detail__bar-price mono">
+          <span className="detail__bar-price">
             {formatPrice(vehicle.price, vehicle.currency)}
           </span>
           <InterestButton

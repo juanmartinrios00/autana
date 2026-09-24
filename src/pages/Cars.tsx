@@ -289,7 +289,7 @@ export function Cars() {
               aria-expanded={sheetOpen}
               onClick={() => setSheetOpen(true)}
             >
-              <Icon name="list" size={15} />
+              <Icon name="filter" size={15} />
               Filtros
               {activeCount > 0 && <Badge tone="accent">{activeCount}</Badge>}
             </Button>

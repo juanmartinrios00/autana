@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Badge } from '../ui/Badge'
-import { Button } from '../ui/Button'
+import { Icon } from '../ui/Icon'
 import { locationLabel, sellerTypeLabels } from '../../lib/format'
 import type { Seller } from '../../types'
 import type { TrustSignal } from '../../lib/trust'
@@ -25,7 +25,7 @@ interface SellerCardProps {
 
 export function SellerCard({ seller, trust }: SellerCardProps) {
   return (
-    <div className="seller card">
+    <div className="seller">
       <span className="seller__avatar" aria-hidden="true">
         {initials(seller.name)}
       </span>
@@ -71,10 +71,9 @@ export function SellerCard({ seller, trust }: SellerCardProps) {
             "Contactar" se fue: tampoco hacía nada, y ahora el contacto es
             "Me interesa", arriba en la ficha. Dos botones de contacto hacen
             pensar que hay dos caminos. */}
-        <Link to={`/g/${seller.id}#avisos`}>
-          <Button variant="outline" size="sm">
-            Ver publicaciones
-          </Button>
+        <Link to={`/g/${seller.id}#avisos`} className="seller__link">
+          Ver sus publicaciones
+          <Icon name="arrowRight" size={15} />
         </Link>
       </div>
     </div>

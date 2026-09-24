@@ -165,40 +165,66 @@
 
 /* --- Ficha técnica ------------------------------------------------------ */
 
+/* Las características, sin grilla de bordes: cada dato con su ícono en un
+   cuadrado gris, el nombre chico arriba y el valor abajo. La tabla con
+   lineas por todos lados se leía como un formulario para completar. */
 .specs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--sp-5) var(--sp-4);
   margin: 0;
-  padding: var(--sp-2) var(--sp-1);
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
-  box-shadow: none;
+  padding: var(--sp-5);
+  border-radius: var(--r-xl);
+  background: #fff;
+  box-shadow: var(--sh-card);
 }
 
 .specs__item {
-  padding: 18px 22px;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: var(--sp-3);
+  align-items: center;
 }
 
-.specs__item:last-child {
-  border-right: 0;
+.specs__icon {
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink-2);
 }
 
 .specs__label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-4);
+  font-size: 0.78rem;
+  color: var(--ink-3);
 }
 
 .specs__value {
-  margin: 5px 0 0;
-  font-size: 0.97rem;
-  font-weight: 600;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* En el teléfono, de a dos: de a uno eran nueve renglones de scroll. */
+@media (max-width: 599px) {
+  .specs {
+    grid-template-columns: 1fr 1fr;
+    padding: var(--sp-4);
+  }
+
+  .specs__item {
+    grid-template-columns: 34px 1fr;
+    column-gap: var(--sp-2);
+  }
+
+  .specs__icon {
+    width: 34px;
+    height: 34px;
+  }
 }
 
 /* --- Card del vendedor -------------------------------------------------- */
@@ -209,6 +235,22 @@
   gap: var(--sp-5);
   flex-wrap: wrap;
   padding: var(--sp-5);
+  border-radius: var(--r-xl);
+  background: #fff;
+  box-shadow: var(--sh-card);
+}
+
+.seller__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.seller__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .seller__avatar {
@@ -283,68 +325,119 @@
   flex-shrink: 0;
 }
 
+/* El panel, sin contorno: blanco sobre el fondo y apoyado en la sombra. */
 .detail__panel {
   display: flex;
   flex-direction: column;
   padding: var(--sp-6);
   border-radius: var(--r-xl);
-  box-shadow: var(--sh-md);
+  background: #fff;
+  box-shadow: var(--sh-card);
 }
 
-.detail__panel-top {
+.detail__kicker {
   display: flex;
   align-items: center;
-  gap: 9px;
-  margin-bottom: var(--sp-4);
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: var(--sp-2);
+  font-size: 0.82rem;
+  color: var(--ink-3);
+}
+
+.detail__sep {
+  width: 1px;
+  height: 11px;
+  background: var(--ink-4);
 }
 
 .detail__title {
-  font-size: 1.88rem;
-  line-height: 1.1;
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.015em;
 }
 
-.detail__meta {
-  margin-top: var(--sp-3);
-  font-size: 0.875rem;
+.detail__year {
+  font-weight: 400;
   color: var(--ink-3);
 }
 
+/* Lo más grande del panel, en la misma tipografía que todo lo demás. */
 .detail__price {
-  margin-top: var(--sp-5);
-  font-size: 2.38rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  margin-top: var(--sp-4);
+  font-size: 2.3rem;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
 }
 
 .detail__negotiable {
-  margin-top: var(--sp-2);
-  font-size: 0.78rem;
-  color: var(--ink-3);
+  margin-top: var(--sp-1);
+  font-size: 0.82rem;
+  color: var(--success);
+}
+
+.detail__place {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--sp-3);
+  font-size: 0.88rem;
+  color: var(--ink-2);
 }
 
 /* A cuántas personas les interesa. Tono de dato, no de alerta: no es un
    "¡apurate!", es un hecho sobre el aviso. */
 .detail__interest {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  margin-top: var(--sp-3);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--ink-2);
+  margin-top: var(--sp-4);
+  font-size: 0.84rem;
+  color: var(--ink-3);
 }
 
 .detail__actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
 }
 
-.detail__actions-pair {
+.detail__quick {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-1);
+}
+
+/* Botones callados: ícono arriba del texto, en caja normal y sin borde. */
+.detail__quick .btn {
+  flex-direction: column;
+  gap: 4px;
+  height: auto;
+  padding: 10px 4px;
+  border: 0;
+  border-radius: var(--r-md);
+  clip-path: none;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.detail__quick .btn:hover:not(:disabled) {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.detail__quick .btn[aria-pressed='true'] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.detail__quick .btn:disabled {
+  background: transparent;
 }
 
 .detail__panel-rule {
@@ -393,8 +486,9 @@
 }
 
 .detail__bar-price {
-  font-size: 1.12rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
