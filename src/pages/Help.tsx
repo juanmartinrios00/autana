@@ -71,7 +71,7 @@ const TOPICS: Topic[] = [
         q: '¿Cómo comparo dos autos?',
         a: (
           <p>
-            Desde el botón de comparar de cada card, y después en{' '}
+            Con el botón de cuatro cuadraditos que tiene cada auto sobre la foto, al lado del corazón (en el celular, adentro de cada aviso, donde dice «Comparar»), y después en{' '}
             <Link to="/comparar">Comparar</Link>. La comparación vive en la dirección del
             navegador, así que mandarle a alguien los dos autos es copiar el link.
           </p>

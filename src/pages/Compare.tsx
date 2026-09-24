@@ -192,7 +192,7 @@ export function Compare() {
           icon="grid"
           scene="sinComparar"
           title="Todavía no elegiste ninguno"
-          description="Entrá al listado y tocá “Comparar” en los que te interesen. Podés elegir hasta tres."
+          description="En el listado, cada auto tiene sobre la foto un botón de cuatro cuadraditos, al lado del corazón. Tocalo en los que te interesen (en el celular, está adentro de cada aviso). Podés elegir hasta tres."
           action={
             <Link to="/autos">
               <Button variant="yellow">Ver los autos publicados</Button>
