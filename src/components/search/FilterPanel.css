@@ -41,45 +41,30 @@
   gap: var(--sp-2);
 }
 
-.filters__chip {
+/* Cápsulas grises sin contorno; la elegida, en tinta y con su tilde. Pesan
+   más que la regla general de `.chip-button .badge`, que pintaba igual a la
+   elegida y a las otras: se elegía "Diésel" y no había forma de verlo. */
+.filters .chip-button .filters__chip {
   height: 32px;
+  padding-inline: 12px;
+  gap: 5px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: none;
+  color: var(--ink-2);
   font-weight: 500;
 }
 
-/* --- Control segmentado ------------------------------------------------- */
-
-.segmented {
-  display: flex;
-  gap: var(--sp-1);
-  height: 44px;
-  padding: 4px;
-  border-radius: var(--r-pill);
+.filters .chip-button:hover .filters__chip {
   background: var(--surface-2);
-}
-
-.segmented__item {
-  flex-grow: 1;
-  border: 0;
-  border-radius: var(--r-pill);
-  background: transparent;
-  font-size: 0.84rem;
-  font-weight: 500;
-  color: var(--ink-3);
-  transition:
-    background var(--dur-fast) var(--ease),
-    color var(--dur-fast) var(--ease);
-}
-
-.segmented__item:hover {
+  box-shadow: none;
   color: var(--ink);
 }
 
-.segmented__item.is-on {
+.filters .chip-button .filters__chip.is-on {
   background: var(--ink);
   color: var(--ink-inverse);
-  font-weight: 600;
 }
-
 
 /* Las dos monedas del tope de precio. Son un par de pastillas chicas y no un
    select: son dos opciones, y un desplegable para dos esconde la que no está
@@ -95,9 +80,9 @@
 
 .filters__money {
   padding: 5px 12px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--r-sm);
-  background: var(--canvas);
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  background: var(--surface);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   font-weight: 600;
@@ -109,7 +94,7 @@
 }
 
 .filters__money:hover {
-  border-color: var(--ink);
+  background: var(--surface-2);
   color: var(--ink);
 }
 

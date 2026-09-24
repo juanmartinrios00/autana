@@ -1,5 +1,6 @@
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
+import { Icon } from '../ui/Icon'
 import { AmountInput } from '../ui/AmountInput'
 import { Select } from '../ui/Select'
 import {
@@ -58,7 +59,8 @@ function ChipGroup<T extends string>({
               aria-pressed={on}
               onClick={() => onToggle(option)}
             >
-              <Badge tone={on ? 'tint' : 'outline'} className="filters__chip">
+              <Badge className={on ? 'filters__chip is-on' : 'filters__chip'}>
+                {on && <Icon name="check" size={13} strokeWidth={2} />}
                 {labels[option]}
               </Badge>
             </button>
@@ -190,28 +192,27 @@ export function FilterPanel({
 
       <fieldset className="filters__group">
         <legend className="field__label">Transmisión</legend>
-        <div className="segmented">
-          <button
-            type="button"
-            className={!filters.transmission ? 'segmented__item is-on' : 'segmented__item'}
-            aria-pressed={!filters.transmission}
-            onClick={() => setParam('transmission', undefined)}
-          >
-            Todas
-          </button>
-          {transmissions.map((option) => (
-            <button
-              key={option}
-              type="button"
-              className={
-                filters.transmission === option ? 'segmented__item is-on' : 'segmented__item'
-              }
-              aria-pressed={filters.transmission === option}
-              onClick={() => setParam('transmission', option)}
-            >
-              {transmissionLabels[option]}
-            </button>
-          ))}
+        {/* Chips como los demás grupos y no un control segmentado: con
+            "Automática" y "CVT" no entraban las cuatro en el ancho del panel y
+            la última quedaba cortada. Los chips bajan de renglón. */}
+        <div className="filters__chips">
+          {[undefined, ...transmissions].map((option) => {
+            const on = filters.transmission === option
+            return (
+              <button
+                key={option ?? 'todas'}
+                type="button"
+                className="chip-button"
+                aria-pressed={on}
+                onClick={() => setParam('transmission', option)}
+              >
+                <Badge className={on ? 'filters__chip is-on' : 'filters__chip'}>
+                  {on && <Icon name="check" size={13} strokeWidth={2} />}
+                  {option ? transmissionLabels[option] : 'Todas'}
+                </Badge>
+              </button>
+            )
+          })}
         </div>
       </fieldset>
 
@@ -258,7 +259,8 @@ export function FilterPanel({
             aria-pressed={Boolean(filters.negotiable)}
             onClick={() => setParam('negotiable', filters.negotiable ? undefined : '1')}
           >
-            <Badge tone={filters.negotiable ? 'tint' : 'outline'} className="filters__chip">
+            <Badge className={filters.negotiable ? 'filters__chip is-on' : 'filters__chip'}>
+              {filters.negotiable && <Icon name="check" size={13} strokeWidth={2} />}
               Acepta ofertas
             </Badge>
           </button>
