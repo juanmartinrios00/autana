@@ -1,5 +1,10 @@
 /* ==========================================================================
-   Vehicle card — la imagen es la protagonista y la card tiene mucho aire.
+   Vehicle card — foto, qué auto es y cuánto sale. Lo demás, en la ficha.
+
+   Sin contorno: una hairline alrededor de cada caja convierte la grilla en
+   una planilla, y el hover que la pasaba a tinta plena era una caja negra por
+   cada auto que el mouse cruzaba. La separación del fondo la da una sombra
+   corta, y el hover la estira un poco. El bloque no se desplaza.
    ========================================================================== */
 
 .vcard {
@@ -8,35 +13,29 @@
   flex-direction: column;
   overflow: hidden;
   border-radius: var(--r-xl);
-  background: var(--canvas);
-  border: 1px solid var(--line);
-  box-shadow: none;
-  transition:
-    border-color var(--dur-med) var(--ease),
-    background var(--dur-med) var(--ease);
+  background: #fff;
+  box-shadow: var(--sh-card);
+  transition: box-shadow var(--dur-med) var(--ease);
 }
 
 .vcard:hover {
-  border-color: var(--ink);
+  box-shadow: var(--sh-card-hover);
 }
 
 .vcard:focus-within {
   box-shadow:
-    0 0 0 1.5px var(--ink),
-    0 0 0 5px var(--accent-tint);
+    var(--sh-card-hover),
+    0 0 0 2px var(--ink);
 }
 
-/* Plano propio, mas oscuro que la card: sin foto tiene que leerse como un
-   hueco de imagen, no como un pedazo de card en blanco. Va con margen y
-   radio propio — la foto flota dentro de la card en vez de ir pegada al
-   borde, que es lo que le da el aire. */
+/* La foto va de borde a borde y en 4:3, que es como sale de un celular
+   apaisado: recorta poco y todas las cajas quedan de la misma altura. Sin
+   foto, el plano gris se lee como un hueco de imagen. */
 .vcard__media {
   position: relative;
-  height: 200px;
+  aspect-ratio: 4 / 3;
   flex-shrink: 0;
   overflow: hidden;
-  margin: var(--sp-2);
-  border-radius: var(--r-lg);
   background: var(--surface-2);
 }
 
@@ -48,7 +47,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--dur-slow) var(--ease);
 }
 
 .vmedia--empty {
@@ -57,54 +55,45 @@
   height: 100%;
 }
 
-.vcard:hover .vmedia {
-  transform: scale(1.03);
-}
-
 .vcard__condition {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 10px;
+  left: 10px;
 }
 
-/* El contador de fotos, sobre la foto. Tinta translúcida y no un `Badge`: va
-   encima de una imagen que puede ser clara u oscura. */
-.vcard__photos {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  border-radius: var(--r-pill);
-  background: rgba(11, 11, 12, 0.66);
-  color: var(--ink-inverse);
-  font-size: var(--fs-xs);
-  backdrop-filter: blur(4px);
-}
-
-.vcard__fav {
+/* Comparar y favorito, sobre la foto. Por encima del link que cubre la card. */
+.vcard__tools {
   position: absolute;
   top: 10px;
   right: 10px;
   z-index: 2;
+  display: flex;
+  gap: 6px;
 }
 
 .vcard__body {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
-  padding: var(--sp-3) var(--sp-4) var(--sp-5);
+  flex-grow: 1;
+  padding: var(--sp-4) var(--sp-4) var(--sp-4);
 }
 
+/* Dos renglones y se corta: "Ford Ranger Raptor 3.0 V6 Ecoboost Biturbo
+   Cabina Doble 4x4" no puede empujar el precio de su caja más abajo que el
+   de la de al lado. El título completo está en la ficha y en el link. */
 .vcard__title {
-  font-size: 1.06rem;
-  line-height: 1.22;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 0.97rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
 }
 
-/* El enlace cubre la card entera: toda la superficie es clickeable, pero el
-   botón de favorito queda por encima con su propio z-index. */
+/* El enlace cubre la card entera: toda la superficie es clickeable. */
 .vcard__link::after {
   content: '';
   position: absolute;
@@ -116,40 +105,86 @@
   outline: 0;
 }
 
-.vcard__meta {
-  font-size: 0.81rem;
+.vcard__seller {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: 0.8rem;
   color: var(--ink-3);
 }
 
-.vcard__price {
-  font-size: 1.38rem;
-  font-weight: 700;
-  letter-spacing: -0.035em;
+.vcard__verified {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--r-pill);
+  background: var(--success);
+  color: #fff;
 }
 
-.vcard__foot {
-  display: flex;
+/* El precio es lo más grande de la caja, y en la tipografía de todo lo demás:
+   en mono y en negrita se leía como una planilla. Los números tabulares
+   mantienen las cifras alineadas de una caja a la otra. */
+.vcard__price {
+  margin-top: var(--sp-3);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.vcard__meta {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-3);
+  gap: 8px;
+  margin-top: var(--sp-2);
+  font-size: 0.84rem;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.vcard__sep {
+  width: 1px;
+  height: 11px;
+  background: var(--ink-4);
 }
 
 .vcard__location {
-  font-size: 0.78rem;
+  margin-top: 2px;
+  font-size: 0.8rem;
   color: var(--ink-3);
 }
 
-.vcard__seller-info {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  flex-shrink: 0;
+/* El botón va al fondo, así queda a la misma altura en toda la fila aunque un
+   título ocupe un renglón y otro dos. */
+.vcard__actions {
+  display: grid;
+  margin-top: auto;
+  padding-top: var(--sp-4);
 }
 
-.vcard__seller,
-.vcard__trust {
-  height: 22px;
-  font-size: 0.69rem;
+/* "Me interesa" en la caja es un botón suave y no el amarillo lleno: en una
+   grilla de doce son doce botones amarillos, y el amarillo deja de señalar
+   nada. Se enciende al pasar por encima. En la ficha sigue siendo el lleno,
+   porque ahí es la acción de la pantalla. */
+.vcard .interest__card-button {
+  width: 100%;
+  height: 38px;
+  clip-path: none;
+  border-radius: var(--r-md);
+  background: var(--accent-tint);
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.vcard .interest__card-button:hover:not(:disabled) {
+  background: var(--accent);
 }
 
 /* --- Vista de lista ----------------------------------------------------- */
@@ -159,16 +194,17 @@
 }
 
 .vcard--list .vcard__media {
-  width: 300px;
-  height: auto;
-  min-height: 190px;
-  flex-shrink: 0;
+  width: 280px;
+  aspect-ratio: auto;
+  min-height: 200px;
 }
 
 .vcard--list .vcard__body {
-  flex-grow: 1;
-  justify-content: center;
-  padding: var(--sp-5) var(--sp-5) var(--sp-5) var(--sp-3);
+  padding: var(--sp-5);
+}
+
+.vcard--list .vcard__actions {
+  max-width: 260px;
 }
 
 @media (max-width: 699px) {
@@ -178,11 +214,75 @@
 
   .vcard--list .vcard__media {
     width: auto;
-    height: 200px;
+    aspect-ratio: 4 / 3;
+    min-height: 0;
   }
 
   .vcard--list .vcard__body {
-    padding: var(--sp-3) var(--sp-4) var(--sp-5);
+    padding: var(--sp-4);
+  }
+
+  .vcard--list .vcard__actions {
+    max-width: none;
+  }
+}
+
+/* --- Grilla en el celular ------------------------------------------------
+   Una caja por pantalla es mucho scroll para recorrer una búsqueda. En el
+   teléfono la grilla pasa a filas: foto a la izquierda, datos a la derecha,
+   y entran cuatro o cinco autos por pantalla. El botón de contacto no va: la
+   fila entera lleva a la ficha, donde está el grande. */
+@media (max-width: 599px) {
+  .vgrid--grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-3);
+  }
+
+  .vgrid--grid .vcard {
+    flex-direction: row;
+  }
+
+  .vgrid--grid .vcard__media {
+    width: 42%;
+    aspect-ratio: auto;
+    min-height: 148px;
+  }
+
+  .vgrid--grid .vcard__body {
+    padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-4);
+  }
+
+  .vgrid--grid .vcard__title {
+    font-size: 0.9rem;
+  }
+
+  .vgrid--grid .vcard__price {
+    margin-top: var(--sp-2);
+    font-size: 1.2rem;
+  }
+
+  .vgrid--grid .vcard__meta {
+    margin-top: var(--sp-1);
+    font-size: 0.78rem;
+  }
+
+  .vgrid--grid .vcard__location {
+    font-size: 0.76rem;
+  }
+
+  .vgrid--grid .vcard__actions,
+  .vgrid--grid .cmp-dot {
+    display: none;
+  }
+
+  .vgrid--grid .vcard__tools {
+    top: 6px;
+    right: 6px;
+  }
+
+  .vgrid--grid .fav {
+    width: 30px;
+    height: 30px;
   }
 }
 
@@ -191,11 +291,12 @@
 .fav {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--line-strong);
+  width: 34px;
+  height: 34px;
+  border: 0;
   border-radius: var(--r-pill);
   background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 3px rgba(11, 11, 12, 0.18);
   backdrop-filter: blur(6px);
   color: var(--ink);
   transition:
@@ -233,7 +334,9 @@
 }
 
 .vgrid--grid {
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* 230 y no 280: al lado del panel de filtros entran tres por fila en una
+     pantalla común en vez de dos, y cuatro sin el panel. */
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 }
 
 .vgrid--list {
@@ -281,28 +384,9 @@
   cursor: not-allowed;
 }
 
-/* El enlace del título cubre la card entera, así que este botón necesita su
-   propio plano para poder recibir el clic. */
-.vcard__compare {
-  position: relative;
-  z-index: 2;
-}
-
-/* "Me interesa" arriba y a todo el ancho, porque es la acción; comparar
-   abajo. Lado a lado no entran en una caja de la grilla, y envueltos quedaba
-   el botón amarillo chico y comparar ocupando todo el ancho: lo menos
-   importante se veía más grande. */
-.vcard__actions {
-  display: grid;
-  gap: var(--sp-2);
-  margin-top: var(--sp-1);
-}
-
-.vcard__actions .interest__card-button {
-  width: 100%;
-}
-
-.vcard__interest {
-  font-size: 0.74rem;
-  color: var(--ink-3);
+/* Comparar en la card: el mismo botón redondo que el favorito. */
+.cmp-dot:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge } from '../ui/Badge'
 import { Icon } from '../ui/Icon'
@@ -6,15 +5,7 @@ import { CompareButton } from './CompareButton'
 import { FavoriteButton } from './FavoriteButton'
 import { InterestButton } from './InterestButton'
 import { VehicleMedia } from './VehicleMedia'
-import {
-  conditionLabels,
-  formatPrice,
-  locationLabel,
-  relativeDate,
-  sellerTypeLabels,
-  vehicleMeta,
-  vehicleTitle,
-} from '../../lib/format'
+import { formatMileage, formatPrice, locationLabel, vehicleTitle } from '../../lib/format'
 import type { Vehicle } from '../../types'
 import './VehicleCard.css'
 
@@ -26,111 +17,88 @@ interface VehicleCardProps {
   priority?: boolean
 }
 
+/**
+ * Quién vende, en una línea, sólo cuando dice algo.
+ *
+ * Una concesionaria va con su nombre, que es una marca que se puede buscar, y
+ * la tilde si está verificada. Un particular no: su nombre no le dice nada a
+ * quien mira la grilla. Lo que sí sirve es el hecho ---verificada, o desde
+ * cuándo tiene cuenta---, porque una cuenta de esta semana publicando un auto
+ * caro es justo lo que conviene que se vea. Va en gris y sin sello de color:
+ * en un sitio que arranca casi todas las cuentas son nuevas, y pintarlas
+ * haría ver sospechoso al sitio entero. Una cuenta con tiempo y sin verificar
+ * no dice nada, así que no se muestra.
+ */
+function SellerLine({ vehicle }: { vehicle: Vehicle }) {
+  const trust = vehicle.sellerTrust
+  const dealer = vehicle.sellerType === 'dealer'
+  /* Un particular con cuenta de hace un año y sin verificar no tiene nada
+     que decir, y "Particular · desde ago 2025" en cada caja es ruido. */
+  if (!dealer && !trust?.verified && !trust?.isNew) return null
+
+  return (
+    <span className="vcard__seller">
+      {dealer ? vehicle.sellerName || 'Concesionaria' : trust?.verified ? 'Particular' : 'Cuenta nueva'}
+      {trust?.verified && (
+        <span className="vcard__verified" role="img" aria-label="verificada" title="Cuenta verificada">
+          <Icon name="check" size={9} strokeWidth={2.6} />
+        </span>
+      )}
+    </span>
+  )
+}
+
+/**
+ * La caja de cada aviso en los listados.
+ *
+ * Tenía de todo: sello de condición, contador de fotos, fecha, dos o tres
+ * badges, un botón amarillo lleno, otro de comparar y el contador de
+ * interesados. Cada cosa tenía su razón, pero juntas competían con lo único
+ * que se mira al recorrer una grilla: la foto, qué auto es y cuánto sale.
+ *
+ * Quedó lo que se necesita para decidir si entrar, en el orden en que se lee:
+ * qué es, quién lo vende si importa, el precio, año y kilómetros, dónde está.
+ * "0 km" ya lo dice el kilometraje. Lo demás está a un toque, en la ficha.
+ */
 export function VehicleCard({ vehicle, layout = 'grid', priority = false }: VehicleCardProps) {
   const title = vehicleTitle(vehicle)
-  /* El número sube si se toca "Me interesa" acá mismo: esperar a recargar la
-     página para ver el propio toque se lee como que no contó.
-
-     Se guarda de qué aviso es, y no sólo el número, que es el mismo criterio
-     que usa la ficha del aviso. Con un
-     `useState(vehicle.interestCount)` a secas, el valor se toma una sola vez:
-     cuando la grilla vuelve a pedir los resultados ---cambiar un filtro, pasar
-     de página y volver--- React reusa la instancia de las cards cuyo aviso
-     sigue estando, no vuelve a correr el inicializador, y el contador queda
-     clavado en el que tenía. Derivándolo, lo que viene de la base gana siempre,
-     salvo para el aviso que la persona tocó recién. */
-  const [bumped, setBumped] = useState<{ id: string; count: number } | null>(null)
-  const interest = bumped?.id === vehicle.id ? bumped.count : vehicle.interestCount
+  const name = `${title} ${vehicle.year}`
 
   return (
     <article className={`vcard vcard--${layout}`}>
       <div className="vcard__media">
         <VehicleMedia vehicle={vehicle} priority={priority} />
-        {vehicle.condition !== 'used' && (
-          <Badge
-            tone={vehicle.condition === 'new' ? 'dark' : 'outline'}
-            className="vcard__condition"
-          >
-            {conditionLabels[vehicle.condition]}
+        {vehicle.condition === 'certified' && (
+          <Badge tone="dark" className="vcard__condition">
+            Certificado
           </Badge>
         )}
-        <FavoriteButton vehicleId={vehicle.id} title={title} className="vcard__fav" />
-        {/* Cuántas fotos tiene, sobre la foto. Es lo que separa un aviso de
-            alguien que se tomó el trabajo de uno hecho a las apuradas, y hasta
-            ahora había que entrar para saberlo. Con una sola no se muestra: no
-            hay nada que anunciar. */}
-        {vehicle.images.length > 1 && (
-          <span className="vcard__photos mono" aria-label={`${vehicle.images.length} fotos`}>
-            <Icon name="camera" size={13} />
-            {vehicle.images.length}
-          </span>
-        )}
+        <div className="vcard__tools">
+          <CompareButton slug={vehicle.slug} title={name} compact />
+          <FavoriteButton vehicleId={vehicle.id} title={name} />
+        </div>
       </div>
 
       <div className="vcard__body">
         <h3 className="vcard__title">
-          {/* El link cubre la card entera; el resto del contenido queda encima. */}
+          {/* El link cubre la card entera; los botones quedan encima. */}
           <Link to={`/autos/${vehicle.slug}`} className="vcard__link">
             {title}
           </Link>
         </h3>
+        <SellerLine vehicle={vehicle} />
 
-        <span className="vcard__meta mono">{vehicleMeta(vehicle)}</span>
-        <span className="vcard__price mono">{formatPrice(vehicle.price, vehicle.currency)}</span>
+        <span className="vcard__price">{formatPrice(vehicle.price, vehicle.currency)}</span>
+        <span className="vcard__meta">
+          {vehicle.year}
+          <span className="vcard__sep" aria-hidden="true" />
+          {formatMileage(vehicle.mileage)}
+        </span>
+        <span className="vcard__location">{locationLabel(vehicle.location)}</span>
 
-        <hr className="rule" />
-
-        <div className="vcard__foot">
-          {/* Cuándo se publicó: un aviso de hace cuatro meses puede estar
-              vendido y sin actualizar, y eso cambia a quién le escribís
-              primero. */}
-          <span className="vcard__location">
-            {locationLabel(vehicle.location)} · {relativeDate(vehicle.createdAt)}
-          </span>
-          <span className="vcard__seller-info">
-            {/* Hechos, no un sello ganado. `Verificada` la pone una persona a
-                mano y es la senial fuerte; cuando no esta, queda la antiguedad,
-                que es lo unico que no se puede falsificar apurado. Una cuenta
-                de esta semana publicando un auto caro es justo lo que conviene
-                que se vea. */}
-            {vehicle.sellerTrust &&
-              (vehicle.sellerTrust.verified ? (
-                <Badge tone="success" className="vcard__trust">
-                  Verificada
-                </Badge>
-              ) : (
-                /* "Cuenta nueva" va en tono neutro, no de alerta. Una cuenta
-                   recien creada no es evidencia de nada malo, y ademas en un
-                   marketplace que arranca son casi todas: pintarlas de amarillo
-                   haria ver sospechoso al sitio entero. El hecho informa, el
-                   color no opina. */
-                <Badge tone="tint" className="vcard__trust">
-                  {vehicle.sellerTrust.sinceShort}
-                </Badge>
-              ))}
-            {vehicle.sellerType && (
-              <Badge className="vcard__seller">{sellerTypeLabels[vehicle.sellerType]}</Badge>
-            )}
-          </span>
-        </div>
-
-        {/* Va en su propia fila y no dentro del pie: ahí conviven la ubicación
-            y los sellos del vendedor, y un tercer elemento rompe el reparto. */}
         <div className="vcard__actions">
-          <InterestButton
-            vehicle={vehicle}
-            title={title}
-            onCount={(count) => setBumped({ id: vehicle.id, count })}
-          />
-          <CompareButton slug={vehicle.slug} title={title} className="vcard__compare" />
+          <InterestButton vehicle={vehicle} title={title} />
         </div>
-        {interest > 0 && (
-          /* En cero no se muestra: un aviso recién publicado no tiene por qué
-             anunciar que todavía no le interesa a nadie. */
-          <span className="vcard__interest mono">
-            A {interest} {interest === 1 ? 'persona le' : 'personas les'} interesa
-          </span>
-        )}
       </div>
     </article>
   )
