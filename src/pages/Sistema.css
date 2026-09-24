@@ -102,3 +102,26 @@
   gap: var(--sp-3);
   margin-top: var(--sp-4);
 }
+
+.sistema__heads {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--sp-5);
+}
+
+.sistema__heads figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0;
+  font-weight: 600;
+}
+
+.sistema__heads svg {
+  width: 100%;
+  height: auto;
+  padding: var(--sp-5);
+  border-radius: var(--r-lg);
+  background: var(--ink);
+  color: rgba(255, 255, 255, 0.78);
+}

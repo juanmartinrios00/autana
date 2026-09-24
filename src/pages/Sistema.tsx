@@ -1,4 +1,6 @@
+import { CocheraPlano } from '../components/garage/CocheraPlano'
 import { GarageScene } from '../components/garage/scenes'
+import { Mojones } from '../components/levels/Mojones'
 import { Oblea } from '../components/levels/Oblea'
 import { LevelScene } from '../components/levels/scenes'
 import { Button } from '../components/ui/Button'
@@ -89,6 +91,21 @@ export function Sistema() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="sistema__block">
+        <h2>Encabezados</h2>
+        <p className="sistema__note">440 × 300, sobre la cabecera oscura. Se esconden en el celular.</p>
+        <div className="sistema__heads">
+          <figure>
+            <CocheraPlano />
+            <figcaption>El garage: la cochera desde arriba</figcaption>
+          </figure>
+          <figure>
+            <Mojones />
+            <figcaption>Niveles: un mojón por nivel, en el km de los logros que pide</figcaption>
+          </figure>
+        </div>
       </section>
 
       <section className="sistema__block">

@@ -1,0 +1,23 @@
+/* Ver el componente. */
+
+.mojon__km,
+.mojon__numero {
+  fill: currentColor;
+  stroke: none;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.mojon__km {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.mojon__numero {
+  font-size: 24px;
+}
+
+.mojon--meta {
+  stroke: var(--accent);
+  color: var(--accent);
+}

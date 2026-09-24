@@ -1,0 +1,19 @@
+/* Ver el componente. */
+
+.cochera__sonado {
+  stroke: var(--accent);
+}
+
+.cochera__ausente {
+  stroke-dasharray: 4 5;
+  opacity: 0.55;
+}
+
+.cochera__numero {
+  fill: currentColor;
+  stroke: none;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}

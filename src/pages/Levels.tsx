@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AchievementList } from '../components/levels/AchievementList'
 import { LevelScene } from '../components/levels/scenes'
+import { Mojones } from '../components/levels/Mojones'
 import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
 import { BRAND, pageTitle } from '../config/brand'
@@ -87,21 +88,24 @@ export function Levels() {
     <>
       <section className="levels__head hero-bleed">
         <div className="page levels__head-inner">
-          <span className="over over--invert">Los niveles</span>
-          <h1 className="levels__title">Se suben haciendo, no participando.</h1>
-          <p className="levels__lead">
-            Los {total} logros salen de datos que ya existen: si borrás una publicación, el
-            nivel baja; si la marcás como vendida, no. No hay puntos por entrar todos los
-            días.
-          </p>
-          {/* La misma aclaración que está en el perfil. Va acá arriba y no al
-              pie porque es lo que más se malinterpreta: alguien que llega desde
-              un aviso tiene que enterarse antes de mirar la escalera. */}
-          <p className="levels__warn">
-            <Icon name="user" size={16} />
-            Es un juego del perfil, no una calificación de vendedor. A quien mira tus
-            autos le mostramos hechos: si estás verificada y desde cuándo tenés cuenta.
-          </p>
+          <div className="levels__head-text">
+            <span className="over over--invert">Los niveles</span>
+            <h1 className="levels__title">Se suben haciendo, no participando.</h1>
+            <p className="levels__lead">
+              Los {total} logros salen de datos que ya existen: si borrás una publicación, el
+              nivel baja; si la marcás como vendida, no. No hay puntos por entrar todos los
+              días.
+            </p>
+            {/* La misma aclaración que está en el perfil. Va acá arriba y no al
+                pie porque es lo que más se malinterpreta: alguien que llega desde
+                un aviso tiene que enterarse antes de mirar la escalera. */}
+            <p className="levels__warn">
+              <Icon name="user" size={16} />
+              Es un juego del perfil, no una calificación de vendedor. A quien mira tus
+              autos le mostramos hechos: si estás verificada y desde cuándo tenés cuenta.
+            </p>
+          </div>
+          <Mojones className="levels__art" />
         </div>
       </section>
 

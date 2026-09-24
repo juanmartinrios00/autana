@@ -94,3 +94,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* El dibujo de la derecha. Sólo donde hay lugar: en el celular el texto
+   ocupa todo el ancho y el dibujo empujaría el botón debajo del pliegue. */
+.glanding__head-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-7);
+}
+
+.glanding__art {
+  display: none;
+  width: 100%;
+  max-width: 440px;
+  justify-self: end;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+@media (min-width: 960px) {
+  .glanding__head-inner {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+
+  .glanding__art {
+    display: block;
+  }
+}

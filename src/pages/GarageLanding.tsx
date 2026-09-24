@@ -1,3 +1,4 @@
+import { CocheraPlano } from '../components/garage/CocheraPlano'
 import { Link, Navigate } from 'react-router-dom'
 import { GarageShowcase } from '../components/garage/GarageShowcase'
 import { Button } from '../components/ui/Button'
@@ -32,27 +33,30 @@ export function GarageLanding() {
     <>
       <section className="glanding__head hero-bleed">
         <div className="page glanding__head-inner">
-          <span className="over over--invert">El garage virtual</span>
-          <h1 className="glanding__title">Los autos que te marcaron.</h1>
-          <p className="glanding__lead">
-            No son los que vendés. Son cuatro: el primero, el de hoy, el que soñás y el que no
-            tendrías que haber vendido. Cada uno se dibuja con el auto que cargues, y si tenés la
-            foto, va la foto.
-          </p>
+          <div className="glanding__head-text">
+            <span className="over over--invert">El garage virtual</span>
+            <h1 className="glanding__title">Los autos que te marcaron.</h1>
+            <p className="glanding__lead">
+              No son los que vendés. Son cuatro: el primero, el de hoy, el que soñás y el que no
+              tendrías que haber vendido. Cada uno se dibuja con el auto que cargues, y si tenés la
+              foto, va la foto.
+            </p>
 
-          <div className="glanding__cta">
-            <Link to="/garage/mio">
-              <Button variant="yellow">{session ? 'Ir a mi garage' : 'Armá el tuyo'}</Button>
-            </Link>
-            <Link to="/gente">
-              <Button variant="outline">Buscar a alguien</Button>
-            </Link>
-            {session && (
-              <Link to="/siguiendo" className="glanding__more">
-                A quién seguís
+            <div className="glanding__cta">
+              <Link to="/garage/mio">
+                <Button variant="yellow">{session ? 'Ir a mi garage' : 'Armá el tuyo'}</Button>
               </Link>
-            )}
+              <Link to="/gente">
+                <Button variant="outline">Buscar a alguien</Button>
+              </Link>
+              {session && (
+                <Link to="/siguiendo" className="glanding__more">
+                  A quién seguís
+                </Link>
+              )}
+            </div>
           </div>
+          <CocheraPlano className="glanding__art" />
         </div>
       </section>
 
