@@ -91,7 +91,7 @@ export function Novedades() {
             icon="bell"
             scene="sinNovedades"
             title="Todavía no hay novedades"
-            description="Acá aparece cuando alguien se interesa en un auto que publicaste, cuando alguien te empieza a seguir, y cuando cambia el garage de alguien que seguís."
+            description="Acá aparece cuando alguien se interesa en un auto que publicaste, cuando baja de precio un auto que guardaste, cuando alguien te empieza a seguir, y cuando cambia el garage de alguien que seguís."
             action={
               <Link to="/gente" className="novedades__empty-link">
                 Buscar a alguien para seguir

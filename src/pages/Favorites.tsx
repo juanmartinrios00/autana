@@ -148,7 +148,8 @@ export function Favorites() {
           <Icon name="heart" size={17} />
           <p className="favorites__notice-text">
             Estos favoritos están guardados sólo en este navegador. Si entrás a tu cuenta se
-            suben y los vas a tener en cualquier dispositivo.
+            suben, los vas a tener en cualquier dispositivo y te avisamos si alguno baja de
+            precio.
           </p>
           <Link to="/entrar">
             <Button size="sm">Entrar</Button>
@@ -163,7 +164,7 @@ export function Favorites() {
           icon="heart"
           scene="sinFavoritos"
           title="Todavía no guardaste ningún auto"
-          description="Tocá el corazón en cualquier publicación y lo vas a encontrar acá."
+          description="Tocá el corazón en cualquier publicación y lo vas a encontrar acá. Con tu cuenta, si alguno baja de precio te avisamos en tus novedades."
           action={
             <Link to="/autos">
               <Button variant="yellow">Ver los autos publicados</Button>
