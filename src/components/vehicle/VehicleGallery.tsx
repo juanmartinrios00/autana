@@ -48,7 +48,7 @@ export function VehicleGallery({ vehicle, children }: VehicleGalleryProps) {
             aria-label={`Ver la foto ${index + 1} a pantalla completa`}
             onClick={() => setZoom(true)}
           >
-            <VehicleMedia vehicle={vehicle} index={index} />
+            <VehicleMedia vehicle={vehicle} index={index} priority />
           </button>
         ) : (
           <VehicleMedia vehicle={vehicle} index={index} />

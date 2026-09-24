@@ -22,9 +22,11 @@ interface VehicleCardProps {
   vehicle: Vehicle
   /** `list` alarga la card en horizontal para la vista de lista. */
   layout?: 'grid' | 'list'
+  /** La primera de la pantalla: su foto se baja antes que el resto. */
+  priority?: boolean
 }
 
-export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
+export function VehicleCard({ vehicle, layout = 'grid', priority = false }: VehicleCardProps) {
   const title = vehicleTitle(vehicle)
   /* El número sube si se toca "Me interesa" acá mismo: esperar a recargar la
      página para ver el propio toque se lee como que no contó.
@@ -43,7 +45,7 @@ export function VehicleCard({ vehicle, layout = 'grid' }: VehicleCardProps) {
   return (
     <article className={`vcard vcard--${layout}`}>
       <div className="vcard__media">
-        <VehicleMedia vehicle={vehicle} />
+        <VehicleMedia vehicle={vehicle} priority={priority} />
         {vehicle.condition !== 'used' && (
           <Badge
             tone={vehicle.condition === 'new' ? 'dark' : 'outline'}

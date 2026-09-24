@@ -22,8 +22,15 @@ export function VehicleGrid({
         ? Array.from({ length: skeletonCount }, (_, index) => (
             <VehicleCardSkeleton key={index} layout={layout} />
           ))
-        : vehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.id} vehicle={vehicle} layout={layout} />
+        : vehicles.map((vehicle, index) => (
+            /* Sólo la primera: es la única que está arriba de todo en el
+               celular, y marcar varias como prioritarias es no marcar ninguna. */
+            <VehicleCard
+              key={vehicle.id}
+              vehicle={vehicle}
+              layout={layout}
+              priority={index === 0}
+            />
           ))}
     </div>
   )
