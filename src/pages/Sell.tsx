@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { MissionCard } from '../components/levels/MissionCard'
 import { ShareButton } from '../components/vehicle/ShareButton'
 import { PhotoUploader, type Photo } from '../components/sell/PhotoUploader'
-import { CartelVendo } from '../components/sell/CartelVendo'
 import { PriceReference } from '../components/sell/PriceReference'
 import { AmountInput } from '../components/ui/AmountInput'
 import { Badge } from '../components/ui/Badge'
@@ -808,7 +807,7 @@ export function Sell() {
         </div>
 
         <aside className="sell__aside">
-          <div className="sell__summary">
+          <div className="card card--pad sell__summary">
             <div className="sell__summary-head">
               <h2 className="sell__summary-title">Resumen</h2>
               {savedAt && (
@@ -821,23 +820,30 @@ export function Sell() {
               )}
             </div>
 
-            <CartelVendo
-              make={draft.make}
-              model={draft.model}
-              trim={draft.trim}
-              year={draft.year}
-              mileage={draft.mileage}
-              price={draft.price}
-              currency={draft.currency}
-              whatsapp={draft.whatsapp}
-              city={draft.city}
-            />
-
-            <p className="sell__summary-photos">
-              {existing.length + photos.length === 0
-                ? 'Todavía sin fotos'
-                : `${existing.length + photos.length} ${existing.length + photos.length === 1 ? 'foto' : 'fotos'}`}
-            </p>
+            <dl className="sell__summary-list">
+              <div className="sell__summary-row">
+                <dt>Vehículo</dt>
+                <dd className="mono">
+                  {[draft.make, draft.model, draft.year].filter(Boolean).join(' ') || '—'}
+                </dd>
+              </div>
+              <div className="sell__summary-row">
+                <dt>Kilometraje</dt>
+                <dd className="mono">
+                  {draft.mileage ? `${Number(draft.mileage).toLocaleString('es-AR')} km` : '—'}
+                </dd>
+              </div>
+              <div className="sell__summary-row">
+                <dt>Fotos</dt>
+                <dd className="mono">{existing.length + photos.length || '—'}</dd>
+              </div>
+              <div className="sell__summary-row">
+                <dt>Precio</dt>
+                <dd className="mono">
+                  {draft.price ? formatPrice(Number(draft.price), draft.currency) : '—'}
+                </dd>
+              </div>
+            </dl>
 
             <p className="sell__summary-note">
               {editing

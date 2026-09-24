@@ -3,7 +3,6 @@ import { AgenciaDibujo } from '../components/home/AgenciaDibujo'
 import { GarageScene } from '../components/garage/scenes'
 import { Mojones } from '../components/levels/Mojones'
 import { Oblea } from '../components/levels/Oblea'
-import { CartelVendo } from '../components/sell/CartelVendo'
 import { LevelScene } from '../components/levels/scenes'
 import { Button } from '../components/ui/Button'
 import { EMPTY_SCENE_NAMES, EMPTY_SCENES } from '../components/ui/empty-scenes'
@@ -69,28 +68,6 @@ export function Sistema() {
             </li>
           ))}
         </ul>
-      </section>
-
-      <section className="sistema__block">
-        <h2>Objetos</h2>
-        <p className="sistema__note">
-          La regla: cuando una pantalla necesita un contenedor, se usa el objeto que la gente ya
-          conoce para eso. La oblea para los logros, la cédula verde para el perfil, el cartel de
-          VENDO para lo que se está publicando y la línea de la ruta en el pie.
-        </p>
-        <div style={{ maxWidth: 360, paddingTop: 12 }}>
-          <CartelVendo
-            make="Toyota"
-            model="Hilux"
-            trim="SRV"
-            year="2019"
-            mileage="58400"
-            price="32500"
-            currency="USD"
-            whatsapp=""
-            city="Palermo"
-          />
-        </div>
       </section>
 
       <section className="sistema__block">
