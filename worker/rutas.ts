@@ -1,5 +1,5 @@
 /**
- * Las rutas y las listas que el Worker usa para decidir, sin lógica adentro.
+ * Las rutas y las listas que el Worker usa para decidir.
  *
  * Están acá y no en `index.ts` por una exigencia del runtime: todo lo que el
  * archivo de entrada exporta con nombre, workerd lo trata como un punto de
@@ -13,6 +13,8 @@
  * no hay forma de comprobar lo que hace antes de publicarlo. Los tests las
  * importan de acá.
  */
+
+import { ENTRADAS } from '../src/config/entradas'
 
 /**
  * El slug se interpola en un filtro de PostgREST, así que se acota antes de
@@ -102,4 +104,65 @@ export const RUTAS_VIEJAS: Record<string, string> = {
   '/terms': '/terminos',
   '/privacy': '/privacidad',
   '/profile': '/perfil',
+}
+
+/**
+ * Las rutas que la aplicación sabe dibujar.
+ *
+ * Sirve para lo contrario de lo que parece: lo que NO está acá es una página
+ * que no existe, y el Worker le contesta 404 en vez de 200. Antes cualquier
+ * dirección inventada ---`/autoss`, un link viejo mal copiado--- devolvía 200
+ * con la pantalla de "no encontramos esa página" adentro. Google a eso lo
+ * llama *soft 404*: como el servidor dice "todo bien", termina indexando
+ * páginas de error y repartiendo entre ellas lo que le corresponde al sitio.
+ *
+ * Están también las privadas, las que piden sesión: existen como pantallas
+ * aunque no se indexen, y contestar 404 sobre ellas sería mentir igual.
+ *
+ * Hay un test que lee `src/App.tsx` y comprueba que no falte ninguna. Si
+ * alguien agrega una pantalla y no la suma acá, esa pantalla sale con 404 y
+ * Google la saca del buscador: el test es lo único que lo evita.
+ */
+export const RUTAS_FIJAS = [
+  '/',
+  '/explorar',
+  '/autos',
+  '/favoritos',
+  '/comparar',
+  '/entrar',
+  '/niveles',
+  '/recuperar',
+  '/agencias',
+  '/ayuda',
+  '/contacto',
+  '/blog',
+  '/terminos',
+  '/privacidad',
+  '/garage',
+  '/gente',
+  '/vender',
+  '/mis-avisos',
+  '/ajustes',
+  '/garage/mio',
+  '/novedades',
+  '/siguiendo',
+  '/admin',
+  '/perfil',
+  ...ENTRADAS.map((entrada) => `/${entrada}`),
+]
+
+/** Las que llevan algo adentro: un aviso, una nota, un garage, un aviso a editar. */
+export const RUTAS_CON_PARAMETRO = [
+  LISTING_URL,
+  BLOG_URL,
+  GARAGE_URL,
+  /^\/vender\/[A-Za-z0-9-]{1,120}\/editar\/?$/,
+]
+
+/** ¿La aplicación tiene una pantalla para esta dirección? */
+export function esRutaConocida(pathname: string): boolean {
+  /* Sin la barra del final, que sirve la misma pantalla: ver `canonicalFor`. */
+  const limpio = pathname.replace(/\/+$/, '') || '/'
+  if (RUTAS_FIJAS.includes(limpio)) return true
+  return RUTAS_CON_PARAMETRO.some((patron) => patron.test(pathname))
 }

@@ -158,12 +158,25 @@ export function Compare() {
     )
   }
 
+  /* El título va afuera del caso "hay autos": sin él, la pantalla vacía
+     ---que es la que más se ve, porque se llega antes de elegir ninguno---
+     no tenía ningún encabezado de página, y un lector de pantalla no podía
+     decir dónde estaba parado. */
   if (vehicles.length === 0) {
     return (
-      <div className="page section">
+      <div className="page section compare">
+        <header className="compare__head">
+          <div>
+            <h1 className="compare__title">Comparar</h1>
+            <p className="compare__lead">
+              Hasta tres autos lado a lado, con las diferencias marcadas.
+            </p>
+          </div>
+        </header>
+
         <EmptyState
           icon="grid"
-          title="No hay autos para comparar"
+          title="Todavía no elegiste ninguno"
           description="Entrá al listado y tocá “Comparar” en los que te interesen. Podés elegir hasta tres."
           action={
             <Link to="/autos">

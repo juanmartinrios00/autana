@@ -8,6 +8,7 @@ import {
   BLOG_URL,
   CANONICAL_HOST,
   DISALLOWED,
+  esRutaConocida,
   GARAGE_URL,
   LISTING_URL,
   RUTAS_VIEJAS,
@@ -840,6 +841,21 @@ export default {
     /* Todo lo demás: el HTML de la SPA con su canonical, y los archivos que no
        son HTML tal cual vienen. */
     const assetResponse = await env.ASSETS.fetch(request)
-    return isHtml(assetResponse) ? renderCanonical(assetResponse, url) : assetResponse
+    if (!isHtml(assetResponse)) return assetResponse
+
+    const html = renderCanonical(assetResponse, url)
+
+    /* Una dirección que la aplicación no sabe dibujar es una página que no
+       existe, y se contesta como tal. El cuerpo es el mismo ---la SPA muestra
+       "no encontramos esa página"--- y lo que cambia es el código: con 200,
+       Google indexa la pantalla de error como si fuera contenido (*soft 404*).
+
+       Va acá abajo de todo a propósito: las direcciones con contenido de
+       verdad ---un aviso, una nota, un garage--- ya salieron por arriba. */
+    if (!esRutaConocida(url.pathname)) {
+      return new Response(html.body, { status: 404, headers: html.headers })
+    }
+
+    return html
   },
 } satisfies ExportedHandler<Env>

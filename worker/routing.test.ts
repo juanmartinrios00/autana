@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 /* Con `?raw`, igual que los tests que leen el esquema: lo que se prueba es
    el archivo de configuracion tal cual se despliega. */
 import wranglerRaw from '../wrangler.jsonc?raw'
+import appRaw from '../src/App.tsx?raw'
 import { provinces } from '../src/data/makes'
 import { LIMITS } from '../src/lib/limits'
 import {
@@ -19,6 +20,7 @@ import {
 import {
   BLOG_URL,
   CANONICAL_HOST,
+  esRutaConocida,
   DISALLOWED,
   GARAGE_URL,
   LISTING_URL,
@@ -424,6 +426,52 @@ describe('run_worker_first', () => {
  * canonical que las junte, lo que le corresponde a `/autos` queda repartido
  * entre todas y no alcanza para nada.
  */
+/**
+ * Las rutas que existen, atadas a las que declara la aplicación.
+ *
+ * El Worker contesta 404 a lo que no está en `RUTAS_FIJAS`. Si alguien agrega
+ * una pantalla en `App.tsx` y no la suma a esa lista, la pantalla anda ---la
+ * SPA la dibuja igual--- pero el servidor la declara inexistente y Google la
+ * saca del buscador. Nada lo avisaría: es el error mudo que este test cubre.
+ */
+describe('las rutas que el Worker reconoce', () => {
+  /* Del archivo de rutas tal cual, como los otros tests que leen el esquema. */
+  const declaradas = [...appRaw.matchAll(/<Route\s+path="([^"]+)"/g)]
+    .map((match) => match[1]!)
+    .filter((path) => path !== '*')
+
+  it('la aplicación no declara ninguna pantalla que el Worker desconozca', () => {
+    const sinCubrir = declaradas.filter((path) => {
+      /* `autos/:slug` se prueba con un ejemplo: los patrones con parámetro no
+         se pueden comparar como texto. */
+      const ejemplo = `/${path}`
+        .replace(':slug/editar', 'renault-symbol-2012/editar')
+        .replace(':slug', 'renault-symbol-2012')
+        .replace(':id', '419025f7-a7e0-4ee2-b6ce-162ce8319b33')
+      return !esRutaConocida(ejemplo)
+    })
+    expect(sinCubrir, `faltan en RUTAS_FIJAS: ${sinCubrir.join(', ')}`).toEqual([])
+  })
+
+  it('la portada y las puertas de entrada existen', () => {
+    expect(esRutaConocida('/')).toBe(true)
+    expect(esRutaConocida('/tiktok')).toBe(true)
+  })
+
+  it('con la barra del final es la misma pantalla', () => {
+    expect(esRutaConocida('/autos/')).toBe(true)
+    expect(esRutaConocida('/autos/renault-symbol-2012/')).toBe(true)
+  })
+
+  it('lo que no existe, no existe', () => {
+    expect(esRutaConocida('/autoss')).toBe(false)
+    expect(esRutaConocida('/wp-admin')).toBe(false)
+    expect(esRutaConocida('/autos/renault/symbol')).toBe(false)
+    expect(esRutaConocida('/blog/nota/parte-2')).toBe(false)
+    expect(esRutaConocida('/g/no-es-un-uuid')).toBe(false)
+  })
+})
+
 describe('canonicalFor', () => {
   const de = (href: string) => canonicalFor(new URL(href))
 
