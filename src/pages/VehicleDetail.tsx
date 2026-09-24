@@ -36,6 +36,7 @@ import {
 import { interestLabel } from '../lib/contact'
 import type { Seller, Vehicle } from '../types'
 import './VehicleDetail.css'
+import { rememberRecent } from '../lib/recent'
 import { reportError } from '../lib/report'
 
 type Status = 'loading' | 'ready' | 'notfound' | 'error'
@@ -94,6 +95,10 @@ export function VehicleDetail() {
         /* La visita se cuenta y se olvida: si falla, no pasa nada. Es una
            métrica, no el contenido de la página. */
         void registerView(slug)
+        /* Y se anota en este navegador, para la fila de "vistos
+           recientemente". Después de que el aviso existe: uno que no se pudo
+           abrir no se miró. */
+        rememberRecent(slug)
 
         /* Los dos van por su cuenta y cada uno se cae solo. Pedidos juntos y
            esperados con un `await`, un tropiezo de red buscando el vendedor se

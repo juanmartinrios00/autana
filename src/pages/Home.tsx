@@ -29,6 +29,7 @@ import { useDarkHero } from '../hooks/useDarkHero'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import type { Vehicle } from '../types'
 import './Home.css'
+import { RecentlyViewed } from '../components/vehicle/RecentlyViewed'
 
 const popular = [
   { label: 'SUV hasta USD 30.000', query: 'bodyType=suv&maxPrice=30000' },
@@ -237,6 +238,10 @@ export function Home() {
 
         {/* Las otras formas de buscar ---marca, modelo, presupuesto,
             provincia--- viven en `/explorar`. */}
+        {/* Sólo aparece para quien ya miró autos: en la primera visita no
+            existe, así que no le agrega alto a la portada de nadie nuevo. */}
+        <RecentlyViewed />
+
         <CategorySlider
           counts={bodyCounts}
           action={{ label: 'Otras formas de buscar', to: '/explorar' }}

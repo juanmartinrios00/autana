@@ -17,6 +17,7 @@ import {
 import type { Vehicle } from '../types'
 import './Favorites.css'
 import { reportError } from '../lib/report'
+import { RecentlyViewed } from '../components/vehicle/RecentlyViewed'
 
 /**
  * Los autos que guardaste.
@@ -194,6 +195,11 @@ export function Favorites() {
           )}
         </>
       )}
+
+      {/* Lo que miró y no guardó. Acá es donde alguien vuelve a buscar "ese
+          que había visto": los favoritos son los que decidió guardar, y esto
+          es el resto del recorrido. Se saltean los que ya están arriba. */}
+      <RecentlyViewed excluir={ids} />
 
       {searches.length > 0 && (
         <section className="searches">
