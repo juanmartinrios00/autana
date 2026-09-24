@@ -344,6 +344,7 @@ export function Cars() {
           <EmptyState
             tone="error"
             icon="close"
+            scene="sinConexion"
             title="Algo salió mal"
             description="No pudimos cargar los resultados. Revisá tu conexión e intentá de nuevo."
             action={
@@ -368,6 +369,7 @@ export function Cars() {
 
         {status === "ready" && total === 0 && (
           <EmptyState
+            scene="sinResultados"
             title="No encontramos autos"
             description="Probá ampliar el rango de precio o quitar alguno de los filtros activos."
             action={

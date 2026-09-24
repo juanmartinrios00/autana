@@ -468,6 +468,7 @@ export function Help() {
         {buscando && cuantas === 0 && notas.length === 0 && (
           <EmptyState
             icon="search"
+            scene="sinResultados"
             title={`No encontramos nada sobre "${busqueda.trim()}"`}
             description="Puede que todavía no exista esa función, o que lo llamemos de otra forma. Escribinos y te contestamos."
             action={

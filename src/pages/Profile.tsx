@@ -152,6 +152,7 @@ export function Profile() {
         <EmptyState
           tone="error"
           icon="car"
+          scene="noExiste"
           title="No encontramos ese perfil"
           description="Puede que la cuenta ya no exista."
           action={

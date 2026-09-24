@@ -51,6 +51,7 @@ export function BlogPost() {
       <div className="page section">
         <EmptyState
           icon="search"
+          scene="noExiste"
           title="No encontramos esa nota"
           description="Puede que haya cambiado de dirección o que nunca haya existido."
           action={

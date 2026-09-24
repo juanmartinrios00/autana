@@ -493,6 +493,14 @@
   box-shadow: var(--sh-sm);
 }
 
+/* El dibujo, cuando lo hay: 240 × 150, en el color del texto. */
+.empty__scene {
+  width: min(240px, 70%);
+  height: auto;
+  margin-bottom: var(--sp-2);
+  color: var(--ink-2);
+}
+
 .empty--error .empty__icon {
   background: var(--danger-bg);
   color: var(--danger);

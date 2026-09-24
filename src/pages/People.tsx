@@ -125,6 +125,7 @@ export function People() {
 
         {!searching && answer.failed && (
           <EmptyState
+            scene="sinConexion"
             title="No pudimos buscar"
             description="Probá de nuevo en un momento."
             icon="search"
@@ -142,6 +143,7 @@ export function People() {
             </ul>
           ) : (
             <EmptyState
+              scene="sinResultados"
               title={`No encontramos a nadie con "${term.trim()}"`}
               description="Puede que el nombre esté escrito distinto, o que esa persona haya elegido no aparecer en el buscador. El link directo a su garage siempre funciona."
               icon="search"

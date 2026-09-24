@@ -80,6 +80,7 @@ export function Novedades() {
           <EmptyState
             tone="error"
             icon="bell"
+            scene="sinConexion"
             title="No pudimos cargar las novedades"
             description="Probá de nuevo en un momento."
           />
@@ -88,6 +89,7 @@ export function Novedades() {
         {ready && !loaded.failed && !loaded.items.length && (
           <EmptyState
             icon="bell"
+            scene="sinNovedades"
             title="Todavía no hay novedades"
             description="Acá aparece cuando alguien se interesa en un auto que publicaste, cuando alguien te empieza a seguir, y cuando cambia el garage de alguien que seguís."
             action={

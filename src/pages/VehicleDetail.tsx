@@ -203,6 +203,7 @@ export function VehicleDetail() {
         <EmptyState
           tone="error"
           icon="close"
+          scene="sinConexion"
           title="No pudimos cargar la publicación"
           description="Revisá tu conexión e intentá de nuevo."
           action={
@@ -221,6 +222,7 @@ export function VehicleDetail() {
         <EmptyState
           tone="error"
           icon="car"
+          scene="noExiste"
           title="No encontramos esa publicación"
           description="Puede que se haya vendido o que el vendedor la haya dado de baja."
           action={

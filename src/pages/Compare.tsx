@@ -190,6 +190,7 @@ export function Compare() {
 
         <EmptyState
           icon="grid"
+          scene="sinComparar"
           title="Todavía no elegiste ninguno"
           description="Entrá al listado y tocá “Comparar” en los que te interesen. Podés elegir hasta tres."
           action={

@@ -143,6 +143,7 @@ export function MyListings() {
         <EmptyState
           tone="error"
           icon="car"
+          scene="sinConexion"
           title="No pudimos traer tus publicaciones"
           description="Puede ser un problema momentáneo de conexión."
           action={<Button onClick={() => setReloads((count) => count + 1)}>Reintentar</Button>}

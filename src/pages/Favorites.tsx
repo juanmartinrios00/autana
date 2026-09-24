@@ -161,6 +161,7 @@ export function Favorites() {
       {!busy && ids.length === 0 && (
         <EmptyState
           icon="heart"
+          scene="sinFavoritos"
           title="Todavía no guardaste ningún auto"
           description="Tocá el corazón en cualquier publicación y lo vas a encontrar acá."
           action={

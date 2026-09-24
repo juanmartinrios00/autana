@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { pageTitle } from '../config/brand'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
+import { EMPTY_SCENES } from '../components/ui/empty-scenes'
 import './NotFound.css'
 
 /**
@@ -27,8 +28,12 @@ export function NotFound() {
      200. Sin la etiqueta, Google puede indexar direcciones que no existen. */
   useDocumentMeta({ title: pageTitle('Página no encontrada'), noindex: true })
 
+  /* El mismo dibujo que "no encontramos esa publicación", cuando exista. */
+  const Scene = EMPTY_SCENES.noExiste
+
   return (
     <div className="page section notfound">
+      {Scene && <Scene className="notfound__scene" />}
       <span className="over">Error 404</span>
       <h1 className="notfound__title">Esta página no existe</h1>
       <p className="notfound__text">

@@ -125,3 +125,15 @@
   background: var(--ink);
   color: rgba(255, 255, 255, 0.78);
 }
+
+.sistema__falta {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 240 / 150;
+  border: 1px dashed var(--line-strong);
+  box-shadow: none;
+  background: transparent;
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  color: var(--ink-4);
+}
