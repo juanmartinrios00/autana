@@ -21,6 +21,7 @@ const Blog = lazy(() => import('./pages/Blog').then((m) => ({ default: m.Blog })
 const BlogPost = lazy(() => import('./pages/BlogPost').then((m) => ({ default: m.BlogPost })))
 const Cars = lazy(() => import('./pages/Cars').then((m) => ({ default: m.Cars })))
 const Compare = lazy(() => import('./pages/Compare').then((m) => ({ default: m.Compare })))
+const Explore = lazy(() => import('./pages/Explore').then((m) => ({ default: m.Explore })))
 const Contact = lazy(() => import('./pages/Contact').then((m) => ({ default: m.Contact })))
 const Dealers = lazy(() => import('./pages/Dealers').then((m) => ({ default: m.Dealers })))
 const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default: m.Favorites })))
@@ -62,6 +63,7 @@ export default function App() {
                 ))}
 
                 {/* Fase 2 — marketplace */}
+                <Route path="explorar" element={<Explore />} />
                 <Route path="autos" element={<Cars />} />
                 <Route path="autos/:slug" element={<VehicleDetail />} />
 

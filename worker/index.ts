@@ -330,6 +330,7 @@ export const DISALLOWED = [
 export const STATIC_PAGES = [
   '/',
   '/autos',
+  '/explorar',
   '/garage',
   '/blog',
   '/ayuda',

@@ -20,12 +20,21 @@ function photoFor(body: string): string | null {
   return match ? match[1] : null
 }
 
-export function CategorySlider({ counts }: { counts: Record<string, number> }) {
+/** `action` lo pone la portada para mandar a `/explorar`; adentro de Explorar
+ *  no hace falta, porque el resto de las formas de buscar ya están abajo. */
+export function CategorySlider({
+  counts,
+  action,
+}: {
+  counts: Record<string, number>
+  action?: { label: string; to: string }
+}) {
   return (
     <Slider
       eyebrow="Buscá por carrocería"
       title="Qué tipo de auto buscás"
       itemWidth="224px"
+      action={action}
     >
       {bodyTypes.map((body) => {
         const count = counts[body] ?? 0

@@ -14,6 +14,7 @@ const linkGroups = [
     label: 'Marketplace',
     links: [
       { to: '/autos', label: 'Comprar un auto' },
+      { to: '/explorar', label: 'Explorar por marca o precio' },
       { to: '/vender', label: 'Publicar un vehículo' },
       { to: '/favoritos', label: 'Favoritos' },
       { to: '/comparar', label: 'Comparar vehículos' },

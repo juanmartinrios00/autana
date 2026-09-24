@@ -235,7 +235,12 @@ export function Home() {
           />
         </div>
 
-        <CategorySlider counts={bodyCounts} />
+        {/* Las otras formas de buscar ---marca, modelo, presupuesto,
+            provincia--- viven en `/explorar`. */}
+        <CategorySlider
+          counts={bodyCounts}
+          action={{ label: 'Otras formas de buscar', to: '/explorar' }}
+        />
       </div>
 
       {/* Los tres motivos van acá y no arriba: quien entra a un clasificado

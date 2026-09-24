@@ -17,6 +17,7 @@ import { NavSearch } from './NavSearch'
    a quién seguís, y en cualquiera de esas uno está "en el garage". */
 const links: { to: string; label: string; matches?: string[] }[] = [
   { to: '/autos', label: 'Comprar' },
+  { to: '/explorar', label: 'Explorar' },
   { to: '/garage', label: 'Garage', matches: ['/garage', '/g/', '/gente', '/siguiendo'] },
   { to: '/favoritos', label: 'Favoritos' },
   { to: '/comparar', label: 'Comparar' },
