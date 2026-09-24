@@ -135,6 +135,29 @@ export function formatMileage(km: number): string {
   return `${km.toLocaleString('es-AR')} km`
 }
 
+/**
+ * Lo que alguien escribió en un campo de monto, reducido a los dígitos.
+ *
+ * En Argentina los miles se separan con punto: "18.500.000". Un
+ * `type="number"` no lo entiende ---Chromium se come el segundo punto y deja
+ * 18,5--- así que esos campos son de texto y los números salen de acá. Una
+ * coma con uno o dos dígitos al final son centavos y se tiran: en autos no
+ * existen, y "18.500.000,00" es el mismo precio. Cualquier otro signo es un
+ * separador. Los ceros de adelante sobran, salvo el cero solo, que es un 0 km.
+ */
+export function soloDigitos(texto: string): string {
+  return texto
+    .replace(/,\d{0,2}\s*$/, '')
+    .replace(/\D/g, '')
+    .replace(/^0+(?=\d)/, '')
+    .slice(0, 12)
+}
+
+/** `18500000` como "18.500.000", para mostrar mientras se escribe. */
+export function conPuntos(digitos: string): string {
+  return digitos.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
 export function formatCount(value: number): string {
   return value.toLocaleString('es-AR')
 }

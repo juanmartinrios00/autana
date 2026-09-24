@@ -1,6 +1,6 @@
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
+import { AmountInput } from '../ui/AmountInput'
 import { Select } from '../ui/Select'
 import {
   bodyLabels,
@@ -138,23 +138,19 @@ export function FilterPanel({
           })}
         </div>
         <div className="filters__pair">
-          <Input
+          <AmountInput
             label="Desde"
             hideLabel
-            type="number"
-            inputMode="numeric"
             placeholder="Desde"
-            value={filters.minPrice ?? ''}
-            onChange={(event) => setParam('minPrice', event.target.value || undefined)}
+            value={filters.minPrice === undefined ? '' : String(filters.minPrice)}
+            onValueChange={(value) => setParam('minPrice', value || undefined)}
           />
-          <Input
+          <AmountInput
             label="Hasta"
             hideLabel
-            type="number"
-            inputMode="numeric"
             placeholder="Hasta"
-            value={filters.maxPrice ?? ''}
-            onChange={(event) => setParam('maxPrice', event.target.value || undefined)}
+            value={filters.maxPrice === undefined ? '' : String(filters.maxPrice)}
+            onValueChange={(value) => setParam('maxPrice', value || undefined)}
           />
         </div>
       </fieldset>
@@ -162,34 +158,32 @@ export function FilterPanel({
       <fieldset className="filters__group">
         <legend className="field__label">Año</legend>
         <div className="filters__pair">
-          <Input
+          <AmountInput
             label="Desde"
             hideLabel
-            type="number"
-            inputMode="numeric"
+            agrupar={false}
+            maxLength={4}
             placeholder="Desde"
-            value={filters.minYear ?? ''}
-            onChange={(event) => setParam('minYear', event.target.value || undefined)}
+            value={filters.minYear === undefined ? '' : String(filters.minYear)}
+            onValueChange={(value) => setParam('minYear', value || undefined)}
           />
-          <Input
+          <AmountInput
             label="Hasta"
             hideLabel
-            type="number"
-            inputMode="numeric"
+            agrupar={false}
+            maxLength={4}
             placeholder="Hasta"
-            value={filters.maxYear ?? ''}
-            onChange={(event) => setParam('maxYear', event.target.value || undefined)}
+            value={filters.maxYear === undefined ? '' : String(filters.maxYear)}
+            onValueChange={(value) => setParam('maxYear', value || undefined)}
           />
         </div>
       </fieldset>
 
-      <Input
+      <AmountInput
         label="Kilometraje máximo"
-        type="number"
-        inputMode="numeric"
         placeholder="Sin tope"
-        value={filters.maxMileage ?? ''}
-        onChange={(event) => setParam('maxMileage', event.target.value || undefined)}
+        value={filters.maxMileage === undefined ? '' : String(filters.maxMileage)}
+        onValueChange={(value) => setParam('maxMileage', value || undefined)}
       />
 
       <hr className="rule" />

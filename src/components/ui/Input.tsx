@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes } from 'react'
+import { useId, type InputHTMLAttributes, type Ref } from 'react'
 import { Icon, type IconName } from './Icon'
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
@@ -7,6 +7,8 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>
   icon?: IconName
   /** Oculta el label visualmente pero lo deja para el lector de pantalla. */
   hideLabel?: boolean
+  /** Con React 19 llega como una prop más y sigue de largo al `<input>`. */
+  ref?: Ref<HTMLInputElement>
 }
 
 export function Input({ label, error, icon, hideLabel = false, id, className, ...rest }: InputProps) {

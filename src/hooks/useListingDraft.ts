@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { soloDigitos } from '../lib/format'
 import type {
   BodyType,
   Currency,
@@ -55,7 +56,11 @@ function read(): ListingDraft {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return emptyDraft
     /* Se mezcla contra el vacío para tolerar borradores de versiones viejas. */
-    return { ...emptyDraft, ...(JSON.parse(raw) as Partial<ListingDraft>) }
+    const draft = { ...emptyDraft, ...(JSON.parse(raw) as Partial<ListingDraft>) }
+    /* Cuando el precio y el kilometraje eran `type="number"`, un "58.400"
+       quedaba guardado como "58.4": pasaba la validación y la base, que guarda
+       enteros, rechazaba el aviso. Ahora esos campos guardan sólo dígitos. */
+    return { ...draft, price: soloDigitos(draft.price), mileage: soloDigitos(draft.mileage) }
   } catch {
     return emptyDraft
   }

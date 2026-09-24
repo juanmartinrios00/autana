@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { MissionCard } from '../components/levels/MissionCard'
 import { ShareButton } from '../components/vehicle/ShareButton'
 import { PhotoUploader, type Photo } from '../components/sell/PhotoUploader'
+import { AmountInput } from '../components/ui/AmountInput'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
@@ -561,14 +562,12 @@ export function Sell() {
           {step === 1 && (
             <div className="sell__fields">
               <div className="sell__pair">
-                <Input
+                <AmountInput
                   label="Kilometraje"
-                  type="number"
-                  inputMode="numeric"
-                  placeholder="Ej. 58400"
+                  placeholder="Ej. 58.400"
                   value={draft.mileage}
                   error={errors.mileage}
-                  onChange={(event) => update('mileage', event.target.value)}
+                  onValueChange={(value) => update('mileage', value)}
                 />
                 <Select
                   label="Combustible"
@@ -681,14 +680,12 @@ export function Sell() {
                     mirar el select. El ejemplo del placeholder cambia con la
                     moneda por lo mismo. */}
                 <div className="sell__price">
-                  <Input
+                  <AmountInput
                     label="Precio"
-                    type="number"
-                    inputMode="numeric"
-                    placeholder={draft.currency === 'ARS' ? 'Ej. 18500000' : 'Ej. 12500'}
+                    placeholder={draft.currency === 'ARS' ? 'Ej. 18.500.000' : 'Ej. 12.500'}
                     value={draft.price}
                     error={errors.price}
-                    onChange={(event) => update('price', event.target.value)}
+                    onValueChange={(value) => update('price', value)}
                   />
                   <Select
                     label="Moneda"

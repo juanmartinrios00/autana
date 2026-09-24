@@ -24,7 +24,7 @@ import {
   transmissionLabels,
   transmissions,
   vehicleMeta,
-  vehicleTitle, slugTitle,
+  vehicleTitle, slugTitle, soloDigitos, conPuntos,
 } from './format'
 
 describe('formatPrice', () => {
@@ -58,6 +58,40 @@ describe('formatMileage', () => {
   it('lleva la unidad pegada al numero', () => {
     expect(formatMileage(34_200)).toBe('34.200 km')
     expect(formatMileage(0)).toBe('0 km')
+  })
+})
+
+describe('soloDigitos', () => {
+  it('entiende los miles con punto, que un campo numerico no entiende', () => {
+    expect(soloDigitos('18.500.000')).toBe('18500000')
+    expect(soloDigitos('58.400')).toBe('58400')
+    expect(soloDigitos('USD 12 500')).toBe('12500')
+  })
+
+  it('tira los centavos, pero no una coma de miles', () => {
+    expect(soloDigitos('18.500.000,00')).toBe('18500000')
+    expect(soloDigitos('12500,5')).toBe('12500')
+    expect(soloDigitos('12,500')).toBe('12500')
+  })
+
+  it('deja el cero solo, que es un 0 km, y saca los de adelante', () => {
+    expect(soloDigitos('0')).toBe('0')
+    expect(soloDigitos('00058')).toBe('58')
+    expect(soloDigitos('')).toBe('')
+    expect(soloDigitos('abc')).toBe('')
+  })
+})
+
+describe('conPuntos', () => {
+  it('separa los miles como se leen aca', () => {
+    expect(conPuntos('18500000')).toBe('18.500.000')
+    expect(conPuntos('12500')).toBe('12.500')
+    expect(conPuntos('950')).toBe('950')
+    expect(conPuntos('')).toBe('')
+  })
+
+  it('ida y vuelta da lo mismo', () => {
+    expect(soloDigitos(conPuntos('1234567'))).toBe('1234567')
   })
 })
 
