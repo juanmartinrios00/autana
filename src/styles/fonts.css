@@ -1,0 +1,50 @@
+/* ==========================================================================
+   Las tipografías, servidas por nosotros
+   ==========================================================================
+
+   Antes venían de Google Fonts. Eso son dos conexiones nuevas antes de que se
+   vea una letra ---`fonts.googleapis.com` para el CSS y `fonts.gstatic.com`
+   para los archivos---, y en un celular con datos móviles cada una cuesta cerca
+   de medio segundo entre DNS, TLS y el viaje. Además el CSS llega primero y
+   recién ahí el navegador se entera de qué archivo pedir: son dos viajes en
+   fila, no en paralelo.
+
+   Sirviéndolas desde el mismo dominio, la conexión ya está abierta y se pueden
+   precargar desde el HTML (`index.html`), que es lo que las pone en la primera
+   tanda de descargas.
+
+   Los archivos son los mismos que entregaba Google: el subconjunto latino de
+   cada familia, que es el que cubre el español ---tildes, ñ, ¿ y ¡---. Las
+   otras diecinueve variantes que ofrece (cirílico, griego, vietnamita) no las
+   usa nadie acá. De 105 KB a 66.
+
+   Las dos son variables: un solo archivo cubre todos los pesos. Por eso
+   `font-weight` es un rango y no hay una regla por peso. Las dos están bajo
+   licencia SIL Open Font License, que permite servirlas así.
+
+   `swap`: el texto se ve desde el primer momento con la tipografía del
+   sistema y cambia cuando llega la nuestra. Lo contrario ---texto invisible
+   hasta que baje la fuente--- es peor en una conexión lenta, que es justo
+   donde importa. */
+
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('/fonts/archivo-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}

@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "og:garage": "vite build --ssr scripts/og-garage.tsx --outDir node_modules/.cache/og-garage --emptyOutDir --logLevel warn && node node_modules/.cache/og-garage/og-garage.js",
+    "hero": "node scripts/hero-imagenes.mjs",
     "iconos": "vite build --ssr scripts/iconos.tsx --outDir node_modules/.cache/iconos --emptyOutDir --logLevel warn && node node_modules/.cache/iconos/iconos.js",
     "og:home": "vite build --ssr scripts/og-home.tsx --outDir node_modules/.cache/og-home --emptyOutDir --logLevel warn && node node_modules/.cache/og-home/og-home.js",
     "foto:carroceria": "node scripts/foto-carroceria.mjs",

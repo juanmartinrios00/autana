@@ -29,11 +29,24 @@
       content="Autos de particulares y concesionarias en Argentina. Contacto directo con el vendedor por WhatsApp y sin comisión por vender."
     />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Las tipografías las servimos nosotros: ver `src/styles/fonts.css`. Se
+         precargan acá para que salgan en la primera tanda de descargas, y no
+         después de que el navegador termine de leer el CSS. `crossorigin` es
+         obligatorio aunque sean del mismo dominio: las fuentes se piden en modo
+         anónimo, y sin eso el navegador las baja dos veces. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=JetBrains+Mono:wght@400;500;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/archivo-latin-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/jetbrains-mono-latin-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
   </head>
   <body>

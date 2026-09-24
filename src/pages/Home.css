@@ -15,7 +15,22 @@
   overflow: hidden;
   /* El color de fondo es el del piso de la cochera: si la imagen tarda en
      llegar, el hero no parpadea de gris a negro. */
-  background: #0c0e0d url('../assets/hero/mercedes-cochera.jpg') no-repeat;
+  background-color: #0c0e0d;
+  background-repeat: no-repeat;
+  /* La foto del hero, en el tamaño que hace falta y en el formato más liviano
+     que el navegador entienda. El original es de 2200 px y 164 KB: en un
+     celular de 390 eran 164 KB para mostrar 900, y siendo fondo de CSS no puede
+     usar `<picture>` como el resto de las imágenes del sitio. La versión de 900
+     en AVIF pesa 20 KB. Las genera `npm run hero`.
+
+     La línea de `url()` de arriba es para los navegadores que no entienden
+     `image-set`: la de abajo la pisa en todos los demás, así que nadie baja las
+     dos. */
+  background-image: url('../assets/hero/mercedes-cochera-900.webp');
+  background-image: image-set(
+    url('../assets/hero/mercedes-cochera-900.avif') type('image/avif'),
+    url('../assets/hero/mercedes-cochera-900.webp') type('image/webp')
+  );
   /* El auto queda apenas a la izquierda del centro y ocupa la mitad de abajo.
      Anclar en 48% / 62% lo conserva entero cuando el recorte se angosta, que
      es lo que pasa en el celular: ahí `cover` recorta por los costados y con
@@ -23,6 +38,17 @@
   background-position: 48% 62%;
   background-size: cover;
   color: var(--ink);
+}
+
+/* De acá para arriba la pantalla ya pide más resolución. */
+@media (min-width: 900px) {
+  .hero {
+    background-image: url('../assets/hero/mercedes-cochera-1800.webp');
+    background-image: image-set(
+      url('../assets/hero/mercedes-cochera-1800.avif') type('image/avif'),
+      url('../assets/hero/mercedes-cochera-1800.webp') type('image/webp')
+    );
+  }
 }
 
 .hero::after {
