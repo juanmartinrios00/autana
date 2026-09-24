@@ -142,7 +142,7 @@
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: var(--sp-1);
+  gap: 2px;
   margin-left: auto;
   flex-shrink: 0;
 }
@@ -154,7 +154,7 @@
   display: inline-flex;
   align-items: center;
   height: 38px;
-  padding-inline: 12px;
+  padding-inline: 10px;
   border-radius: 0;
   font-size: var(--fs-over);
   font-weight: 500;
@@ -178,9 +178,9 @@
 .navbar__link::after {
   content: '';
   position: absolute;
-  right: 12px;
+  right: 10px;
   bottom: 5px;
-  left: 12px;
+  left: 10px;
   height: 1px;
   background: currentColor;
   opacity: 0.55;
@@ -375,7 +375,7 @@ button.navbar__link {
   flex: 1 1 auto;
   min-width: 220px;
   height: 44px;
-  margin-left: var(--sp-5);
+  margin-left: var(--sp-4);
   padding-right: 8px;
   border: 1px solid transparent;
   border-radius: var(--r-sm);
@@ -537,8 +537,9 @@ button.navbar__link {
   pointer-events: none;
 }
 
-/* Con los links centrados, el espacio del medio se acaba antes. */
-@media (max-width: 1279px) {
+/* Con cuatro entradas en vez de cinco, la barra entera entra desde 1180 con
+   el buscador todavía por encima de los 250 px. */
+@media (max-width: 1179px) {
   .navbar__links {
     display: none;
   }
@@ -642,10 +643,6 @@ button.navbar__link {
     padding-inline: 16px;
   }
 
-  .navbar__cta-extra {
-    display: none;
-  }
-
   /* Contra el borde, lejos del logo: pegados se leían como una sola cosa. */
   .navbar__actions {
     margin-left: auto;
@@ -724,6 +721,55 @@ button.navbar__link {
   display: grid;
 }
 
+/* Con los grupos el menú es más largo que una pantalla chica: scrollea adentro
+   y no se lleva la página. */
+.navbar__mobile {
+  max-height: calc(100dvh - var(--nav-h) - var(--sp-4));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.navbar__mobile-group {
+  display: grid;
+  padding-bottom: var(--sp-2);
+}
+
+.navbar__mobile-label {
+  display: block;
+  padding: var(--sp-3) var(--sp-4) var(--sp-1);
+  font-size: 0.66rem;
+  letter-spacing: var(--ls-over);
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+/* Adentro de un grupo, los ítems van en caja normal y con su ícono: el
+   mayúsculas espaciado queda para las entradas de primer nivel. */
+.navbar__mobile-link.navbar__mobile-link--item {
+  min-height: 44px;
+  font-size: 0.94rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.navbar__mobile-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* Un link suelto entre dos grupos: una línea arriba y otra abajo lo separan
+   de los que tienen rótulo. */
+.navbar__mobile-link--solo {
+  margin-block: var(--sp-1) var(--sp-2);
+  border-block: 1px solid var(--line);
+  border-radius: 0;
+}
+
+.navbar__mobile-item svg {
+  color: var(--ink-3);
+}
+
 .navbar__mobile-link {
   display: flex;
   align-items: center;
@@ -747,7 +793,7 @@ button.navbar__link {
   background: var(--surface);
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1180px) {
   .navbar__mobile {
     display: none;
   }
@@ -851,9 +897,24 @@ button.navbar__link {
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-5);
+  position: relative;
   margin-top: var(--sp-6);
-  padding-top: var(--sp-5);
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  padding-top: var(--sp-6);
+}
+
+/* La línea que separa el pie de la firma es la de una ruta: trazos amarillos
+   de doce con huecos de diez, la línea discontinua del medio de la calzada.
+   Es el mismo registro de la oblea y la cédula ---objetos que cualquiera que
+   maneja en Argentina reconoce--- en el lugar más callado del sitio. */
+.footer__bottom::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, var(--accent) 0 12px, transparent 12px 22px);
+  opacity: 0.85;
 }
 
 @media (max-width: 699px) {

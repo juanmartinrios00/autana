@@ -1,45 +1,22 @@
 import { Link } from 'react-router-dom'
 import { BrandLockup } from '../brand/Logo'
 import { BRAND } from '../../config/brand'
+import { LEGAL_LINKS, NAV_GROUPS, visibleItems } from './nav-links'
 
-/* El pie es donde viven las pantallas que se leen una vez: explicaciones,
-   legales, captación. Es a propósito y no por descarte — la navbar es para lo
-   que se usa seguido, y meter ahí un desplegable con esto cuesta caro en
-   celular, que es de donde entra la mayoría.
+/* Los mismos tres grupos que la barra, con los mismos nombres y en el mismo
+   orden: quien buscó algo en "Garage" arriba lo encuentra en "Garage" abajo.
+   Salen de `nav-links`, así que una pantalla nueva aparece en los dos lados.
 
-   Cuando sean más, se parten en grupos por tópico. Con seis todavía no hace
-   falta: agrupar en dos columnas de tres es más ruido que ayuda. */
-const linkGroups = [
-  {
-    label: 'Marketplace',
-    links: [
-      { to: '/autos', label: 'Comprar un auto' },
-      { to: '/explorar', label: 'Explorar por marca o precio' },
-      { to: '/vender', label: 'Publicar un vehículo' },
-      { to: '/favoritos', label: 'Favoritos' },
-      { to: '/comparar', label: 'Comparar vehículos' },
-    ],
-  },
-  {
-    label: 'Comunidad',
-    links: [
-      { to: '/garage', label: `Garage ${BRAND}` },
-      { to: '/gente', label: 'Buscar personas' },
-      { to: '/agencias', label: 'Concesionarias' },
-      { to: '/niveles', label: 'Niveles y logros' },
-    ],
-  },
-  {
-    label: 'Soporte',
-    links: [
-      { to: '/blog', label: 'Blog' },
-      { to: '/ayuda', label: 'Centro de ayuda' },
-      { to: '/contacto', label: 'Contacto' },
-      { to: '/terminos', label: 'Términos' },
-      { to: '/privacidad', label: 'Privacidad' },
-    ],
-  },
-]
+   El pie suma lo que arriba no va: publicar (que arriba es el botón
+   amarillo), favoritos adentro de Comprar, y los legales al final de Ayuda. */
+const linkGroups = NAV_GROUPS.filter((group) => group.items).map((group) => {
+  const links = visibleItems(group, false).map(({ to, label }) => ({ to, label }))
+  if (group.id === 'comprar') {
+    links.push({ to: '/favoritos', label: 'Favoritos' }, { to: '/vender', label: 'Publicar un vehículo' })
+  }
+  if (group.id === 'ayuda') links.push(...LEGAL_LINKS)
+  return { label: group.label, links }
+})
 
 export function Footer() {
   return (

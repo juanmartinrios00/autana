@@ -73,6 +73,15 @@ export const paths = {
   tag: <><path d="M3.5 3.5h8l9 9-8 8-9-9z" /><circle cx="8" cy="8" r="1.5" /></>,
   /* Bajó de precio: la línea cae y sigue cayendo. */
   trendDown: <><path d="m3 6.5 6.5 6.5 4-4 7.5 7.5" /><path d="M21 11v5.5h-5.5" /></>,
+  /* Comparar: dos flechas que van y vienen, lo de uno contra lo del otro. */
+  compare: <><path d="M4 8h15" /><path d="m15 4 4 4-4 4" /><path d="M20 16H5" /><path d="m9 12-4 4 4 4" /></>,
+  help: <><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.6v.6" /><path d="M12 16.5v1" /></>,
+  /* El blog es un diario doblado, no un libro: son notas, no manuales. */
+  news: <><path d="M3.5 4.5h13v15h-13z" /><path d="M16.5 8.5h4v11h-4" /><path d="M6.5 8h7" /><path d="M6.5 12h7" /><path d="M6.5 16h4" /></>,
+  users: <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.4-3.6 2.9-5.5 6.5-5.5s6.1 1.9 6.5 5.5" /><path d="M15 4.8a3.5 3.5 0 0 1 0 6.4" /><path d="M18 14.8c2 .7 3.2 2.4 3.5 5.2" /></>,
+  /* Una agencia: el toldo y la vidriera. */
+  store: <><path d="M3.5 9.5 5 4.5h14l1.5 5z" /><path d="M4.5 9.5v10h15v-10" /><path d="M9.5 19.5v-5h5v5" /></>,
+  mail: <><path d="M3 5.5h18v13H3z" /><path d="m3 6 9 7 9-7" /></>,
 } as const satisfies Record<string, ReactElement>
 
 export type IconName = keyof typeof paths

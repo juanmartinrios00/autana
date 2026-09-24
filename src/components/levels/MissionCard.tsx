@@ -7,7 +7,7 @@ import './MissionCard.css'
  * Una misión: el próximo logro, con el botón que lo resuelve.
  *
  * Va en amarillo claro y no en el amarillo de la marca: es una sugerencia, y
- * al lado de "Publicar vehículo", que sí es amarillo lleno, no puede competirle.
+ * al lado de "Publicar", que sí es amarillo lleno, no puede competirle.
  * El link a `/niveles` está para quien no sabe de qué logro le hablan.
  */
 export function MissionCard({ mission, className }: { mission: Mission; className?: string }) {

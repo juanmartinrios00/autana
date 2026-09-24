@@ -6,27 +6,9 @@ import { useUnseenNovedades } from '../../hooks/useUnseenNovedades'
 import { Wordmark } from '../brand/Logo'
 import { AccountMenu } from './AccountMenu'
 import { Icon } from '../ui/Icon'
+import { NavMenu } from './NavMenu'
+import { isInGroup, NAV_GROUPS, visibleItems } from './nav-links'
 import { NavSearch } from './NavSearch'
-
-/* "Vender" no está: el botón amarillo "Publicar vehículo" lleva al mismo lugar
-   y se ve en todos los tamaños. Su lugar lo toma el garage, que hasta acá era
-   invisible para quien no tenía cuenta.
-
-   `matches` es para marcar el link activo en más de una ruta: el garage vive
-   repartido entre la página que lo explica, el de cada persona, el buscador y
-   a quién seguís, y en cualquiera de esas uno está "en el garage". */
-const links: { to: string; label: string; matches?: string[] }[] = [
-  { to: '/autos', label: 'Comprar' },
-  { to: '/explorar', label: 'Explorar' },
-  { to: '/garage', label: 'Garage', matches: ['/garage', '/g/', '/gente', '/siguiendo'] },
-  { to: '/favoritos', label: 'Favoritos' },
-  { to: '/comparar', label: 'Comparar' },
-]
-
-function isActiveLink(link: (typeof links)[number], pathname: string, routerActive: boolean) {
-  if (!link.matches) return routerActive
-  return link.matches.some((prefix) => pathname === prefix || pathname.startsWith(prefix.endsWith('/') ? prefix : `${prefix}/`))
-}
 
 interface NavbarProps {
   /** `true` mientras la página está arriba de todo, sin scrollear. */
@@ -142,20 +124,8 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
           <Icon name={searchOpen ? 'close' : 'search'} size={20} />
         </button>
 
-        {/* Los links van en un grupo con hairlines entre medio, no sueltos. */}
-        <nav className="navbar__links" aria-label="Principal">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                isActiveLink(link, location.pathname, isActive) ? 'navbar__link is-active' : 'navbar__link'
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
+        {/* Cuatro entradas, tres con panel. Ver `nav-links`. */}
+        <NavMenu withSession={Boolean(session)} />
 
         <div className="navbar__actions">
           {session && (
@@ -187,12 +157,11 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
             </Link>
           )}
 
-          {/* En un celular angosto dice sólo "Publicar": ver `.navbar__cta-extra`. */}
+          {/* Dice "Publicar" y nada más, en todos los tamaños. Decía "Publicar
+              vehículo", y esa palabra de más eran 150 px que ahora se lleva el
+              buscador: el botón amarillo se entiende igual. */}
           <Link to="/vender" className="navbar__cta">
-            {/* El espacio es duro a propósito: el botón es flex, y un espacio
-                común al principio del span se descarta ---decía
-                "PUBLICARVEHÍCULO"---. */}
-            Publicar<span className="navbar__cta-extra">&nbsp;vehículo</span>
+            Publicar
           </Link>
         </div>
 
@@ -201,23 +170,56 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
           className={menuOpen ? 'navbar__mobile is-open' : 'navbar__mobile'}
         >
           <nav className="navbar__mobile-links" aria-label="Principal para celulares">
-            {links.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                onClick={() => setMenuOpen(false)}
-                className={({ isActive }) =>
-                  isActiveLink(link, location.pathname, isActive)
-                    ? 'navbar__mobile-link is-active'
-                    : 'navbar__mobile-link'
-                }
-              >
-                {link.label}
-                <Icon name="arrowRight" size={18} />
-              </NavLink>
-            ))}
+            {/* Los mismos grupos que la barra de escritorio, uno abajo del
+                otro con su rótulo: en el celular no hay paneles que abrir, y
+                un acordeón adentro de un menú es un clic de más. */}
+            {NAV_GROUPS.map((group) => {
+              const items = group.items ? visibleItems(group, Boolean(session)) : null
+              if (!items) {
+                return (
+                  <NavLink
+                    key={group.id}
+                    to={group.to!}
+                    onClick={() => setMenuOpen(false)}
+                    className={() =>
+                      isInGroup(group, location.pathname)
+                        ? 'navbar__mobile-link navbar__mobile-link--item navbar__mobile-link--solo is-active'
+                        : 'navbar__mobile-link navbar__mobile-link--item navbar__mobile-link--solo'
+                    }
+                  >
+                    <span className="navbar__mobile-item">
+                      {group.icon && <Icon name={group.icon} size={17} />}
+                      {group.label}
+                    </span>
+                  </NavLink>
+                )
+              }
+              return (
+                <div key={group.id} className="navbar__mobile-group">
+                  <span className="navbar__mobile-label mono">{group.label}</span>
+                  {items.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setMenuOpen(false)}
+                      className={
+                        location.pathname + location.search === item.to
+                          ? 'navbar__mobile-link navbar__mobile-link--item is-active'
+                          : 'navbar__mobile-link navbar__mobile-link--item'
+                      }
+                    >
+                      <span className="navbar__mobile-item">
+                        <Icon name={item.icon} size={17} />
+                        {item.label}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )
+            })}
             {session ? (
               <>
+                <span className="navbar__mobile-label mono">Tu cuenta</span>
                 <Link to="/perfil" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
                   Mi perfil <Icon name="arrowRight" size={18} />
                 </Link>
@@ -244,16 +246,6 @@ export function Navbar({ atTop, overHero }: NavbarProps) {
                 >
                   {unseen > 0 ? `Novedades (${unseen})` : 'Novedades'}{' '}
                   <Icon name="arrowRight" size={18} />
-                </Link>
-                <Link to="/gente" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
-                  Buscar personas <Icon name="arrowRight" size={18} />
-                </Link>
-                <Link
-                  to="/siguiendo"
-                  className="navbar__mobile-link"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Siguiendo <Icon name="arrowRight" size={18} />
                 </Link>
                 <Link
                   to="/ajustes"

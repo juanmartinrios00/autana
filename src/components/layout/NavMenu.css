@@ -1,0 +1,179 @@
+/* ==========================================================================
+   Los paneles de la navbar en escritorio
+   ========================================================================== */
+
+.navmenu {
+  position: relative;
+}
+
+.navmenu__trigger {
+  gap: 6px;
+  cursor: pointer;
+}
+
+.navmenu__chevron {
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.navmenu__trigger.is-open .navmenu__chevron {
+  transform: rotate(180deg);
+}
+
+/* El subrayado del link, pero sin llegar abajo de la flecha: marca la palabra. */
+.navmenu__trigger::after {
+  right: 28px;
+}
+
+/* El último panel se abre hacia la izquierda: pegado a la derecha de la
+   barra, abierto hacia el otro lado se salía de la pantalla. */
+.navmenu:last-child .navmenu__panel {
+  right: 0;
+  left: auto;
+}
+
+/* El panel cuelga del borde de la barra, no del botón: el `top` suma la mitad
+   de lo que la barra mide de más que el botón. Siempre en papel y tinta, como
+   las sugerencias del buscador, también si la barra está en negro o flotando
+   sobre el hero. */
+.navmenu__panel {
+  position: absolute;
+  top: calc(100% + (var(--nav-h) - 38px) / 2);
+  left: 0;
+  z-index: 55;
+  width: 340px;
+  padding: var(--sp-4) var(--sp-3) var(--sp-3);
+  border-radius: var(--r-xl);
+  background: #fff;
+  color: var(--ink);
+  box-shadow: var(--sh-overlay);
+  animation: navmenu-in var(--dur-med) var(--ease);
+}
+
+.navmenu__panel--wide {
+  width: 560px;
+}
+
+.navmenu__panel[hidden] {
+  display: none;
+}
+
+/* El puente: el espacio entre el botón y el panel también es "el panel". Sin
+   esto, bajar el mouse cruzaba un hueco de veinte píxeles donde no había nada
+   y la demora de cierre era lo único que lo sostenía. */
+.navmenu__panel::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: calc((var(--nav-h) - 38px) / 2);
+}
+
+@keyframes navmenu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navmenu__panel {
+    animation: none;
+  }
+}
+
+.navmenu__kicker {
+  margin: 0 0 var(--sp-2);
+  padding-inline: var(--sp-3);
+  font-size: 0.66rem;
+  letter-spacing: var(--ls-over);
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+
+.navmenu__items {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navmenu__panel--wide .navmenu__items {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.navmenu__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  color: var(--ink);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.navmenu__item:hover,
+.navmenu__item:focus-visible {
+  background: var(--surface);
+}
+
+/* El mismo cuadrado gris de los datos de la ficha: un solo sistema de íconos
+   con fondo en todo el sitio. Al pasar, el cuadrado se vuelve amarillo: es lo
+   que se está por tocar. */
+.navmenu__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink-2);
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.navmenu__item:hover .navmenu__icon,
+.navmenu__item:focus-visible .navmenu__icon {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.navmenu__text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.navmenu__label {
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.navmenu__hint {
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+.navmenu__extra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.navmenu__extra:hover {
+  background: var(--accent-tint);
+}
