@@ -4,6 +4,15 @@ import { BRAND, pageTitle } from '../src/config/brand'
 import { findPost, postsByDate } from '../src/content/blog/posts'
 import { SUPABASE_PUBLIC } from '../src/config/supabase-public'
 import { ENTRADAS } from '../src/config/entradas'
+import {
+  BLOG_URL,
+  CANONICAL_HOST,
+  DISALLOWED,
+  GARAGE_URL,
+  LISTING_URL,
+  RUTAS_VIEJAS,
+  STATIC_PAGES,
+} from './rutas'
 
 /**
  * Previews de los avisos al compartir el link.
@@ -28,20 +37,7 @@ interface Env {
   ASSETS: Fetcher
 }
 
-/**
- * El slug se interpola en un filtro de PostgREST, así que se acota antes de
- * usarlo. Lo que no entre en este patrón no es un slug nuestro: los generamos
- * con letras, números y guiones.
- */
-export const LISTING_URL = /^\/autos\/([A-Za-z0-9-]{1,120})\/?$/
-export const BLOG_URL = /^\/blog\/([a-z0-9-]{1,120})\/?$/
 
-/**
- * El garage se direcciona por el uuid del usuario, así que se exige la forma
- * exacta de un uuid. Mismo motivo que el slug: se interpola en un filtro.
- */
-export const GARAGE_URL =
-  /^\/g\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\/?$/
 
 interface ListingRow {
   slug: string
@@ -52,6 +48,8 @@ interface ListingRow {
   price: number
   currency: string
   mileage: number
+  /** `new`, `used` o `certified`. Para los datos estructurados. */
+  condition: string
   description: string
   city: string
   province: string
@@ -59,7 +57,7 @@ interface ListingRow {
 }
 
 const COLUMNS =
-  'slug,make,model,trim,year,price,currency,mileage,description,city,province,listing_images(path,position)'
+  'slug,make,model,trim,year,price,currency,mileage,condition,description,city,province,listing_images(path,position)'
 
 async function fetchListing(slug: string): Promise<ListingRow | null> {
   const params = new URLSearchParams({
@@ -301,45 +299,7 @@ function appendToHead(html: string): HTMLRewriterElementContentHandlers {
    dominio, que puede dejar de ser el de workers.dev.
 --------------------------------------------------------------------------- */
 
-/**
- * Lo que no va al buscador: lo que es de cada usuario o parte de un flujo. No
- * aporta nada en un buscador y gasta presupuesto de rastreo.
- *
- * Se exporta junto con `STATIC_PAGES` para que un test pueda cruzarlas. Las dos
- * listas dicen cosas opuestas sobre las mismas URLs, y una pagina que caiga en
- * las dos es una contradiccion que Google resuelve solo y a su criterio: el
- * sitemap la ofrece y el robots la prohibe.
- */
-export const DISALLOWED = [
-  '/entrar',
-  '/vender',
-  '/perfil',
-  '/mis-avisos',
-  '/favoritos',
-  '/ajustes',
-  '/admin',
-  '/comparar',
-  '/recuperar',
-  '/gente',
-  '/siguiendo',
-  '/garage/mio',
-  '/novedades',
-]
 
-/** Las publicas con contenido propio, que van fijas al sitemap. */
-export const STATIC_PAGES = [
-  '/',
-  '/autos',
-  '/explorar',
-  '/garage',
-  '/blog',
-  '/ayuda',
-  '/agencias',
-  '/niveles',
-  '/contacto',
-  '/terminos',
-  '/privacidad',
-]
 
 function robots(origin: string): Response {
   /* El garage publico (`/g/`) si se indexa, que para eso se comparte — salvo el
@@ -492,6 +452,69 @@ interface Preview {
   canonical: string
   /** Que los buscadores no lo indexen. El preview al compartir va igual. */
   noindex?: boolean
+  /** Datos estructurados, ya en JSON. Ver `listingJsonLd`. */
+  jsonLd?: string
+}
+
+/**
+ * Los datos del aviso en el formato que lee Google (schema.org), para que en el
+ * resultado de búsqueda aparezcan el precio, el año y los kilómetros en vez de
+ * un renglón de texto.
+ *
+ * Es la misma información que ya está en la pantalla. No es una promesa: si el
+ * aviso se pausa o se vende, el Worker deja de servir estas etiquetas ---
+ * `fetchListing` sólo trae los activos--- y Google lo saca en la próxima
+ * pasada.
+ *
+ * `Car` es un tipo de `Product`, así que la oferta va como en cualquier
+ * producto: precio, moneda y disponibilidad.
+ */
+export function listingJsonLd(row: ListingRow, canonical: string, image: string | null): string {
+  const condiciones: Record<string, string> = {
+    new: 'https://schema.org/NewCondition',
+    used: 'https://schema.org/UsedCondition',
+    certified: 'https://schema.org/RefurbishedCondition',
+  }
+
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'Car',
+    name: buildTitle(row).replace(` | ${BRAND}`, ''),
+    description: buildDescription(row),
+    url: canonical,
+    ...(image ? { image: [image] } : {}),
+    brand: { '@type': 'Brand', name: row.make },
+    model: row.model,
+    vehicleModelDate: String(row.year),
+    mileageFromOdometer: {
+      '@type': 'QuantitativeValue',
+      value: row.mileage,
+      /* El código de kilómetro en la lista de unidades que usa schema.org. */
+      unitCode: 'KMT',
+    },
+    itemCondition: condiciones[row.condition] ?? condiciones.used,
+    offers: {
+      '@type': 'Offer',
+      price: row.price,
+      priceCurrency: row.currency,
+      availability: 'https://schema.org/InStock',
+      itemCondition: condiciones[row.condition] ?? condiciones.used,
+      url: canonical,
+      availableAtOrFrom: {
+        '@type': 'Place',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: row.city,
+          addressRegion: row.province,
+          addressCountry: 'AR',
+        },
+      },
+    },
+  }
+
+  /* Los `<` escapados: un `</script>` adentro de la descripción cerraría la
+     etiqueta antes de tiempo y el resto del JSON se leería como HTML. */
+  return JSON.stringify(data).replaceAll('<', '\\u003c')
 }
 
 /**
@@ -519,6 +542,7 @@ function renderPreview(assetResponse: Response, preview: Preview): Response {
        El preview al compartir se arma igual: apagar Google no es apagar
        WhatsApp, y el link sigue siendo para mandarlo. */
     noindex ? `<meta name="robots" content="noindex">` : '',
+    preview.jsonLd ? `<script type="application/ld+json">${preview.jsonLd}</script>` : '',
   ]
     .filter(Boolean)
     .join('')
@@ -628,12 +652,17 @@ async function renderListing(request: Request, env: Env, slug: string): Promise<
 
   const title = buildTitle(row)
   const url = new URL(request.url)
+  const canonical = `${url.origin}/autos/${row.slug}`
+  const cover = coverImage(row)
 
   return renderPreview(assetResponse, {
     title,
     description: buildDescription(row),
-    image: coverImage(row) ?? homeImage(url.origin),
-    canonical: `${url.origin}/autos/${row.slug}`,
+    image: cover ?? homeImage(url.origin),
+    canonical,
+    /* Con la lámina genérica no: es la marca, no el auto, y declararla como
+       foto del vehículo sería decirle a Google algo que no es. */
+    jsonLd: listingJsonLd(row, canonical, cover),
   })
 }
 
@@ -707,26 +736,6 @@ function renderPost(assetResponse: Response, request: Request, slug: string): Re
   })
 }
 
-/**
- * El dominio definitivo del sitio, o `null` mientras no haya uno.
- *
- * Un Worker contesta en todos los dominios que tenga atados, así que apenas
- * `auteando.com` apunte acá el sitio entero va a existir dos veces: en el
- * dominio propio y en el de `workers.dev`. Para Google eso es el mismo
- * contenido en dos lugares y tiene que elegir cuál indexar; elige mal más o
- * menos la mitad de las veces, y ahí el resultado de búsqueda muestra una
- * dirección que nadie quiere repartir.
- *
- * Además todo lo que arma una URL absoluta sale del host del pedido ---el
- * canonical, el `og:url`, el sitemap y la dirección que está adentro del
- * robots--- así que sin esto cada uno diría el dominio por el que entraron.
- *
- * Prendido el 20/9/2026, recién después de atar `auteando.com` al Worker en
- * Cloudflare y de comprobar que servía el sitio con su certificado. Ese orden
- * es el único que hay: prendido antes de que el dominio resuelva, el sitio se
- * redirige a un lugar que todavía no existe y queda caído para todo el mundo.
- */
-export const CANONICAL_HOST: string | null = 'auteando.com'
 
 /**
  * Manda a `auteando.com` a quien haya entrado por el dominio de `workers.dev`.
@@ -750,36 +759,6 @@ export function canonicalRedirect(url: URL, request: Request): Response | null {
   return Response.redirect(destino.toString(), 301)
 }
 
-/**
- * Las rutas de antes, cuando los caminos estaban en ingles.
- *
- * El sitio es para Argentina y las pantallas ya se llamaban mitad y mitad
- * ---`/gente` y `/novedades` en castellano, `/cars` y `/sell` en ingles--- asi
- * que se unificaron. Esto existe para que nada de lo que ya este dando vueltas
- * se caiga: un link mandado por WhatsApp, un favorito del navegador, lo que
- * Google haya alcanzado a indexar.
- *
- * Ninguna de las nuevas empieza con una de las viejas, asi que no hay forma de
- * entrar en un bucle. Hay un test que lo sostiene, porque es la clase de cosa
- * que se rompe agregando una ruta un año despues.
- */
-export const RUTAS_VIEJAS: Record<string, string> = {
-  '/cars': '/autos',
-  '/sell': '/vender',
-  '/favorites': '/favoritos',
-  '/my-listings': '/mis-avisos',
-  '/settings': '/ajustes',
-  '/compare': '/comparar',
-  '/login': '/entrar',
-  '/reset': '/recuperar',
-  '/levels': '/niveles',
-  '/dealers': '/agencias',
-  '/help': '/ayuda',
-  '/contact': '/contacto',
-  '/terms': '/terminos',
-  '/privacy': '/privacidad',
-  '/profile': '/perfil',
-}
 
 /**
  * Manda una ruta vieja a la nueva, conservando lo que venga despues.

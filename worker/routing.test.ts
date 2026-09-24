@@ -6,20 +6,25 @@ import { provinces } from '../src/data/makes'
 import { LIMITS } from '../src/lib/limits'
 import {
   attr,
-  BLOG_URL,
   buildDescription,
   buildTitle,
-  CANONICAL_HOST,
   canonicalFor,
   canonicalRedirect,
+  legacyRedirect,
+  listingJsonLd,
+  xmlEscape,
+} from './index'
+/* Las constantes viven aparte: el archivo de entrada del Worker sólo puede
+   exportar funciones. Está explicado arriba de `rutas.ts`. */
+import {
+  BLOG_URL,
+  CANONICAL_HOST,
   DISALLOWED,
   GARAGE_URL,
-  legacyRedirect,
   LISTING_URL,
   RUTAS_VIEJAS,
   STATIC_PAGES,
-  xmlEscape,
-} from './index'
+} from './rutas'
 
 /**
  * Lo que el worker decide antes de tocar nada: qué URL es un aviso, qué texto
@@ -39,6 +44,7 @@ const row = {
   price: 32_900,
   currency: 'USD',
   mileage: 34_200,
+  condition: 'used',
   description: 'Impecable, único dueño, service al día.',
   city: 'Rosario',
   province: 'Santa Fe',
@@ -95,6 +101,70 @@ describe('las URL que el worker reescribe', () => {
     expect('/blog/como-comprar-un-usado'.match(BLOG_URL)?.[1]).toBe('como-comprar-un-usado')
     expect('/blog'.match(BLOG_URL)).toBeNull()
     expect('/blog/Como-Comprar'.match(BLOG_URL)).toBeNull()
+  })
+})
+
+/**
+ * Los datos estructurados del aviso: lo que hace que en Google aparezca con
+ * precio, año y kilómetros en vez de un renglón de texto.
+ *
+ * Se prueba porque el error es mudo en los dos sentidos: un JSON mal armado lo
+ * descarta el buscador sin avisar, y un dato equivocado ---un precio en la
+ * moneda que no es--- se publica igual y lo ve todo el mundo.
+ */
+describe('listingJsonLd', () => {
+  const canonical = 'https://auteando.com/autos/bmw-320i-2022'
+  const parse = (r = row, image: string | null = null) =>
+    JSON.parse(listingJsonLd(r, canonical, image).replaceAll('\\u003c', '<'))
+
+  it('dice qué auto es, con su precio y su moneda', () => {
+    const data = parse()
+    expect(data['@type']).toBe('Car')
+    expect(data.brand.name).toBe('BMW')
+    expect(data.model).toBe('320i')
+    expect(data.vehicleModelDate).toBe('2022')
+    expect(data.offers).toMatchObject({ price: 32_900, priceCurrency: 'USD', url: canonical })
+  })
+
+  it('los kilómetros con su unidad, que es lo que los hace kilómetros', () => {
+    expect(parse().mileageFromOdometer).toEqual({
+      '@type': 'QuantitativeValue',
+      value: 34_200,
+      unitCode: 'KMT',
+    })
+  })
+
+  it('la condición del aviso, y usado si viniera algo raro', () => {
+    expect(parse({ ...row, condition: 'new' }).itemCondition).toBe('https://schema.org/NewCondition')
+    expect(parse({ ...row, condition: 'used' }).itemCondition).toBe('https://schema.org/UsedCondition')
+    expect(parse({ ...row, condition: 'vaya a saber' }).itemCondition).toBe(
+      'https://schema.org/UsedCondition',
+    )
+  })
+
+  /* Sin foto propia no se declara ninguna: la lámina genérica es la marca, no
+     el auto. */
+  it('la foto sólo si es del auto', () => {
+    expect(parse(row, 'https://auteando.com/foto.webp').image).toEqual([
+      'https://auteando.com/foto.webp',
+    ])
+    expect(parse().image).toBeUndefined()
+  })
+
+  /**
+   * El JSON va adentro de un `<script>`: si alguien escribe `</script>` en la
+   * descripción de su aviso y sale tal cual, la etiqueta se cierra ahí y el
+   * resto del JSON lo lee el navegador como HTML. Es una forma de meter
+   * cualquier cosa en la página desde un formulario.
+   */
+  it('no deja cerrar la etiqueta desde la descripción de un aviso', () => {
+    const malicioso = { ...row, description: '</script><img src=x onerror=alert(1)>' }
+    const salida = listingJsonLd(malicioso, canonical, null)
+    expect(salida).not.toContain('</script>')
+    expect(salida).not.toContain('<img')
+    expect(salida).toContain('\\u003c')
+    /* Y sigue siendo JSON válido después de desescapar. */
+    expect(JSON.parse(salida.replaceAll('\\u003c', '<')).description).toContain('</script>')
   })
 })
 
