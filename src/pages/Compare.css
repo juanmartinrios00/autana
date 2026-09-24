@@ -38,6 +38,11 @@
   min-width: 620px;
   border-collapse: separate;
   border-spacing: 0;
+  /* Las columnas de los autos, todas del mismo ancho. Con el reparto
+     automático la tabla le daba más lugar al que tuviera el título más largo:
+     un "Ranger Raptor 3.0 V6 Ecoboost Biturbo Cabina Doble" se comía media
+     pantalla y la comparación dejaba de ser lado a lado. */
+  table-layout: fixed;
 }
 
 /* --- Encabezado: la card de cada auto ------------------------------------ */
@@ -49,7 +54,7 @@
 .compare__col {
   padding: 0 var(--sp-2) var(--sp-5);
   text-align: left;
-  vertical-align: bottom;
+  vertical-align: top;
 }
 
 .compare__card {
@@ -60,8 +65,8 @@
   gap: var(--sp-3);
   padding: var(--sp-3);
   border-radius: var(--r-lg);
-  background: var(--canvas);
-  box-shadow: var(--sh-flat);
+  background: #fff;
+  box-shadow: var(--sh-card);
 }
 
 .compare__media {
@@ -73,6 +78,10 @@
 }
 
 .compare__name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   font-family: var(--font-display);
   font-size: 1.02rem;
   font-weight: 600;
@@ -132,6 +141,11 @@
    iguales sería inventar una diferencia. */
 .compare__cell.is-best {
   position: relative;
+  /* El fondo amarillo va en un ::before con z-index negativo, para quedar
+     detrás del texto. Sin una capa propia en la celda, ese negativo lo
+     mandaba detrás del fondo de la página y el amarillo no se veía nunca:
+     la pantalla decía "lo mejor va en amarillo" y sólo había negrita. */
+  isolation: isolate;
   font-weight: 700;
 }
 
