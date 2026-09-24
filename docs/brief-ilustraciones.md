@@ -144,7 +144,7 @@ Estas piezas son código más que dibujo, y ya están hechas o las hacemos acá:
   interfaz. Si falta uno, se agrega en `src/components/ui/icon-paths.tsx`
   siguiendo a los otros.
 - **Las obleas de los logros** (`src/components/levels/Oblea.tsx`).
-- **Los dibujos de los encabezados** (la cochera y los mojones).
+- **Los dibujos de los encabezados** (la cochera, los mojones y la agencia).
 
 ---
 

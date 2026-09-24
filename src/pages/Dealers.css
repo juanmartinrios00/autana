@@ -51,8 +51,8 @@
 .dpoint {
   padding: var(--sp-5);
   border-radius: var(--r-xl);
-  background: var(--canvas);
-  box-shadow: var(--sh-flat);
+  background: #fff;
+  box-shadow: var(--sh-card);
 }
 
 .dpoint__icon {
@@ -142,4 +142,31 @@
 .dealers__cta {
   margin-top: var(--sp-8);
   text-align: center;
+}
+
+/* El dibujo de la agencia, a la derecha. Sólo donde hay lugar: en el celular
+   empujaría el botón de crear la cuenta debajo del pliegue. */
+.dealers__head-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-7);
+}
+
+.dealers__art {
+  display: none;
+  width: 100%;
+  max-width: 440px;
+  justify-self: end;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+@media (min-width: 960px) {
+  .dealers__head-inner {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+
+  .dealers__art {
+    display: block;
+  }
 }

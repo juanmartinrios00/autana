@@ -1,4 +1,5 @@
 import { CocheraPlano } from '../components/garage/CocheraPlano'
+import { AgenciaDibujo } from '../components/home/AgenciaDibujo'
 import { GarageScene } from '../components/garage/scenes'
 import { Mojones } from '../components/levels/Mojones'
 import { Oblea } from '../components/levels/Oblea'
@@ -128,6 +129,10 @@ export function Sistema() {
           <figure>
             <Mojones />
             <figcaption>Niveles: un mojón por nivel, en el km de los logros que pide</figcaption>
+          </figure>
+          <figure>
+            <AgenciaDibujo />
+            <figcaption>Concesionarias: la agencia con sus banderines</figcaption>
           </figure>
         </div>
       </section>

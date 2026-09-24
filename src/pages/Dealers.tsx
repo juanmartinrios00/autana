@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
+import { AgenciaDibujo } from '../components/home/AgenciaDibujo'
 import { Icon } from '../components/ui/Icon'
 import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
@@ -25,22 +26,22 @@ import './Dealers.css'
 
 const PUNTOS = [
   {
-    icon: 'list' as const,
+    icon: 'car' as const,
     title: '25 publicaciones activas',
     text: 'Contra 5 de un particular. Los vendidos no ocupan lugar: marcás uno como vendido y liberás el espacio en el acto.',
   },
   {
-    icon: 'search' as const,
+    icon: 'filter' as const,
     title: 'Filtro propio',
     text: 'Quien busca sólo concesionarias te encuentra. Es un filtro de la búsqueda, no un destacado que se paga.',
   },
   {
-    icon: 'car' as const,
+    icon: 'eye' as const,
     title: 'Lugar en la portada',
     text: 'Las concesionarias con avisos activos salen en la home, ordenadas por cuántos autos tienen publicados.',
   },
   {
-    icon: 'check' as const,
+    icon: 'shield' as const,
     title: 'El sello de verificada',
     text: 'Lo ponemos a mano, de a una, después de confirmar que la agencia existe. Por eso significa algo cuando aparece.',
   },
@@ -77,27 +78,30 @@ export function Dealers() {
     <>
       <section className="dealers__head hero-bleed">
         <div className="page dealers__head-inner">
-          <span className="over over--invert">Para concesionarias</span>
-          <h1 className="dealers__title">Tu stock, sin comisión y sin intermediarios.</h1>
-          <p className="dealers__lead">
-            El comprador te escribe directo por WhatsApp. No cobramos por publicar, ni
-            por vender, ni por aparecer más arriba — no hay posiciones que se paguen.
-          </p>
+          <div className="dealers__head-text">
+            <span className="over over--invert">Para concesionarias</span>
+            <h1 className="dealers__title">Tu stock, sin comisión y sin intermediarios.</h1>
+            <p className="dealers__lead">
+              El comprador te escribe directo por WhatsApp. No cobramos por publicar, ni
+              por vender, ni por aparecer más arriba — no hay posiciones que se paguen.
+            </p>
 
-          <div className="dealers__actions">
-            {session ? (
-              <Link to="/ajustes">
-                <Button variant="yellow">Cambiar mi perfil a concesionaria</Button>
+            <div className="dealers__actions">
+              {session ? (
+                <Link to="/ajustes">
+                  <Button variant="yellow">Cambiar mi perfil a concesionaria</Button>
+                </Link>
+              ) : (
+                <Link to="/entrar">
+                  <Button variant="yellow">Crear la cuenta de la agencia</Button>
+                </Link>
+              )}
+              <Link to="/autos?sellerType=dealer" className="dealers__secondary">
+                Ver las que ya publican
               </Link>
-            ) : (
-              <Link to="/entrar">
-                <Button variant="yellow">Crear la cuenta de la agencia</Button>
-              </Link>
-            )}
-            <Link to="/autos?sellerType=dealer" className="dealers__secondary">
-              Ver las que ya publican
-            </Link>
+            </div>
           </div>
+          <AgenciaDibujo className="dealers__art" />
         </div>
       </section>
 
