@@ -2,6 +2,7 @@ import { PUBLISHED_STATUSES, type AchievementId, type LevelInput } from './level
 import { computeTrust, type TrustSignal } from './trust'
 import { applyVehicleFilters } from './search-query'
 import { photoUrl, requireSupabase } from './supabase'
+import { limpiarParaBuscar } from './referencia'
 import type {
   Currency,
   GarageSlot,
@@ -375,6 +376,44 @@ export async function getSimilarVehicles(vehicle: Vehicle, limit = 3): Promise<V
     .slice(0, limit)
 
   return withSellerTrust(similar)
+}
+
+/**
+ * Los precios de los autos parecidos a uno que se está publicando: misma
+ * marca y modelo (sin distinguir mayúsculas, porque en el formulario son texto
+ * libre), dos años para cada lado y la misma moneda. Para el precio de
+ * referencia (`lib/referencia`).
+ *
+ * Sólo trae el precio: no hace falta más, y son hasta doscientas filas.
+ */
+export async function getPriceReference(input: {
+  make: string
+  model: string
+  year: number
+  currency: Currency
+  /** Al editar, el aviso propio no cuenta como referencia de sí mismo. */
+  excludeId?: string | null
+}): Promise<number[]> {
+  const make = limpiarParaBuscar(input.make)
+  const model = limpiarParaBuscar(input.model)
+  if (!make || !model || !input.year) return []
+
+  const client = requireSupabase()
+  let query = client
+    .from('listings')
+    .select('price')
+    .eq('status', 'active')
+    .ilike('make', make)
+    .ilike('model', model)
+    .eq('currency', input.currency)
+    .gte('year', input.year - 2)
+    .lte('year', input.year + 2)
+    .limit(200)
+  if (input.excludeId) query = query.neq('id', input.excludeId)
+
+  const { data, error } = await query
+  if (error) throw error
+  return (data as { price: number }[]).map((row) => row.price)
 }
 
 /**

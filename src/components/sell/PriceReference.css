@@ -1,0 +1,36 @@
+/* El precio de referencia, abajo del campo de precio. Un recuadro callado:
+   ayuda a decidir, no le compite al formulario. */
+.pref {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+
+.pref__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pref__range strong {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.pref__note {
+  margin-top: var(--sp-1);
+}
+
+.pref__fine {
+  margin-top: var(--sp-1);
+  font-size: 0.78rem;
+  color: var(--ink-4);
+}

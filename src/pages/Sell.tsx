@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { MissionCard } from '../components/levels/MissionCard'
 import { ShareButton } from '../components/vehicle/ShareButton'
 import { PhotoUploader, type Photo } from '../components/sell/PhotoUploader'
+import { PriceReference } from '../components/sell/PriceReference'
 import { AmountInput } from '../components/ui/AmountInput'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -714,6 +715,17 @@ export function Sell() {
                   </button>
                 </div>
               </div>
+
+              {/* Cuánto piden por autos parecidos: la nota del blog sobre
+                  cómo ponerle precio, hecha herramienta. */}
+              <PriceReference
+                make={draft.make}
+                model={draft.model}
+                year={Number(draft.year)}
+                currency={draft.currency}
+                price={Number(draft.price)}
+                excludeId={listingId}
+              />
 
               <div className="sell__pair">
                 <Select
