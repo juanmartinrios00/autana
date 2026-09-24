@@ -650,11 +650,48 @@ button.navbar__link {
   .navbar__actions {
     margin-left: auto;
   }
+
+  /* Con sesión, el círculo de la cuenta no entra: con él, "Publicar" bajaba a
+     una segunda fila y el logo quedaba cortado arriba. Todo lo que tiene su
+     menú ---perfil, avisos, garage, ajustes, salir--- ya está en el de la
+     hamburguesa. */
+  .navbar__actions .account {
+    display: none;
+  }
 }
 
 @media (max-width: 380px) {
   .navbar__logo {
     height: 14px;
+  }
+}
+
+/* Con sesión suma la campanita, y a 360 ---el ancho de muchos Android--- la
+   fila se pasaba por 37 px: "Publicar" bajaba a una segunda fila y el logo
+   quedaba cortado arriba. Se gana achicando los botones redondos y el aire
+   entre ellos, sin sacar nada. */
+@media (max-width: 400px) {
+  .navbar__inner,
+  .navbar__actions {
+    gap: 6px;
+  }
+
+  .navbar__burger,
+  .navbar__search-toggle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .navbar__bell {
+    width: 32px;
+  }
+
+  .navbar__cta {
+    padding-inline: 12px;
+  }
+
+  .navbar__logo {
+    height: 13px;
   }
 }
 
