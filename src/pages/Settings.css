@@ -33,8 +33,8 @@
   gap: var(--sp-4);
   padding: var(--sp-5);
   border-radius: var(--r-xl);
-  background: var(--canvas);
-  box-shadow: var(--sh-flat);
+  background: #fff;
+  box-shadow: var(--sh-card);
 }
 
 .settings__section-title {

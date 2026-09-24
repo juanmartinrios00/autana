@@ -21,8 +21,9 @@
   flex-direction: column;
   overflow: hidden;
   border-radius: var(--r-xl);
-  background: var(--canvas);
-  box-shadow: var(--sh-flat);
+  /* Blanca y con sombra, como las cajas de los avisos: sin contorno. */
+  background: #fff;
+  box-shadow: var(--sh-card);
 }
 
 .gslot--empty {

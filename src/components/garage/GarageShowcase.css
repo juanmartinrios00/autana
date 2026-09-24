@@ -23,8 +23,10 @@
   aspect-ratio: 320 / 200;
   max-width: 100%;
   margin-bottom: var(--sp-2);
-  border: 1px solid var(--line);
-  background: var(--canvas);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--sh-card);
   color: var(--ink);
 }
 
