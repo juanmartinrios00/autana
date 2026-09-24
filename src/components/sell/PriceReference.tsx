@@ -14,6 +14,8 @@ interface PriceReferenceProps {
   /** Lo que lleva cargado en el campo, para decir dónde cae. */
   price: number
   excludeId?: string | null
+  /** Quién lo lee: quien publica o quien está mirando el aviso. */
+  mode?: 'sell' | 'buy'
 }
 
 /**
@@ -24,7 +26,15 @@ interface PriceReferenceProps {
  * autos, no muestra nada: es una ayuda, y un cartel de error acá distraería
  * del formulario.
  */
-export function PriceReference({ make, model, year, currency, price, excludeId }: PriceReferenceProps) {
+export function PriceReference({
+  make,
+  model,
+  year,
+  currency,
+  price,
+  excludeId,
+  mode = 'sell',
+}: PriceReferenceProps) {
   /* La búsqueda entera en un texto: marca y modelo limpios y en minúscula (la
      base las compara sin distinguir mayúsculas), año, moneda y el aviso que no
      cuenta. El efecto depende sólo de esto, así que tipear un espacio o cambiar
@@ -67,25 +77,50 @@ export function PriceReference({ make, model, year, currency, price, excludeId }
     <div className="pref" role="status">
       <p className="pref__title">
         <Icon name="tag" size={15} />
-        Hay {ref.count} {nombre} de {year - 2} a {hasta} publicados
+        {mode === 'sell'
+          ? `Hay ${ref.count} ${nombre} de ${year - 2} a ${hasta} publicados`
+          : `Comparado con ${ref.count} ${nombre} de ${year - 2} a ${hasta} publicados`}
       </p>
       <p className="pref__range">
         La mitad pide entre <strong>{formatPrice(ref.low, currency)}</strong> y{' '}
         <strong>{formatPrice(ref.high, currency)}</strong>.
       </p>
-      {ref.position === 'encima' && (
-        <p className="pref__note">
-          Tu precio está por encima de casi todos. Si tiene algo que lo justifique (pocos
-          kilómetros, un service recién hecho), contalo en la descripción.
-        </p>
+      {mode === 'sell' ? (
+        <>
+          {ref.position === 'encima' && (
+            <p className="pref__note">
+              Tu precio está por encima de casi todos. Si tiene algo que lo justifique (pocos
+              kilómetros, un service recién hecho), contalo en la descripción.
+            </p>
+          )}
+          {ref.position === 'debajo' && (
+            <p className="pref__note">
+              Tu precio está bastante por debajo. Si es a propósito, vas a recibir consultas
+              rápido; si no, revisá que no falte un cero.
+            </p>
+          )}
+          {ref.position === 'dentro' && (
+            <p className="pref__note">Tu precio está dentro de lo que se pide.</p>
+          )}
+        </>
+      ) : (
+        /* Para quien compra, el hecho y nada más: ni "oferta" ni "caro". Un
+           precio abajo del resto puede ser una oportunidad o un auto con
+           algo; eso lo decide quien lo va a ver. */
+        <>
+          {ref.position === 'encima' && (
+            <p className="pref__note">Este pide más que casi todos los parecidos.</p>
+          )}
+          {ref.position === 'debajo' && (
+            <p className="pref__note">
+              Este pide bastante menos que los parecidos. Vale la pena preguntar por qué.
+            </p>
+          )}
+          {ref.position === 'dentro' && (
+            <p className="pref__note">Este está dentro de lo que se pide.</p>
+          )}
+        </>
       )}
-      {ref.position === 'debajo' && (
-        <p className="pref__note">
-          Tu precio está bastante por debajo. Si es a propósito, vas a recibir consultas rápido;
-          si no, revisá que no falte un cero.
-        </p>
-      )}
-      {ref.position === 'dentro' && <p className="pref__note">Tu precio está dentro de lo que se pide.</p>}
       <p className="pref__fine">
         Es lo que se pide, no lo que se paga: sirve para ubicarte, no para fijar el precio.
       </p>

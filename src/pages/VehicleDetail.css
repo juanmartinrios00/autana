@@ -45,6 +45,12 @@
   gap: var(--sp-4);
 }
 
+/* La del precio de referencia: sin autos con qué comparar queda vacía, y una
+   sección vacía sumaría un hueco entre las características y la descripción. */
+.detail__section--tight:empty {
+  display: none;
+}
+
 .detail__heading {
   font-size: 1.38rem;
 }

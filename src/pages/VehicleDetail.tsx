@@ -13,6 +13,7 @@ import { VehicleGrid } from '../components/vehicle/VehicleGrid'
 import { VehicleSpecs } from '../components/vehicle/VehicleSpecs'
 import { ReportDialog } from '../components/vehicle/ReportDialog'
 import { ShareButton } from '../components/vehicle/ShareButton'
+import { PriceReference } from '../components/sell/PriceReference'
 import { BRAND, pageTitle } from '../config/brand'
 import { useAuth } from '../hooks/useAuth'
 import { useCompare } from '../hooks/useCompare'
@@ -295,6 +296,21 @@ export function VehicleDetail() {
           <section className="detail__section">
             <h2 className="detail__heading">Características</h2>
             <VehicleSpecs vehicle={vehicle} />
+          </section>
+
+          {/* Cómo está de precio contra los parecidos publicados. Sin título
+              propio cuando no hay con qué comparar: el componente no dibuja
+              nada con menos de tres. */}
+          <section className="detail__section detail__section--tight">
+            <PriceReference
+              mode="buy"
+              make={vehicle.make}
+              model={vehicle.model}
+              year={vehicle.year}
+              currency={vehicle.currency}
+              price={vehicle.price}
+              excludeId={vehicle.id}
+            />
           </section>
 
           {/* Igual que el vendedor de abajo: sin descripción, sin título. */}
