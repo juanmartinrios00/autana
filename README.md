@@ -62,15 +62,40 @@ npm run dev
 Buildea y publica en Cloudflare Workers con `wrangler deploy`, que toma el
 nombre y el directorio de assets de `wrangler.jsonc`.
 
-**Es manual.** No hay integración de Git: pushear a `main` no publica nada. Si
-alguna vez se conecta, hay que sacar este script — con los dos caminos activos
-cada publicación dispara dos builds y gana el que termina último, que es la
+**Ojo: pushear a `main` también publica.** Esto decía que el deploy era manual
+y que pushear no hacía nada; el 24/9/2026 se comprobó que no: producción tenía
+commits que nadie había desplegado a mano, y en `wrangler deployments list`
+aparece un deploy pocos minutos después de cada push. Hay una integración de
+Git prendida en Cloudflare.
+
+Con los dos caminos activos, publicar con `npm run deploy` mientras hay un
+build de Cloudflare en curso hace que gane el que termine último, que es la
 forma de publicar un commit viejo sin enterarse.
+
+Lo que **no** se publica solo son las migraciones: un push que necesite una
+migración nueva sale a producción igual, y la pantalla que dependa de ella se
+rompe hasta que alguien la pegue en el SQL Editor. Primero la migración,
+después el push.
 
 Ojo con una trampa al leer `wrangler deployments list`: un solo `wrangler
 deploy` deja **dos** registros con unos quince segundos de diferencia, uno por
 la subida de los assets y otro por los triggers. Parecen dos deploys y no lo
 son.
+
+### Chequeo de humo
+
+    npm run humo                            contra auteando.com
+    npm run humo -- http://localhost:8788   contra el Worker local
+
+Los diez minutos de revisión manual que uno nunca hace, en dos segundos: que
+las pantallas contesten, que una dirección inventada dé 404, que los avisos
+sigan llevando sus datos para Google y su canonical, que el sitemap y el
+robots sigan en pie, que las láminas y las tipografías estén, y que la base
+conteste. Sale con código 1 si algo falla.
+
+No usa navegador a propósito ---sólo `fetch`--- así no le suma dependencias al
+repo. Lo que no puede ver, porque no dibuja nada, es que la pantalla se vea
+bien o que el JavaScript no explote.
 
 ## Cómo está organizado
 
