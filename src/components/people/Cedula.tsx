@@ -102,7 +102,16 @@ export function Cedula({
       </div>
 
       <div className="cedula__foot">
-        <span className="cedula__plate" aria-label={`Patente del perfil ${patente(userId)}`}>
+        {/* `role="img"` y no un `span` pelado: ARIA no deja poner `aria-label`
+            en un elemento sin rol ---el lector de pantalla lo ignora y la
+            etiqueta se pierde en silencio--- y las dos partes de adentro están
+            ocultas, así que sin esto la patente no se anuncia de ninguna
+            forma. Es el mismo patrón que el sello de acá abajo. */}
+        <span
+          className="cedula__plate"
+          role="img"
+          aria-label={`Patente del perfil ${patente(userId)}`}
+        >
           <span className="cedula__plate-band" aria-hidden="true">
             Argentina
           </span>
