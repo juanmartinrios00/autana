@@ -35,8 +35,23 @@ const stopAfter = args.includes('--stop')
 
 const EXCLUDED = 'realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor'
 
+/**
+ * La versión del CLI, fija.
+ *
+ * Con `npx supabase` a secas, cada corrida baja la última: el entorno de
+ * pruebas cambia solo, de un día para el otro, sin que nadie toque el repo. Ya
+ * pasó ---la 2.118.0 levanta un Storage que le pide a su propia base un
+ * `ON CONFLICT (name, bucket_id)` que el esquema nuevo sólo cubre con índices
+ * parciales, así que toda subida de foto falla con 500--- y el suite de base
+ * quedó en rojo por algo que no estaba en el código.
+ *
+ * Para subirla: cambiar el número, correr `npm run test:db` y ver que pase.
+ * Se puede probar otra sin tocar el archivo: `SUPABASE_CLI=2.118.0 npm run test:db`.
+ */
+const CLI = process.env.SUPABASE_CLI ?? '2.117.0'
+
 function supabase(command, { quiet = false } = {}) {
-  const result = spawnSync(`npx supabase ${command}`, {
+  const result = spawnSync(`npx supabase@${CLI} ${command}`, {
     cwd: work,
     shell: true,
     encoding: 'utf8',
