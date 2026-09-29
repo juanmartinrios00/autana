@@ -18,7 +18,8 @@
     "og:home": "vite build --ssr scripts/og-home.tsx --outDir node_modules/.cache/og-home --emptyOutDir --logLevel warn && node node_modules/.cache/og-home/og-home.js",
     "foto:carroceria": "node scripts/foto-carroceria.mjs",
     "og:blog": "vite build --ssr scripts/og-blog.tsx --outDir node_modules/.cache/og-blog --emptyOutDir --logLevel warn && node node_modules/.cache/og-blog/og-blog.js",
-    "test:db": "node scripts/db-test.mjs"
+    "test:db": "node scripts/db-test.mjs",
+    "fotos:copiar": "node scripts/fotos-copiar.mjs"
   },
   "dependencies": {
     "@supabase/auth-js": "2.112.4",

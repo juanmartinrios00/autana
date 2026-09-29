@@ -17,6 +17,7 @@ import type {
 } from '../types'
 import type { MakeModelCount } from './suggest'
 import { garagePhotoUrl } from './garage'
+import { FOTOS_URL } from '../config/fotos'
 
 /**
  * Única capa que habla con el backend. Todo lo que la UI sabe de la red pasa
@@ -2245,6 +2246,11 @@ function storagePath(bucket: string, value: string | null): string | null {
   const marker = `/object/public/${bucket}/`
   const at = value.indexOf(marker)
   if (at !== -1) return decodeURIComponent(value.slice(at + marker.length))
+  /* Y la forma de R2, `https://fotos…/<bucket>/<ruta>`, si ya están ahí. */
+  if (FOTOS_URL) {
+    const r2 = `${FOTOS_URL.replace(/\/+$/, '')}/${bucket}/`
+    if (value.startsWith(r2)) return decodeURIComponent(value.slice(r2.length))
+  }
   return value.startsWith('http') ? null : value
 }
 

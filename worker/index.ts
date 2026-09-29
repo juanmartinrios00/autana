@@ -3,6 +3,8 @@
 import { BRAND, pageTitle } from '../src/config/brand'
 import { findPost, postsByDate } from '../src/content/blog/posts'
 import { SUPABASE_PUBLIC } from '../src/config/supabase-public'
+import { apiFotos, type Almacen } from './fotos'
+import { FOTOS_URL, urlDeFotoEnR2 } from '../src/config/fotos'
 import { ENTRADAS } from '../src/config/entradas'
 import {
   BLOG_URL,
@@ -36,6 +38,20 @@ import {
 
 interface Env {
   ASSETS: Fetcher
+  /** El bucket de R2 de las fotos. Falta hasta que se crea: ver `config/fotos`. */
+  FOTOS?: R2Bucket
+}
+
+/**
+ * Quién es el dueño de un token de sesión, según Supabase. Ver `worker/fotos`.
+ */
+async function usuarioDelToken(token: string): Promise<string | null> {
+  const response = await fetch(`${SUPABASE_PUBLIC.url}/auth/v1/user`, {
+    headers: { apikey: SUPABASE_PUBLIC.anonKey, Authorization: `Bearer ${token}` },
+  })
+  if (!response.ok) return null
+  const user = (await response.json()) as { id?: unknown }
+  return typeof user.id === 'string' ? user.id : null
 }
 
 
@@ -232,18 +248,24 @@ export function garagePreviewImage(entries: GarageEntryRow[], origin: string, hi
   return garageImage(entries) ?? `${origin}/og-garage.png`
 }
 
+/** La URL pública de una foto: en R2 si está prendido, si no en Supabase. */
+function fotoPublica(bucket: string, path: string): string {
+  if (FOTOS_URL) return urlDeFotoEnR2(FOTOS_URL, bucket, path)
+  return `${SUPABASE_PUBLIC.url}/storage/v1/object/public/${bucket}/${path}`
+}
+
 /** La primera foto que haya, en el orden de las consignas. */
 export function garageImage(entries: GarageEntryRow[]): string | null {
   const withPhoto = entries.find((entry) => entry.photo_path)
   if (!withPhoto?.photo_path) return null
-  return `${SUPABASE_PUBLIC.url}/storage/v1/object/public/garage-photos/${withPhoto.photo_path}`
+  return fotoPublica('garage-photos', withPhoto.photo_path)
 }
 
 function coverImage(row: ListingRow): string | null {
   const images = (row.listing_images ?? []).slice().sort((a, b) => a.position - b.position)
   const first = images[0]
   if (!first) return null
-  return `${SUPABASE_PUBLIC.url}/storage/v1/object/public/listing-photos/${first.path}`
+  return fotoPublica('listing-photos', first.path)
 }
 
 /** Escapa para meter texto dentro de un atributo HTML. */
@@ -898,6 +920,10 @@ export default {
 
     const legacy = legacyRedirect(url, request)
     if (legacy) return legacy
+
+    if (url.pathname.startsWith('/api/fotos/')) {
+      return apiFotos(request, url, env.FOTOS as unknown as Almacen | undefined, usuarioDelToken)
+    }
 
     if (url.pathname === '/robots.txt') return robots(url.origin)
     if (url.pathname === '/sitemap.xml') return sitemap(url.origin)

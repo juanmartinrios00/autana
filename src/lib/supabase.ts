@@ -2,6 +2,8 @@ import { AuthClient } from '@supabase/auth-js'
 import { PostgrestClient } from '@supabase/postgrest-js'
 import { StorageClient } from '@supabase/storage-js'
 import { SUPABASE_PUBLIC } from '../config/supabase-public'
+import { FOTOS_URL } from '../config/fotos'
+import { almacenR2, type AlmacenDeFotos } from './fotos'
 
 /**
  * Cliente de Supabase, armado a mano con los tres módulos que usamos.
@@ -76,7 +78,11 @@ function build() {
   }
 
   const rest = new PostgrestClient(new URL('rest/v1', base).href, { fetch: fetchWithAuth })
-  const storage = new StorageClient(new URL('storage/v1', base).href, {}, fetchWithAuth)
+  /* Las fotos: en Supabase o en R2, según `config/fotos`. Las dos tienen la
+     misma forma, así que el resto de la aplicación no sabe cuál es. */
+  const storage: AlmacenDeFotos = FOTOS_URL
+    ? almacenR2(FOTOS_URL, async () => (await auth.getSession()).data.session?.access_token ?? null)
+    : new StorageClient(new URL('storage/v1', base).href, {}, fetchWithAuth)
 
   return {
     auth,
