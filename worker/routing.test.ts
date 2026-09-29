@@ -474,6 +474,14 @@ describe('run_worker_first', () => {
     expect(correElWorker('/assets/index-NXXoz_Hn.js')).toBe(false)
     expect(correElWorker('/assets/index-eXG7-A66.css')).toBe(false)
   })
+
+  /* Las fuentes las pide el `preload` de una página que ya pasó por el
+     worker. Cada invocación cuenta contra el límite diario del plan gratis de
+     Cloudflare, y con ellas adentro una visita valía tres. */
+  it('no corre en las fuentes', () => {
+    expect(correElWorker('/fonts/archivo-latin-var.woff2')).toBe(false)
+    expect(correElWorker('/fonts/jetbrains-mono-latin-var.woff2')).toBe(false)
+  })
 })
 
 /**

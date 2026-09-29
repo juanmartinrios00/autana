@@ -34,6 +34,9 @@
     // Con esto el worker corre primero en todo salvo `/assets/*`, que son los
     // bundles con el hash en el nombre. Por ahí no entra nadie: los pide el
     // navegador después de abrir una página que ya pasó por la redirección.
-    "run_worker_first": ["/*", "!/assets/*"]
+    // Las fuentes, igual: las pide el `preload` de una página ya servida. Cada
+    // pasada por el worker cuenta contra los 100.000 pedidos por día del plan
+    // gratis, y con las dos fuentes adentro una visita eran tres.
+    "run_worker_first": ["/*", "!/assets/*", "!/fonts/*"]
   }
 }
