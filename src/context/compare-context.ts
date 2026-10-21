@@ -7,7 +7,10 @@ export interface CompareValue {
   /** Los slugs elegidos, en el orden en que se fueron sumando. */
   slugs: string[]
   has: (slug: string) => boolean
-  toggle: (slug: string) => void
+  /** El nombre con que se eligió: marca, modelo y año como estaban en la card. */
+  nameOf: (slug: string) => string
+  /** Suma o saca un auto; `name` es lo que va a decir la barra. */
+  toggle: (slug: string, name: string) => void
   remove: (slug: string) => void
   clear: () => void
   /** `true` cuando ya hay tres y no entra otro. */

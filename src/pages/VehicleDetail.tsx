@@ -412,7 +412,7 @@ export function VehicleDetail() {
                       ? 'Ya elegiste tres autos para comparar'
                       : undefined
                   }
-                  onClick={() => compare.toggle(vehicle.slug)}
+                  onClick={() => compare.toggle(vehicle.slug, `${title} ${vehicle.year}`)}
                 >
                   <Icon name={compare.has(vehicle.slug) ? 'check' : 'grid'} size={16} />
                   {compare.has(vehicle.slug) ? 'Comparando' : 'Comparar'}

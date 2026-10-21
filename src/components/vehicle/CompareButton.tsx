@@ -27,7 +27,7 @@ export function CompareButton({ slug, title, className, compact = false }: Compa
       disabled={blocked}
       title={blocked ? 'Ya elegiste tres autos para comparar' : compact ? (picked ? 'Comparando' : 'Comparar') : undefined}
       aria-label={picked ? `Sacar ${title} de la comparación` : `Comparar ${title}`}
-      onClick={() => toggle(slug)}
+      onClick={() => toggle(slug, title)}
     >
       <Icon name={picked ? 'check' : 'compare'} size={15} />
       {!compact && (picked ? 'Comparando' : 'Comparar')}

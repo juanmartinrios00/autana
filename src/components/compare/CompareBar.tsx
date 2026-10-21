@@ -2,7 +2,6 @@ import { Link, useLocation } from 'react-router-dom'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import { useCompare } from '../../hooks/useCompare'
-import { slugTitle } from '../../lib/format'
 import './CompareBar.css'
 
 /**
@@ -16,7 +15,7 @@ import './CompareBar.css'
  * a la vista y la barra sólo taparía contenido.
  */
 export function CompareBar() {
-  const { slugs, remove, clear } = useCompare()
+  const { slugs, nameOf, remove, clear } = useCompare()
   const location = useLocation()
 
   if (slugs.length === 0 || location.pathname === '/comparar') return null
@@ -33,16 +32,15 @@ export function CompareBar() {
           <ul className="cmpbar__list">
             {slugs.map((slug) => (
               <li key={slug} className="cmpbar__chip">
-                {/* El slug ya dice marca, modelo y año: alcanza como etiqueta
-                    sin tener que pedir los vehículos completos sólo para la
-                    barra. `slugTitle` le saca el código del final, que se
-                    estaba viendo en pantalla. */}
-                <span className="cmpbar__chip-name">{slugTitle(slug)}</span>
+                {/* El nombre que tenía la card al elegirlo: alcanza como
+                    etiqueta sin tener que pedir los vehículos completos sólo
+                    para la barra. */}
+                <span className="cmpbar__chip-name">{nameOf(slug)}</span>
                 <button
                   type="button"
                   className="cmpbar__chip-remove"
                   onClick={() => remove(slug)}
-                  aria-label={`Sacar ${slug.replace(/-/g, ' ')} de la comparación`}
+                  aria-label={`Sacar ${nameOf(slug)} de la comparación`}
                 >
                   <Icon name="close" size={13} />
                 </button>
