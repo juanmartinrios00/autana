@@ -12,7 +12,14 @@ import { useSlowHint } from "../hooks/useSlowHint";
 import { SaveSearch } from "../components/search/SaveSearch";
 import { activeChips, useVehicleFilters } from "../hooks/useVehicleFilters";
 import { ActiveFilters } from "../components/search/ActiveFilters";
-import { listMakes, listModels, listProvinces, listVehicles } from "../lib/api";
+import {
+  listMakes,
+  listModels,
+  listProvinces,
+  listVehicles,
+  PageOutOfRangeError,
+} from "../lib/api";
+import { reportError } from "../lib/report";
 import { formatCount, sortLabels, sortValues } from "../lib/format";
 import { pageWindow } from "../lib/pagination";
 import type { Paginated, Vehicle } from "../types";
@@ -160,8 +167,16 @@ export function Cars() {
       .then((data) => {
         if (current) setAnswer({ key: requestKey, data, failed: false });
       })
-      .catch(() => {
-        if (current) setAnswer({ key: requestKey, data: null, failed: true });
+      .catch((cause: unknown) => {
+        if (!current) return;
+        /* Una página que ya no existe no es un error: se vuelve a la primera,
+           que es donde están los autos que quedan. */
+        if (cause instanceof PageOutOfRangeError) {
+          setParam("page", undefined);
+          return;
+        }
+        reportError("listVehicles", cause);
+        setAnswer({ key: requestKey, data: null, failed: true });
       });
 
     /* La búsqueda anterior puede resolver después de que cambiaron los filtros:
@@ -169,7 +184,7 @@ export function Cars() {
     return () => {
       current = false;
     };
-  }, [requestKey, filters, sort, page, attempt]);
+  }, [requestKey, filters, sort, page, attempt, setParam]);
 
   const status: Status =
     answer.key !== requestKey ? "loading" : answer.failed ? "error" : "ready";
@@ -257,7 +272,10 @@ export function Cars() {
         )}
       </aside>
 
-      <main className="cars__results">
+      {/* Una sección y no un `<main>`: el `<main>` ya lo pone el layout, y
+          dos le dicen al lector de pantalla que la página tiene dos
+          contenidos principales. */}
+      <section className="cars__results" aria-label="Resultados">
         <div className="cars__head">
           <div>
             <h1 className="cars__count">
@@ -416,7 +434,7 @@ export function Cars() {
             </div>
           </nav>
         )}
-      </main>
+      </section>
     </div>
   );
 }

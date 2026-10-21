@@ -20,7 +20,10 @@ export function useVehicleFilters() {
 
   const filters = useMemo(() => parseFilters(params), [params])
   const sort = parseSort(params)
-  const page = num(params, 'page') ?? 1
+  /* Entera y desde uno. `?page=0` le pedía a la base un rango negativo y la
+     pantalla decía "1 vehículo" sin mostrar ninguno; `?page=1.5`, un offset
+     con coma que la base rechazaba. */
+  const page = Math.max(1, Math.floor(num(params, 'page') ?? 1))
 
   /**
    * Escribe varios valores en una sola actualización, y vuelve a la página 1:

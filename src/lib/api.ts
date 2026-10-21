@@ -33,6 +33,21 @@ export class NotFoundError extends Error {
 }
 
 /**
+ * Una página del listado que ya no existe.
+ *
+ * Un link a `?page=3` sigue andando cuando se vendió la mitad de los autos de
+ * esa búsqueda, y la base contesta con un 416 en vez de una lista vacía. Sin
+ * distinguirlo caía en la pantalla de error, que decía "revisá tu conexión" y
+ * ofrecía reintentar: la conexión estaba bien, y reintentar daba lo mismo.
+ */
+export class PageOutOfRangeError extends Error {
+  constructor() {
+    super('Esa página del listado ya no existe.')
+    this.name = 'PageOutOfRangeError'
+  }
+}
+
+/**
  * Una escritura que no tocó ninguna fila.
  *
  * RLS no rechaza los UPDATE ni los DELETE: los *filtra*. Si el aviso no es de
@@ -274,6 +289,8 @@ export async function listVehicles({
   if (error && filters.rebajados && error.code === '42703') {
     return { items: [], total: 0, page, pageSize }
   }
+  /* PostgREST dice así que el `offset` pasó del último resultado. */
+  if (error?.code === 'PGRST103') throw new PageOutOfRangeError()
   if (error) throw error
 
   const items = (data as ListingRow[]).map(toVehicle)
