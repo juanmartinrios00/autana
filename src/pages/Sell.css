@@ -362,6 +362,10 @@
   flex-direction: column;
   align-items: center;
   gap: var(--sp-4);
+  /* Con ancho propio y no el de su contenido: los dos botones de abajo en
+     una fila medían más que un celular, la caja crecía hasta ese ancho y,
+     centrada, se salía por los dos costados (420px en una pantalla de 390). */
+  width: 100%;
   max-width: 520px;
   padding: var(--sp-8) var(--sp-7);
   text-align: center;
@@ -410,8 +414,16 @@
 
 .sell__done-actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--sp-3);
   margin-top: var(--sp-2);
+}
+
+@media (max-width: 480px) {
+  .sell__done-card {
+    padding: var(--sp-7) var(--sp-5);
+  }
 }
 
 @media (max-width: 1023px) {
