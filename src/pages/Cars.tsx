@@ -394,6 +394,10 @@ export function Cars() {
           />
         )}
 
+        {/* Las cards llevan h3; sin un h2 en el medio, quien navega por
+            títulos con lector de pantalla salta del conteo a cada auto sin
+            saber que entró a la lista. */}
+        <h2 className="sr-only">Resultados</h2>
         {status !== "error" && (status === "loading" || total > 0) && (
           <VehicleGrid
             vehicles={result?.items ?? []}

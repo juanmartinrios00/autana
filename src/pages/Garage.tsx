@@ -284,6 +284,9 @@ export function Garage() {
         {!editable && filled === 0 && (
           <p className="garagepage__empty">{profile.name} todavía no cargó autos en su garage.</p>
         )}
+        {/* Cada espacio lleva h3: este es el h2 que los agrupa para quien
+            navega por títulos. */}
+        <h2 className="sr-only">Los autos de {profile.name}</h2>
         <div className={editable ? 'garage' : 'garage garage--visita'}>
           {SLOTS.filter((slot) => editable || garage.some((entry) => entry.slot === slot.id)).map((slot) => (
             <GarageSlotCard

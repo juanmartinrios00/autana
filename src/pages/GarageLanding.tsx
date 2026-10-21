@@ -61,6 +61,7 @@ export function GarageLanding() {
       </section>
 
       <div className="page glanding__body">
+        <h2 className="sr-only">Los cuatro espacios</h2>
         <GarageShowcase />
 
         <section className="glanding__how" aria-labelledby="glanding-how">
