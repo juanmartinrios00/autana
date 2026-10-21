@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 /* Con `?raw`, igual que el resto de los tests que leen el esquema. */
 import sql from '../../supabase/migrations/019_contact_messages.sql?raw'
 import garageSql from '../../supabase/migrations/002_garage.sql?raw'
-import { CONTACT_LIMITS, GARAGE_YEARS, LIMITS } from './limits'
+import schemaSql from '../../supabase/schema.sql?raw'
+import { CONTACT_LIMITS, DOORS, GARAGE_YEARS, LIMITS, PG_INT_MAX, PRICE_RANGE } from './limits'
 
 /**
  * El formulario de contacto y la tabla que lo recibe declaran los mismos
@@ -75,5 +76,27 @@ describe('GARAGE_YEARS contra la migración 002', () => {
      uno sobre el otro sin querer. */
   it('empieza antes que el rango de los avisos', () => {
     expect(GARAGE_YEARS.min).toBeLessThan(1950)
+  })
+})
+
+describe('PRICE_RANGE contra la columna', () => {
+  /* Si un techo pasa del tipo de la columna, el formulario deja publicar un
+     precio que la base rechaza con un error que nadie entiende. */
+  it('la columna del precio sigue siendo un int', () => {
+    expect(schemaSql).toMatch(/\n\s*price\s+int\s/)
+  })
+
+  it('ningún techo pasa del int de Postgres', () => {
+    for (const [currency, range] of Object.entries(PRICE_RANGE)) {
+      expect(range.max, currency).toBeLessThanOrEqual(PG_INT_MAX)
+      expect(range.min, currency).toBeLessThan(range.max)
+    }
+  })
+})
+
+describe('DOORS', () => {
+  it('es un rango de puertas que existe', () => {
+    expect(DOORS.min).toBeGreaterThanOrEqual(2)
+    expect(DOORS.min).toBeLessThan(DOORS.max)
   })
 })

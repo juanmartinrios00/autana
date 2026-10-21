@@ -98,8 +98,16 @@ export const GARAGE_YEARS = { min: 1900, max: 2100 } as const
  *
  * Es un `Record` por moneda: si alguna vez se suma una, el compilador pide su
  * rango en vez de dejarla sin control.
+ *
+ * El techo de pesos no puede pasar de lo que entra en la columna, que es un
+ * `int` de Postgres: hasta 2.147.483.647. Estaba en cinco mil millones, y un
+ * precio entre los dos topes pasaba el formulario y volvía como un `out of
+ * range for type integer` que se leía "No pudimos publicar el aviso".
  */
 export const PRICE_RANGE: Record<Currency, { min: number; max: number }> = {
   USD: { min: 500, max: 5_000_000 },
-  ARS: { min: 300_000, max: 5_000_000_000 },
+  ARS: { min: 300_000, max: 2_000_000_000 },
 }
+
+/** El `int` de Postgres, que es el tipo de `listings.price`. */
+export const PG_INT_MAX = 2_147_483_647
