@@ -972,9 +972,17 @@ button.navbar__link {
 
 /* Alto reservado mientras baja el chunk de una pantalla. No es un spinner a
    proposito: a esta escala el chunk llega antes de que un spinner alcance a
-   leerse, y lo unico que hace falta evitar es que el pie salte. */
+   leerse, y lo unico que hace falta evitar es que el pie salte.
+
+   Una pantalla entera y no 70vh: con 70vh, sumada la navbar, el pie quedaba
+   asomado al final del primer pantallazo del celular y saltaba afuera apenas
+   llegaba la pantalla. Era el salto de diseño (CLS) de todas las entradas
+   directas menos la portada: 0,22 en el blog y en explorar, donde Google
+   empieza a marcarlo como malo. Lo usan también las pantallas que esperan
+   sus datos con un esqueleto chico, como el garage. */
 .route-fallback {
-  min-height: 70vh;
+  min-height: 100vh;
+  min-height: 100svh;
 }
 
 /* Cerrar sesión en el menú de celular: separado del resto y en rojo, igual que

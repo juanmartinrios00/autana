@@ -24,6 +24,10 @@
 .cars__results {
   /* Lo que queda debajo de la navbar fija al subir con el cambio de página. */
   scroll-margin-top: calc(var(--nav-h) + var(--sp-4));
+  /* Al menos una pantalla: los doce esqueletos son más altos que una búsqueda
+     con dos resultados, y al llegar la respuesta el pie subía de golpe hasta
+     la mitad de la pantalla. */
+  min-height: calc(100svh - var(--nav-h));
   flex-grow: 1;
   min-width: 0;
   display: flex;

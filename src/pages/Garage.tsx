@@ -170,7 +170,7 @@ export function Garage() {
 
   if (!profile) {
     return (
-      <div className="page section">
+      <div className="page section route-fallback">
         <Skeleton height="180px" />
       </div>
     )
