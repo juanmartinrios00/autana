@@ -85,7 +85,12 @@ export function Login() {
 
   function validate(): string | null {
     if (!email.includes('@') || !email.includes('.')) return 'Ingresá un mail válido.'
-    if (password.length < MIN_PASSWORD)
+    /* El mínimo es para crear la contraseña, no para entrar: al entrar, la
+       que vale es la que la base tiene guardada, y una cuenta hecha con un
+       mínimo más corto ---el de Supabase es seis--- quedaría afuera con un
+       cartel que le pide algo que no puede cambiar sin entrar. */
+    if (mode === 'signin' && !password) return 'Poné tu contraseña.'
+    if (mode === 'signup' && password.length < MIN_PASSWORD)
       return `La contraseña tiene que tener al menos ${MIN_PASSWORD} caracteres.`
     if (mode === 'signup' && name.trim().length < 2) {
       return kind === 'dealer' ? 'Poné el nombre de la agencia.' : 'Poné tu nombre.'
