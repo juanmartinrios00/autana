@@ -5,8 +5,6 @@ export interface DocumentMeta {
   description?: string
   /** Imagen para la preview al compartir el link. */
   image?: string
-  /** JSON-LD, para que Google entienda de qué se trata la página. */
-  structuredData?: Record<string, unknown>
   /** Saca la página del buscador. Para lo que devuelve 200 pero no existe. */
   noindex?: boolean
 }
@@ -63,12 +61,18 @@ function defaults() {
  *
  * Los dos caminos tienen que decir lo mismo: si esto y el worker arman textos
  * distintos, el link compartido muestra una cosa y la pestaña otra.
+ *
+ * Los datos para Google (JSON-LD) los pone sólo el worker. Esto también los
+ * ponía, y como Google ejecuta el JavaScript, la ficha le llegaba con dos
+ * `Car` ---el del worker, completo, y uno a medias sin condición ni dirección---
+ * y las notas con un `BlogPosting` y un `Article`. Google entra siempre por la
+ * dirección de la página, nunca navegando adentro de la aplicación, así que
+ * lo del worker es lo que ve en todos los casos.
  */
 export function useDocumentMeta({
   title,
   description,
   image,
-  structuredData,
   noindex,
 }: DocumentMeta) {
   useEffect(() => {
@@ -100,22 +104,4 @@ export function useDocumentMeta({
     if (picture) upsertMeta('meta[property="og:image"]', 'property', 'og:image', picture)
     else document.head.querySelector('meta[property="og:image"]')?.remove()
   }, [title, description, image, noindex])
-
-  /* El dato se compara ya serializado. `structuredData` se arma como objeto
-     literal en la llamada, así que es una referencia nueva en cada render: con
-     el objeto como dependencia, el efecto borraba y volvía a crear el `<script>`
-     en cada repintado de la ficha ---abrir un desplegable, pasar el mouse por
-     una card--- para dejar exactamente el mismo contenido. */
-  const json = structuredData ? JSON.stringify(structuredData) : null
-
-  useEffect(() => {
-    if (!json) return
-
-    const script = document.createElement('script')
-    script.type = 'application/ld+json'
-    script.textContent = json
-    document.head.appendChild(script)
-
-    return () => script.remove()
-  }, [json])
 }

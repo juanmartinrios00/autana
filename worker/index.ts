@@ -6,6 +6,7 @@ import { SUPABASE_PUBLIC } from '../src/config/supabase-public'
 import { apiFotos, type Almacen } from './fotos'
 import { FOTOS_URL, urlDeFotoEnR2 } from '../src/config/fotos'
 import { ENTRADAS } from '../src/config/entradas'
+import { bodyLabels, fuelLabels, transmissionLabels } from '../src/lib/format'
 import {
   BLOG_URL,
   CANONICAL_HOST,
@@ -67,6 +68,10 @@ interface ListingRow {
   mileage: number
   /** `new`, `used` o `certified`. Para los datos estructurados. */
   condition: string
+  fuel_type: string
+  transmission: string
+  body_type: string
+  color: string | null
   description: string
   city: string
   province: string
@@ -74,7 +79,8 @@ interface ListingRow {
 }
 
 const COLUMNS =
-  'slug,make,model,trim,year,price,currency,mileage,condition,description,city,province,listing_images(path,position)'
+  'slug,make,model,trim,year,price,currency,mileage,condition,fuel_type,transmission,body_type,color,' +
+  'description,city,province,listing_images(path,position)'
 
 async function fetchListing(slug: string): Promise<ListingRow | null> {
   const params = new URLSearchParams({
@@ -565,6 +571,11 @@ export function postJsonLd(
  * `Car` es un tipo de `Product`, así que la oferta va como en cualquier
  * producto: precio, moneda y disponibilidad.
  */
+function etiqueta(campo: string, labels: Record<string, string>, valor: string) {
+  const texto = labels[valor]
+  return texto ? { [campo]: texto } : {}
+}
+
 export function listingJsonLd(row: ListingRow, canonical: string, image: string | null): string {
   const condiciones: Record<string, string> = {
     new: 'https://schema.org/NewCondition',
@@ -589,6 +600,13 @@ export function listingJsonLd(row: ListingRow, canonical: string, image: string 
       unitCode: 'KMT',
     },
     itemCondition: condiciones[row.condition] ?? condiciones.used,
+    /* En castellano y no el valor de la base: schema.org los toma como texto
+       libre, y "Nafta" es lo que buscaría alguien, no "petrol". Lo que no está
+       en las etiquetas se deja afuera en vez de mandar el código crudo. */
+    ...etiqueta('fuelType', fuelLabels, row.fuel_type),
+    ...etiqueta('vehicleTransmission', transmissionLabels, row.transmission),
+    ...etiqueta('bodyType', bodyLabels, row.body_type),
+    ...(row.color?.trim() ? { color: row.color.trim() } : {}),
     offers: {
       '@type': 'Offer',
       price: row.price,

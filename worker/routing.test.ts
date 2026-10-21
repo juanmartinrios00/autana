@@ -50,6 +50,10 @@ const row = {
   currency: 'USD',
   mileage: 34_200,
   condition: 'used',
+  fuel_type: 'petrol',
+  transmission: 'manual',
+  body_type: 'sedan',
+  color: null as string | null,
   description: 'Impecable, único dueño, service al día.',
   city: 'Rosario',
   province: 'Santa Fe',
@@ -141,6 +145,16 @@ describe('listingJsonLd', () => {
 
   it('la condición del aviso, y usado si viniera algo raro', () => {
     expect(parse({ ...row, condition: 'new' }).itemCondition).toBe('https://schema.org/NewCondition')
+  })
+
+  it('dice combustible, caja, carrocería y color en castellano', () => {
+    const data = parse({ ...row, fuel_type: 'diesel', transmission: 'automatic', body_type: 'pickup', color: ' Gris ' })
+    expect(data.fuelType).toBe('Diésel')
+    expect(data.vehicleTransmission).toBe('Automática')
+    expect(data.bodyType).toBe('Pick-up')
+    expect(data.color).toBe('Gris')
+    /* Un valor que no está en las etiquetas no sale crudo. */
+    expect(parse({ ...row, fuel_type: 'plasma' }).fuelType).toBeUndefined()
     expect(parse({ ...row, condition: 'used' }).itemCondition).toBe('https://schema.org/UsedCondition')
     expect(parse({ ...row, condition: 'vaya a saber' }).itemCondition).toBe(
       'https://schema.org/UsedCondition',

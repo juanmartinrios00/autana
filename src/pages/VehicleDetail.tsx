@@ -174,29 +174,6 @@ export function VehicleDetail() {
       ? `${vehicleMeta(vehicle)} en ${locationLabel(vehicle.location)}. ${vehicle.description.slice(0, 120)}`
       : undefined,
     image: vehicle?.images[0]?.url,
-    /* Le dice a Google que esto es un vehículo en venta, con su precio. Es lo
-       que habilita los resultados enriquecidos en la búsqueda. */
-    structuredData: vehicle
-      ? {
-          '@context': 'https://schema.org',
-          '@type': 'Car',
-          name: vehicleTitle(vehicle),
-          brand: { '@type': 'Brand', name: vehicle.make },
-          model: vehicle.model,
-          vehicleModelDate: String(vehicle.year),
-          mileageFromOdometer: { '@type': 'QuantitativeValue', value: vehicle.mileage, unitCode: 'KMT' },
-          fuelType: vehicle.fuelType,
-          vehicleTransmission: vehicle.transmission,
-          color: vehicle.color || undefined,
-          image: vehicle.images.map((photo) => photo.url).filter(Boolean),
-          offers: {
-            '@type': 'Offer',
-            price: vehicle.price,
-            priceCurrency: vehicle.currency,
-            availability: 'https://schema.org/InStock',
-          },
-        }
-      : undefined,
   })
 
   if (status === 'error') {

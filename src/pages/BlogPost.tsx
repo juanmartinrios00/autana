@@ -3,7 +3,7 @@ import { PostCard } from '../components/blog/PostCard'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Icon } from '../components/ui/Icon'
-import { BRAND, pageTitle } from '../config/brand'
+import { pageTitle } from '../config/brand'
 import { bodies } from '../content/blog/bodies'
 import { findPost, postsByDate } from '../content/blog/posts'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
@@ -13,13 +13,10 @@ import './BlogPost.css'
 /**
  * Un artículo.
  *
- * El `structuredData` no es adorno: es lo que hace que Google muestre la fecha
- * y el autor en el resultado en vez de una línea suelta. Un blog que existe
- * para posicionar y no lo declara está trabajando a medias.
- *
  * Las etiquetas para WhatsApp y las redes las pone el Worker antes de que
- * corra nada de esto —leen el HTML crudo y no ejecutan JavaScript—. Acá se
- * ponen igual para Google, que sí lo ejecuta, y para el título de la pestaña.
+ * corra nada de esto —leen el HTML crudo y no ejecutan JavaScript—, y también
+ * el `BlogPosting` que hace que Google muestre la fecha en el resultado. Acá se
+ * ponen el título y la descripción para la pestaña y para navegar adentro.
  */
 export function BlogPost() {
   const { slug = '' } = useParams()
@@ -32,18 +29,6 @@ export function BlogPost() {
     title: post ? pageTitle(post.title) : pageTitle('Nota no encontrada'),
     description: post?.summary,
     image: cover ?? undefined,
-    structuredData: post
-      ? {
-          '@context': 'https://schema.org',
-          '@type': 'Article',
-          headline: post.title,
-          description: post.summary,
-          datePublished: post.date,
-          dateModified: post.date,
-          author: { '@type': 'Organization', name: BRAND },
-          publisher: { '@type': 'Organization', name: BRAND },
-        }
-      : undefined,
   })
 
   if (!post || !body) {
