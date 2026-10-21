@@ -25,6 +25,10 @@ export const LIMITS = {
   trim: 60,
   /** "San Miguel de Tucuman" son 21; los barrios largos, unos 30. */
   city: 60,
+  /** "2.0 TSI 16v Turbo" son 17; el motor va en una celda de la ficha. */
+  engine: 30,
+  /** "Gris plata metalizado" son 21; tambien va en una celda de la ficha. */
+  color: 30,
   /** El nombre que se muestra en el perfil y al lado de cada aviso. */
   name: 60,
   /** El nombre de una busqueda guardada, que va en una fila de la lista. */
@@ -51,6 +55,17 @@ export const CONTACT_LIMITS = {
   email: { min: 6, max: 160 },
   message: { min: 20, max: 4000 },
 } as const
+
+
+/**
+ * Cuántas puertas puede tener un auto publicado.
+ *
+ * La columna es `int` sin `check`, y el campo es libre: sin tope entraba un
+ * "44" que la ficha mostraba tal cual, y un "4.5" que Postgres rechazaba con un
+ * `invalid input syntax for type integer` traducido a "No pudimos publicar el
+ * aviso, probá de nuevo". Probar de nuevo no lo arreglaba.
+ */
+export const DOORS = { min: 2, max: 5 } as const
 
 
 /**

@@ -31,7 +31,7 @@ import { describeError } from '../lib/errors'
 import { computeLevel, type Achievement, type LevelState } from '../lib/levels'
 import { levelChange, photosMission, type Mission } from '../lib/missions'
 import { currencies, currencyLabels } from '../lib/format'
-import { LIMITS, PRICE_RANGE } from '../lib/limits'
+import { DOORS, LIMITS, PRICE_RANGE } from '../lib/limits'
 import { toE164 } from '../lib/whatsapp'
 import { useDocumentMeta } from '../hooks/useDocumentMeta'
 import {
@@ -63,7 +63,7 @@ function validate(step: number, draft: ListingDraft): Partial<Record<keyof Listi
     if (!draft.make.trim()) errors.make = 'Falta la marca.'
     if (!draft.model.trim()) errors.model = 'Falta el modelo.'
     if (!draft.year) errors.year = 'Falta el año.'
-    else if (year < 1950 || year > thisYear + 1) errors.year = `Poné un año entre 1950 y ${thisYear + 1}.`
+    else if (!Number.isInteger(year) || year < 1950 || year > thisYear + 1) errors.year = `Poné un año entre 1950 y ${thisYear + 1}.`
     if (!draft.condition) errors.condition = 'Elegí la condición.'
   }
 
@@ -74,6 +74,12 @@ function validate(step: number, draft: ListingDraft): Partial<Record<keyof Listi
     if (!draft.fuelType) errors.fuelType = 'Elegí el combustible.'
     if (!draft.transmission) errors.transmission = 'Elegí la transmisión.'
     if (!draft.bodyType) errors.bodyType = 'Elegí la carrocería.'
+    /* Opcional, pero si se escribe tiene que ser un número de puertas: la
+       columna es `int` y un "4.5" volvía como un error de Postgres. */
+    const doors = Number(draft.doors)
+    if (draft.doors && (!Number.isInteger(doors) || doors < DOORS.min || doors > DOORS.max)) {
+      errors.doors = `Poné entre ${DOORS.min} y ${DOORS.max} puertas.`
+    }
   }
 
   if (step === 3) {
@@ -316,9 +322,9 @@ export function Sell() {
         transmission: draft.transmission as Exclude<ListingDraft['transmission'], ''>,
         drivetrain: draft.drivetrain || null,
         bodyType: draft.bodyType as Exclude<ListingDraft['bodyType'], ''>,
-        engine: draft.engine.trim() || null,
+        engine: cap(draft.engine, LIMITS.engine) || null,
         doors: draft.doors ? Number(draft.doors) : null,
-        color: draft.color.trim() || null,
+        color: cap(draft.color, LIMITS.color) || null,
         city: cap(draft.city, LIMITS.city),
         province: draft.province,
         description: cap(draft.description, LIMITS.description),
@@ -607,6 +613,7 @@ export function Sell() {
                   label="Motor (opcional)"
                   placeholder="Ej. 1.6 16v"
                   value={draft.engine}
+                  maxLength={LIMITS.engine}
                   onChange={(event) => update('engine', event.target.value)}
                 />
               </div>
@@ -615,6 +622,7 @@ export function Sell() {
                   label="Color (opcional)"
                   placeholder="Ej. Gris plata"
                   value={draft.color}
+                  maxLength={LIMITS.color}
                   onChange={(event) => update('color', event.target.value)}
                 />
                 <Input
@@ -623,6 +631,9 @@ export function Sell() {
                   inputMode="numeric"
                   placeholder="Ej. 4"
                   value={draft.doors}
+                  error={errors.doors}
+                  min={DOORS.min}
+                  max={DOORS.max}
                   onChange={(event) => update('doors', event.target.value)}
                 />
               </div>
