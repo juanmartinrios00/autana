@@ -50,7 +50,11 @@ export function useVehicleFilters() {
           if (!paging) next.delete('page')
           return next
         },
-        { replace: true, preventScrollReset: !paging },
+        /* Pasar de página sí queda en el historial: "atrás" desde la página
+           3 vuelve a la 2, como en cualquier buscador. Antes reemplazaba, y
+           "atrás" sacaba del listado entero. Los filtros siguen reemplazando:
+           tocar cinco casillas no son cinco pasos para deshacer. */
+        { replace: !paging },
       )
     },
     [setSearchParams],

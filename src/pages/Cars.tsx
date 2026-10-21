@@ -186,6 +186,20 @@ export function Cars() {
     };
   }, [requestKey, filters, sort, page, attempt, setParam]);
 
+  /* Al cambiar de página, arriba de los resultados: la paginación está al
+     pie, y sin esto la página nueva se veía desde el final. Sólo cuando cambia
+     el número y no al montar, que de eso se encarga el layout. */
+  const resultsRef = useRef<HTMLElement>(null);
+  const shownPage = useRef(page);
+  useEffect(() => {
+    if (shownPage.current === page) return;
+    shownPage.current = page;
+    const results = resultsRef.current;
+    if (results && results.getBoundingClientRect().top < 0) {
+      results.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [page]);
+
   const status: Status =
     answer.key !== requestKey ? "loading" : answer.failed ? "error" : "ready";
   const result = answer.data;
@@ -275,7 +289,11 @@ export function Cars() {
       {/* Una sección y no un `<main>`: el `<main>` ya lo pone el layout, y
           dos le dicen al lector de pantalla que la página tiene dos
           contenidos principales. */}
-      <section className="cars__results" aria-label="Resultados">
+      <section
+        ref={resultsRef}
+        className="cars__results"
+        aria-label="Resultados"
+      >
         <div className="cars__head">
           <div>
             <h1 className="cars__count">

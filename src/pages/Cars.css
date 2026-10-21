@@ -22,6 +22,8 @@
 }
 
 .cars__results {
+  /* Lo que queda debajo de la navbar fija al subir con el cambio de página. */
+  scroll-margin-top: calc(var(--nav-h) + var(--sp-4));
   flex-grow: 1;
   min-width: 0;
   display: flex;

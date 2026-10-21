@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigationType } from 'react-router-dom'
 import { DarkHeroContext } from '../../context/dark-hero'
 import { useOrphanPhotoCleanup } from '../../hooks/useOrphanPhotoCleanup'
 import { CompareBar } from '../compare/CompareBar'
@@ -15,6 +15,35 @@ export function Layout() {
   /* Se arranca leyendo la posición real: si alguien recarga a mitad de página,
      la navbar tiene que nacer sólida y no transparente sobre contenido blanco. */
   const [atTop, setAtTop] = useState(() => window.scrollY < 24)
+
+  /**
+   * Cada pantalla nueva arranca arriba.
+   *
+   * Con `BrowserRouter` nadie lo hace solo: el navegador vuelve arriba en una
+   * carga completa, pero un cambio de ruta de la aplicación deja la ventana
+   * donde estaba. Tocar "Centro de ayuda" en el pie abría la ayuda tres mil
+   * píxeles abajo, y una card del final de la portada abría la ficha por la
+   * mitad, con las fotos y el precio fuera de pantalla.
+   *
+   * Sólo cuando cambia la ruta, no los parámetros: filtrar el listado no
+   * tiene que mandar arriba a quien está mirando los resultados. Y no al ir
+   * para atrás o para adelante (`POP`), donde lo esperable es volver adonde
+   * uno estaba y de eso se encarga el navegador.
+   */
+  const navigationType = useNavigationType()
+  useEffect(() => {
+    if (navigationType === 'POP') return
+    /* Con ancla y el destino ya en pantalla, se va ahí. Si todavía no está
+       ---el garage trae `#avisos` y los avisos llegan después---, arriba, y la
+       pantalla baja cuando lo tenga. */
+    const target = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null
+    if (target) {
+      target.scrollIntoView()
+      return
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sólo al cambiar de pantalla
+  }, [location.pathname])
 
   /* Lo declara la pantalla que se esté mostrando, con `useDarkHero`. El
      `setState` es estable, así que el contexto no cambia de identidad y no
