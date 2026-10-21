@@ -65,7 +65,10 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
 
   const contact = fetched?.vehicleId === vehicle.id ? fetched.contact : null
   const [busy, setBusy] = useState(false)
-  const [failure, setFailure] = useState<string | null>(null)
+  /* Con el aviso al que pertenece, como el contacto: "Este aviso ya no está
+     publicado" no puede quedar abajo del botón del auto siguiente. */
+  const [failed, setFailed] = useState<{ vehicleId: string; text: string } | null>(null)
+  const failure = failed?.vehicleId === vehicle.id ? failed.text : null
 
   /* Sólo en la ficha: que el botón diga "Te interesa" si ya lo tocaste. En el
      listado serían veinte consultas por página para cambiar una palabra. */
@@ -90,7 +93,7 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
       return
     }
 
-    setFailure(null)
+    setFailed(null)
 
     /* Ya lo trajo en este mismo render de la página: no hace falta volver a
        preguntar, y tampoco sumaría. */
@@ -103,7 +106,7 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
     try {
       const found = await expressInterest(vehicle.slug)
       if (!found) {
-        setFailure('Este aviso ya no está publicado.')
+        setFailed({ vehicleId: vehicle.id, text: 'Este aviso ya no está publicado.' })
         return
       }
       setFetched({ vehicleId: vehicle.id, contact: found })
@@ -111,11 +114,13 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
       onCount?.(found.interestCount)
       dialogRef.current?.showModal()
     } catch (cause) {
-      setFailure(
-        cause instanceof ContactLimitError
-          ? cause.message
-          : 'No pudimos traer el contacto. Probá de nuevo.',
-      )
+      setFailed({
+        vehicleId: vehicle.id,
+        text:
+          cause instanceof ContactLimitError
+            ? cause.message
+            : 'No pudimos traer el contacto. Probá de nuevo.',
+      })
     } finally {
       setBusy(false)
     }
@@ -157,7 +162,17 @@ export function InterestButton({ vehicle, title, size = 'card', onCount }: Inter
         </p>
       )}
 
-      <dialog ref={dialogRef} className="interest" aria-labelledby={titleId}>
+      {/* Tocar afuera cierra, como cualquier ventana en el celular: el clic
+          en el fondo le llega al propio `<dialog>`, y uno adentro le llega a
+          un hijo. Sin esto la única salida era la × de arriba. */}
+      <dialog
+        ref={dialogRef}
+        className="interest"
+        aria-labelledby={titleId}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) event.currentTarget.close()
+        }}
+      >
         <div className="interest__inner">
           <header className="interest__head">
             <div>
