@@ -376,8 +376,26 @@ describe('applyVehicleFilters', () => {
          dos, una en cada columna. Pidiendo la frase entera en una sola columna
          no encontraba nada. */
       expect(apply({ q: 'Renault Symbol' }).calls).toEqual([
-        { method: 'or', args: ['make.ilike.%Renault%,model.ilike.%Renault%'] },
-        { method: 'or', args: ['make.ilike.%Symbol%,model.ilike.%Symbol%'] },
+        { method: 'or', args: ['make.ilike.%Renault%,model.ilike.%Renault%,trim.ilike.%Renault%'] },
+        { method: 'or', args: ['make.ilike.%Symbol%,model.ilike.%Symbol%,trim.ilike.%Symbol%'] },
+      ])
+    })
+
+    /* "Corolla XEi": la versión no está en la marca ni en el modelo. */
+    it('busca también en la versión', () => {
+      expect(apply({ q: 'xei' }).calls).toEqual([
+        { method: 'or', args: ['make.ilike.%xei%,model.ilike.%xei%,trim.ilike.%xei%'] },
+      ])
+    })
+
+    /* "Gol 2015" no encontraba nada: pedía "2015" dentro del modelo. Y el
+       Peugeot 2008 tiene que seguir saliendo, por eso es un or y no un eq. */
+    it('un número que puede ser un año se busca también en el año', () => {
+      expect(apply({ q: '2008' }).calls).toEqual([
+        { method: 'or', args: ['make.ilike.%2008%,model.ilike.%2008%,trim.ilike.%2008%,year.eq.2008'] },
+      ])
+      expect(apply({ q: '500' }).calls).toEqual([
+        { method: 'or', args: ['make.ilike.%500%,model.ilike.%500%,trim.ilike.%500%'] },
       ])
     })
 
@@ -385,10 +403,10 @@ describe('applyVehicleFilters', () => {
       /* `%` y `_` son comodines dentro de un ilike: dejarlos pasar convierte
          cualquier búsqueda en "traeme todo". */
       expect(apply({ q: 'ford%' }).calls).toEqual([
-        { method: 'or', args: ['make.ilike.%ford%,model.ilike.%ford%'] },
+        { method: 'or', args: ['make.ilike.%ford%,model.ilike.%ford%,trim.ilike.%ford%'] },
       ])
       expect(apply({ q: 'f_rd' }).calls).toEqual([
-        { method: 'or', args: ['make.ilike.%frd%,model.ilike.%frd%'] },
+        { method: 'or', args: ['make.ilike.%frd%,model.ilike.%frd%,trim.ilike.%frd%'] },
       ])
       /* Un término que era puro comodín desaparece entero. */
       expect(apply({ q: '%_' }).calls).toEqual([])
@@ -400,7 +418,9 @@ describe('applyVehicleFilters', () => {
       const query = apply({ q: 'ford,status.eq.deleted' })
       for (const call of query.calls) {
         const filter = call.args[0] as string
-        expect(filter).toBe('make.ilike.%fordstatuseqdeleted%,model.ilike.%fordstatuseqdeleted%')
+        expect(filter).toBe(
+          'make.ilike.%fordstatuseqdeleted%,model.ilike.%fordstatuseqdeleted%,trim.ilike.%fordstatuseqdeleted%',
+        )
       }
     })
 
@@ -416,14 +436,14 @@ describe('applyVehicleFilters', () => {
 
     it('conserva números y guiones, que son parte de los nombres', () => {
       expect(apply({ q: 'C4 Mercedes-Benz' }).calls).toEqual([
-        { method: 'or', args: ['make.ilike.%C4%,model.ilike.%C4%'] },
-        { method: 'or', args: ['make.ilike.%Mercedes-Benz%,model.ilike.%Mercedes-Benz%'] },
+        { method: 'or', args: ['make.ilike.%C4%,model.ilike.%C4%,trim.ilike.%C4%'] },
+        { method: 'or', args: ['make.ilike.%Mercedes-Benz%,model.ilike.%Mercedes-Benz%,trim.ilike.%Mercedes-Benz%'] },
       ])
     })
 
     it('conserva los acentos y la ñ', () => {
       expect(apply({ q: 'Citroën' }).calls).toEqual([
-        { method: 'or', args: ['make.ilike.%Citroën%,model.ilike.%Citroën%'] },
+        { method: 'or', args: ['make.ilike.%Citroën%,model.ilike.%Citroën%,trim.ilike.%Citroën%'] },
       ])
     })
   })

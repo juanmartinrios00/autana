@@ -184,6 +184,22 @@ function searchTerms(q: string): string[] {
 }
 
 /**
+ * Dónde puede estar una palabra de la búsqueda.
+ *
+ * En la marca y el modelo, como siempre, y también en la versión: "Corolla
+ * XEi" o "Hilux SRX" son búsquedas comunes y la versión no está en ninguna de
+ * las dos. Un número de cuatro cifras que puede ser un año se busca además en
+ * el año: "Gol 2015" no encontraba nada porque pedía "2015" dentro del modelo.
+ * Sigue buscándose en el modelo porque hay modelos que son años ---el Peugeot
+ * 2008---, y con un `or` los dos casos andan.
+ */
+function termFilter(term: string): string {
+  const fields = [`make.ilike.%${term}%`, `model.ilike.%${term}%`, `trim.ilike.%${term}%`]
+  if (/^(19|20)\d\d$/.test(term)) fields.push(`year.eq.${term}`)
+  return fields.join(',')
+}
+
+/**
  * El mínimo que tiene que saber hacer un constructor de consultas para que esto
  * le aplique los filtros. Se describe por forma y no importando el tipo de
  * `postgrest-js` a propósito: así el módulo no arrastra ninguna dependencia y
@@ -215,7 +231,7 @@ export function applyVehicleFilters<Q extends FilterableQuery<Q>>(
      una columna y el modelo en la otra— no encontraba nada. Los `or`
      encadenados se combinan con AND, que es justo lo que queremos. */
   for (const term of searchTerms(filters.q ?? '')) {
-    query = query.or(`make.ilike.%${term}%,model.ilike.%${term}%`)
+    query = query.or(termFilter(term))
   }
 
   if (filters.make) query = query.eq('make', filters.make)
