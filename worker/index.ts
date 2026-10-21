@@ -892,6 +892,11 @@ function renderPost(assetResponse: Response, request: Request, slug: string): Re
  */
 export function canonicalRedirect(url: URL, request: Request): Response | null {
   if (!CANONICAL_HOST || url.hostname === CANONICAL_HOST) return null
+  /* El worker corriendo en la máquina de uno (`wrangler dev`) no es un
+     segundo sitio para Google: redirigirlo mandaba cada pedido a producción, y
+     el chequeo de humo contra el worker local terminaba probando el sitio
+     publicado ---o fallando entero con 301---. */
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') return null
   if (request.method !== 'GET' && request.method !== 'HEAD') return null
 
   const destino = new URL(url)
@@ -929,78 +934,123 @@ export function legacyRedirect(url: URL, request: Request): Response | null {
   return null
 }
 
+/**
+ * Las cabeceras de seguridad de base, en todo lo que sale del worker.
+ *
+ * El sitio no mandaba ninguna. Son las que no cuestan nada y no pueden romper
+ * lo que ya anda:
+ *
+ * - `frame-ancestors 'none'` (y `X-Frame-Options` para los navegadores que no
+ *   leen la otra): nadie puede meter el sitio adentro de un iframe propio y
+ *   hacerle tocar a alguien "Publicar" o "Borrar" con una capa transparente
+ *   encima. El sitio no se embebe en ningún lado.
+ * - `nosniff`: un archivo se interpreta como lo que dice que es. Las fotos las
+ *   suben los usuarios.
+ * - `Referrer-Policy`: al salir a WhatsApp o a Instagram se manda el dominio y
+ *   no la dirección entera, que puede llevar una búsqueda o el id de alguien.
+ * - `Permissions-Policy`: el sitio no usa cámara, micrófono ni ubicación, y
+ *   así tampoco los puede pedir un script de afuera. Elegir una foto con el
+ *   `<input type="file">` no pasa por la API de cámara.
+ *
+ * No va una `Content-Security-Policy` entera a propósito: el contador de
+ * Cloudflare lo inyecta el borde después del worker, las fotos pueden venir de
+ * dos dominios y los errores van a Sentry. Una lista de orígenes desactualizada
+ * no falla en ningún test: deja la pantalla rota para el que la abre.
+ */
+const SECURITY_HEADERS: Record<string, string> = {
+  'Content-Security-Policy': "frame-ancestors 'none'",
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+}
+
+export function withSecurityHeaders(response: Response): Response {
+  /* Las respuestas de `ASSETS.fetch` vienen con las cabeceras inmutables:
+     hay que copiarla para poder tocarlas. */
+  const copy = new Response(response.body, response)
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    if (!copy.headers.has(name)) copy.headers.set(name, value)
+  }
+  return copy
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url)
-
-    const canonical = canonicalRedirect(url, request)
-    if (canonical) return canonical
-
-    const legacy = legacyRedirect(url, request)
-    if (legacy) return legacy
-
-    if (url.pathname.startsWith('/api/fotos/')) {
-      return apiFotos(request, url, env.FOTOS as unknown as Almacen | undefined, usuarioDelToken)
-    }
-
-    if (url.pathname === '/robots.txt') return robots(url.origin)
-    if (url.pathname === '/sitemap.xml') return sitemap(url.origin)
-
-    /* Sólo lecturas: el resto del sitio no necesita que el servidor toque nada. */
-    if (request.method !== 'GET' && request.method !== 'HEAD') {
-      return env.ASSETS.fetch(request)
-    }
-
-    const listing = url.pathname.match(LISTING_URL)
-    if (listing) {
-      try {
-        return await renderListing(request, env, listing[1]!)
-      } catch (cause) {
-        console.error('preview del aviso', cause)
-        /* La página vale más que el preview. */
-        return env.ASSETS.fetch(request)
-      }
-    }
-
-    const post = url.pathname.match(BLOG_URL)
-    if (post) {
-      try {
-        const assetResponse = await htmlFor(request, env)
-        return assetResponse ? renderPost(assetResponse, request, post[1]!) : env.ASSETS.fetch(request)
-      } catch (cause) {
-        console.error('preview de la nota', cause)
-        return env.ASSETS.fetch(request)
-      }
-    }
-
-    const garage = url.pathname.match(GARAGE_URL)
-    if (garage) {
-      try {
-        return await renderGarage(request, env, garage[1]!)
-      } catch (cause) {
-        console.error('preview del garage', cause)
-        return env.ASSETS.fetch(request)
-      }
-    }
-
-    /* Todo lo demás: el HTML de la SPA con su canonical, y los archivos que no
-       son HTML tal cual vienen. */
-    const assetResponse = await env.ASSETS.fetch(request)
-    if (!isHtml(assetResponse)) return assetResponse
-
-    const html = renderCanonical(assetResponse, url)
-
-    /* Una dirección que la aplicación no sabe dibujar es una página que no
-       existe, y se contesta como tal. El cuerpo es el mismo ---la SPA muestra
-       "no encontramos esa página"--- y lo que cambia es el código: con 200,
-       Google indexa la pantalla de error como si fuera contenido (*soft 404*).
-
-       Va acá abajo de todo a propósito: las direcciones con contenido de
-       verdad ---un aviso, una nota, un garage--- ya salieron por arriba. */
-    if (!esRutaConocida(url.pathname)) {
-      return new Response(html.body, { status: 404, headers: html.headers })
-    }
-
-    return html
+    return withSecurityHeaders(await handle(request, env))
   },
 } satisfies ExportedHandler<Env>
+
+async function handle(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url)
+
+  const canonical = canonicalRedirect(url, request)
+  if (canonical) return canonical
+
+  const legacy = legacyRedirect(url, request)
+  if (legacy) return legacy
+
+  if (url.pathname.startsWith('/api/fotos/')) {
+    return apiFotos(request, url, env.FOTOS as unknown as Almacen | undefined, usuarioDelToken)
+  }
+
+  if (url.pathname === '/robots.txt') return robots(url.origin)
+  if (url.pathname === '/sitemap.xml') return sitemap(url.origin)
+
+  /* Sólo lecturas: el resto del sitio no necesita que el servidor toque nada. */
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    return env.ASSETS.fetch(request)
+  }
+
+  const listing = url.pathname.match(LISTING_URL)
+  if (listing) {
+    try {
+      return await renderListing(request, env, listing[1]!)
+    } catch (cause) {
+      console.error('preview del aviso', cause)
+      /* La página vale más que el preview. */
+      return env.ASSETS.fetch(request)
+    }
+  }
+
+  const post = url.pathname.match(BLOG_URL)
+  if (post) {
+    try {
+      const assetResponse = await htmlFor(request, env)
+      return assetResponse ? renderPost(assetResponse, request, post[1]!) : env.ASSETS.fetch(request)
+    } catch (cause) {
+      console.error('preview de la nota', cause)
+      return env.ASSETS.fetch(request)
+    }
+  }
+
+  const garage = url.pathname.match(GARAGE_URL)
+  if (garage) {
+    try {
+      return await renderGarage(request, env, garage[1]!)
+    } catch (cause) {
+      console.error('preview del garage', cause)
+      return env.ASSETS.fetch(request)
+    }
+  }
+
+  /* Todo lo demás: el HTML de la SPA con su canonical, y los archivos que no
+     son HTML tal cual vienen. */
+  const assetResponse = await env.ASSETS.fetch(request)
+  if (!isHtml(assetResponse)) return assetResponse
+
+  const html = renderCanonical(assetResponse, url)
+
+  /* Una dirección que la aplicación no sabe dibujar es una página que no
+     existe, y se contesta como tal. El cuerpo es el mismo ---la SPA muestra
+     "no encontramos esa página"--- y lo que cambia es el código: con 200,
+     Google indexa la pantalla de error como si fuera contenido (*soft 404*).
+
+     Va acá abajo de todo a propósito: las direcciones con contenido de
+     verdad ---un aviso, una nota, un garage--- ya salieron por arriba. */
+  if (!esRutaConocida(url.pathname)) {
+    return new Response(html.body, { status: 404, headers: html.headers })
+  }
+
+  return html
+}

@@ -17,6 +17,7 @@ import {
   organizationJsonLd,
   postJsonLd,
   xmlEscape,
+  withSecurityHeaders,
 } from './index'
 /* Las constantes viven aparte: el archivo de entrada del Worker sólo puede
    exportar funciones. Está explicado arriba de `rutas.ts`. */
@@ -423,6 +424,11 @@ describe('el dominio canónico', () => {
     expect(salida?.headers.get('location')).toBe('https://auteando.com/cars')
   })
 
+  it('deja en paz al worker local', () => {
+    expect(pedido('http://localhost:8788/autos')).toBeNull()
+    expect(pedido('http://127.0.0.1:8788/')).toBeNull()
+  })
+
   it('conserva el camino y la query', () => {
     const salida = pedido(
       'https://autana.riosjuanm10.workers.dev/cars?make=BMW&minPrice=20000',
@@ -647,5 +653,23 @@ describe('las rutas viejas', () => {
     for (const path of [...STATIC_PAGES, ...DISALLOWED]) {
       expect(RUTAS_VIEJAS[path], path).toBeUndefined()
     }
+  })
+})
+
+describe('las cabeceras de seguridad', () => {
+  it('se suman a cualquier respuesta, también a las inmutables de los assets', () => {
+    const original = Response.redirect('https://auteando.com/', 301)
+    const response = withSecurityHeaders(original)
+    expect(response.status).toBe(301)
+    expect(response.headers.get('Location')).toBe('https://auteando.com/')
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
+    expect(response.headers.get('Content-Security-Policy')).toBe("frame-ancestors 'none'")
+  })
+
+  /* Una respuesta que ya trae la suya ---una API que alguna vez la necesite---
+     manda sobre la de base. */
+  it('no pisa la que ya venía', () => {
+    const response = withSecurityHeaders(new Response('', { headers: { 'Referrer-Policy': 'no-referrer' } }))
+    expect(response.headers.get('Referrer-Policy')).toBe('no-referrer')
   })
 })
