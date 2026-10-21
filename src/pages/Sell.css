@@ -383,6 +383,23 @@
   text-underline-offset: 2px;
 }
 
+.sell__done-missing {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  border-left: 3px solid var(--warning);
+  background: var(--warning-bg);
+  /* El texto en tinta y no en el ámbar: ámbar sobre su propio fondo no llega
+     al contraste mínimo para un párrafo. */
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+.sell__done-missing a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .sell__done-mission {
   align-self: stretch;
 }

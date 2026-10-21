@@ -168,6 +168,10 @@ export function Sell() {
   const [publishing, setPublishing] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null)
+  /* Las fotos que no llegaron a subir, con el aviso al que pertenecen. Si
+     una falla, el aviso se publica igual con las demás, y sin esto nadie se
+     enteraba: el vendedor veía "lista" y un aviso con menos fotos. */
+  const [missingPhotos, setMissingPhotos] = useState<{ slug: string; sent: number; got: number } | null>(null)
   /* La hora de entrada del ticket: la de publicar, no la de cada render. */
   const [publishedAt, setPublishedAt] = useState<Date | null>(null)
 
@@ -354,6 +358,11 @@ export function Sell() {
 
       setPublishedSlug(vehicle.slug)
       setPublishedAt(new Date())
+      setMissingPhotos(
+        vehicle.images.length < photos.length
+          ? { slug: vehicle.slug, sent: photos.length, got: vehicle.images.length }
+          : null,
+      )
       window.scrollTo({ top: 0 })
 
       /* Después de publicar, y sin esperarlo: la pantalla de listo no depende
@@ -431,6 +440,15 @@ export function Sell() {
             precio={formatPrice(Number(draft.price), draft.currency)}
             entrada={publishedAt ?? new Date()}
           />
+          {missingPhotos?.slug === publishedSlug && (
+            <p className="sell__done-missing" role="status">
+              {missingPhotos.got === 0
+                ? 'No pudimos subir las fotos.'
+                : `Subimos ${missingPhotos.got} de ${missingPhotos.sent} fotos.`}{' '}
+              Las que faltan las podés sumar desde{' '}
+              <Link to={`/vender/${publishedSlug}/editar`}>editar el aviso</Link>.
+            </p>
+          )}
           {result && result.earned.length > 0 && (
             <p className="sell__done-earned">
               Sumaste {enLista(result.earned.map((item) => `«${item.title}»`))}.

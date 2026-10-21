@@ -646,11 +646,21 @@ export async function createListing(
 }
 
 /**
- * Sube las fotos al bucket y las registra.
+ * Cuántas fotos suben a la vez.
+ *
+ * De a una, publicar con diez fotos eran diez viajes en fila, y con datos
+ * móviles el "Publicando…" duraba lo que tardaba el más lento por diez. Todas
+ * juntas se pisan el ancho de banda de un celular y alguna se corta; tres es
+ * lo que aprovecha la conexión sin ahogarla.
+ */
+const PHOTO_UPLOADS_AT_ONCE = 3
+
+/**
+ * Sube las fotos al bucket y las registra. Devuelve cuántas quedaron.
  *
  * Si alguna falla, las que sí subieron quedan: es preferible una publicación
  * con 6 de 8 fotos a perder todo el trabajo. El vendedor puede completar las
- * que falten editando el aviso.
+ * que falten editando el aviso, y la pantalla de listo se lo dice.
  */
 export async function uploadListingPhotos(
   listingId: string,
@@ -659,21 +669,35 @@ export async function uploadListingPhotos(
   startPosition = 0,
 ): Promise<number> {
   const client = requireSupabase()
-  const rows: { listing_id: string; path: string; position: number }[] = []
+  /* Por índice y no con `push`: subiendo de a varias terminan en cualquier
+     orden, y el orden de las filas es el de las fotos. */
+  const uploaded: ({ listing_id: string; path: string; position: number } | null)[] = photos.map(() => null)
 
-  for (const [index, blob] of photos.entries()) {
-    const position = startPosition + index
-    /* El sufijo al azar evita pisar una foto vieja al editar: las posiciones
-       se reutilizan cuando se borra alguna del medio, los nombres no. */
-    const suffix = Math.random().toString(36).slice(2, 8)
-    const path = `${userId}/${listingId}/${position}-${suffix}.webp`
-    const { error } = await client.storage
-      .from('listing-photos')
-      .upload(path, blob, { contentType: 'image/webp', upsert: true })
-
-    if (!error) rows.push({ listing_id: listingId, path, position })
+  let next = 0
+  async function uploadNext(): Promise<void> {
+    while (next < photos.length) {
+      const index = next++
+      const position = startPosition + index
+      /* El sufijo al azar evita pisar una foto vieja al editar: las posiciones
+         se reutilizan cuando se borra alguna del medio, los nombres no. */
+      const suffix = Math.random().toString(36).slice(2, 8)
+      const path = `${userId}/${listingId}/${position}-${suffix}.webp`
+      const { error } = await client.storage.from('listing-photos').upload(path, photos[index]!, {
+        contentType: 'image/webp',
+        upsert: true,
+        /* Un año: el nombre lleva un sufijo al azar, así que una foto
+           cambiada es otro archivo y nunca hay que volver a preguntar. Es lo
+           mismo que pone el worker cuando las fotos viven en R2. */
+        cacheControl: '31536000',
+      })
+      if (!error) uploaded[index] = { listing_id: listingId, path, position }
+    }
   }
+  await Promise.all(
+    Array.from({ length: Math.min(PHOTO_UPLOADS_AT_ONCE, photos.length) }, () => uploadNext()),
+  )
 
+  const rows = uploaded.filter((row) => row !== null)
   if (rows.length > 0) {
     const { error } = await client.from('listing_images').insert(rows)
     if (error) throw error

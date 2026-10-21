@@ -13,7 +13,12 @@ import { urlDeFotoEnR2 } from '../config/fotos'
 type Resultado<T> = Promise<{ data: T; error: null } | { data: null; error: Error }>
 
 export interface CarpetaDeFotos {
-  upload(path: string, body: Blob, options?: { contentType?: string; upsert?: boolean }): Resultado<{ path: string }>
+  /** `cacheControl` lo usa Supabase; en R2 lo decide el worker por bucket. */
+  upload(
+    path: string,
+    body: Blob,
+    options?: { contentType?: string; upsert?: boolean; cacheControl?: string },
+  ): Resultado<{ path: string }>
   remove(paths: string[]): Resultado<{ name: string }[]>
   list(prefix?: string, options?: { limit?: number }): Resultado<{ name: string; id: string | null }[]>
   getPublicUrl(path: string): { data: { publicUrl: string } }
